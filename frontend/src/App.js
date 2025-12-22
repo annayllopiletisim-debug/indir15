@@ -7,6 +7,7 @@ import Footer from './components/Footer';
 import HomePage from './pages/HomePage';
 import BrandPage from './pages/BrandPage';
 import StoresPage from './pages/StoresPage';
+import ContactPage from './pages/ContactPage';
 import AdminLoginPage from './pages/admin/AdminLoginPage';
 import AdminDashboardPage from './pages/admin/AdminDashboardPage';
 import AdminLayout from './components/AdminLayout';
