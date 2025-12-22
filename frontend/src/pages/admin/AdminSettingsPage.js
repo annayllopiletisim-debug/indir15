@@ -205,9 +205,9 @@ const AdminSettingsPage = () => {
           <h3 className="font-medium text-blue-400 mb-2">💡 İpucu</h3>
           <ul className="text-sm text-muted-foreground space-y-1">
             <li>• Sticky CTA bar, kullanıcı mağaza seçtiğinde altta görünür</li>
-            <li>• CTA'da canlı indirim sayısı gösterilir (API'den çekilir)</li>
+            <li>• CTA içinde canlı indirim sayısı gösterilir (API ile çekilir)</li>
             <li>• 0 sonuç varsa CTA disabled olur</li>
-            <li>• A/B test sonuçları için Google Analytics'te "sticky_cta_click" eventini takip edin</li>
+            <li>• A/B test sonuçları için Google Analytics eventini takip edin</li>
           </ul>
         </div>
       </div>
