@@ -103,6 +103,14 @@ class Brand(BaseModel):
     homepage_order: int = 0
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
+# Newsletter Subscriber Model
+class NewsletterSubscriber(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    email: str
+    subscribed_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    is_active: bool = True
+
 class BrandCreate(BaseModel):
     name: str
     slug: str
