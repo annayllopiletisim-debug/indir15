@@ -53,7 +53,7 @@ const ShareButtons = ({ title, url, size = 'md' }) => {
             </button>
           </TooltipTrigger>
           <TooltipContent>
-            <p>WhatsApp'ta Paylaş</p>
+            <p>WhatsApp&apos;ta Paylaş</p>
           </TooltipContent>
         </Tooltip>
 
@@ -68,7 +68,7 @@ const ShareButtons = ({ title, url, size = 'md' }) => {
             </button>
           </TooltipTrigger>
           <TooltipContent>
-            <p>Facebook'ta Paylaş</p>
+            <p>Facebook&apos;ta Paylaş</p>
           </TooltipContent>
         </Tooltip>
       </div>
