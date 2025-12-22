@@ -99,6 +99,8 @@ class Brand(BaseModel):
     app_install_enabled: bool = False
     ios_app_url: Optional[str] = None
     android_app_url: Optional[str] = None
+    show_on_homepage: bool = False
+    homepage_order: int = 0
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 class BrandCreate(BaseModel):
@@ -112,6 +114,8 @@ class BrandCreate(BaseModel):
     app_install_enabled: bool = False
     ios_app_url: Optional[str] = None
     android_app_url: Optional[str] = None
+    show_on_homepage: bool = False
+    homepage_order: int = 0
 
 class Coupon(BaseModel):
     model_config = ConfigDict(extra="ignore")
@@ -455,6 +459,18 @@ async def upload_pdf(file: UploadFile = File(...), user: AdminUser = Depends(get
 async def get_brands(category_id: Optional[str] = None):
     query = {'category_id': category_id} if category_id else {}
     brands = await db.brands.find(query, {'_id': 0}).to_list(1000)
+    for brand in brands:
+        if isinstance(brand.get('created_at'), str):
+            brand['created_at'] = datetime.fromisoformat(brand['created_at'])
+    return brands
+
+@api_router.get("/brands/homepage")
+async def get_homepage_brands():
+    """Get brands marked for homepage display, ordered by homepage_order"""
+    brands = await db.brands.find(
+        {'show_on_homepage': True},
+        {'_id': 0}
+    ).sort('homepage_order', 1).to_list(100)
     for brand in brands:
         if isinstance(brand.get('created_at'), str):
             brand['created_at'] = datetime.fromisoformat(brand['created_at'])
