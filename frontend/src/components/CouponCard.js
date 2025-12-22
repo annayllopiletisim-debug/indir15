@@ -9,6 +9,10 @@ const CouponCard = ({ coupon, brand }) => {
   const [showModal, setShowModal] = useState(false);
   const [copied, setCopied] = useState(false);
 
+  // Get brand info - either from passed brand object or from coupon itself
+  const brandName = brand?.name || coupon.brand_name;
+  const brandSlug = brand?.slug || coupon.brand_slug;
+
   const handleGetCode = async () => {
     // Track coupon view
     trackClick('coupon_view', coupon.id, coupon.brand_id, brand?.category_id);
@@ -63,6 +67,8 @@ const CouponCard = ({ coupon, brand }) => {
         expiryDate={coupon.expiry_date}
         isActive={coupon.is_active}
         showActiveStatus={true}
+        brandName={brandName}
+        brandSlug={brandSlug}
         actions={actions}
         testId={`coupon-card-${coupon.id}`}
       />
