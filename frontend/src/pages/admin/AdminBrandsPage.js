@@ -148,7 +148,9 @@ const AdminBrandsPage = () => {
       meta_description: '',
       app_install_enabled: false,
       ios_app_url: '',
-      android_app_url: ''
+      android_app_url: '',
+      show_on_homepage: false,
+      homepage_order: 0
     });
     setEditingId(null);
     setShowForm(false);
