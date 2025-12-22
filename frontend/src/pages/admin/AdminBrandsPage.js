@@ -433,13 +433,7 @@ const AdminBrandsPage = () => {
             <div key={brand.id} className="glass-effect p-6 rounded-2xl">
               <div className="flex items-start justify-between mb-4">
                 <div className="flex items-center space-x-3">
-                  {brand.logo_url ? (
-                    <img src={brand.logo_url} alt={brand.name} className="w-12 h-12 rounded-lg object-cover" />
-                  ) : (
-                    <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-neon-purple to-neon-pink flex items-center justify-center">
-                      <span className="text-lg font-bold">{brand.name.charAt(0)}</span>
-                    </div>
-                  )}
+                  <BrandLogo logoUrl={brand.logo_url} brandName={brand.name} size="md" />
                   <div>
                     <h3 className="font-bold">{brand.name}</h3>
                     <p className="text-xs text-muted-foreground">/{brand.slug}</p>
