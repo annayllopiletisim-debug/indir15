@@ -81,6 +81,14 @@ function App() {
             }
           />
           <Route
+            path="/kategoriler"
+            element={
+              <PublicLayout>
+                <CategoriesPage />
+              </PublicLayout>
+            }
+          />
+          <Route
             path="/iletisim"
             element={
               <PublicLayout>
