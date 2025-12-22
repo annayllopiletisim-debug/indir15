@@ -255,52 +255,6 @@ const HomePage = () => {
         )}
 
         {/* ═══════════════════════════════════════════════════════════════
-            3️⃣ KATEGORİLER
-        ═══════════════════════════════════════════════════════════════ */}
-        <section className="container mx-auto px-4 py-6">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-heading font-bold">Kategoriler</h2>
-            <Link to="/kategoriler" className="text-sm text-muted-foreground hover:text-primary">
-              Tümü →
-            </Link>
-          </div>
-
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            {sortedCategories.slice(0, 8).map((category) => {
-              const hasDeals = category.total_deals > 0;
-              
-              return (
-                <Link
-                  key={category.id}
-                  to={`/kategori/${category.slug}`}
-                  className={`
-                    p-4 rounded-xl transition-all
-                    ${hasDeals 
-                      ? 'bg-card border border-border hover:border-primary/30 shadow-card hover:shadow-card-hover' 
-                      : 'bg-muted/30 opacity-50'
-                    }
-                  `}
-                >
-                  <h3 className={`text-sm font-semibold mb-2 ${hasDeals ? '' : 'text-muted-foreground'}`}>
-                    {category.name}
-                  </h3>
-                  <div className="flex items-center gap-3 text-xs text-muted-foreground">
-                    <span className="flex items-center gap-1">
-                      <Tag className="w-3 h-3" />
-                      {category.total_deals || 0}
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <Store className="w-3 h-3" />
-                      {category.store_count || 0}
-                    </span>
-                  </div>
-                </Link>
-              );
-            })}
-          </div>
-        </section>
-
-        {/* ═══════════════════════════════════════════════════════════════
             4️⃣ BUGÜN POPÜLER
         ═══════════════════════════════════════════════════════════════ */}
         {popularItems.length > 0 && (
