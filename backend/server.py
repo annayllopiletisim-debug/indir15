@@ -799,6 +799,114 @@ async def get_expiring_soon():
         'total': len(coupons) + len(discounts)
     }
 
+@api_router.get("/popular-today")
+async def get_popular_today():
+    """Get today's most clicked deals based on analytics"""
+    now = datetime.now(timezone.utc)
+    today_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
+    
+    date_filter = {'timestamp': {'$gte': today_start.isoformat()}}
+    
+    # Get top clicked coupons today
+    coupon_pipeline = [
+        {'$match': {**date_filter, 'type': {'$in': ['coupon_view', 'coupon_copy']}}},
+        {'$group': {'_id': '$item_id', 'clicks': {'$sum': 1}}},
+        {'$sort': {'clicks': -1}},
+        {'$limit': 5}
+    ]
+    
+    # Get top clicked discounts today
+    discount_pipeline = [
+        {'$match': {**date_filter, 'type': 'discount_click'}},
+        {'$group': {'_id': '$item_id', 'clicks': {'$sum': 1}}},
+        {'$sort': {'clicks': -1}},
+        {'$limit': 5}
+    ]
+    
+    coupon_clicks = await db.click_events.aggregate(coupon_pipeline).to_list(5)
+    discount_clicks = await db.click_events.aggregate(discount_pipeline).to_list(5)
+    
+    popular_coupons = []
+    for item in coupon_clicks:
+        coupon = await db.coupons.find_one({'id': item['_id']}, {'_id': 0})
+        if coupon:
+            brand = await db.brands.find_one({'id': coupon.get('brand_id')}, {'_id': 0})
+            if brand:
+                coupon['brand_name'] = brand['name']
+                coupon['brand_slug'] = brand['slug']
+                coupon['brand_logo_url'] = brand.get('logo_url')
+            coupon['click_count'] = item['clicks']
+            if isinstance(coupon.get('expiry_date'), str):
+                coupon['expiry_date'] = datetime.fromisoformat(coupon['expiry_date'])
+            popular_coupons.append(coupon)
+    
+    popular_discounts = []
+    for item in discount_clicks:
+        discount = await db.discounts.find_one({'id': item['_id']}, {'_id': 0})
+        if discount:
+            brand = await db.brands.find_one({'id': discount.get('brand_id')}, {'_id': 0})
+            if brand:
+                discount['brand_name'] = brand['name']
+                discount['brand_slug'] = brand['slug']
+                discount['brand_logo_url'] = brand.get('logo_url')
+            discount['click_count'] = item['clicks']
+            if isinstance(discount.get('expiry_date'), str):
+                discount['expiry_date'] = datetime.fromisoformat(discount['expiry_date'])
+            popular_discounts.append(discount)
+    
+    # If no analytics data, return recent items as fallback
+    if not popular_coupons and not popular_discounts:
+        # Get recent coupons
+        recent_coupons = await db.coupons.find({'is_active': True}, {'_id': 0}).sort('created_at', -1).limit(4).to_list(4)
+        for coupon in recent_coupons:
+            brand = await db.brands.find_one({'id': coupon.get('brand_id')}, {'_id': 0})
+            if brand:
+                coupon['brand_name'] = brand['name']
+                coupon['brand_slug'] = brand['slug']
+                coupon['brand_logo_url'] = brand.get('logo_url')
+            if isinstance(coupon.get('expiry_date'), str):
+                coupon['expiry_date'] = datetime.fromisoformat(coupon['expiry_date'])
+            popular_coupons.append(coupon)
+        
+        # Get recent discounts
+        recent_discounts = await db.discounts.find({}, {'_id': 0}).sort('created_at', -1).limit(4).to_list(4)
+        for discount in recent_discounts:
+            brand = await db.brands.find_one({'id': discount.get('brand_id')}, {'_id': 0})
+            if brand:
+                discount['brand_name'] = brand['name']
+                discount['brand_slug'] = brand['slug']
+                discount['brand_logo_url'] = brand.get('logo_url')
+            if isinstance(discount.get('expiry_date'), str):
+                discount['expiry_date'] = datetime.fromisoformat(discount['expiry_date'])
+            popular_discounts.append(discount)
+    
+    return {
+        'coupons': popular_coupons,
+        'discounts': popular_discounts,
+        'total': len(popular_coupons) + len(popular_discounts)
+    }
+
+@api_router.get("/brands/with-deal-count")
+async def get_brands_with_deal_count():
+    """Get homepage brands with active deal counts"""
+    brands = await db.brands.find(
+        {'show_on_homepage': True},
+        {'_id': 0}
+    ).sort('homepage_order', 1).to_list(100)
+    
+    for brand in brands:
+        brand_id = brand['id']
+        # Count active coupons
+        coupon_count = await db.coupons.count_documents({'brand_id': brand_id, 'is_active': True})
+        # Count discounts
+        discount_count = await db.discounts.count_documents({'brand_id': brand_id})
+        brand['active_deal_count'] = coupon_count + discount_count
+        
+        if isinstance(brand.get('created_at'), str):
+            brand['created_at'] = datetime.fromisoformat(brand['created_at'])
+    
+    return brands
+
 @api_router.post("/analytics/track")
 async def track_click(event: ClickEventCreate):
     new_event = ClickEvent(**event.model_dump())
