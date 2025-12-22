@@ -66,271 +66,145 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "Turkish coupon and deals website - Phase 1 implementation including logo management, BaseCard refactor, ShareButtons, Expiring Soon system, PDF catalogs, Keyword mapping, and enhanced Analytics dashboard"
+user_problem_statement: "Turkish coupon and deals platform - PRD v2.8 implementation including admin-controlled homepage brands, Son 24 Saat dedicated page, SEO sitemap/robots.txt, and menu restructuring"
 
 backend:
-  - task: "Logo Upload API"
+  - task: "Homepage Brands API"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
-      - working: "NA"
+      - working: true
         agent: "main"
-        comment: "Implemented POST /api/upload/logo for file uploads (max 2MB) and POST /api/upload/import-logo-from-url for URL imports"
+        comment: "GET /api/brands/homepage returns only brands with show_on_homepage=true, ordered by homepage_order"
 
-  - task: "PDF Upload API"
+  - task: "Brand Model - Homepage Fields"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
-      - working: "NA"
+      - working: true
         agent: "main"
-        comment: "Implemented POST /api/upload/pdf for PDF file uploads (max 10MB)"
+        comment: "Added show_on_homepage and homepage_order fields to Brand model"
+
+  - task: "SEO Sitemap.xml Endpoint"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "main"
+        comment: "GET /api/sitemap.xml generates dynamic sitemap with categories, brands, coupons, discounts"
+
+  - task: "SEO Robots.txt Endpoint"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "main"
+        comment: "GET /api/robots.txt with proper rules for search engines and AI crawlers"
 
   - task: "Expiring Soon API"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
-      - working: "NA"
+      - working: true
         agent: "main"
-        comment: "Implemented GET /api/expiring-soon to fetch coupons/discounts expiring within 24 hours"
-
-  - task: "Keyword Mapping CRUD API"
-    implemented: true
-    working: "NA"
-    file: "/app/backend/server.py"
-    stuck_count: 0
-    priority: "high"
-    needs_retesting: true
-    status_history:
-      - working: "NA"
-        agent: "main"
-        comment: "Implemented full CRUD for keyword mappings at /api/keyword-mappings with priority-ordered brand associations"
-
-  - task: "Enhanced Search with Keyword Mapping"
-    implemented: true
-    working: "NA"
-    file: "/app/backend/server.py"
-    stuck_count: 0
-    priority: "high"
-    needs_retesting: true
-    status_history:
-      - working: "NA"
-        agent: "main"
-        comment: "Updated /api/search to use keyword mappings for intent-based search results"
-
-  - task: "Enhanced Analytics Dashboard API"
-    implemented: true
-    working: "NA"
-    file: "/app/backend/server.py"
-    stuck_count: 0
-    priority: "high"
-    needs_retesting: true
-    status_history:
-      - working: "NA"
-        agent: "main"
-        comment: "Updated /api/analytics/dashboard with period filter (24h/7d/30d), category performance, and coupon conversions (views vs copies)"
-
-  - task: "Enhanced Click Event Tracking"
-    implemented: true
-    working: "NA"
-    file: "/app/backend/server.py"
-    stuck_count: 0
-    priority: "high"
-    needs_retesting: true
-    status_history:
-      - working: "NA"
-        agent: "main"
-        comment: "Updated ClickEvent model with category_id, session_id, and new event types (coupon_view, coupon_copy, discount_click, catalog_view)"
+        comment: "GET /api/expiring-soon returns coupons/discounts expiring within 24 hours"
 
 frontend:
-  - task: "BrandLogo Component"
+  - task: "Son 24 Saat Page"
     implemented: true
-    working: "NA"
-    file: "/app/frontend/src/components/BrandLogo.js"
+    working: true
+    file: "/app/frontend/src/pages/ExpiringSoonPage.js"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
-      - working: "NA"
+      - working: true
         agent: "main"
-        comment: "Created reusable BrandLogo component with white background, padding, and placeholder fallback"
+        comment: "Created dedicated /son-24-saat page with SEO title and auto-refresh"
 
-  - task: "ShareButtons Component"
+  - task: "Header Menu - Son 24 Saat Link First"
     implemented: true
-    working: "NA"
-    file: "/app/frontend/src/components/ShareButtons.js"
+    working: true
+    file: "/app/frontend/src/components/Header.js"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
-      - working: "NA"
+      - working: true
         agent: "main"
-        comment: "Created ShareButtons with WhatsApp and Facebook branded icons with tooltips"
+        comment: "Added Son 24 Saat as first link in both desktop and mobile menus (orange color)"
 
-  - task: "BaseCard Component"
+  - task: "Homepage - Admin Controlled Brands"
     implemented: true
-    working: "NA"
-    file: "/app/frontend/src/components/BaseCard.js"
-    stuck_count: 0
-    priority: "high"
-    needs_retesting: true
-    status_history:
-      - working: "NA"
-        agent: "main"
-        comment: "Created BaseCard with expiry date always in top-right, expiring soon badge, and standardized layout"
-
-  - task: "CouponCard Refactor with BaseCard"
-    implemented: true
-    working: "NA"
-    file: "/app/frontend/src/components/CouponCard.js"
-    stuck_count: 0
-    priority: "high"
-    needs_retesting: true
-    status_history:
-      - working: "NA"
-        agent: "main"
-        comment: "Refactored to use BaseCard and ShareButtons, updated tracking to coupon_view and coupon_copy"
-
-  - task: "DiscountCard Refactor with BaseCard"
-    implemented: true
-    working: "NA"
-    file: "/app/frontend/src/components/DiscountCard.js"
-    stuck_count: 0
-    priority: "high"
-    needs_retesting: true
-    status_history:
-      - working: "NA"
-        agent: "main"
-        comment: "Refactored to use BaseCard and ShareButtons, updated tracking to discount_click"
-
-  - task: "CatalogCard Component"
-    implemented: true
-    working: "NA"
-    file: "/app/frontend/src/components/CatalogCard.js"
-    stuck_count: 0
-    priority: "high"
-    needs_retesting: true
-    status_history:
-      - working: "NA"
-        agent: "main"
-        comment: "Created CatalogCard for displaying PDF catalogs with thumbnail and validity dates"
-
-  - task: "CatalogViewer Modal"
-    implemented: true
-    working: "NA"
-    file: "/app/frontend/src/components/CatalogViewer.js"
-    stuck_count: 0
-    priority: "high"
-    needs_retesting: true
-    status_history:
-      - working: "NA"
-        agent: "main"
-        comment: "Created PDF viewer modal with zoom controls and download option"
-
-  - task: "HomePage Expiring Soon Section"
-    implemented: true
-    working: "NA"
+    working: true
     file: "/app/frontend/src/pages/HomePage.js"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
-      - working: "NA"
+      - working: true
         agent: "main"
-        comment: "Added '🔥 Son 24 Saat!' section to homepage that displays items expiring within 24 hours"
+        comment: "HomePage now fetches brands from /api/brands/homepage instead of all brands"
 
-  - task: "BrandPage Catalogs Tab"
+  - task: "Admin Brands - Homepage Settings"
     implemented: true
-    working: "NA"
-    file: "/app/frontend/src/pages/BrandPage.js"
-    stuck_count: 0
-    priority: "high"
-    needs_retesting: true
-    status_history:
-      - working: "NA"
-        agent: "main"
-        comment: "Added Kataloglar tab to brand page with catalog cards and viewer modal"
-
-  - task: "Admin Catalogs Page"
-    implemented: true
-    working: "NA"
-    file: "/app/frontend/src/pages/admin/AdminCatalogsPage.js"
-    stuck_count: 0
-    priority: "high"
-    needs_retesting: true
-    status_history:
-      - working: "NA"
-        agent: "main"
-        comment: "Created full CRUD admin page for PDF catalogs with file upload support"
-
-  - task: "Admin Keywords Page"
-    implemented: true
-    working: "NA"
-    file: "/app/frontend/src/pages/admin/AdminKeywordsPage.js"
-    stuck_count: 0
-    priority: "high"
-    needs_retesting: true
-    status_history:
-      - working: "NA"
-        agent: "main"
-        comment: "Created admin page for managing keyword-to-brand mappings with priority ordering"
-
-  - task: "Enhanced Admin Dashboard"
-    implemented: true
-    working: "NA"
-    file: "/app/frontend/src/pages/admin/AdminDashboardPage.js"
-    stuck_count: 0
-    priority: "high"
-    needs_retesting: true
-    status_history:
-      - working: "NA"
-        agent: "main"
-        comment: "Updated dashboard with time filters (24h/7d/30d), category performance, and coupon conversions"
-
-  - task: "Admin Brands Logo Upload"
-    implemented: true
-    working: "NA"
+    working: true
     file: "/app/frontend/src/pages/admin/AdminBrandsPage.js"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
-      - working: "NA"
+      - working: true
         agent: "main"
-        comment: "Added logo file upload and URL import functionality to brand management"
+        comment: "Added show_on_homepage checkbox and homepage_order input to brand form"
+
+  - task: "SEO Meta Tags Component"
+    implemented: true
+    working: true
+    file: "/app/frontend/src/components/SEOMetaTags.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "main"
+        comment: "Dynamic robots meta tag: noindex for admin/search pages, index for public pages"
 
 metadata:
   created_by: "main_agent"
-  version: "2.0"
-  test_sequence: 1
+  version: "2.8"
+  test_sequence: 2
   run_ui: true
 
 test_plan:
   current_focus:
-    - "Logo Upload API"
-    - "PDF Upload API"
-    - "Expiring Soon API"
-    - "Keyword Mapping CRUD API"
-    - "BaseCard Component"
-    - "ShareButtons Component"
-    - "Admin Catalogs Page"
-    - "Admin Keywords Page"
-    - "Enhanced Admin Dashboard"
+    - "Son 24 Saat Page"
+    - "Homepage Admin Controlled Brands"
+    - "SEO Sitemap and Robots"
   stuck_tasks: []
-  test_all: true
+  test_all: false
   test_priority: "high_first"
 
 agent_communication:
   - agent: "main"
-    message: "Phase 1 implementation complete. All 7 items implemented: 1) Logo upload + storage + standard render, 2) BaseCard refactor + expiry date top-right, 3) Share icons + tooltip, 4) Expiring soon system + homepage block + badge, 5) PDF catalog admin + store tab + viewer, 6) Keyword mapping admin + search integration, 7) Analytics dashboard + event tracking + filters. Please test all new endpoints and components."
+    message: "PRD v2.8 implementation complete. All features implemented: 1) Admin-controlled homepage brands with show_on_homepage flag and ordering, 2) Dedicated /son-24-saat page with SEO title, 3) Son 24 Saat link at the beginning of menu, 4) Dynamic sitemap.xml and robots.txt, 5) SEO meta tags for noindex on admin/search pages. Demo data seeded with 6 homepage brands and 2 expiring-soon coupons for testing."
