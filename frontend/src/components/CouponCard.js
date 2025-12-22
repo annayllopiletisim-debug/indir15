@@ -1,27 +1,17 @@
-import React, { useState, useEffect } from 'react';
-import { Copy, Check, Clock, ExternalLink, X } from 'lucide-react';
+import React, { useState } from 'react';
+import { Copy, Check, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { getTimeRemaining, trackClick, buildUTMLink, shareOnWhatsApp, shareOnFacebook } from '../utils/helpers';
-import { Share2 } from 'lucide-react';
+import { BaseCard } from './BaseCard';
+import ShareButtons from './ShareButtons';
+import { trackClick, buildUTMLink } from '../utils/helpers';
 
 const CouponCard = ({ coupon, brand }) => {
   const [showModal, setShowModal] = useState(false);
   const [copied, setCopied] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(null);
-
-  useEffect(() => {
-    if (coupon.expiry_date) {
-      const updateTime = () => {
-        setTimeLeft(getTimeRemaining(coupon.expiry_date));
-      };
-      updateTime();
-      const interval = setInterval(updateTime, 60000);
-      return () => clearInterval(interval);
-    }
-  }, [coupon.expiry_date]);
 
   const handleGetCode = async () => {
-    trackClick('coupon', coupon.id, coupon.brand_id);
+    // Track coupon view
+    trackClick('coupon_view', coupon.id, coupon.brand_id, brand?.category_id);
     
     // First show modal
     setShowModal(true);
@@ -39,85 +29,43 @@ const CouponCard = ({ coupon, brand }) => {
     try {
       await navigator.clipboard.writeText(coupon.code);
       setCopied(true);
+      // Track coupon copy
+      trackClick('coupon_copy', coupon.id, coupon.brand_id, brand?.category_id);
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
       console.error('Failed to copy:', err);
     }
   };
 
-  const isExpired = timeLeft?.expired || !coupon.is_active;
-  const currentUrl = window.location.href;
+  const isExpired = coupon.expiry_date && new Date(coupon.expiry_date) < new Date();
+
+  const actions = (
+    <div className="flex items-center space-x-2">
+      <button
+        onClick={handleGetCode}
+        disabled={isExpired || !coupon.is_active}
+        className="flex-1 px-6 py-3 bg-gradient-to-r from-neon-purple to-neon-pink rounded-lg font-medium hover:shadow-lg hover:shadow-neon-purple/50 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+        data-testid="coupon-get-code-btn"
+      >
+        Kodu Göster
+      </button>
+      
+      <ShareButtons title={coupon.title} size="md" />
+    </div>
+  );
 
   return (
     <>
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className={`relative group ${
-          isExpired ? 'opacity-60' : ''
-        }`}
-        data-testid={`coupon-card-${coupon.id}`}
-      >
-        <div className="glass-effect rounded-2xl p-6 hover:border-neon-purple/50 transition-all duration-300">
-          <div className="flex items-start justify-between mb-3">
-            <div className="flex-1">
-              <h3 className="text-lg font-heading font-bold mb-1">{coupon.title}</h3>
-              <p className="text-sm text-muted-foreground">{coupon.description}</p>
-            </div>
-            {isExpired && (
-              <span className="px-3 py-1 rounded-full bg-destructive/20 text-destructive text-xs font-medium" data-testid="coupon-expired-badge">
-                Süresi Doldu
-              </span>
-            )}
-            {!isExpired && coupon.is_active && (
-              <span className="px-3 py-1 rounded-full bg-green-500/20 text-green-400 text-xs font-medium" data-testid="coupon-active-badge">
-                Aktif
-              </span>
-            )}
-          </div>
-          
-          <div className="flex items-center justify-between mb-4">
-            <div className="text-2xl font-heading font-bold text-gradient">
-              {coupon.discount_text}
-            </div>
-            
-            {timeLeft && !isExpired && (
-              <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-                <Clock className="w-4 h-4" />
-                <span className="font-mono">{timeLeft.text}</span>
-              </div>
-            )}
-          </div>
-          
-          <div className="flex items-center space-x-2">
-            <button
-              onClick={handleGetCode}
-              disabled={isExpired}
-              className="flex-1 px-6 py-3 bg-gradient-to-r from-neon-purple to-neon-pink rounded-lg font-medium hover:shadow-lg hover:shadow-neon-purple/50 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-              data-testid="coupon-get-code-btn"
-            >
-              Kodu Göster
-            </button>
-            
-            <button
-              onClick={() => shareOnWhatsApp(coupon.title, currentUrl)}
-              className="p-3 rounded-lg hover:bg-white/5 transition-colors"
-              data-testid="coupon-whatsapp-share"
-              aria-label="WhatsApp'ta paylaş"
-            >
-              <Share2 className="w-5 h-5" />
-            </button>
-            <button
-              onClick={() => shareOnFacebook(currentUrl)}
-              className="p-3 rounded-lg hover:bg-white/5 transition-colors"
-              data-testid="coupon-facebook-share"
-              aria-label="Facebook'ta paylaş"
-            >
-              <ExternalLink className="w-5 h-5" />
-            </button>
-          </div>
-        </div>
-      </motion.div>
+      <BaseCard
+        title={coupon.title}
+        description={coupon.description}
+        discountText={coupon.discount_text}
+        expiryDate={coupon.expiry_date}
+        isActive={coupon.is_active}
+        showActiveStatus={true}
+        actions={actions}
+        testId={`coupon-card-${coupon.id}`}
+      />
 
       <AnimatePresence>
         {showModal && (
