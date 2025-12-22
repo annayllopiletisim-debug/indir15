@@ -141,6 +141,7 @@ function App() {
             <Route path="discounts" element={<AdminDiscountsPage />} />
             <Route path="keywords" element={<AdminKeywordsPage />} />
             <Route path="hero-slides" element={<AdminHeroSlidesPage />} />
+            <Route path="settings" element={<AdminSettingsPage />} />
           </Route>
         </Routes>
       </BrowserRouter>
