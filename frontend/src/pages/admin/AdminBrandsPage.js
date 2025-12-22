@@ -97,6 +97,11 @@ const AdminBrandsPage = () => {
     return <div className="p-8">Yükleniyor...</div>;
   }
 
+  const filteredBrands = brands.filter(brand =>
+    brand.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    brand.slug.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
     <>
       <Helmet>
