@@ -115,6 +115,12 @@ code {
     border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
+.light .glass-effect {
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
 .text-gradient {
     background-clip: text;
     -webkit-background-clip: text;
