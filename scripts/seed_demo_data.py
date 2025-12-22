@@ -72,11 +72,17 @@ async def seed_data():
     await db.brands.insert_many(brands)
     print(f"✓ {len(brands)} brands created")
     
-    # Coupons for each brand
+    # Coupons for each brand (some expiring in 24 hours for "Son 24 Saat" feature)
     all_coupons = []
     coupon_templates = [
         {'title': 'Yeni Üyelere Özel %20 İndirim', 'desc': 'İlk alışverişinizde %20 indirim!', 'code_suffix': 'YENİ', 'discount': '%20 İndirim', 'days': 30},
         {'title': 'Sepette %15 İndirim', 'desc': 'Tüm ürünlerde geçerli', 'code_suffix': '15', 'discount': '%15 İndirim', 'days': 20},
+    ]
+    
+    # Add some coupons expiring within 24 hours
+    expiring_soon_templates = [
+        {'title': '🔥 Son Fırsat! Nike İndirim Kodu', 'desc': 'Sadece bugün geçerli!', 'code_suffix': 'FLASH', 'discount': '%20 İndirim', 'hours': 12},
+        {'title': '⏰ Kaçırmayın! Adidas Flash Sale', 'desc': 'Son saatler!', 'code_suffix': 'SON', 'discount': '%25 İndirim', 'hours': 18},
     ]
     
     for brand in brands:
@@ -95,6 +101,24 @@ async def seed_data():
                 'created_at': datetime.now(timezone.utc).isoformat()
             }
             all_coupons.append(coupon)
+    
+    # Add expiring soon coupons for first 2 brands (Nike, Adidas)
+    for i, brand in enumerate(brands[:2]):
+        template = expiring_soon_templates[i]
+        coupon = {
+            'id': str(uuid.uuid4()),
+            'brand_id': brand['id'],
+            'title': template['title'],
+            'description': template['desc'],
+            'code': f"{brand['name'].upper()}{template['code_suffix']}",
+            'discount_text': template['discount'],
+            'expiry_date': (datetime.now(timezone.utc) + timedelta(hours=template['hours'])).isoformat(),
+            'is_active': True,
+            'utm_template': f'utm_source=savvysaver&utm_medium=coupon&utm_campaign={brand["slug"]}-flash',
+            'destination_url': f'https://www.{brand["slug"]}.com/flash-sale',
+            'created_at': datetime.now(timezone.utc).isoformat()
+        }
+        all_coupons.append(coupon)
     
     await db.coupons.insert_many(all_coupons)
     print(f"✓ {len(all_coupons)} coupons created")
