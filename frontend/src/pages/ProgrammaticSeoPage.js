@@ -29,7 +29,15 @@ const ProgrammaticSeoPage = () => {
       setError(null);
       
       try {
-        // Clean slug - remove -indirimleri suffix if present for API call
+        // Check if this is a programmatic SEO slug (ends with -indirimleri)
+        if (!slug?.endsWith('-indirimleri') && slug !== 'son-24-saat') {
+          // Not a programmatic SEO page, show error
+          setError('Sayfa bulunamadı');
+          setLoading(false);
+          return;
+        }
+        
+        // Clean slug - remove -indirimleri suffix for API call
         const cleanSlug = slug?.replace(/-indirimleri$/, '') || 'son-24-saat';
         const response = await axios.get(`${API}/seo-page/${cleanSlug}`);
         setPageData(response.data);
