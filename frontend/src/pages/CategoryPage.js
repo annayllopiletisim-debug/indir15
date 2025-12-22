@@ -5,7 +5,8 @@ import BrandLogo from '../components/BrandLogo';
 import CouponCard from '../components/CouponCard';
 import DiscountCard from '../components/DiscountCard';
 import StickyActionBar from '../components/StickyActionBar';
-import { Search, Check, X, ChevronRight, Tag } from 'lucide-react';
+import AlphabetNav from '../components/AlphabetNav';
+import { Search, Check, X, Tag } from 'lucide-react';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
@@ -20,6 +21,7 @@ const CategoryPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedStores, setSelectedStores] = useState(new Set());
   const [showDeals, setShowDeals] = useState(false);
+  const [selectedLetter, setSelectedLetter] = useState(null);
   
   // Site settings for sticky bar
   const [siteSettings, setSiteSettings] = useState({ sticky_cta_enabled: true, sticky_cta_variant: "A" });
@@ -114,13 +116,36 @@ const CategoryPage = () => {
     fetchData();
   }, [slug]);
 
-  // Filter brands by search term
+  // Get available letters from brands
+  const availableLetters = useMemo(() => {
+    const letters = new Set();
+    brands.forEach(brand => {
+      const firstLetter = brand.name.charAt(0).toUpperCase();
+      letters.add(firstLetter);
+    });
+    return Array.from(letters).sort((a, b) => a.localeCompare(b, 'tr'));
+  }, [brands]);
+
+  // Filter brands by search term and selected letter
   const filteredBrands = useMemo(() => {
-    if (!searchTerm) return brands;
-    return brands.filter(brand =>
-      brand.name.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-  }, [searchTerm, brands]);
+    let result = brands;
+    
+    // Filter by search term
+    if (searchTerm) {
+      result = result.filter(brand =>
+        brand.name.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+    
+    // Filter by selected letter
+    if (selectedLetter) {
+      result = result.filter(brand =>
+        brand.name.charAt(0).toUpperCase() === selectedLetter
+      );
+    }
+    
+    return result;
+  }, [searchTerm, selectedLetter, brands]);
 
   // Toggle store selection
   const toggleStore = (brandSlug) => {
@@ -164,20 +189,6 @@ const CategoryPage = () => {
     }, {});
   }, [brands]);
 
-  // Group brands alphabetically
-  const groupedBrands = useMemo(() => {
-    return filteredBrands.reduce((acc, brand) => {
-      const firstLetter = brand.name.charAt(0).toUpperCase();
-      if (!acc[firstLetter]) {
-        acc[firstLetter] = [];
-      }
-      acc[firstLetter].push(brand);
-      return acc;
-    }, {});
-  }, [filteredBrands]);
-
-  const letters = Object.keys(groupedBrands).sort((a, b) => a.localeCompare(b, 'tr'));
-
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -220,18 +231,30 @@ const CategoryPage = () => {
 
         <div className="container mx-auto px-4 py-6">
           {/* Search */}
-          <div className="flex flex-col sm:flex-row gap-4 mb-6">
-            <div className="flex-1 relative">
+          <div className="mb-4">
+            <div className="relative max-w-md">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
               <input
                 type="text"
                 placeholder="Mağaza ara..."
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                onChange={(e) => {
+                  setSearchTerm(e.target.value);
+                  setSelectedLetter(null); // Clear letter filter when searching
+                }}
                 className="w-full pl-10 pr-4 py-3 bg-card border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary text-foreground"
               />
             </div>
           </div>
+
+          {/* Alphabet Navigation */}
+          {!searchTerm && (
+            <AlphabetNav
+              letters={availableLetters}
+              selectedLetter={selectedLetter}
+              onSelect={setSelectedLetter}
+            />
+          )}
 
           {/* Selected Stores Pills */}
           {selectedStores.size > 0 && !showDeals && (
@@ -293,65 +316,59 @@ const CategoryPage = () => {
               )}
             </div>
           ) : (
-            /* Stores Grid - Alphabetically sorted like StoresPage */
+            /* Stores Grid - Compact view */
             <>
-              {letters.length === 0 ? (
+              {filteredBrands.length === 0 ? (
                 <div className="text-center py-16">
                   <p className="text-muted-foreground">Mağaza bulunamadı.</p>
                 </div>
               ) : (
-                <div className="space-y-8">
-                  {letters.map((letter) => (
-                    <div key={letter}>
-                      <h2 className="text-2xl font-heading font-bold text-primary mb-4">
-                        {letter}
-                      </h2>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
-                        {groupedBrands[letter].map((brand) => {
-                          const isSelected = selectedStores.has(brand.slug);
-                          return (
-                            <button
-                              key={brand.id}
-                              onClick={() => toggleStore(brand.slug)}
-                              className={`group p-4 rounded-xl text-left transition-all flex items-center gap-3 ${
-                                isSelected 
-                                  ? 'bg-primary/10 border-2 border-primary' 
-                                  : 'glass-effect hover:border-primary/30'
-                              }`}
-                            >
-                              {/* Checkbox */}
-                              <div className={`w-5 h-5 rounded flex-shrink-0 flex items-center justify-center border-2 transition-colors ${
-                                isSelected 
-                                  ? 'bg-primary border-primary' 
-                                  : 'border-muted-foreground/30'
-                              }`}>
-                                {isSelected && <Check className="w-3 h-3 text-white" />}
-                              </div>
+                <>
+                  {/* Show letter heading only when letter is selected */}
+                  {selectedLetter && (
+                    <h2 className="text-2xl font-heading font-bold text-primary mb-4">
+                      {selectedLetter}
+                    </h2>
+                  )}
+                  
+                  {/* Compact Grid */}
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
+                    {filteredBrands.map((brand) => {
+                      const isSelected = selectedStores.has(brand.slug);
+                      return (
+                        <button
+                          key={brand.id}
+                          onClick={() => toggleStore(brand.slug)}
+                          className={`group p-3 rounded-xl text-center transition-all relative ${
+                            isSelected 
+                              ? 'bg-primary/10 border-2 border-primary' 
+                              : 'glass-effect hover:border-primary/30'
+                          }`}
+                        >
+                          {/* Checkbox indicator */}
+                          {isSelected && (
+                            <div className="absolute top-2 right-2 w-5 h-5 rounded bg-primary flex items-center justify-center">
+                              <Check className="w-3 h-3 text-white" />
+                            </div>
+                          )}
 
-                              {/* Logo */}
-                              <BrandLogo logoUrl={brand.logo_url} brandName={brand.name} size="sm" />
+                          {/* Logo */}
+                          <div className="flex justify-center mb-2">
+                            <BrandLogo logoUrl={brand.logo_url} brandName={brand.name} size="md" />
+                          </div>
 
-                              {/* Info */}
-                              <div className="flex-1 min-w-0">
-                                <h3 className="font-medium truncate">{brand.name}</h3>
-                                {brand.deal_count > 0 ? (
-                                  <p className="text-sm text-primary">{brand.deal_count} indirim</p>
-                                ) : (
-                                  <p className="text-xs text-muted-foreground">İndirim yok</p>
-                                )}
-                              </div>
-
-                              {/* Arrow */}
-                              <ChevronRight className={`w-4 h-4 text-muted-foreground transition-transform ${
-                                isSelected ? 'rotate-90' : ''
-                              }`} />
-                            </button>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  ))}
-                </div>
+                          {/* Info */}
+                          <h3 className="font-medium text-sm truncate mb-1">{brand.name}</h3>
+                          {brand.deal_count > 0 ? (
+                            <p className="text-xs text-primary">{brand.deal_count} indirim</p>
+                          ) : (
+                            <p className="text-xs text-muted-foreground">-</p>
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </>
               )}
             </>
           )}
