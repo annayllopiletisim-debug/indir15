@@ -379,6 +379,39 @@ const AdminBrandsPage = () => {
                 <label className="text-sm font-medium">Uygulama İndir Sekmesi Aktif</label>
               </div>
 
+              {/* Homepage Display Settings */}
+              <div className="p-4 bg-neon-purple/10 rounded-xl border border-neon-purple/30">
+                <div className="flex items-center gap-2 mb-3">
+                  <Home className="w-5 h-5 text-neon-purple" />
+                  <span className="font-medium">Ana Sayfa Gösterimi</span>
+                </div>
+                <div className="flex items-center space-x-4">
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={formData.show_on_homepage}
+                      onChange={(e) => setFormData({...formData, show_on_homepage: e.target.checked})}
+                      className="w-4 h-4 accent-neon-purple"
+                    />
+                    <span className="text-sm">Ana sayfada göster</span>
+                  </label>
+                  {formData.show_on_homepage && (
+                    <div className="flex items-center gap-2">
+                      <GripVertical className="w-4 h-4 text-muted-foreground" />
+                      <label className="text-sm text-muted-foreground">Sıra:</label>
+                      <input
+                        type="number"
+                        value={formData.homepage_order}
+                        onChange={(e) => setFormData({...formData, homepage_order: parseInt(e.target.value) || 0})}
+                        className="w-20 px-2 py-1 bg-void-subtle rounded-lg focus:outline-none focus:ring-2 focus:ring-neon-purple text-center"
+                        min="0"
+                      />
+                      <span className="text-xs text-muted-foreground">(Düşük = önce)</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+
               {formData.app_install_enabled && (
                 <div className="grid grid-cols-2 gap-4">
                   <div>
