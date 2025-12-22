@@ -616,6 +616,75 @@ async def delete_discount(discount_id: str, user: AdminUser = Depends(get_curren
         raise HTTPException(status_code=404, detail="Discount not found")
     return {"message": "Discount deleted"}
 
+# ═══════════════════════════════════════════════════════════════
+# DEALS COUNT ENDPOINT (for Sticky CTA)
+# ═══════════════════════════════════════════════════════════════
+
+@api_router.get("/deals/count")
+async def get_deals_count(brand_ids: Optional[str] = None, category_id: Optional[str] = None):
+    """
+    Get total count of active deals (coupons + discounts) for given filters.
+    brand_ids: comma-separated brand IDs (e.g., "id1,id2,id3")
+    category_id: filter by category (will get all brands in that category)
+    Returns: { count: number }
+    """
+    brand_id_list = []
+    
+    if brand_ids:
+        brand_id_list = [bid.strip() for bid in brand_ids.split(',') if bid.strip()]
+    elif category_id:
+        # Get all brands in this category
+        brands = await db.brands.find({'category_id': category_id}, {'id': 1}).to_list(1000)
+        brand_id_list = [b['id'] for b in brands]
+    
+    if not brand_id_list:
+        # No filters, return total active deals
+        coupon_count = await db.coupons.count_documents({'is_active': {'$ne': False}})
+        discount_count = await db.discounts.count_documents({})
+        return {"count": coupon_count + discount_count}
+    
+    # Count coupons for selected brands
+    coupon_count = await db.coupons.count_documents({
+        'brand_id': {'$in': brand_id_list},
+        'is_active': {'$ne': False}
+    })
+    
+    # Count discounts for selected brands
+    discount_count = await db.discounts.count_documents({
+        'brand_id': {'$in': brand_id_list}
+    })
+    
+    return {"count": coupon_count + discount_count}
+
+# ═══════════════════════════════════════════════════════════════
+# SITE SETTINGS (for Admin toggles like Sticky CTA)
+# ═══════════════════════════════════════════════════════════════
+
+class SiteSettings(BaseModel):
+    sticky_cta_enabled: bool = True
+    sticky_cta_variant: str = "A"  # "A" = "İndirimleri Göster (X)", "B" = "X Sonucu Gör"
+
+@api_router.get("/site-settings")
+async def get_site_settings():
+    """Get site settings (public endpoint for frontend)"""
+    settings = await db.site_settings.find_one({}, {'_id': 0})
+    if not settings:
+        # Return defaults
+        return {"sticky_cta_enabled": True, "sticky_cta_variant": "A"}
+    return settings
+
+@api_router.put("/site-settings")
+async def update_site_settings(settings: SiteSettings, user: AdminUser = Depends(get_current_user)):
+    """Update site settings (admin only)"""
+    await db.site_settings.update_one(
+        {},
+        {'$set': settings.model_dump()},
+        upsert=True
+    )
+    return settings.model_dump()
+
+
+
 @api_router.get("/hero-slides", response_model=List[HeroSlide])
 async def get_hero_slides(include_inactive: bool = False):
     query = {} if include_inactive else {'is_active': True}
