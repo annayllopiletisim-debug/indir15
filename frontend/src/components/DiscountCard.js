@@ -3,7 +3,7 @@ import { BaseCard } from './BaseCard';
 import ShareButtons from './ShareButtons';
 import { trackClick, buildUTMLink } from '../utils/helpers';
 
-const DiscountCard = ({ discount, brand }) => {
+const DiscountCard = ({ discount, brand, compact = false }) => {
   const handleClick = () => {
     trackClick('discount_click', discount.id, discount.brand_id, brand?.category_id);
     if (discount.destination_url) {
@@ -18,12 +18,20 @@ const DiscountCard = ({ discount, brand }) => {
   const brandName = brand?.name || discount.brand_name;
   const brandSlug = brand?.slug || discount.brand_slug;
 
-  const actions = (
+  const actions = compact ? (
+    <button
+      onClick={handleClick}
+      disabled={isExpired}
+      className="w-full px-4 py-2 bg-primary/90 hover:bg-primary rounded-lg text-sm font-medium transition-all disabled:opacity-50"
+    >
+      Mağazaya Git
+    </button>
+  ) : (
     <div className="flex items-center space-x-2">
       <button
         onClick={handleClick}
         disabled={isExpired}
-        className="flex-1 px-6 py-3 bg-gradient-to-r from-neon-purple to-neon-pink rounded-lg font-medium hover:shadow-lg hover:shadow-neon-purple/50 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+        className="flex-1 px-6 py-3 bg-gradient-to-r from-primary to-pink-500 rounded-lg font-medium hover:shadow-lg hover:shadow-primary/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
         data-testid="discount-get-deal-btn"
       >
         Mağazaya Git
@@ -36,7 +44,7 @@ const DiscountCard = ({ discount, brand }) => {
   return (
     <BaseCard
       title={discount.title}
-      description={discount.description}
+      description={compact ? null : discount.description}
       discountText={discount.discount_text}
       expiryDate={discount.expiry_date}
       isActive={true}
@@ -45,6 +53,7 @@ const DiscountCard = ({ discount, brand }) => {
       brandSlug={brandSlug}
       actions={actions}
       testId={`discount-card-${discount.id}`}
+      compact={compact}
     />
   );
 };
