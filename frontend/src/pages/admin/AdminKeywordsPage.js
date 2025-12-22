@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
-import { Plus, Pencil, Trash2, Search, Tag, GripVertical } from 'lucide-react';
+import { Plus, Pencil, Trash2, Search, Tag, GripVertical, Upload, Download, X } from 'lucide-react';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
 import { getAuthToken } from '../../utils/auth';
@@ -14,7 +14,10 @@ const AdminKeywordsPage = () => {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [showForm, setShowForm] = useState(false);
+  const [showCSVModal, setShowCSVModal] = useState(false);
+  const [csvData, setCsvData] = useState('');
   const [editingMapping, setEditingMapping] = useState(null);
+  const [draggedBrand, setDraggedBrand] = useState(null);
   const [formData, setFormData] = useState({
     keyword: '',
     brand_ids: [],
@@ -22,6 +25,7 @@ const AdminKeywordsPage = () => {
     priority: 0,
     is_active: true
   });
+  const fileInputRef = useRef(null);
 
   const fetchData = async () => {
     try {
@@ -80,7 +84,7 @@ const AdminKeywordsPage = () => {
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm('Bu eşleşmeyi silmek istediğinize emin misiniz?')) return;
+    if (!window.confirm('Bu eşleştirmeyi silmek istediğinize emin misiniz?')) return;
     
     try {
       await axios.delete(`${API}/keyword-mappings/${id}`, {
@@ -111,13 +115,93 @@ const AdminKeywordsPage = () => {
     });
   };
 
-  const moveBrand = (fromIndex, toIndex) => {
-    setFormData(prev => {
-      const newBrandIds = [...prev.brand_ids];
-      const [removed] = newBrandIds.splice(fromIndex, 1);
-      newBrandIds.splice(toIndex, 0, removed);
-      return { ...prev, brand_ids: newBrandIds };
-    });
+  // Drag and Drop handlers
+  const handleDragStart = (e, index) => {
+    setDraggedBrand(index);
+    e.dataTransfer.effectAllowed = 'move';
+  };
+
+  const handleDragOver = (e, index) => {
+    e.preventDefault();
+    if (draggedBrand === null || draggedBrand === index) return;
+    
+    const newBrandIds = [...formData.brand_ids];
+    const draggedItem = newBrandIds[draggedBrand];
+    newBrandIds.splice(draggedBrand, 1);
+    newBrandIds.splice(index, 0, draggedItem);
+    
+    setFormData(prev => ({ ...prev, brand_ids: newBrandIds }));
+    setDraggedBrand(index);
+  };
+
+  const handleDragEnd = () => {
+    setDraggedBrand(null);
+  };
+
+  // CSV Import/Export
+  const handleCSVImport = async () => {
+    try {
+      const lines = csvData.trim().split('\n');
+      let successCount = 0;
+      let errorCount = 0;
+
+      for (const line of lines) {
+        const [keyword, ...brandNames] = line.split(',').map(s => s.trim());
+        if (!keyword) continue;
+
+        const brandIds = brandNames
+          .map(name => brands.find(b => b.name.toLowerCase() === name.toLowerCase())?.id)
+          .filter(Boolean);
+
+        try {
+          await axios.post(`${API}/keyword-mappings`, {
+            keyword: keyword.toLowerCase(),
+            brand_ids: brandIds,
+            priority: 0,
+            is_active: true
+          }, {
+            headers: { Authorization: `Bearer ${getAuthToken()}` }
+          });
+          successCount++;
+        } catch (e) {
+          errorCount++;
+        }
+      }
+
+      alert(`İçe aktarma tamamlandı!\n✓ ${successCount} başarılı\n✗ ${errorCount} hatalı`);
+      setShowCSVModal(false);
+      setCsvData('');
+      fetchData();
+    } catch (error) {
+      alert('CSV içe aktarma hatası');
+    }
+  };
+
+  const handleCSVExport = () => {
+    const csvContent = mappings.map(m => {
+      const brandNames = m.brand_ids?.map(id => getBrandName(id)).join(',') || '';
+      return `${m.keyword},${brandNames}`;
+    }).join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'keyword_mappings.csv';
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const handleFileUpload = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      setCsvData(event.target.result);
+      setShowCSVModal(true);
+    };
+    reader.readAsText(file);
   };
 
   const filteredMappings = mappings.filter(m =>
@@ -140,9 +224,24 @@ const AdminKeywordsPage = () => {
           <h1 className="text-2xl font-heading font-bold">Anahtar Kelime Eşleştirme</h1>
           <p className="text-sm text-muted-foreground">Arama kelimelerini mağazalarla eşleştirin</p>
         </div>
-        <Button onClick={() => { setShowForm(true); setEditingMapping(null); resetForm(); }}>
-          <Plus className="w-4 h-4 mr-2" /> Yeni Eşleştirme
-        </Button>
+        <div className="flex gap-2">
+          <input
+            type="file"
+            ref={fileInputRef}
+            accept=".csv"
+            onChange={handleFileUpload}
+            className="hidden"
+          />
+          <Button variant="outline" onClick={() => fileInputRef.current?.click()}>
+            <Upload className="w-4 h-4 mr-2" /> CSV İçe Aktar
+          </Button>
+          <Button variant="outline" onClick={handleCSVExport}>
+            <Download className="w-4 h-4 mr-2" /> CSV Dışa Aktar
+          </Button>
+          <Button onClick={() => { setShowForm(true); setEditingMapping(null); resetForm(); }}>
+            <Plus className="w-4 h-4 mr-2" /> Yeni Eşleştirme
+          </Button>
+        </div>
       </div>
 
       {/* Search */}
@@ -157,6 +256,36 @@ const AdminKeywordsPage = () => {
           />
         </div>
       </div>
+
+      {/* CSV Import Modal */}
+      {showCSVModal && (
+        <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4">
+          <div className="bg-void-paper rounded-2xl p-6 max-w-2xl w-full">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-bold">CSV İçe Aktarma</h2>
+              <button onClick={() => setShowCSVModal(false)} className="p-2 hover:bg-white/10 rounded-lg">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            
+            <p className="text-sm text-muted-foreground mb-4">
+              Format: <code className="bg-void-subtle px-2 py-1 rounded">anahtar_kelime,mağaza1,mağaza2,mağaza3</code>
+            </p>
+            
+            <textarea
+              value={csvData}
+              onChange={(e) => setCsvData(e.target.value)}
+              className="w-full h-64 p-4 bg-void-subtle rounded-lg font-mono text-sm resize-none"
+              placeholder="ayakkabı,Nike,Adidas,Puma&#10;telefon,Apple Store,Samsung&#10;giyim,Zara,H&M,Mango"
+            />
+
+            <div className="flex gap-2 mt-4">
+              <Button onClick={handleCSVImport}>İçe Aktar</Button>
+              <Button variant="outline" onClick={() => setShowCSVModal(false)}>İptal</Button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Form Modal */}
       {showForm && (
@@ -179,43 +308,35 @@ const AdminKeywordsPage = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium mb-2">Mağazalar (Sıralı Öncelik) *</label>
+                <label className="block text-sm font-medium mb-2">Mağazalar (Sürükle-Bırak ile Sırala) *</label>
                 
-                {/* Selected brands with priority order */}
+                {/* Selected brands with drag-drop */}
                 {formData.brand_ids.length > 0 && (
                   <div className="mb-3 space-y-2">
-                    <p className="text-xs text-muted-foreground">Seçili mağazalar (öncelik sırasına göre):</p>
+                    <p className="text-xs text-muted-foreground">Seçili mağazalar (sürükleyerek sıralayın):</p>
                     {formData.brand_ids.map((brandId, index) => (
-                      <div key={brandId} className="flex items-center gap-2 p-2 bg-void-subtle rounded-lg">
+                      <div
+                        key={brandId}
+                        draggable
+                        onDragStart={(e) => handleDragStart(e, index)}
+                        onDragOver={(e) => handleDragOver(e, index)}
+                        onDragEnd={handleDragEnd}
+                        className={`flex items-center gap-2 p-2 bg-void-subtle rounded-lg cursor-move ${
+                          draggedBrand === index ? 'opacity-50' : ''
+                        }`}
+                      >
                         <GripVertical className="w-4 h-4 text-muted-foreground" />
-                        <span className="flex-1">{index + 1}. {getBrandName(brandId)}</span>
-                        <div className="flex gap-1">
-                          {index > 0 && (
-                            <button
-                              type="button"
-                              onClick={() => moveBrand(index, index - 1)}
-                              className="px-2 py-1 text-xs bg-white/10 rounded hover:bg-white/20"
-                            >
-                              ↑
-                            </button>
-                          )}
-                          {index < formData.brand_ids.length - 1 && (
-                            <button
-                              type="button"
-                              onClick={() => moveBrand(index, index + 1)}
-                              className="px-2 py-1 text-xs bg-white/10 rounded hover:bg-white/20"
-                            >
-                              ↓
-                            </button>
-                          )}
-                          <button
-                            type="button"
-                            onClick={() => toggleBrand(brandId)}
-                            className="px-2 py-1 text-xs bg-red-500/20 text-red-400 rounded hover:bg-red-500/30"
-                          >
-                            ×
-                          </button>
-                        </div>
+                        <span className="w-6 h-6 rounded bg-neon-purple/20 flex items-center justify-center text-xs font-bold">
+                          {index + 1}
+                        </span>
+                        <span className="flex-1">{getBrandName(brandId)}</span>
+                        <button
+                          type="button"
+                          onClick={() => toggleBrand(brandId)}
+                          className="px-2 py-1 text-xs bg-red-500/20 text-red-400 rounded hover:bg-red-500/30"
+                        >
+                          ×
+                        </button>
                       </div>
                     ))}
                   </div>
