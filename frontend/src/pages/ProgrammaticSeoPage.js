@@ -144,27 +144,7 @@ const ProgrammaticSeoPage = () => {
 
   return (
     <>
-      {/* SEO Meta Tags */}
-      <Helmet>
-        <title>{seo_meta.title}</title>
-        <meta name="description" content={seo_meta.description} />
-        <meta name="robots" content={seo_meta.robots || 'index, follow'} />
-        <link rel="canonical" href={fullCanonicalUrl} />
-        
-        {/* Open Graph */}
-        <meta property="og:title" content={seo_meta.title} />
-        <meta property="og:description" content={seo_meta.description} />
-        <meta property="og:type" content="website" />
-        <meta property="og:url" content={fullCanonicalUrl} />
-        <meta property="og:site_name" content="İndirim Keşfet" />
-        
-        {/* Twitter Card */}
-        <meta name="twitter:card" content="summary" />
-        <meta name="twitter:title" content={seo_meta.title} />
-        <meta name="twitter:description" content={seo_meta.description} />
-      </Helmet>
-      
-      {/* Structured Data - Outside Helmet for proper rendering */}
+      {/* Structured Data */}
       {structured_data && (
         <script 
           type="application/ld+json"
