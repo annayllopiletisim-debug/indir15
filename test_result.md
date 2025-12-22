@@ -144,7 +144,7 @@ backend:
 frontend:
   - task: "Son 24 Saat Page"
     implemented: true
-    working: false
+    working: true
     file: "/app/frontend/src/pages/ExpiringSoonPage.js"
     stuck_count: 0
     priority: "high"
@@ -156,6 +156,9 @@ frontend:
       - working: false
         agent: "testing"
         comment: "CRITICAL: Page title not updating dynamically - shows default 'İndirim Keşfet - Kupon Kodları ve İndirim Fırsatları' instead of SEO title 'Son 24 Saatte Bitecek İndirimler | İndirim Keşfet'. H1 and content display correctly but Helmet title not working."
+      - working: true
+        agent: "main"
+        comment: "Fixed: Replaced Helmet with direct DOM manipulation. Title now shows 'Son 24 Saatte Bitecek İndirimler | İndirim Keşfet' and canonical URL is set correctly."
 
   - task: "Header Menu - Son 24 Saat Link First"
     implemented: true
