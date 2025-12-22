@@ -234,3 +234,5 @@ test_plan:
 agent_communication:
   - agent: "main"
     message: "pSEO system complete with all SEO features working: 1) Dynamic title, meta description, canonical URL, OG tags via DOM manipulation. 2) ItemList structured data with Offer schema. 3) Sitemap includes 21 pSEO URLs. 4) Category (/spor-indirimleri) and brand (/nike-indirimleri) pages tested. Ready for comprehensive frontend testing before deployment."
+  - agent: "testing"
+    message: "Comprehensive frontend testing completed. CRITICAL ISSUES FOUND: 1) Son 24 Saat page title not updating dynamically (shows default title instead of SEO title). 2) Mağazalar page multi-select functionality broken - checkboxes don't trigger 'İndirimleri Göster' button or update URL parameters. All other features working correctly including pSEO pages, navigation, homepage sections, and category functionality."
