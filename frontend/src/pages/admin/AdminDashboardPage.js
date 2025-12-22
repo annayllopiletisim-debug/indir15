@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
-import api from '../../utils/api';
+import api from '../utils/api';
 import { TrendingUp, MousePointer, Store } from 'lucide-react';
 
 const AdminDashboardPage = () => {
