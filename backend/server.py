@@ -462,7 +462,7 @@ async def upload_pdf(file: UploadFile = File(...), user: AdminUser = Depends(get
     async with aiofiles.open(filepath, 'wb') as f:
         await f.write(content)
     
-    return UploadResponse(url=f"/uploads/pdfs/{filename}", filename=filename)
+    return UploadResponse(url=f"/api/uploads/pdfs/{filename}", filename=filename)
 
 @api_router.get("/brands", response_model=List[Brand])
 async def get_brands(category_id: Optional[str] = None):
