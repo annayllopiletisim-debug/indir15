@@ -22,6 +22,7 @@ const Header = () => {
             </Link>
             
             <div className="flex items-center space-x-4">
+              <ThemeToggle />
               <button
                 onClick={() => setShowSearch(true)}
                 className="p-2 rounded-lg hover:bg-white/5 transition-colors"
