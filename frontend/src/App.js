@@ -86,9 +86,9 @@ function App() {
             <Route index element={<Navigate to="/admin/dashboard" />} />
             <Route path="dashboard" element={<AdminDashboardPage />} />
             <Route path="categories" element={<div className="p-8 text-center">Kategoriler sayfası çok yakında...</div>} />
-            <Route path="brands" element={<div className="p-8 text-center">Mağazalar sayfası çok yakında...</div>} />
-            <Route path="coupons" element={<div className="p-8 text-center">Kuponlar sayfası çok yakında...</div>} />
-            <Route path="discounts" element={<div className="p-8 text-center">İndirimler sayfası çok yakında...</div>} />
+            <Route path="brands" element={<AdminBrandsPage />} />
+            <Route path="coupons" element={<AdminCouponsPage />} />
+            <Route path="discounts" element={<AdminDiscountsPage />} />
             <Route path="hero-slides" element={<div className="p-8 text-center">Hero Slaytlar sayfası çok yakında...</div>} />
           </Route>
         </Routes>
