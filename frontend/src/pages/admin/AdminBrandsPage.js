@@ -261,14 +261,77 @@ const AdminBrandsPage = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium mb-2">Logo URL</label>
-                <input
-                  type="url"
-                  value={formData.logo_url}
-                  onChange={(e) => setFormData({...formData, logo_url: e.target.value})}
-                  className="w-full px-4 py-2 bg-void-subtle rounded-lg focus:outline-none focus:ring-2 focus:ring-neon-purple"
-                  placeholder="https://..."
-                />
+                <label className="block text-sm font-medium mb-2">Logo (Max 2MB)</label>
+                
+                {/* Logo Input Mode Toggle */}
+                <div className="flex gap-2 mb-3">
+                  <button
+                    type="button"
+                    onClick={() => setLogoInputMode('upload')}
+                    className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm ${
+                      logoInputMode === 'upload' ? 'bg-neon-purple text-white' : 'bg-void-subtle hover:bg-white/10'
+                    }`}
+                  >
+                    <Upload className="w-4 h-4" />
+                    Dosya Yükle
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setLogoInputMode('url')}
+                    className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm ${
+                      logoInputMode === 'url' ? 'bg-neon-purple text-white' : 'bg-void-subtle hover:bg-white/10'
+                    }`}
+                  >
+                    <LinkIcon className="w-4 h-4" />
+                    URL'den Al
+                  </button>
+                </div>
+
+                {logoInputMode === 'upload' ? (
+                  <div className="flex items-center gap-3">
+                    <label className="flex-1 cursor-pointer">
+                      <input
+                        type="file"
+                        accept="image/jpeg,image/png,image/webp,image/svg+xml"
+                        onChange={handleLogoUpload}
+                        className="hidden"
+                      />
+                      <div className="px-4 py-3 bg-void-subtle rounded-lg border-2 border-dashed border-white/20 hover:border-neon-purple/50 text-center transition-colors">
+                        {uploading ? 'Yükleniyor...' : 'Tıklayın veya sürükleyin'}
+                      </div>
+                    </label>
+                    {formData.logo_url && (
+                      <BrandLogo logoUrl={formData.logo_url} brandName={formData.name} size="md" />
+                    )}
+                  </div>
+                ) : (
+                  <div className="flex gap-2">
+                    <input
+                      type="url"
+                      value={formData.logo_url}
+                      onChange={(e) => setFormData({...formData, logo_url: e.target.value})}
+                      className="flex-1 px-4 py-2 bg-void-subtle rounded-lg focus:outline-none focus:ring-2 focus:ring-neon-purple"
+                      placeholder="https://..."
+                    />
+                    {formData.logo_url && !formData.logo_url.startsWith('/uploads/') && (
+                      <button
+                        type="button"
+                        onClick={handleImportFromUrl}
+                        disabled={uploading}
+                        className="px-4 py-2 bg-neon-blue rounded-lg hover:bg-neon-blue/80 disabled:opacity-50"
+                        title="URL'yi sunucuya kaydet"
+                      >
+                        {uploading ? '...' : '↓'}
+                      </button>
+                    )}
+                  </div>
+                )}
+                
+                {formData.logo_url && (
+                  <p className="text-xs text-muted-foreground mt-2">
+                    {formData.logo_url.startsWith('/uploads/') ? '✓ Sunucuda kayıtlı' : '⚠ Harici URL'}
+                  </p>
+                )}
               </div>
 
               <div>
