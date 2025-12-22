@@ -23,12 +23,16 @@ const CouponCard = ({ coupon, brand }) => {
   const handleGetCode = async () => {
     trackClick('coupon', coupon.id, coupon.brand_id);
     
-    if (coupon.destination_url) {
-      const finalUrl = buildUTMLink(coupon.destination_url, coupon.utm_template, coupon.id);
-      window.open(finalUrl, '_blank');
-    }
-    
+    // First show modal
     setShowModal(true);
+    
+    // Then redirect after a small delay
+    if (coupon.destination_url) {
+      setTimeout(() => {
+        const finalUrl = buildUTMLink(coupon.destination_url, coupon.utm_template, coupon.id);
+        window.open(finalUrl, '_blank');
+      }, 500);
+    }
   };
 
   const handleCopyCode = async () => {
