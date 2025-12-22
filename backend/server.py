@@ -159,6 +159,31 @@ class HeroSlideCreate(BaseModel):
     order: int = 0
     is_active: bool = True
 
+class Catalog(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    brand_id: str
+    title: str
+    description: Optional[str] = None
+    pdf_url: str
+    thumbnail_url: Optional[str] = None
+    category_id: Optional[str] = None
+    valid_from: Optional[datetime] = None
+    valid_until: Optional[datetime] = None
+    is_active: bool = True
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class CatalogCreate(BaseModel):
+    brand_id: str
+    title: str
+    description: Optional[str] = None
+    pdf_url: str
+    thumbnail_url: Optional[str] = None
+    category_id: Optional[str] = None
+    valid_from: Optional[datetime] = None
+    valid_until: Optional[datetime] = None
+    is_active: bool = True
+
 class ClickEvent(BaseModel):
     model_config = ConfigDict(extra="ignore")
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
