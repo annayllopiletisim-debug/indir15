@@ -49,6 +49,7 @@ function App() {
     <ThemeProvider>
       <HelmetProvider>
         <BrowserRouter>
+          <SEOMetaTags />
           <Routes>
           <Route
             path="/"
