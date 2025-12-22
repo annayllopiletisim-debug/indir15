@@ -55,16 +55,18 @@ const DealCardCompact = ({
   return (
     <div 
       className={`
-        w-[248px] h-[140px] md:w-[290px] md:h-[160px]
+        w-[248px] h-[140px] md:w-[290px] md:h-[155px]
         flex-shrink-0 snap-start
         bg-card border border-border
-        rounded-card md:rounded-card-lg
+        rounded-xl
         shadow-card hover:shadow-card-hover
-        p-3 md:p-4
+        p-3
         flex flex-col
         transition-shadow duration-200
+        cursor-pointer
         ${isExpired ? 'opacity-50' : ''}
       `}
+      onClick={handleClick}
       data-testid={`deal-card-${item.id}`}
     >
       {/* ═══ ÜST BAR: Logo + Süre ═══ */}
