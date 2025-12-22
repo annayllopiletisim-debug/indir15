@@ -204,15 +204,36 @@ class CatalogCreate(BaseModel):
 class ClickEvent(BaseModel):
     model_config = ConfigDict(extra="ignore")
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
-    type: str
+    type: str  # 'coupon_view', 'coupon_copy', 'discount_click', 'catalog_view', 'app_install'
     item_id: str
     brand_id: str
+    category_id: Optional[str] = None
+    session_id: Optional[str] = None
     timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 class ClickEventCreate(BaseModel):
     type: str
     item_id: str
     brand_id: str
+    category_id: Optional[str] = None
+    session_id: Optional[str] = None
+
+class KeywordMapping(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    keyword: str
+    brand_ids: List[str] = []  # Ordered list of brand IDs (priority order)
+    category_id: Optional[str] = None
+    priority: int = 0
+    is_active: bool = True
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class KeywordMappingCreate(BaseModel):
+    keyword: str
+    brand_ids: List[str] = []
+    category_id: Optional[str] = None
+    priority: int = 0
+    is_active: bool = True
 
 class AnalyticsDashboard(BaseModel):
     total_clicks: int
