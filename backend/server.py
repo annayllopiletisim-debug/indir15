@@ -886,8 +886,8 @@ async def get_popular_today():
         'total': len(popular_coupons) + len(popular_discounts)
     }
 
-@api_router.get("/brands/with-deal-count")
-async def get_brands_with_deal_count():
+@api_router.get("/homepage-brands")
+async def get_homepage_brands_with_deals():
     """Get homepage brands with active deal counts"""
     brands = await db.brands.find(
         {'show_on_homepage': True},
