@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Search, Menu, X, FolderTree } from 'lucide-react';
+import { Search, Menu, X, FolderTree, Clock } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import SearchModal from './SearchModal';
 import ThemeToggle from './ThemeToggle';
@@ -42,6 +42,10 @@ const Header = () => {
               </button>
               
               <nav className="hidden lg:flex items-center space-x-6">
+                <Link to="/son-24-saat" className="text-sm hover:text-orange-500 transition-colors flex items-center gap-1.5 text-orange-400" data-testid="header-expiring-link">
+                  <Clock className="w-4 h-4" />
+                  Son 24 Saat
+                </Link>
                 <Link to="/kategoriler" className="text-sm hover:text-neon-purple transition-colors" data-testid="header-categories-link">
                   Kategoriler
                 </Link>
@@ -70,6 +74,15 @@ const Header = () => {
             data-testid="mobile-menu"
           >
             <nav className="container mx-auto px-4 py-4 flex flex-col space-y-3">
+              <Link
+                to="/son-24-saat"
+                className="py-3 px-4 rounded-lg bg-orange-500/10 hover:bg-orange-500/20 transition-colors text-lg flex items-center gap-3 text-orange-400"
+                onClick={() => setShowMenu(false)}
+                data-testid="mobile-expiring-link"
+              >
+                <Clock className="w-5 h-5" />
+                ⏰ Son 24 Saat
+              </Link>
               <Link
                 to="/kategoriler"
                 className="py-3 px-4 rounded-lg hover:bg-white/5 transition-colors text-lg flex items-center gap-3"
