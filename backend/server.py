@@ -473,6 +473,60 @@ async def delete_hero_slide(slide_id: str, user: AdminUser = Depends(get_current
         raise HTTPException(status_code=404, detail="Slide not found")
     return {"message": "Slide deleted"}
 
+@api_router.get("/catalogs", response_model=List[Catalog])
+async def get_catalogs(brand_id: Optional[str] = None, category_id: Optional[str] = None):
+    query = {'is_active': True}
+    if brand_id:
+        query['brand_id'] = brand_id
+    if category_id:
+        query['category_id'] = category_id
+    
+    catalogs = await db.catalogs.find(query, {'_id': 0}).to_list(100)
+    for catalog in catalogs:
+        for date_field in ['created_at', 'valid_from', 'valid_until']:
+            if catalog.get(date_field) and isinstance(catalog[date_field], str):
+                catalog[date_field] = datetime.fromisoformat(catalog[date_field])
+    return catalogs
+
+@api_router.post("/catalogs", response_model=Catalog)
+async def create_catalog(catalog: CatalogCreate, user: AdminUser = Depends(get_current_user)):
+    new_catalog = Catalog(**catalog.model_dump())
+    catalog_dict = new_catalog.model_dump()
+    catalog_dict['created_at'] = catalog_dict['created_at'].isoformat()
+    if catalog_dict.get('valid_from'):
+        catalog_dict['valid_from'] = catalog_dict['valid_from'].isoformat()
+    if catalog_dict.get('valid_until'):
+        catalog_dict['valid_until'] = catalog_dict['valid_until'].isoformat()
+    await db.catalogs.insert_one(catalog_dict)
+    return new_catalog
+
+@api_router.put("/catalogs/{catalog_id}", response_model=Catalog)
+async def update_catalog(catalog_id: str, catalog: CatalogCreate, user: AdminUser = Depends(get_current_user)):
+    update_dict = catalog.model_dump()
+    if update_dict.get('valid_from'):
+        update_dict['valid_from'] = update_dict['valid_from'].isoformat()
+    if update_dict.get('valid_until'):
+        update_dict['valid_until'] = update_dict['valid_until'].isoformat()
+    
+    result = await db.catalogs.update_one(
+        {'id': catalog_id},
+        {'$set': update_dict}
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Catalog not found")
+    updated = await db.catalogs.find_one({'id': catalog_id}, {'_id': 0})
+    for date_field in ['created_at', 'valid_from', 'valid_until']:
+        if updated.get(date_field) and isinstance(updated[date_field], str):
+            updated[date_field] = datetime.fromisoformat(updated[date_field])
+    return Catalog(**updated)
+
+@api_router.delete("/catalogs/{catalog_id}")
+async def delete_catalog(catalog_id: str, user: AdminUser = Depends(get_current_user)):
+    result = await db.catalogs.delete_one({'id': catalog_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Catalog not found")
+    return {"message": "Catalog deleted"}
+
 @api_router.post("/analytics/track")
 async def track_click(event: ClickEventCreate):
     new_event = ClickEvent(**event.model_dump())
