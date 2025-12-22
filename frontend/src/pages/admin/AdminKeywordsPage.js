@@ -26,7 +26,7 @@ const AdminKeywordsPage = () => {
   const fetchData = async () => {
     try {
       const [mappingsRes, brandsRes, categoriesRes] = await Promise.all([
-        axios.get(`${API}/keyword-mappings`, { headers: { Authorization: `Bearer ${getToken()}` } }),
+        axios.get(`${API}/keyword-mappings`, { headers: { Authorization: `Bearer ${getAuthToken()}` } }),
         axios.get(`${API}/brands`),
         axios.get(`${API}/categories`)
       ]);
@@ -50,11 +50,11 @@ const AdminKeywordsPage = () => {
     try {
       if (editingMapping) {
         await axios.put(`${API}/keyword-mappings/${editingMapping.id}`, formData, {
-          headers: { Authorization: `Bearer ${getToken()}` }
+          headers: { Authorization: `Bearer ${getAuthToken()}` }
         });
       } else {
         await axios.post(`${API}/keyword-mappings`, formData, {
-          headers: { Authorization: `Bearer ${getToken()}` }
+          headers: { Authorization: `Bearer ${getAuthToken()}` }
         });
       }
       
@@ -84,7 +84,7 @@ const AdminKeywordsPage = () => {
     
     try {
       await axios.delete(`${API}/keyword-mappings/${id}`, {
-        headers: { Authorization: `Bearer ${getToken()}` }
+        headers: { Authorization: `Bearer ${getAuthToken()}` }
       });
       fetchData();
     } catch (error) {

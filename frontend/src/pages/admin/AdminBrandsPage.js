@@ -88,7 +88,7 @@ const AdminBrandsPage = () => {
     try {
       const res = await axios.post(`${API}/upload/logo`, formDataUpload, {
         headers: {
-          Authorization: `Bearer ${getToken()}`,
+          Authorization: `Bearer ${getAuthToken()}`,
           'Content-Type': 'multipart/form-data'
         }
       });
@@ -111,7 +111,7 @@ const AdminBrandsPage = () => {
 
       const res = await axios.post(`${API}/upload/import-logo-from-url`, formDataUpload, {
         headers: {
-          Authorization: `Bearer ${getToken()}`
+          Authorization: `Bearer ${getAuthToken()}`
         }
       });
       setFormData(prev => ({ ...prev, logo_url: res.data.url }));

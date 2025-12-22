@@ -31,7 +31,7 @@ const AdminCatalogsPage = () => {
   const fetchData = async () => {
     try {
       const [catalogsRes, brandsRes, categoriesRes] = await Promise.all([
-        axios.get(`${API}/catalogs`, { headers: { Authorization: `Bearer ${getToken()}` } }),
+        axios.get(`${API}/catalogs`, { headers: { Authorization: `Bearer ${getAuthToken()}` } }),
         axios.get(`${API}/brands`),
         axios.get(`${API}/categories`)
       ]);
@@ -71,7 +71,7 @@ const AdminCatalogsPage = () => {
       const endpoint = type === 'pdf' ? '/upload/pdf' : '/upload/logo';
       const res = await axios.post(`${API}${endpoint}`, formDataUpload, {
         headers: {
-          Authorization: `Bearer ${getToken()}`,
+          Authorization: `Bearer ${getAuthToken()}`,
           'Content-Type': 'multipart/form-data'
         }
       });
@@ -100,11 +100,11 @@ const AdminCatalogsPage = () => {
 
       if (editingCatalog) {
         await axios.put(`${API}/catalogs/${editingCatalog.id}`, payload, {
-          headers: { Authorization: `Bearer ${getToken()}` }
+          headers: { Authorization: `Bearer ${getAuthToken()}` }
         });
       } else {
         await axios.post(`${API}/catalogs`, payload, {
-          headers: { Authorization: `Bearer ${getToken()}` }
+          headers: { Authorization: `Bearer ${getAuthToken()}` }
         });
       }
       
@@ -138,7 +138,7 @@ const AdminCatalogsPage = () => {
     
     try {
       await axios.delete(`${API}/catalogs/${id}`, {
-        headers: { Authorization: `Bearer ${getToken()}` }
+        headers: { Authorization: `Bearer ${getAuthToken()}` }
       });
       fetchData();
     } catch (error) {
