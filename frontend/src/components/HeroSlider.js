@@ -32,7 +32,7 @@ const HeroSlider = ({ slides }) => {
   }
 
   return (
-    <div className="relative w-full h-[60vh] lg:h-[70vh] overflow-hidden" data-testid="hero-slider">
+    <div className="relative w-full h-[40vh] lg:h-[50vh] overflow-hidden" data-testid="hero-slider">
       <AnimatePresence mode="wait">
         <motion.div
           key={currentSlide}
