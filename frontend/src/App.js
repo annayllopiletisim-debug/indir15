@@ -22,6 +22,8 @@ import AdminLayout from './components/AdminLayout';
 import { isAuthenticated } from './utils/auth';
 import '@/App.css';
 
+// Force webpack rebuild - v2
+
 const ProtectedRoute = ({ children }) => {
   return isAuthenticated() ? children : <Navigate to="/admin/login" />;
 };
