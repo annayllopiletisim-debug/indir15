@@ -6,6 +6,7 @@ import Header from './components/Header';
 import Footer from './components/Footer';
 import CategoryNav from './components/CategoryNav';
 import CategorySlider from './components/CategorySlider';
+import SEOMetaTags from './components/SEOMetaTags';
 import HomePage from './pages/HomePage';
 import BrandPage from './pages/BrandPage';
 import StoresPage from './pages/StoresPage';
