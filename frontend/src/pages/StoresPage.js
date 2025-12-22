@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Helmet } from 'react-helmet-async';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import axios from 'axios';
-import { Search, Check, X, Filter, ChevronRight, Tag } from 'lucide-react';
+import { Search, Check, X, ChevronRight, Tag } from 'lucide-react';
 import BrandLogo from '../components/BrandLogo';
 import CouponCard from '../components/CouponCard';
 import DiscountCard from '../components/DiscountCard';
+import StickyActionBar from '../components/StickyActionBar';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
@@ -21,6 +21,39 @@ const StoresPage = () => {
   const [loading, setLoading] = useState(true);
   const [selectedStores, setSelectedStores] = useState(new Set());
   const [showDeals, setShowDeals] = useState(false);
+  
+  // Site settings for sticky bar
+  const [siteSettings, setSiteSettings] = useState({ sticky_cta_enabled: true, sticky_cta_variant: "A" });
+
+  // Fetch site settings
+  useEffect(() => {
+    const fetchSettings = async () => {
+      try {
+        const res = await axios.get(`${API}/site-settings`);
+        setSiteSettings(res.data);
+      } catch (error) {
+        console.log('Using default site settings');
+      }
+    };
+    fetchSettings();
+  }, []);
+
+  // SEO Meta Tags via DOM manipulation
+  useEffect(() => {
+    document.title = 'Mağazalar - İndirim Keşfet';
+    
+    let metaDesc = document.querySelector('meta[name="description"]');
+    if (!metaDesc) {
+      metaDesc = document.createElement('meta');
+      metaDesc.setAttribute('name', 'description');
+      document.head.appendChild(metaDesc);
+    }
+    metaDesc.setAttribute('content', 'Tüm mağazaları görüntüleyin ve kupon ile indirimleri keşfedin.');
+    
+    return () => {
+      document.title = 'İndirim Keşfet - Kupon Kodları ve İndirim Fırsatları';
+    };
+  }, []);
 
   // Parse initial selection from URL
   useEffect(() => {
@@ -108,19 +141,22 @@ const StoresPage = () => {
     setSearchParams({});
   };
 
+  // Get selected brand IDs for StickyActionBar
+  const selectedBrandIds = useMemo(() => {
+    return brands
+      .filter(b => selectedStores.has(b.slug))
+      .map(b => b.id);
+  }, [selectedStores, brands]);
+
   // Get filtered deals based on selected stores
   const filteredDeals = useMemo(() => {
     if (selectedStores.size === 0) return { coupons: [], discounts: [] };
-    
-    const selectedBrandIds = brands
-      .filter(b => selectedStores.has(b.slug))
-      .map(b => b.id);
     
     return {
       coupons: allCoupons.filter(c => selectedBrandIds.includes(c.brand_id)),
       discounts: allDiscounts.filter(d => selectedBrandIds.includes(d.brand_id))
     };
-  }, [selectedStores, brands, allCoupons, allDiscounts]);
+  }, [selectedStores, selectedBrandIds, allCoupons, allDiscounts]);
 
   // Brand map for cards
   const brandMap = useMemo(() => {
@@ -142,7 +178,7 @@ const StoresPage = () => {
     }, {});
   }, [filteredBrands]);
 
-  const letters = Object.keys(groupedBrands).sort();
+  const letters = Object.keys(groupedBrands).sort((a, b) => a.localeCompare(b, 'tr'));
 
   if (loading) {
     return (
@@ -154,12 +190,7 @@ const StoresPage = () => {
 
   return (
     <>
-      <Helmet>
-        <title>Mağazalar - İndirim Keşfet</title>
-        <meta name="description" content="Tüm mağazaları görüntüleyin ve kupon ile indirimleri keşfedin." />
-      </Helmet>
-
-      <div className="min-h-screen" data-testid="stores-page">
+      <div className="min-h-screen pb-20" data-testid="stores-page">
         {/* Header */}
         <div className="bg-card border-b border-border">
           <div className="container mx-auto px-4 py-8">
@@ -169,9 +200,8 @@ const StoresPage = () => {
         </div>
 
         <div className="container mx-auto px-4 py-6">
-          {/* Search & Selection Bar */}
+          {/* Search */}
           <div className="flex flex-col sm:flex-row gap-4 mb-6">
-            {/* Search */}
             <div className="flex-1 relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
               <input
@@ -182,30 +212,10 @@ const StoresPage = () => {
                 className="w-full pl-10 pr-4 py-3 bg-card border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary text-foreground"
               />
             </div>
-
-            {/* Selection Actions */}
-            {selectedStores.size > 0 && (
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => setShowDeals(true)}
-                  className="flex items-center gap-2 px-4 py-3 bg-primary text-white rounded-xl font-medium hover:bg-primary/90 transition-colors"
-                >
-                  <Filter className="w-4 h-4" />
-                  <span>İndirimleri Göster ({selectedStores.size})</span>
-                </button>
-                <button
-                  onClick={clearSelection}
-                  className="p-3 bg-muted rounded-xl hover:bg-muted/80 transition-colors"
-                  title="Seçimi temizle"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
-            )}
           </div>
 
           {/* Selected Stores Pills */}
-          {selectedStores.size > 0 && (
+          {selectedStores.size > 0 && !showDeals && (
             <div className="flex flex-wrap gap-2 mb-6">
               <span className="text-sm text-muted-foreground py-1">Seçili:</span>
               {Array.from(selectedStores).map(slug => {
@@ -229,7 +239,7 @@ const StoresPage = () => {
             <div>
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-xl font-heading font-bold">
-                  Seçili Mağazaların İndirimleri
+                  Seçili Mağazaların İndirimleri ({filteredDeals.coupons.length + filteredDeals.discounts.length})
                 </h2>
                 <button
                   onClick={() => setShowDeals(false)}
@@ -328,6 +338,18 @@ const StoresPage = () => {
           )}
         </div>
       </div>
+
+      {/* Sticky Action Bar */}
+      {!showDeals && (
+        <StickyActionBar
+          selectedCount={selectedStores.size}
+          selectedBrandIds={selectedBrandIds}
+          onShowDeals={() => setShowDeals(true)}
+          onClear={clearSelection}
+          variant={siteSettings.sticky_cta_variant}
+          isEnabled={siteSettings.sticky_cta_enabled}
+        />
+      )}
     </>
   );
 };
