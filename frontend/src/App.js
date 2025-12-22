@@ -4,6 +4,8 @@ import { HelmetProvider } from 'react-helmet-async';
 import { ThemeProvider } from './context/ThemeContext';
 import Header from './components/Header';
 import Footer from './components/Footer';
+import CategoryNav from './components/CategoryNav';
+import CategorySlider from './components/CategorySlider';
 import HomePage from './pages/HomePage';
 import BrandPage from './pages/BrandPage';
 import StoresPage from './pages/StoresPage';
