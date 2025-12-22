@@ -65,6 +65,12 @@ module.exports = {
         // Deal card specific colors
         'time-urgent': '#F97316',     // Orange for Son 24 Saat
         'time-normal': 'hsl(var(--muted-foreground))',
+        // Void colors for dark mode
+        void: {
+          dark: "#0B0C15",
+          paper: "#12141C",
+          subtle: "#181823",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",
