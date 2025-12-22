@@ -6,7 +6,7 @@ const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
 const Newsletter = () => {
   const [email, setEmail] = useState('');
-  const [status, setStatus] = useState('idle'); // idle, loading, success, error
+  const [status, setStatus] = useState('idle');
   const [message, setMessage] = useState('');
 
   const handleSubmit = async (e) => {
@@ -23,10 +23,9 @@ const Newsletter = () => {
     try {
       await axios.post(`${API}/newsletter/subscribe`, { email });
       setStatus('success');
-      setMessage('Başarıyla abone oldunuz!');
+      setMessage('Abone oldunuz');
       setEmail('');
       
-      // Reset after 5 seconds
       setTimeout(() => {
         setStatus('idle');
         setMessage('');
@@ -36,7 +35,7 @@ const Newsletter = () => {
       if (error.response?.status === 409) {
         setMessage('Bu e-posta zaten kayıtlı');
       } else {
-        setMessage('Bir hata oluştu, tekrar deneyin');
+        setMessage('Bir hata oluştu');
       }
       
       setTimeout(() => {
@@ -47,37 +46,36 @@ const Newsletter = () => {
   };
 
   return (
-    <section className="container mx-auto px-4 py-8 lg:py-12">
-      <div className="max-w-2xl mx-auto glass-effect p-6 lg:p-8 rounded-2xl text-center">
-        <div className="inline-flex items-center justify-center p-3 rounded-full bg-primary/20 mb-4">
-          <Mail className="w-6 h-6 text-primary" />
+    <section className="container mx-auto px-4 py-8">
+      <div className="max-w-xl mx-auto glass-effect p-5 rounded-xl">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="p-2 rounded-lg bg-primary/10">
+            <Mail className="w-5 h-5 text-primary" />
+          </div>
+          <div>
+            <h3 className="font-heading font-bold">Fırsatları kaçırmayın</h3>
+            <p className="text-sm text-muted-foreground">Yeni indirimleri e-posta ile alın</p>
+          </div>
         </div>
-        
-        <h2 className="text-xl lg:text-2xl font-heading font-bold mb-2">
-          Fırsatları Kaçırmayın!
-        </h2>
-        <p className="text-muted-foreground mb-6 text-sm lg:text-base">
-          En güncel indirim ve kuponları e-posta ile alın
-        </p>
 
         {status === 'success' ? (
-          <div className="flex items-center justify-center gap-2 text-green-500 py-3">
-            <CheckCircle className="w-5 h-5" />
-            <span className="font-medium">{message}</span>
+          <div className="flex items-center gap-2 text-green-500 py-2">
+            <CheckCircle className="w-4 h-4" />
+            <span className="text-sm">{message}</span>
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3">
+          <form onSubmit={handleSubmit} className="flex gap-2">
             <div className="flex-1 relative">
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="E-posta adresiniz"
-                className="w-full px-4 py-3 bg-background border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary text-foreground placeholder:text-muted-foreground"
+                className="w-full px-4 py-2.5 bg-background border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary text-sm"
                 disabled={status === 'loading'}
               />
               {status === 'error' && message && (
-                <div className="absolute -bottom-6 left-0 flex items-center gap-1 text-destructive text-xs">
+                <div className="absolute -bottom-5 left-0 flex items-center gap-1 text-destructive text-xs">
                   <AlertCircle className="w-3 h-3" />
                   <span>{message}</span>
                 </div>
@@ -86,10 +84,10 @@ const Newsletter = () => {
             <button
               type="submit"
               disabled={status === 'loading'}
-              className="px-6 py-3 bg-gradient-to-r from-primary to-pink-500 rounded-xl font-medium hover:shadow-lg hover:shadow-primary/30 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+              className="px-4 py-2.5 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors disabled:opacity-50 flex items-center gap-2"
             >
               {status === 'loading' ? (
-                <span className="animate-pulse">Kaydediliyor...</span>
+                <span>...</span>
               ) : (
                 <>
                   <span>Abone Ol</span>
@@ -99,10 +97,6 @@ const Newsletter = () => {
             </button>
           </form>
         )}
-        
-        <p className="text-xs text-muted-foreground mt-6">
-          Spam göndermiyoruz. İstediğiniz zaman abonelikten çıkabilirsiniz.
-        </p>
       </div>
     </section>
   );
