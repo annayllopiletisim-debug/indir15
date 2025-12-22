@@ -1,6 +1,6 @@
 import React from 'react';
 import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
-import { LayoutDashboard, Tag, Package, Percent, Image, FolderTree, LogOut, Search } from 'lucide-react';
+import { LayoutDashboard, Tag, Package, Percent, Image, FolderTree, LogOut, Search, Settings } from 'lucide-react';
 import { removeAuthToken, removeAuthUser } from '../utils/auth';
 
 const AdminLayout = () => {
