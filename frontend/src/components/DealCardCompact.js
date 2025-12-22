@@ -1,0 +1,149 @@
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { Clock } from 'lucide-react';
+
+/**
+ * DealCardCompact - Ana sayfa için optimize edilmiş indirim kartı
+ * 
+ * Ölçüler:
+ * - Mobil: 248px × 140px
+ * - Desktop: 290px × 160px
+ * 
+ * Hiyerarşi:
+ * 1. İndirim oranı (ana mesaj)
+ * 2. Marka logosu (görsel kimlik)
+ * 3. Kalan süre
+ * 4. CTA (sessiz)
+ */
+
+// Helper to get time remaining
+const getTimeRemaining = (expiryDate) => {
+  if (!expiryDate) return null;
+  const now = new Date();
+  const expiry = new Date(expiryDate);
+  const diff = expiry - now;
+
+  if (diff <= 0) return { expired: true, text: 'Bitti' };
+
+  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+  const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+  const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+
+  if (days > 0) return { expired: false, text: `${days}g ${hours}s`, urgent: false };
+  if (hours > 0) return { expired: false, text: `${hours}s ${minutes}dk`, urgent: hours < 24 };
+  return { expired: false, text: `${minutes}dk`, urgent: true };
+};
+
+const DealCardCompact = ({ 
+  item, 
+  brand, 
+  type = 'coupon', // 'coupon' or 'discount'
+  onClick 
+}) => {
+  const timeLeft = getTimeRemaining(item.expiry_date);
+  const isExpired = timeLeft?.expired;
+  const isUrgent = timeLeft?.urgent;
+
+  const brandName = brand?.name || item.brand_name;
+  const brandSlug = brand?.slug || item.brand_slug;
+  const brandLogo = brand?.logo_url || item.brand_logo_url;
+
+  const handleClick = () => {
+    if (onClick) onClick(item);
+  };
+
+  return (
+    <div 
+      className={`
+        w-[248px] h-[140px] md:w-[290px] md:h-[160px]
+        flex-shrink-0 snap-start
+        bg-card border border-border
+        rounded-card md:rounded-card-lg
+        shadow-card hover:shadow-card-hover
+        p-3 md:p-4
+        flex flex-col
+        transition-shadow duration-200
+        ${isExpired ? 'opacity-50' : ''}
+      `}
+      data-testid={`deal-card-${item.id}`}
+    >
+      {/* ═══ ÜST BAR: Logo + Süre ═══ */}
+      <div className="flex items-center justify-between h-7 md:h-8 mb-2">
+        {/* Sol: Marka Logosu */}
+        <Link 
+          to={brandSlug ? `/magaza/${brandSlug}` : '#'}
+          className="flex items-center"
+          onClick={(e) => e.stopPropagation()}
+        >
+          {brandLogo ? (
+            <div className="w-6 h-6 md:w-[26px] md:h-[26px] rounded-logo bg-white flex items-center justify-center overflow-hidden">
+              <img 
+                src={brandLogo} 
+                alt={brandName}
+                className="w-full h-full object-contain p-0.5"
+                onError={(e) => {
+                  e.target.style.display = 'none';
+                  e.target.nextSibling.style.display = 'flex';
+                }}
+              />
+              <div className="w-full h-full items-center justify-center text-[10px] font-bold text-gray-500 hidden">
+                {brandName?.charAt(0)}
+              </div>
+            </div>
+          ) : (
+            <div className="w-6 h-6 md:w-[26px] md:h-[26px] rounded-logo bg-white flex items-center justify-center">
+              <span className="text-[10px] font-bold text-gray-500">
+                {brandName?.charAt(0)}
+              </span>
+            </div>
+          )}
+        </Link>
+
+        {/* Sağ: Kalan Süre */}
+        {timeLeft && !isExpired && (
+          <span className={`
+            flex items-center gap-1 
+            text-card-time
+            ${isUrgent ? 'text-time-urgent' : 'text-muted-foreground opacity-70'}
+          `}>
+            <Clock className="w-3 h-3" />
+            {timeLeft.text}
+          </span>
+        )}
+      </div>
+
+      {/* ═══ ORTA ALAN: İndirim + Başlık ═══ */}
+      <div className="flex-1 flex flex-col justify-center min-h-0">
+        {/* İndirim Oranı - ANA MESAJ */}
+        {item.discount_text && (
+          <div className="text-discount-sm md:text-discount text-primary font-heading leading-tight mb-1">
+            {item.discount_text}
+          </div>
+        )}
+        
+        {/* Başlık - Tek satır */}
+        <p className="text-card-title text-muted-foreground line-clamp-1">
+          {item.title}
+        </p>
+      </div>
+
+      {/* ═══ ALT BAR: CTA ═══ */}
+      <div className="h-6 md:h-7 flex items-center">
+        <button
+          onClick={handleClick}
+          disabled={isExpired}
+          className="
+            text-card-cta text-primary 
+            hover:underline 
+            disabled:opacity-40 disabled:no-underline
+            transition-colors
+          "
+        >
+          {type === 'coupon' ? 'Kodu Gör →' : 'Fırsata Git →'}
+        </button>
+      </div>
+    </div>
+  );
+};
+
+export default DealCardCompact;
