@@ -44,7 +44,7 @@ const AdminLoginPage = () => {
   return (
     <>
       <Helmet>
-        <title>Admin Giriş - SavvySaver</title>
+        <title>Admin Giriş - indirimliMi</title>
       </Helmet>
 
       <div className="min-h-screen flex items-center justify-center px-4" data-testid="admin-login-page">

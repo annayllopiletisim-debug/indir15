@@ -62,7 +62,7 @@ const StoresPage = () => {
   return (
     <>
       <Helmet>
-        <title>Tüm Mağazalar - SavvySaver</title>
+        <title>Tüm Mağazalar - indirimliMi</title>
         <meta name="description" content="Tüm mağazaları alfabetik sırayla görüntüleyin ve en güncel kupon ve indirimleri keşfedin." />
       </Helmet>
 

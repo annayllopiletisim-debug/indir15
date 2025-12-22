@@ -58,7 +58,7 @@ const HomePage = () => {
   return (
     <>
       <Helmet>
-        <title>SavvySaver - En Güncel Kupon ve İndirimler</title>
+        <title>indirimliMi - En Güncel Kupon ve İndirimler</title>
         <meta name="description" content="En güncel kupon kodları ve indirimlerle tasarruf edin. Yüzlerce marka ve binlerce kampanya tek bir yerde!" />
       </Helmet>
 

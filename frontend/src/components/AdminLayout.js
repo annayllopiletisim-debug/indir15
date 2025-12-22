@@ -34,7 +34,7 @@ const AdminLayout = () => {
             <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-neon-purple to-neon-pink flex items-center justify-center">
               <span className="text-white font-heading font-bold text-xl">SS</span>
             </div>
-            <span className="text-lg font-heading font-bold text-gradient">SavvySaver</span>
+            <span className="text-lg font-heading font-bold text-gradient">indirimliMi</span>
           </Link>
         </div>
 

@@ -73,7 +73,7 @@ const BrandPage = () => {
     (a, b) => new Date(b.created_at) - new Date(a.created_at)
   );
 
-  const metaTitle = brand.meta_title || `${brand.name} Kupon ve İndirimler - SavvySaver`;
+  const metaTitle = brand.meta_title || `${brand.name} Kupon ve İndirimler - indirimliMi`;
   const metaDescription = brand.meta_description || `${brand.name} için en güncel kupon kodları ve indirimler. Hemen tasarruf etmeye başlayın!`;
 
   // Calculate tab count

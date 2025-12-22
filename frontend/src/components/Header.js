@@ -18,7 +18,7 @@ const Header = () => {
               <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-neon-purple to-neon-pink flex items-center justify-center">
                 <span className="text-white font-heading font-bold text-xl">SS</span>
               </div>
-              <span className="text-xl font-heading font-bold text-gradient hidden sm:inline">SavvySaver</span>
+              <span className="text-xl font-heading font-bold text-gradient hidden sm:inline">indirimliMi</span>
             </Link>
             
             <div className="flex items-center space-x-4">
