@@ -9,6 +9,7 @@ import CategorySlider from './components/CategorySlider';
 import HomePage from './pages/HomePage';
 import BrandPage from './pages/BrandPage';
 import StoresPage from './pages/StoresPage';
+import CategoryPage from './pages/CategoryPage';
 import ContactPage from './pages/ContactPage';
 import AdminLoginPage from './pages/admin/AdminLoginPage';
 import AdminDashboardPage from './pages/admin/AdminDashboardPage';
