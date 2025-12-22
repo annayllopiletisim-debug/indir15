@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Search, Menu, X } from 'lucide-react';
+import { Search, Menu, X, FolderTree } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import SearchModal from './SearchModal';
 import ThemeToggle from './ThemeToggle';
@@ -16,7 +16,7 @@ const Header = () => {
           <div className="flex items-center justify-between h-16">
             <Link to="/" className="flex items-center space-x-2" data-testid="header-logo">
               <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-neon-purple to-neon-pink flex items-center justify-center">
-                <span className="text-white font-heading font-bold text-xl">SS</span>
+                <span className="text-white font-heading font-bold text-xl">iM</span>
               </div>
               <span className="text-xl font-heading font-bold text-gradient hidden sm:inline">indirimliMi</span>
             </Link>
@@ -42,6 +42,9 @@ const Header = () => {
               </button>
               
               <nav className="hidden lg:flex items-center space-x-6">
+                <Link to="/kategoriler" className="text-sm hover:text-neon-purple transition-colors" data-testid="header-categories-link">
+                  Kategoriler
+                </Link>
                 <Link to="/magazalar" className="text-sm hover:text-neon-purple transition-colors" data-testid="header-stores-link">
                   Mağazalar
                 </Link>
@@ -67,6 +70,15 @@ const Header = () => {
             data-testid="mobile-menu"
           >
             <nav className="container mx-auto px-4 py-4 flex flex-col space-y-3">
+              <Link
+                to="/kategoriler"
+                className="py-3 px-4 rounded-lg hover:bg-white/5 transition-colors text-lg flex items-center gap-3"
+                onClick={() => setShowMenu(false)}
+                data-testid="mobile-categories-link"
+              >
+                <FolderTree className="w-5 h-5 text-neon-purple" />
+                Kategoriler
+              </Link>
               <Link
                 to="/magazalar"
                 className="py-3 px-4 rounded-lg hover:bg-white/5 transition-colors text-lg"
