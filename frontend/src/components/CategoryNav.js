@@ -13,8 +13,9 @@ const CategoryNav = () => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await axios.get(`${API}/categories`);
-        const sorted = response.data.sort((a, b) => a.order - b.order);
+        // Use with-stats endpoint to get deal counts
+        const response = await axios.get(`${API}/categories/with-stats`);
+        const sorted = response.data.sort((a, b) => (a.order || 0) - (b.order || 0));
         setCategories(sorted);
       } catch (error) {
         console.error('Failed to fetch categories:', error);
@@ -35,10 +36,13 @@ const CategoryNav = () => {
             <Link
               key={category.id}
               to={`/kategori/${category.slug}`}
-              className="px-4 py-2 rounded-lg hover:bg-accent/10 hover:text-accent transition-colors font-medium text-sm"
+              className="px-4 py-2 rounded-lg hover:bg-accent/10 hover:text-accent transition-colors font-medium text-sm flex items-center gap-1.5"
               data-testid={`category-nav-${category.slug}`}
             >
               {category.name}
+              {category.total_deals > 0 && (
+                <span className="text-xs text-muted-foreground">({category.total_deals})</span>
+              )}
             </Link>
           ))}
           
@@ -70,6 +74,9 @@ const CategoryNav = () => {
                         onClick={() => setShowAll(false)}
                       >
                         {category.name}
+                        {category.total_deals > 0 && (
+                          <span className="text-xs text-muted-foreground ml-1">({category.total_deals})</span>
+                        )}
                       </Link>
                     ))}
                   </motion.div>

@@ -1,36 +1,54 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { Search, Menu, X, FolderTree, Clock } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Search, Menu, X, FolderTree, Flame } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import SearchModal from './SearchModal';
 import ThemeToggle from './ThemeToggle';
+import axios from 'axios';
+
+const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
 const Header = () => {
   const [showMenu, setShowMenu] = useState(false);
-  const [showSearch, setShowSearch] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const navigate = useNavigate();
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      navigate(`/arama?q=${encodeURIComponent(searchQuery.trim())}`);
+      setSearchQuery('');
+    }
+  };
 
   return (
     <>
       <header className="sticky top-0 z-50 w-full glass-effect border-b border-border">
         <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between h-16">
-            <Link to="/" className="flex items-center space-x-2" data-testid="header-logo">
-              <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-primary to-pink-500 flex items-center justify-center">
-                <span className="text-white font-heading font-bold text-sm">İK</span>
-              </div>
-              <span className="text-lg font-heading font-bold hidden sm:inline">İndirim Keşfet</span>
+          <div className="flex items-center justify-between h-16 gap-4">
+            {/* Logo - Sadece yazı */}
+            <Link to="/" className="flex-shrink-0" data-testid="header-logo">
+              <span className="text-lg font-heading font-bold bg-gradient-to-r from-primary to-pink-500 bg-clip-text text-transparent">
+                İndirim Keşfet
+              </span>
             </Link>
             
-            <div className="flex items-center space-x-4">
+            {/* Search Bar - Her zaman açık */}
+            <form onSubmit={handleSearch} className="flex-1 max-w-md">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                <input
+                  type="text"
+                  placeholder="Mağaza veya kupon ara..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full pl-9 pr-4 py-2 bg-muted/50 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary"
+                  data-testid="header-search-input"
+                />
+              </div>
+            </form>
+            
+            <div className="flex items-center space-x-2">
               <ThemeToggle />
-              <button
-                onClick={() => setShowSearch(true)}
-                className="p-2 rounded-lg hover:bg-muted transition-colors"
-                data-testid="header-search-btn"
-                aria-label="Ara"
-              >
-                <Search className="w-5 h-5" />
-              </button>
               
               <button
                 onClick={() => setShowMenu(!showMenu)}
@@ -42,8 +60,8 @@ const Header = () => {
               </button>
               
               <nav className="hidden lg:flex items-center space-x-6">
-                <Link to="/son-24-saat" className="text-sm hover:text-primary transition-colors flex items-center gap-1.5" data-testid="header-expiring-link">
-                  <Clock className="w-4 h-4" />
+                <Link to="/son-24-saat" className="text-sm hover:text-primary transition-colors flex items-center gap-1.5 text-orange-500" data-testid="header-expiring-link">
+                  <Flame className="w-4 h-4" />
                   Son 24 Saat
                 </Link>
                 <Link to="/kategoriler" className="text-sm hover:text-primary transition-colors" data-testid="header-categories-link">
@@ -73,11 +91,11 @@ const Header = () => {
             <nav className="container mx-auto px-4 py-4 flex flex-col space-y-2">
               <Link
                 to="/son-24-saat"
-                className="py-3 px-4 rounded-lg hover:bg-muted transition-colors flex items-center gap-3"
+                className="py-3 px-4 rounded-lg hover:bg-muted transition-colors flex items-center gap-3 text-orange-500"
                 onClick={() => setShowMenu(false)}
                 data-testid="mobile-expiring-link"
               >
-                <Clock className="w-5 h-5 text-primary" />
+                <Flame className="w-5 h-5" />
                 Son 24 Saat
               </Link>
               <Link
@@ -109,8 +127,6 @@ const Header = () => {
           </motion.div>
         )}
       </AnimatePresence>
-
-      <SearchModal isOpen={showSearch} onClose={() => setShowSearch(false)} />
     </>
   );
 };

@@ -7,13 +7,12 @@ const Footer = () => {
     <footer className="bg-card border-t border-border mt-24">
       <div className="container mx-auto px-4 py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          {/* Brand */}
+          {/* Brand - Sadece yazı */}
           <div>
-            <Link to="/" className="flex items-center space-x-2 mb-4">
-              <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-primary to-pink-500 flex items-center justify-center">
-                <span className="text-white font-heading font-bold text-sm">İK</span>
-              </div>
-              <span className="text-lg font-heading font-bold">İndirim Keşfet</span>
+            <Link to="/" className="inline-block mb-4">
+              <span className="text-lg font-heading font-bold bg-gradient-to-r from-primary to-pink-500 bg-clip-text text-transparent">
+                İndirim Keşfet
+              </span>
             </Link>
             <p className="text-sm text-muted-foreground">
               Kupon ve indirimleri keşfedin, tasarruf edin.
