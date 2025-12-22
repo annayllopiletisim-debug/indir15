@@ -4,6 +4,7 @@ import axios from 'axios';
 import CouponCard from '../components/CouponCard';
 import DiscountCard from '../components/DiscountCard';
 import BrandLogo from '../components/BrandLogo';
+import Newsletter from '../components/Newsletter';
 import { 
   ChevronRight, 
   Flame, 
