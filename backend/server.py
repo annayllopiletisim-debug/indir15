@@ -759,11 +759,27 @@ async def track_click(event: ClickEventCreate):
     await db.click_events.insert_one(event_dict)
     return {"message": "Click tracked"}
 
-@api_router.get("/analytics/dashboard", response_model=AnalyticsDashboard)
-async def get_analytics_dashboard(user: AdminUser = Depends(get_current_user)):
-    total_clicks = await db.click_events.count_documents({})
+@api_router.get("/analytics/dashboard")
+async def get_analytics_dashboard(period: str = "7d", user: AdminUser = Depends(get_current_user)):
+    # Calculate date filter based on period
+    now = datetime.now(timezone.utc)
+    if period == "24h":
+        start_date = now - timedelta(hours=24)
+    elif period == "7d":
+        start_date = now - timedelta(days=7)
+    elif period == "30d":
+        start_date = now - timedelta(days=30)
+    else:
+        start_date = now - timedelta(days=7)
     
+    date_filter = {'timestamp': {'$gte': start_date.isoformat()}}
+    
+    # Total clicks in period
+    total_clicks = await db.click_events.count_documents(date_filter)
+    
+    # Top 10 brands by clicks
     brand_clicks_pipeline = [
+        {'$match': date_filter},
         {'$group': {'_id': '$brand_id', 'count': {'$sum': 1}}},
         {'$sort': {'count': -1}},
         {'$limit': 10}
@@ -777,11 +793,52 @@ async def get_analytics_dashboard(user: AdminUser = Depends(get_current_user)):
             brand_clicks.append({
                 'brand_id': item['_id'],
                 'brand_name': brand.get('name', 'Unknown'),
+                'brand_slug': brand.get('slug', ''),
                 'count': item['count']
             })
     
+    # Top 10 coupons by conversions (views vs copies)
+    coupon_pipeline = [
+        {'$match': {**date_filter, 'type': {'$in': ['coupon_view', 'coupon_copy']}}},
+        {'$group': {
+            '_id': {'item_id': '$item_id', 'type': '$type'},
+            'count': {'$sum': 1}
+        }}
+    ]
+    coupon_stats_raw = await db.click_events.aggregate(coupon_pipeline).to_list(1000)
+    
+    # Aggregate coupon stats
+    coupon_stats = {}
+    for item in coupon_stats_raw:
+        item_id = item['_id']['item_id']
+        event_type = item['_id']['type']
+        if item_id not in coupon_stats:
+            coupon_stats[item_id] = {'views': 0, 'copies': 0}
+        if event_type == 'coupon_view':
+            coupon_stats[item_id]['views'] = item['count']
+        elif event_type == 'coupon_copy':
+            coupon_stats[item_id]['copies'] = item['count']
+    
+    # Get top 10 coupons by total interactions
+    coupon_conversions = []
+    for item_id, stats in sorted(coupon_stats.items(), key=lambda x: x[1]['views'] + x[1]['copies'], reverse=True)[:10]:
+        coupon = await db.coupons.find_one({'id': item_id}, {'_id': 0})
+        if coupon:
+            brand = await db.brands.find_one({'id': coupon.get('brand_id')}, {'_id': 0})
+            coupon_conversions.append({
+                'coupon_id': item_id,
+                'title': coupon.get('title', 'Unknown'),
+                'code': coupon.get('code', ''),
+                'views': stats['views'],
+                'copies': stats['copies'],
+                'conversion_rate': round(stats['copies'] / stats['views'] * 100, 1) if stats['views'] > 0 else 0,
+                'brand_name': brand.get('name', 'Unknown') if brand else 'Unknown',
+                'brand_slug': brand.get('slug', '') if brand else ''
+            })
+    
+    # Top 10 discounts by clicks
     discount_clicks_pipeline = [
-        {'$match': {'type': 'discount'}},
+        {'$match': {**date_filter, 'type': 'discount_click'}},
         {'$group': {'_id': '$item_id', 'count': {'$sum': 1}}},
         {'$sort': {'count': -1}},
         {'$limit': 10}
@@ -801,12 +858,36 @@ async def get_analytics_dashboard(user: AdminUser = Depends(get_current_user)):
                 'brand_slug': brand.get('slug', '') if brand else ''
             })
     
-    return AnalyticsDashboard(
-        total_clicks=total_clicks,
-        brand_clicks=brand_clicks,
-        popular_discounts=popular_discounts,
-        popular_brands=brand_clicks[:5]
-    )
+    # Category performance
+    category_pipeline = [
+        {'$match': date_filter},
+        {'$group': {'_id': '$category_id', 'count': {'$sum': 1}}},
+        {'$sort': {'count': -1}},
+        {'$limit': 10}
+    ]
+    category_clicks_raw = await db.click_events.aggregate(category_pipeline).to_list(10)
+    
+    category_performance = []
+    for item in category_clicks_raw:
+        if item['_id']:
+            category = await db.categories.find_one({'id': item['_id']}, {'_id': 0})
+            if category:
+                category_performance.append({
+                    'category_id': item['_id'],
+                    'category_name': category.get('name', 'Unknown'),
+                    'category_slug': category.get('slug', ''),
+                    'count': item['count']
+                })
+    
+    return {
+        'period': period,
+        'total_clicks': total_clicks,
+        'brand_clicks': brand_clicks,
+        'popular_discounts': popular_discounts,
+        'popular_brands': brand_clicks[:5],
+        'category_performance': category_performance,
+        'coupon_conversions': coupon_conversions
+    }
 
 @api_router.get("/search")
 async def search(q: str):
