@@ -12,6 +12,22 @@ module.exports = {
       },
     },
     extend: {
+      // Deal Card Token System
+      spacing: {
+        'card-mobile': '248px',      // Card width mobile
+        'card-desktop': '290px',     // Card width desktop
+        'card-h-mobile': '140px',    // Card height mobile
+        'card-h-desktop': '160px',   // Card height desktop
+        'logo-sm': '24px',           // Logo size mobile
+        'logo-md': '26px',           // Logo size desktop
+      },
+      fontSize: {
+        'discount': ['20px', { lineHeight: '1.2', fontWeight: '700' }],
+        'discount-sm': ['18px', { lineHeight: '1.2', fontWeight: '700' }],
+        'card-title': ['12px', { lineHeight: '1.3' }],
+        'card-time': ['10px', { lineHeight: '1' }],
+        'card-cta': ['12px', { lineHeight: '1' }],
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
@@ -46,22 +62,21 @@ module.exports = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        neon: {
-          purple: "#8B5CF6",
-          pink: "#EC4899",
-          blue: "#3B82F6",
-          cyan: "#06B6D4",
-        },
-        void: {
-          dark: "#0B0C15",
-          paper: "#12141C",
-          subtle: "#181823",
-        },
+        // Deal card specific colors
+        'time-urgent': '#F97316',     // Orange for Son 24 Saat
+        'time-normal': 'hsl(var(--muted-foreground))',
       },
       borderRadius: {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
+        'card': '12px',
+        'card-lg': '14px',
+        'logo': '6px',
+      },
+      boxShadow: {
+        'card': '0 2px 4px rgba(0, 0, 0, 0.04)',
+        'card-hover': '0 4px 8px rgba(0, 0, 0, 0.06)',
       },
       fontFamily: {
         sans: ["Inter", ...fontFamily.sans],
