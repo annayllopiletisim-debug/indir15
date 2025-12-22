@@ -1206,8 +1206,8 @@ from fastapi.responses import PlainTextResponse, Response
 
 @api_router.get("/sitemap.xml", response_class=Response)
 async def get_sitemap():
-    """Generate dynamic sitemap.xml"""
-    base_url = os.environ.get('SITE_URL', 'https://indirimli.mi')
+    """Generate dynamic sitemap.xml with programmatic SEO pages"""
+    base_url = os.environ.get('SITE_URL', 'https://indirimkestet.com')
     now = datetime.now(timezone.utc).strftime('%Y-%m-%d')
     
     urls = []
@@ -1229,24 +1229,51 @@ async def get_sitemap():
     <priority>{priority}</priority>
   </url>''')
     
-    # Categories
+    # Programmatic SEO: Category pages
     categories = await db.categories.find({}, {'_id': 0, 'slug': 1}).to_list(1000)
     for cat in categories:
         urls.append(f'''  <url>
-    <loc>{base_url}/kategori/{cat['slug']}</loc>
+    <loc>{base_url}/{cat['slug']}-indirimleri</loc>
     <lastmod>{now}</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>''')
     
-    # Brands
+    # Programmatic SEO: Brand pages
     brands = await db.brands.find({}, {'_id': 0, 'slug': 1}).to_list(1000)
+    for brand in brands:
+        urls.append(f'''  <url>
+    <loc>{base_url}/{brand['slug']}-indirimleri</loc>
+    <lastmod>{now}</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>''')
+    
+    # Programmatic SEO: Keyword pages (only active)
+    keywords = await db.keyword_mappings.find({'is_active': True}, {'_id': 0, 'keyword': 1}).to_list(1000)
+    for kw in keywords:
+        urls.append(f'''  <url>
+    <loc>{base_url}/{kw['keyword']}-indirimleri</loc>
+    <lastmod>{now}</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.7</priority>
+  </url>''')
+    
+    # Legacy: Individual brand/category pages (for backwards compatibility)
+    for cat in categories:
+        urls.append(f'''  <url>
+    <loc>{base_url}/kategori/{cat['slug']}</loc>
+    <lastmod>{now}</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.7</priority>
+  </url>''')
+    
     for brand in brands:
         urls.append(f'''  <url>
     <loc>{base_url}/magaza/{brand['slug']}</loc>
     <lastmod>{now}</lastmod>
     <changefreq>daily</changefreq>
-    <priority>0.8</priority>
+    <priority>0.7</priority>
   </url>''')
     
     # Active coupons (not expired)
