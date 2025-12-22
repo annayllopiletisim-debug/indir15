@@ -1,7 +1,7 @@
 import React from 'react';
 import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
 import { LayoutDashboard, Tag, Package, Percent, Image, FolderTree, LogOut } from 'lucide-react';
-import { removeAuthToken, removeAuthUser } from '../../utils/auth';
+import { removeAuthToken, removeAuthUser } from '../utils/auth';
 
 const AdminLayout = () => {
   const navigate = useNavigate();
