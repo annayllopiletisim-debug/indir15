@@ -112,7 +112,7 @@ const AdminSettingsPage = () => {
             <div>
               <h3 className="font-medium mb-1">Sticky CTA Bar Aktif</h3>
               <p className="text-sm text-muted-foreground">
-                Mağazalar ve kategori sayfalarında altta sabit CTA bar'ı göster/gizle
+                Mağazalar ve kategori sayfalarında altta sabit CTA barı göster/gizle
               </p>
             </div>
             <button
