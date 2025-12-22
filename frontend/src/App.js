@@ -16,7 +16,6 @@ import AdminDashboardPage from './pages/admin/AdminDashboardPage';
 import AdminBrandsPage from './pages/admin/AdminBrandsPage';
 import AdminCouponsPage from './pages/admin/AdminCouponsPage';
 import AdminDiscountsPage from './pages/admin/AdminDiscountsPage';
-import AdminCatalogsPage from './pages/admin/AdminCatalogsPage';
 import AdminKeywordsPage from './pages/admin/AdminKeywordsPage';
 import AdminHeroSlidesPage from './pages/admin/AdminHeroSlidesPage';
 import AdminCategoriesPage from './pages/admin/AdminCategoriesPage';
@@ -24,7 +23,7 @@ import AdminLayout from './components/AdminLayout';
 import { isAuthenticated } from './utils/auth';
 import '@/App.css';
 
-// Force webpack rebuild - v3
+// Force webpack rebuild - v4
 
 const ProtectedRoute = ({ children }) => {
   return isAuthenticated() ? children : <Navigate to="/admin/login" />;
