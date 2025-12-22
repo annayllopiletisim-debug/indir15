@@ -124,23 +124,17 @@ const ProgrammaticSeoPage = () => {
 
   const { 
     page_type, 
-    seo_meta, 
     h1, 
     short_description, 
     items, 
     total_items, 
     structured_data,
-    related_pages,
-    canonical_url
+    related_pages
   } = pageData;
 
   // Separate coupons and discounts
   const coupons = items.filter(i => i.item_type === 'coupon');
   const discounts = items.filter(i => i.item_type === 'discount');
-
-  // Get base URL for canonical and OG tags
-  const baseUrl = typeof window !== 'undefined' ? window.location.origin : 'https://indirimkestet.com';
-  const fullCanonicalUrl = `${baseUrl}${canonical_url}`;
 
   return (
     <>
