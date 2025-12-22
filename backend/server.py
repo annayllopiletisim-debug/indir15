@@ -561,8 +561,9 @@ async def delete_discount(discount_id: str, user: AdminUser = Depends(get_curren
     return {"message": "Discount deleted"}
 
 @api_router.get("/hero-slides", response_model=List[HeroSlide])
-async def get_hero_slides():
-    slides = await db.hero_slides.find({'is_active': True}, {'_id': 0}).sort('order', 1).to_list(100)
+async def get_hero_slides(include_inactive: bool = False):
+    query = {} if include_inactive else {'is_active': True}
+    slides = await db.hero_slides.find(query, {'_id': 0}).sort('order', 1).to_list(100)
     for slide in slides:
         if isinstance(slide.get('created_at'), str):
             slide['created_at'] = datetime.fromisoformat(slide['created_at'])
