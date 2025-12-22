@@ -1,21 +1,84 @@
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import axios from 'axios';
+import DealCardCompact from '../components/DealCardCompact';
 import CouponCard from '../components/CouponCard';
 import DiscountCard from '../components/DiscountCard';
 import BrandLogo from '../components/BrandLogo';
 import Newsletter from '../components/Newsletter';
+import { trackClick, buildUTMLink } from '../utils/helpers';
 import { 
   ChevronRight, 
   Clock, 
   Tag, 
   Store, 
   TrendingUp,
-  Search
+  Search,
+  Copy,
+  Check
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
+
+// Simple modal for coupon code
+const CouponModal = ({ coupon, brand, isOpen, onClose }) => {
+  const [copied, setCopied] = useState(false);
+
+  if (!isOpen) return null;
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(coupon.code);
+      setCopied(true);
+      trackClick('coupon_copy', coupon.id, coupon.brand_id);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error('Copy failed:', err);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50" onClick={onClose}>
+      <div className="bg-card rounded-xl p-6 max-w-sm w-full shadow-xl" onClick={e => e.stopPropagation()}>
+        <div className="text-center mb-4">
+          <p className="text-sm text-muted-foreground mb-1">{brand?.name}</p>
+          <p className="font-heading font-bold text-lg">{coupon.title}</p>
+        </div>
+        
+        <div className="bg-muted rounded-lg p-4 mb-4">
+          <p className="text-center font-mono text-xl font-bold tracking-wider">
+            {coupon.code}
+          </p>
+        </div>
+
+        <button
+          onClick={handleCopy}
+          className="w-full py-3 bg-primary text-white rounded-lg font-medium flex items-center justify-center gap-2 hover:bg-primary/90 transition-colors"
+        >
+          {copied ? (
+            <>
+              <Check className="w-4 h-4" />
+              Kopyalandı
+            </>
+          ) : (
+            <>
+              <Copy className="w-4 h-4" />
+              Kodu Kopyala
+            </>
+          )}
+        </button>
+
+        <button
+          onClick={onClose}
+          className="w-full mt-2 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+        >
+          Kapat
+        </button>
+      </div>
+    </div>
+  );
+};
 
 const HomePage = () => {
   const [brands, setBrands] = useState([]);
@@ -23,6 +86,10 @@ const HomePage = () => {
   const [expiringSoon, setExpiringSoon] = useState({ coupons: [], discounts: [], total: 0 });
   const [popularToday, setPopularToday] = useState({ coupons: [], discounts: [], total: 0 });
   const [loading, setLoading] = useState(true);
+  
+  // Modal state
+  const [selectedCoupon, setSelectedCoupon] = useState(null);
+  const [selectedBrand, setSelectedBrand] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -66,7 +133,7 @@ const HomePage = () => {
   const expiringItems = [
     ...expiringSoon.coupons.map(c => ({ ...c, type: 'coupon' })),
     ...expiringSoon.discounts.map(d => ({ ...d, type: 'discount' }))
-  ].slice(0, 6);
+  ].slice(0, 8);
 
   // Combine popular items
   const popularItems = [
@@ -81,14 +148,35 @@ const HomePage = () => {
     return b.total_deals - a.total_deals;
   });
 
+  // Handle card click
+  const handleDealClick = (item, brand) => {
+    if (item.type === 'coupon') {
+      trackClick('coupon_view', item.id, item.brand_id);
+      setSelectedCoupon(item);
+      setSelectedBrand(brand);
+      
+      // Open store in new tab
+      if (item.destination_url) {
+        setTimeout(() => {
+          const finalUrl = buildUTMLink(item.destination_url, item.utm_template, item.id);
+          window.open(finalUrl, '_blank');
+        }, 300);
+      }
+    } else {
+      trackClick('discount_click', item.id, item.brand_id);
+      if (item.destination_url) {
+        const finalUrl = buildUTMLink(item.destination_url, item.utm_template, item.id);
+        window.open(finalUrl, '_blank');
+      }
+    }
+  };
+
   // Popular searches for SEO
   const popularSearches = [
-    { label: 'Ayakkabı indirimleri', to: '/arama?q=ayakkabı' },
-    { label: 'Nike kupon kodları', to: '/magaza/nike' },
-    { label: 'Adidas kampanyaları', to: '/magaza/adidas' },
-    { label: 'Spor giyim fırsatları', to: '/kategori/spor' },
+    { label: 'Nike kuponları', to: '/magaza/nike' },
+    { label: 'Adidas indirimleri', to: '/magaza/adidas' },
+    { label: 'Spor fırsatları', to: '/kategori/spor' },
     { label: 'Moda indirimleri', to: '/kategori/moda' },
-    { label: 'Elektronik fırsatları', to: '/kategori/elektronik' },
   ];
 
   return (
@@ -101,34 +189,26 @@ const HomePage = () => {
       <div className="min-h-screen" data-testid="home-page">
 
         {/* ═══════════════════════════════════════════════════════════════
-            1️⃣ SIK TERCİH EDİLEN MAĞAZALAR
+            1️⃣ POPÜLER MAĞAZALAR (Yatay scroll)
         ═══════════════════════════════════════════════════════════════ */}
         {brands.length > 0 && (
-          <section className="container mx-auto px-4 py-5">
+          <section className="container mx-auto px-4 py-4">
             <div className="flex items-center justify-between mb-3">
-              <h2 className="text-base font-heading font-bold text-muted-foreground">
-                Popüler Mağazalar
-              </h2>
-              <Link
-                to="/magazalar"
-                className="text-sm text-muted-foreground hover:text-primary transition-colors"
-              >
+              <span className="text-sm text-muted-foreground">Popüler Mağazalar</span>
+              <Link to="/magazalar" className="text-sm text-muted-foreground hover:text-primary">
                 Tümü →
               </Link>
             </div>
 
-            <div className="flex gap-2 overflow-x-auto pb-2 -mx-4 px-4 scrollbar-hide">
+            <div className="flex gap-2 overflow-x-auto pb-1 -mx-4 px-4 scrollbar-hide">
               {brands.slice(0, 10).map((brand) => (
                 <Link
                   key={brand.id}
                   to={`/magaza/${brand.slug}`}
-                  className="flex-shrink-0 glass-effect px-3 py-2 rounded-lg hover:border-primary/30 transition-all flex items-center gap-2"
+                  className="flex-shrink-0 flex items-center gap-2 px-3 py-2 bg-card border border-border rounded-lg hover:border-primary/30 transition-colors"
                 >
                   <BrandLogo logoUrl={brand.logo_url} brandName={brand.name} size="xs" />
-                  <span className="text-sm font-medium whitespace-nowrap">{brand.name}</span>
-                  {brand.active_deal_count > 0 && (
-                    <span className="text-xs text-primary">({brand.active_deal_count})</span>
-                  )}
+                  <span className="text-sm whitespace-nowrap">{brand.name}</span>
                 </Link>
               ))}
             </div>
@@ -136,21 +216,18 @@ const HomePage = () => {
         )}
 
         {/* ═══════════════════════════════════════════════════════════════
-            2️⃣ SON 24 SAAT - KOMPAKT VERSİYON
+            2️⃣ SON 24 SAAT - KOMPAKT KARTLAR
         ═══════════════════════════════════════════════════════════════ */}
         {expiringItems.length > 0 && (
-          <section className="container mx-auto px-4 py-6">
+          <section className="container mx-auto px-4 py-5">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
-                <Clock className="w-4 h-4 text-orange-500" />
-                <h2 className="text-base font-heading font-bold">
-                  Son 24 Saatte Bitecek Fırsatlar
+                <Clock className="w-4 h-4 text-time-urgent" />
+                <h2 className="text-base font-heading font-semibold">
+                  Son 24 Saatte Bitecek
                 </h2>
               </div>
-              <Link
-                to="/son-24-saat"
-                className="text-sm text-muted-foreground hover:text-primary transition-colors"
-              >
+              <Link to="/son-24-saat" className="text-sm text-muted-foreground hover:text-primary">
                 Tümünü gör →
               </Link>
             </div>
@@ -164,16 +241,13 @@ const HomePage = () => {
                 };
                 
                 return (
-                  <div 
-                    key={`${item.type}-${item.id}`} 
-                    className="flex-shrink-0 w-[280px] sm:w-[300px]"
-                  >
-                    {item.type === 'coupon' ? (
-                      <CouponCard coupon={item} brand={brand} compact />
-                    ) : (
-                      <DiscountCard discount={item} brand={brand} compact />
-                    )}
-                  </div>
+                  <DealCardCompact
+                    key={`${item.type}-${item.id}`}
+                    item={item}
+                    brand={brand}
+                    type={item.type}
+                    onClick={() => handleDealClick(item, brand)}
+                  />
                 );
               })}
             </div>
@@ -181,22 +255,17 @@ const HomePage = () => {
         )}
 
         {/* ═══════════════════════════════════════════════════════════════
-            3️⃣ KATEGORİLER (ANA YÖNLENDİRİCİ)
+            3️⃣ KATEGORİLER
         ═══════════════════════════════════════════════════════════════ */}
-        <section className="container mx-auto px-4 py-8">
-          <div className="flex items-center justify-between mb-5">
-            <h2 className="text-xl font-heading font-bold">
-              Kategoriler
-            </h2>
-            <Link
-              to="/kategoriler"
-              className="text-sm text-muted-foreground hover:text-primary transition-colors"
-            >
+        <section className="container mx-auto px-4 py-6">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-heading font-bold">Kategoriler</h2>
+            <Link to="/kategoriler" className="text-sm text-muted-foreground hover:text-primary">
               Tümü →
             </Link>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             {sortedCategories.slice(0, 8).map((category) => {
               const hasDeals = category.total_deals > 0;
               
@@ -204,30 +273,26 @@ const HomePage = () => {
                 <Link
                   key={category.id}
                   to={`/kategori/${category.slug}`}
-                  className={`group p-4 rounded-xl transition-all ${
-                    hasDeals 
-                      ? 'glass-effect hover:border-primary/30' 
-                      : 'bg-muted/20 opacity-50'
-                  }`}
+                  className={`
+                    p-4 rounded-xl transition-all
+                    ${hasDeals 
+                      ? 'bg-card border border-border hover:border-primary/30 shadow-card hover:shadow-card-hover' 
+                      : 'bg-muted/30 opacity-50'
+                    }
+                  `}
                 >
-                  <h3 className={`text-base font-heading font-semibold mb-2 ${
-                    hasDeals ? 'group-hover:text-primary' : 'text-muted-foreground'
-                  }`}>
+                  <h3 className={`text-sm font-semibold mb-2 ${hasDeals ? '' : 'text-muted-foreground'}`}>
                     {category.name}
                   </h3>
-                  <div className="space-y-1 text-sm">
-                    <div className="flex items-center gap-1.5">
-                      <Tag className={`w-3 h-3 ${hasDeals ? 'text-pink-500' : 'text-muted-foreground/40'}`} />
-                      <span className={hasDeals ? 'text-muted-foreground' : 'text-muted-foreground/40'}>
-                        {category.total_deals || 0} indirim
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-1.5">
-                      <Store className={`w-3 h-3 ${category.store_count > 0 ? 'text-blue-500' : 'text-muted-foreground/40'}`} />
-                      <span className={category.store_count > 0 ? 'text-muted-foreground' : 'text-muted-foreground/40'}>
-                        {category.store_count || 0} mağaza
-                      </span>
-                    </div>
+                  <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                    <span className="flex items-center gap-1">
+                      <Tag className="w-3 h-3" />
+                      {category.total_deals || 0}
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <Store className="w-3 h-3" />
+                      {category.store_count || 0}
+                    </span>
                   </div>
                 </Link>
               );
@@ -239,12 +304,10 @@ const HomePage = () => {
             4️⃣ BUGÜN POPÜLER
         ═══════════════════════════════════════════════════════════════ */}
         {popularItems.length > 0 && (
-          <section className="container mx-auto px-4 py-8">
-            <div className="flex items-center gap-2 mb-5">
-              <TrendingUp className="w-5 h-5 text-primary" />
-              <h2 className="text-xl font-heading font-bold">
-                Bugün Popüler
-              </h2>
+          <section className="container mx-auto px-4 py-6">
+            <div className="flex items-center gap-2 mb-4">
+              <TrendingUp className="w-4 h-4 text-primary" />
+              <h2 className="text-lg font-heading font-bold">Bugün Popüler</h2>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -268,12 +331,10 @@ const HomePage = () => {
         {/* ═══════════════════════════════════════════════════════════════
             5️⃣ POPÜLER ARAMALAR (SEO)
         ═══════════════════════════════════════════════════════════════ */}
-        <section className="container mx-auto px-4 py-8 border-t border-border">
-          <div className="flex items-center gap-2 mb-4">
+        <section className="container mx-auto px-4 py-6 border-t border-border">
+          <div className="flex items-center gap-2 mb-3">
             <Search className="w-4 h-4 text-muted-foreground" />
-            <h3 className="text-sm font-heading text-muted-foreground">
-              Popüler Aramalar
-            </h3>
+            <span className="text-sm text-muted-foreground">Popüler Aramalar</span>
           </div>
 
           <div className="flex flex-wrap gap-2">
@@ -295,6 +356,14 @@ const HomePage = () => {
         <Newsletter />
 
       </div>
+
+      {/* Coupon Code Modal */}
+      <CouponModal
+        coupon={selectedCoupon}
+        brand={selectedBrand}
+        isOpen={!!selectedCoupon}
+        onClose={() => setSelectedCoupon(null)}
+      />
     </>
   );
 };
