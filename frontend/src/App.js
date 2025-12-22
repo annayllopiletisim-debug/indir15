@@ -17,15 +17,9 @@ const ProtectedRoute = ({ children }) => {
 };
 
 const PublicLayout = ({ children }) => {
-  const [showSearch, setShowSearch] = useState(false);
-  const [showMenu, setShowMenu] = useState(false);
-
   return (
     <div className="min-h-screen flex flex-col">
-      <Header
-        onSearchClick={() => setShowSearch(true)}
-        onMenuClick={() => setShowMenu(true)}
-      />
+      <Header />
       <main className="flex-1">{children}</main>
       <Footer />
     </div>
