@@ -109,6 +109,19 @@ function App() {
             }
           />
 
+          {/* ═══════════════════════════════════════════════════════════
+              PROGRAMMATIC SEO ROUTES
+              Tek template ile 1000+ sayfa
+          ═══════════════════════════════════════════════════════════ */}
+          <Route
+            path="/:slug-indirimleri"
+            element={
+              <PublicLayout>
+                <ProgrammaticSeoPage />
+              </PublicLayout>
+            }
+          />
+
           <Route path="/admin/login" element={<AdminLoginPage />} />
           <Route
             path="/admin"
