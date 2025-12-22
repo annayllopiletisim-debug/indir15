@@ -1,7 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import api from '../../utils/api';
-import { Plus, Edit, Trash2, X } from 'lucide-react';
+import { Plus, Edit, Trash2, X, Upload, Link as LinkIcon } from 'lucide-react';
+import BrandLogo from '../../components/BrandLogo';
+import { getToken } from '../../utils/auth';
+import axios from 'axios';
+
+const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
 const AdminBrandsPage = () => {
   const [brands, setBrands] = useState([]);
