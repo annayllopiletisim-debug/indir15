@@ -1,16 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import api from '../../utils/api';
-import { TrendingUp, MousePointer, Store } from 'lucide-react';
+import { TrendingUp, MousePointer, Store, Clock, Copy, Eye, BarChart3, Tag } from 'lucide-react';
+import { Button } from '../../components/ui/button';
 
 const AdminDashboardPage = () => {
   const [analytics, setAnalytics] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [period, setPeriod] = useState('7d');
 
   useEffect(() => {
     const fetchAnalytics = async () => {
+      setLoading(true);
       try {
-        const response = await api.get('/analytics/dashboard');
+        const response = await api.get(`/analytics/dashboard?period=${period}`);
         setAnalytics(response.data);
       } catch (error) {
         console.error('Failed to fetch analytics:', error);
@@ -20,7 +23,13 @@ const AdminDashboardPage = () => {
     };
 
     fetchAnalytics();
-  }, []);
+  }, [period]);
+
+  const periodLabels = {
+    '24h': 'Son 24 Saat',
+    '7d': 'Son 7 Gün',
+    '30d': 'Son 30 Gün'
+  };
 
   if (loading) {
     return (
@@ -37,90 +46,203 @@ const AdminDashboardPage = () => {
       </Helmet>
 
       <div data-testid="admin-dashboard">
-        <h1 className="text-3xl font-heading font-bold mb-8">Dashboard</h1>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-          <div className="glass-effect p-6 rounded-2xl">
-            <div className="flex items-center justify-between mb-4">
-              <div className="w-12 h-12 rounded-xl bg-neon-purple/20 flex items-center justify-center">
-                <MousePointer className="w-6 h-6 text-neon-purple" />
-              </div>
-            </div>
-            <div className="text-3xl font-heading font-bold mb-1">{analytics?.total_clicks || 0}</div>
-            <div className="text-sm text-muted-foreground">Toplam Tıklama</div>
-          </div>
-
-          <div className="glass-effect p-6 rounded-2xl">
-            <div className="flex items-center justify-between mb-4">
-              <div className="w-12 h-12 rounded-xl bg-neon-blue/20 flex items-center justify-center">
-                <Store className="w-6 h-6 text-neon-blue" />
-              </div>
-            </div>
-            <div className="text-3xl font-heading font-bold mb-1">{analytics?.brand_clicks?.length || 0}</div>
-            <div className="text-sm text-muted-foreground">Aktif Mağaza</div>
-          </div>
-
-          <div className="glass-effect p-6 rounded-2xl">
-            <div className="flex items-center justify-between mb-4">
-              <div className="w-12 h-12 rounded-xl bg-neon-pink/20 flex items-center justify-center">
-                <TrendingUp className="w-6 h-6 text-neon-pink" />
-              </div>
-            </div>
-            <div className="text-3xl font-heading font-bold mb-1">{analytics?.popular_discounts?.length || 0}</div>
-            <div className="text-sm text-muted-foreground">Popüler İndirim</div>
+        <div className="flex items-center justify-between mb-8">
+          <h1 className="text-2xl font-heading font-bold">Dashboard</h1>
+          
+          {/* Period Filter */}
+          <div className="flex items-center gap-2 bg-void-subtle p-1 rounded-lg">
+            {['24h', '7d', '30d'].map((p) => (
+              <Button
+                key={p}
+                variant={period === p ? 'default' : 'ghost'}
+                size="sm"
+                onClick={() => setPeriod(p)}
+                className={period === p ? 'bg-neon-purple hover:bg-neon-purple/90' : ''}
+              >
+                {periodLabels[p]}
+              </Button>
+            ))}
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div className="glass-effect p-6 rounded-2xl">
-            <h2 className="text-xl font-heading font-bold mb-6">En Çok Tıklanan Mağazalar</h2>
-            <div className="space-y-4">
-              {analytics?.brand_clicks?.slice(0, 5).map((item, index) => (
-                <div key={item.brand_id} className="flex items-center justify-between p-4 bg-void-subtle rounded-xl">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-neon-purple to-neon-pink flex items-center justify-center text-sm font-bold">
-                      {index + 1}
-                    </div>
-                    <span className="font-medium">{item.brand_name}</span>
-                  </div>
-                  <span className="text-muted-foreground">{item.count} tıklama</span>
-                </div>
-              )) || <p className="text-muted-foreground">Henüz veri yok</p>}
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+          <div className="glass-effect p-5 rounded-2xl">
+            <div className="flex items-center justify-between mb-3">
+              <div className="w-10 h-10 rounded-xl bg-neon-purple/20 flex items-center justify-center">
+                <MousePointer className="w-5 h-5 text-neon-purple" />
+              </div>
+              <Clock className="w-4 h-4 text-muted-foreground" />
             </div>
+            <div className="text-2xl font-heading font-bold mb-1">{analytics?.total_clicks || 0}</div>
+            <div className="text-xs text-muted-foreground">Toplam Tıklama ({periodLabels[period]})</div>
           </div>
 
+          <div className="glass-effect p-5 rounded-2xl">
+            <div className="flex items-center justify-between mb-3">
+              <div className="w-10 h-10 rounded-xl bg-neon-blue/20 flex items-center justify-center">
+                <Store className="w-5 h-5 text-neon-blue" />
+              </div>
+            </div>
+            <div className="text-2xl font-heading font-bold mb-1">{analytics?.brand_clicks?.length || 0}</div>
+            <div className="text-xs text-muted-foreground">Aktif Mağaza</div>
+          </div>
+
+          <div className="glass-effect p-5 rounded-2xl">
+            <div className="flex items-center justify-between mb-3">
+              <div className="w-10 h-10 rounded-xl bg-neon-pink/20 flex items-center justify-center">
+                <TrendingUp className="w-5 h-5 text-neon-pink" />
+              </div>
+            </div>
+            <div className="text-2xl font-heading font-bold mb-1">{analytics?.popular_discounts?.length || 0}</div>
+            <div className="text-xs text-muted-foreground">Popüler İndirim</div>
+          </div>
+
+          <div className="glass-effect p-5 rounded-2xl">
+            <div className="flex items-center justify-between mb-3">
+              <div className="w-10 h-10 rounded-xl bg-green-500/20 flex items-center justify-center">
+                <Tag className="w-5 h-5 text-green-500" />
+              </div>
+            </div>
+            <div className="text-2xl font-heading font-bold mb-1">{analytics?.category_performance?.length || 0}</div>
+            <div className="text-xs text-muted-foreground">Aktif Kategori</div>
+          </div>
+        </div>
+
+        {/* Main Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          {/* Top 10 Brands */}
           <div className="glass-effect p-6 rounded-2xl">
-            <h2 className="text-xl font-heading font-bold mb-6">En Popüler İndirimler</h2>
-            <div className="space-y-4">
-              {analytics?.popular_discounts?.slice(0, 5).map((item, index) => (
-                <div key={item.discount_id} className="p-4 bg-void-subtle rounded-xl">
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-neon-blue to-neon-cyan flex items-center justify-center text-sm font-bold">
-                        {index + 1}
-                      </div>
-                      <div>
-                        <span className="font-medium block">{item.title}</span>
-                        <span className="text-xs text-muted-foreground">{item.brand_name}</span>
-                      </div>
+            <div className="flex items-center gap-2 mb-6">
+              <Store className="w-5 h-5 text-neon-purple" />
+              <h2 className="text-lg font-heading font-bold">Top 10 Mağaza</h2>
+            </div>
+            <div className="space-y-3">
+              {analytics?.brand_clicks?.slice(0, 10).map((item, index) => (
+                <div key={item.brand_id} className="flex items-center justify-between p-3 bg-void-subtle rounded-xl">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-neon-purple to-neon-pink flex items-center justify-center text-xs font-bold">
+                      {index + 1}
                     </div>
-                    <span className="text-muted-foreground">{item.count} tıklama</span>
+                    <span className="font-medium text-sm">{item.brand_name}</span>
                   </div>
-                  <div className="flex space-x-2 mt-2">
+                  <div className="flex items-center gap-2">
+                    <span className="text-muted-foreground text-sm">{item.count}</span>
                     {item.brand_slug && (
                       <a
                         href={`/magaza/${item.brand_slug}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-xs px-3 py-1 rounded-lg bg-void-dark hover:bg-neon-purple/20 transition-colors"
-                        data-testid={`view-brand-${item.discount_id}`}
+                        className="text-xs px-2 py-1 rounded bg-void-dark hover:bg-neon-purple/20 transition-colors"
                       >
-                        Mağazaya Git →
+                        →
                       </a>
                     )}
                   </div>
                 </div>
-              )) || <p className="text-muted-foreground">Henüz veri yok</p>}
+              )) || <p className="text-muted-foreground text-sm">Henüz veri yok</p>}
+            </div>
+          </div>
+
+          {/* Coupon Conversions */}
+          <div className="glass-effect p-6 rounded-2xl">
+            <div className="flex items-center gap-2 mb-6">
+              <BarChart3 className="w-5 h-5 text-neon-blue" />
+              <h2 className="text-lg font-heading font-bold">Kupon Dönüşümleri</h2>
+            </div>
+            <div className="space-y-3">
+              {analytics?.coupon_conversions?.slice(0, 10).map((item, index) => (
+                <div key={item.coupon_id} className="p-3 bg-void-subtle rounded-xl">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-neon-blue to-neon-cyan flex items-center justify-center text-xs font-bold">
+                        {index + 1}
+                      </div>
+                      <div>
+                        <span className="font-medium text-sm block line-clamp-1">{item.title}</span>
+                        <span className="text-xs text-muted-foreground">{item.brand_name}</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-4 mt-2">
+                    <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                      <Eye className="w-3 h-3" />
+                      <span>{item.views} görüntüleme</span>
+                    </div>
+                    <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                      <Copy className="w-3 h-3" />
+                      <span>{item.copies} kopyalama</span>
+                    </div>
+                    <div className={`text-xs font-medium px-2 py-0.5 rounded-full ${
+                      item.conversion_rate >= 50 ? 'bg-green-500/20 text-green-400' :
+                      item.conversion_rate >= 25 ? 'bg-yellow-500/20 text-yellow-400' :
+                      'bg-red-500/20 text-red-400'
+                    }`}>
+                      %{item.conversion_rate} dönüşüm
+                    </div>
+                  </div>
+                </div>
+              )) || <p className="text-muted-foreground text-sm">Henüz veri yok</p>}
+            </div>
+          </div>
+        </div>
+
+        {/* Bottom Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Category Performance */}
+          <div className="glass-effect p-6 rounded-2xl">
+            <div className="flex items-center gap-2 mb-6">
+              <Tag className="w-5 h-5 text-green-500" />
+              <h2 className="text-lg font-heading font-bold">Kategori Performansı</h2>
+            </div>
+            <div className="space-y-3">
+              {analytics?.category_performance?.slice(0, 8).map((item, index) => (
+                <div key={item.category_id} className="flex items-center justify-between p-3 bg-void-subtle rounded-xl">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-green-500 to-emerald-500 flex items-center justify-center text-xs font-bold">
+                      {index + 1}
+                    </div>
+                    <span className="font-medium text-sm">{item.category_name}</span>
+                  </div>
+                  <span className="text-muted-foreground text-sm">{item.count} tıklama</span>
+                </div>
+              )) || <p className="text-muted-foreground text-sm">Henüz veri yok</p>}
+            </div>
+          </div>
+
+          {/* Popular Discounts */}
+          <div className="glass-effect p-6 rounded-2xl">
+            <div className="flex items-center gap-2 mb-6">
+              <TrendingUp className="w-5 h-5 text-neon-pink" />
+              <h2 className="text-lg font-heading font-bold">Top 10 İndirim</h2>
+            </div>
+            <div className="space-y-3">
+              {analytics?.popular_discounts?.slice(0, 10).map((item, index) => (
+                <div key={item.discount_id} className="flex items-center justify-between p-3 bg-void-subtle rounded-xl">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-neon-pink to-pink-500 flex items-center justify-center text-xs font-bold">
+                      {index + 1}
+                    </div>
+                    <div>
+                      <span className="font-medium text-sm block line-clamp-1">{item.title}</span>
+                      <span className="text-xs text-muted-foreground">{item.brand_name}</span>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-muted-foreground text-sm">{item.count}</span>
+                    {item.brand_slug && (
+                      <a
+                        href={`/magaza/${item.brand_slug}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-xs px-2 py-1 rounded bg-void-dark hover:bg-neon-pink/20 transition-colors"
+                      >
+                        →
+                      </a>
+                    )}
+                  </div>
+                </div>
+              )) || <p className="text-muted-foreground text-sm">Henüz veri yok</p>}
             </div>
           </div>
         </div>
