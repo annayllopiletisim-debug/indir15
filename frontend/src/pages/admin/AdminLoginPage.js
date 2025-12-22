@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { setAuthToken, setAuthUser } from '../../utils/auth';
+import { setAuthToken, setAuthUser } from '../utils/auth';
 import { Helmet } from 'react-helmet-async';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
