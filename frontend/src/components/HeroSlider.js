@@ -25,7 +25,7 @@ const HeroSlider = ({ slides }) => {
 
   if (!slides || slides.length === 0) {
     return (
-      <div className="relative w-full h-[60vh] lg:h-[70vh] bg-void-paper flex items-center justify-center">
+      <div className="relative w-full h-[40vh] lg:h-[50vh] bg-void-paper flex items-center justify-center">
         <p className="text-muted-foreground">Slayt bulunamadı</p>
       </div>
     );
