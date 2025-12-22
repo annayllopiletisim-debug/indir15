@@ -70,15 +70,16 @@ const CouponCard = ({ coupon, brand, compact = false }) => {
     <>
       <BaseCard
         title={coupon.title}
-        description={coupon.description}
+        description={compact ? null : coupon.description}
         discountText={coupon.discount_text}
         expiryDate={coupon.expiry_date}
         isActive={coupon.is_active}
-        showActiveStatus={true}
+        showActiveStatus={!compact}
         brandName={brandName}
         brandSlug={brandSlug}
         actions={actions}
         testId={`coupon-card-${coupon.id}`}
+        compact={compact}
       />
 
       <AnimatePresence>
