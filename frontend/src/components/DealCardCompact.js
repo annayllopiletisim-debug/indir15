@@ -70,7 +70,7 @@ const DealCardCompact = ({
       data-testid={`deal-card-${item.id}`}
     >
       {/* ═══ ÜST BAR: Logo + Süre ═══ */}
-      <div className="flex items-center justify-between h-7 md:h-8 mb-2">
+      <div className="flex items-center justify-between h-6 mb-1.5">
         {/* Sol: Marka Logosu */}
         <Link 
           to={brandSlug ? `/magaza/${brandSlug}` : '#'}
@@ -78,7 +78,7 @@ const DealCardCompact = ({
           onClick={(e) => e.stopPropagation()}
         >
           {brandLogo ? (
-            <div className="w-6 h-6 md:w-[26px] md:h-[26px] rounded-logo bg-white flex items-center justify-center overflow-hidden">
+            <div className="w-6 h-6 rounded-md bg-white flex items-center justify-center overflow-hidden">
               <img 
                 src={brandLogo} 
                 alt={brandName}
@@ -93,7 +93,7 @@ const DealCardCompact = ({
               </div>
             </div>
           ) : (
-            <div className="w-6 h-6 md:w-[26px] md:h-[26px] rounded-logo bg-white flex items-center justify-center">
+            <div className="w-6 h-6 rounded-md bg-white flex items-center justify-center">
               <span className="text-[10px] font-bold text-gray-500">
                 {brandName?.charAt(0)}
               </span>
@@ -105,8 +105,8 @@ const DealCardCompact = ({
         {timeLeft && !isExpired && (
           <span className={`
             flex items-center gap-1 
-            text-card-time
-            ${isUrgent ? 'text-time-urgent' : 'text-muted-foreground opacity-70'}
+            text-[10px]
+            ${isUrgent ? 'text-orange-500' : 'text-muted-foreground/70'}
           `}>
             <Clock className="w-3 h-3" />
             {timeLeft.text}
