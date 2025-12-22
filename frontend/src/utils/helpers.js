@@ -1,4 +1,4 @@
-export const trackClick = async (type, itemId, brandId) => {
+export const trackClick = async (type, itemId, brandId, categoryId = null) => {
   try {
     const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/analytics/track`, {
       method: 'POST',
@@ -9,6 +9,8 @@ export const trackClick = async (type, itemId, brandId) => {
         type,
         item_id: itemId,
         brand_id: brandId,
+        category_id: categoryId,
+        session_id: getSessionId(),
       }),
     });
     return response.ok;
@@ -16,6 +18,16 @@ export const trackClick = async (type, itemId, brandId) => {
     console.error('Failed to track click:', error);
     return false;
   }
+};
+
+// Get or create session ID for tracking
+export const getSessionId = () => {
+  let sessionId = sessionStorage.getItem('session_id');
+  if (!sessionId) {
+    sessionId = 'sess_' + Math.random().toString(36).substr(2, 9) + Date.now().toString(36);
+    sessionStorage.setItem('session_id', sessionId);
+  }
+  return sessionId;
 };
 
 export const buildUTMLink = (baseUrl, utmTemplate, itemId) => {
@@ -59,6 +71,14 @@ export const getTimeRemaining = (expiryDate) => {
   }
 };
 
+export const isExpiringSoon = (expiryDate) => {
+  if (!expiryDate) return false;
+  const now = new Date();
+  const expiry = new Date(expiryDate);
+  const diff = expiry - now;
+  return diff > 0 && diff <= 24 * 60 * 60 * 1000;
+};
+
 export const shareOnWhatsApp = (text, url) => {
   const message = encodeURIComponent(`${text} - ${url}`);
   window.open(`https://wa.me/?text=${message}`, '_blank');
@@ -66,4 +86,14 @@ export const shareOnWhatsApp = (text, url) => {
 
 export const shareOnFacebook = (url) => {
   window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, '_blank');
+};
+
+export const formatDate = (dateString) => {
+  if (!dateString) return '';
+  const date = new Date(dateString);
+  return date.toLocaleDateString('tr-TR', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric'
+  });
 };
