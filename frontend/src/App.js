@@ -67,6 +67,14 @@ function App() {
             }
           />
           <Route
+            path="/kategori/:slug"
+            element={
+              <PublicLayout>
+                <CategoryPage />
+              </PublicLayout>
+            }
+          />
+          <Route
             path="/iletisim"
             element={
               <PublicLayout>
