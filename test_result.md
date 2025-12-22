@@ -217,6 +217,18 @@ frontend:
         agent: "main"
         comment: "/:slug route catches all pSEO pages like /nike-indirimleri, /spor-indirimleri"
 
+  - task: "Mağazalar Page Multi-Select"
+    implemented: true
+    working: false
+    file: "/app/frontend/src/pages/StoresPage.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: false
+        agent: "testing"
+        comment: "CRITICAL: Multi-select functionality broken. Brand checkboxes can be clicked but 'İndirimleri Göster' button doesn't appear and URL parameters don't update. Store selection state not properly managed."
+
 metadata:
   created_by: "main_agent"
   version: "2.9"
