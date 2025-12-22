@@ -148,13 +148,40 @@ const SearchModal = ({ isOpen, onClose }) => {
                       {results.discounts.map((discount) => (
                         <Link
                           key={discount.id}
-                          to={`/magaza/${discount.brand_id}`}
+                          to={discount.brand_slug ? `/magaza/${discount.brand_slug}` : '#'}
                           onClick={handleClose}
-                          className="block p-3 rounded-lg hover:bg-white/5 transition-colors"
+                          className="block p-3 rounded-lg hover:bg-white/5 dark:hover:bg-white/5 transition-colors"
                           data-testid={`search-discount-${discount.id}`}
                         >
-                          <div className="font-medium mb-1">{discount.title}</div>
-                          <div className="text-sm text-gradient font-bold">{discount.discount_text}</div>
+                          <div className="flex items-center justify-between mb-1">
+                            <div className="font-medium">{discount.title}</div>
+                            <div className="text-xs text-gradient font-bold">{discount.discount_text}</div>
+                          </div>
+                          {discount.brand_name && (
+                            <div className="text-xs text-muted-foreground">{discount.brand_name}</div>
+                          )}
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {results.catalogs && results.catalogs.length > 0 && (
+                  <div>
+                    <h3 className="text-sm font-medium text-muted-foreground mb-3">Kataloglar ({results.catalogs.length})</h3>
+                    <div className="space-y-2">
+                      {results.catalogs.map((catalog) => (
+                        <Link
+                          key={catalog.id}
+                          to={catalog.brand_slug ? `/magaza/${catalog.brand_slug}` : '#'}
+                          onClick={handleClose}
+                          className="block p-3 rounded-lg hover:bg-white/5 dark:hover:bg-white/5 transition-colors"
+                          data-testid={`search-catalog-${catalog.id}`}
+                        >
+                          <div className="font-medium mb-1">{catalog.title}</div>
+                          {catalog.brand_name && (
+                            <div className="text-xs text-muted-foreground">{catalog.brand_name}</div>
+                          )}
                         </Link>
                       ))}
                     </div>
