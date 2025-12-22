@@ -58,7 +58,7 @@ const ExpiringSoonPage = () => {
   return (
     <>
       <Helmet>
-        <title>Son 24 Saatte Bitecek İndirimler | indirimliMi</title>
+        <title>Son 24 Saatte Bitecek İndirimler | İndirim Keşfet</title>
         <meta name="description" content="Son 24 saat içinde bitecek kupon kodları, indirimler ve kampanyalar. Kaçırmadan hemen kullanın!" />
         <meta name="robots" content="index, follow" />
       </Helmet>

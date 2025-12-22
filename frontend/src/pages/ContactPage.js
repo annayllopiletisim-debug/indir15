@@ -6,8 +6,8 @@ const ContactPage = () => {
   return (
     <>
       <Helmet>
-        <title>İletişim - indirimliMi</title>
-        <meta name="description" content="indirimliMi ile iletişime geçin. Sorularınız, önerileriniz için bizimle iletişime geçebilirsiniz." />
+        <title>İletişim - İndirim Keşfet</title>
+        <meta name="description" content="İndirim Keşfet ile iletişime geçin. Sorularınız, önerileriniz için bizimle iletişime geçebilirsiniz." />
       </Helmet>
 
       <div className="min-h-screen" data-testid="contact-page">
@@ -26,7 +26,7 @@ const ContactPage = () => {
                   <Mail className="w-6 h-6 text-neon-purple" />
                 </div>
                 <h3 className="font-heading font-bold mb-2">E-posta</h3>
-                <p className="text-sm text-muted-foreground">info@indirimliMi.com</p>
+                <p className="text-sm text-muted-foreground">info@İndirim Keşfet.com</p>
               </div>
 
               <div className="glass-effect p-6 rounded-2xl text-center">

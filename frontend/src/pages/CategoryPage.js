@@ -90,7 +90,7 @@ const CategoryPage = () => {
   return (
     <>
       <Helmet>
-        <title>{category.name} - indirimliMi</title>
+        <title>{category.name} - İndirim Keşfet</title>
         <meta name="description" content={`${category.name} kategorisindeki mağazalar, kuponlar ve indirimler.`} />
       </Helmet>
 

@@ -17,7 +17,7 @@ const AdminCouponsPage = () => {
   const [selectedIds, setSelectedIds] = useState([]);
   const [formData, setFormData] = useState({
     brand_id: '', title: '', description: '', code: '', discount_text: '', expiry_date: '',
-    is_active: true, utm_template: 'utm_source=indirimliMi&utm_medium=coupon', destination_url: ''
+    is_active: true, utm_template: 'utm_source=İndirim Keşfet&utm_medium=coupon', destination_url: ''
   });
 
   useEffect(() => { fetchData(); }, []);
@@ -97,7 +97,7 @@ const AdminCouponsPage = () => {
   const resetForm = () => {
     setFormData({
       brand_id: '', title: '', description: '', code: '', discount_text: '', expiry_date: '',
-      is_active: true, utm_template: 'utm_source=indirimliMi&utm_medium=coupon', destination_url: ''
+      is_active: true, utm_template: 'utm_source=İndirim Keşfet&utm_medium=coupon', destination_url: ''
     });
     setEditingId(null);
     setShowForm(false);

@@ -37,7 +37,7 @@ const CategoriesPage = () => {
   return (
     <>
       <Helmet>
-        <title>Kategoriler - indirimliMi</title>
+        <title>Kategoriler - İndirim Keşfet</title>
         <meta name="description" content="Tüm kategorilerdeki indirimler ve kampanyalar. İstediğiniz kategoride en güncel fırsatları keşfedin!" />
       </Helmet>
 
