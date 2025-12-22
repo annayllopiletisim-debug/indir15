@@ -29,9 +29,10 @@ const PublicLayout = ({ children }) => {
 
 function App() {
   return (
-    <HelmetProvider>
-      <BrowserRouter>
-        <Routes>
+    <ThemeProvider>
+      <HelmetProvider>
+        <BrowserRouter>
+          <Routes>
           <Route
             path="/"
             element={
