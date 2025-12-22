@@ -69,16 +69,16 @@ const DealCardCompact = ({
       onClick={handleClick}
       data-testid={`deal-card-${item.id}`}
     >
-      {/* ═══ ÜST BAR: Logo + Süre ═══ */}
+      {/* ═══ ÜST BAR: Logo + Marka Adı + Süre ═══ */}
       <div className="flex items-center justify-between h-6 mb-1.5">
-        {/* Sol: Marka Logosu */}
+        {/* Sol: Marka Logosu + İsim */}
         <Link 
           to={brandSlug ? `/magaza/${brandSlug}` : '#'}
-          className="flex items-center"
+          className="flex items-center gap-1.5 min-w-0 max-w-[55%]"
           onClick={(e) => e.stopPropagation()}
         >
           {brandLogo ? (
-            <div className="w-6 h-6 rounded-md bg-white flex items-center justify-center overflow-hidden">
+            <div className="w-5 h-5 flex-shrink-0 rounded bg-white flex items-center justify-center overflow-hidden">
               <img 
                 src={brandLogo} 
                 alt={brandName}
@@ -88,23 +88,26 @@ const DealCardCompact = ({
                   e.target.nextSibling.style.display = 'flex';
                 }}
               />
-              <div className="w-full h-full items-center justify-center text-[10px] font-bold text-gray-500 hidden">
+              <div className="w-full h-full items-center justify-center text-[9px] font-bold text-gray-500 hidden">
                 {brandName?.charAt(0)}
               </div>
             </div>
           ) : (
-            <div className="w-6 h-6 rounded-md bg-white flex items-center justify-center">
-              <span className="text-[10px] font-bold text-gray-500">
+            <div className="w-5 h-5 flex-shrink-0 rounded bg-white flex items-center justify-center">
+              <span className="text-[9px] font-bold text-gray-500">
                 {brandName?.charAt(0)}
               </span>
             </div>
           )}
+          <span className="text-[11px] text-muted-foreground truncate">
+            {brandName}
+          </span>
         </Link>
 
         {/* Sağ: Kalan Süre */}
         {timeLeft && !isExpired && (
           <span className={`
-            flex items-center gap-1 
+            flex items-center gap-1 flex-shrink-0
             text-[10px]
             ${isUrgent ? 'text-orange-500' : 'text-muted-foreground/70'}
           `}>
