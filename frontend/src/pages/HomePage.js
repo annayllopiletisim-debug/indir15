@@ -20,15 +20,15 @@ const HomePage = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [slidesRes, brandsRes, categoriesRes, expiringSoonRes] = await Promise.all([
+        const [slidesRes, homepageBrandsRes, categoriesRes, expiringSoonRes] = await Promise.all([
           axios.get(`${API}/hero-slides`),
-          axios.get(`${API}/brands`),
+          axios.get(`${API}/brands/homepage`),
           axios.get(`${API}/categories/with-stats`),
           axios.get(`${API}/expiring-soon`),
         ]);
         
         setSlides(slidesRes.data);
-        setBrands(brandsRes.data);
+        setBrands(homepageBrandsRes.data);
         setCategories(categoriesRes.data);
         setExpiringSoon(expiringSoonRes.data);
       } catch (error) {
