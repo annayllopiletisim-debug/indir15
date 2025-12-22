@@ -205,7 +205,7 @@ const AdminHeroSlidesPage = () => {
       {/* Slides Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {slides.map((slide, index) => (
-          <div key={slide.id} className="glass-effect rounded-2xl overflow-hidden">
+          <div key={slide.id} className={`glass-effect rounded-2xl overflow-hidden ${!slide.is_active ? 'opacity-60 border border-red-500/30' : ''}`}>
             <div className="relative h-40">
               {slide.image_url ? (
                 <img src={slide.image_url} alt={slide.title} className="w-full h-full object-cover" />
@@ -217,7 +217,10 @@ const AdminHeroSlidesPage = () => {
               <div className="absolute top-2 left-2 px-2 py-1 bg-black/50 rounded text-xs">
                 Sıra: {slide.order}
               </div>
-              <div className="absolute top-2 right-2">
+              <div className="absolute top-2 right-2 flex items-center gap-2">
+                {!slide.is_active && (
+                  <span className="px-2 py-1 bg-red-500/80 rounded text-xs font-medium">Pasif</span>
+                )}
                 {slide.is_active ? (
                   <Eye className="w-5 h-5 text-green-400" />
                 ) : (
