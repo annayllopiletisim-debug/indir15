@@ -10,6 +10,7 @@ import HomePage from './pages/HomePage';
 import BrandPage from './pages/BrandPage';
 import StoresPage from './pages/StoresPage';
 import CategoryPage from './pages/CategoryPage';
+import CategoriesPage from './pages/CategoriesPage';
 import ContactPage from './pages/ContactPage';
 import AdminLoginPage from './pages/admin/AdminLoginPage';
 import AdminDashboardPage from './pages/admin/AdminDashboardPage';
@@ -23,7 +24,7 @@ import AdminLayout from './components/AdminLayout';
 import { isAuthenticated } from './utils/auth';
 import '@/App.css';
 
-// Force webpack rebuild - v4
+// Force webpack rebuild - v5
 
 const ProtectedRoute = ({ children }) => {
   return isAuthenticated() ? children : <Navigate to="/admin/login" />;
