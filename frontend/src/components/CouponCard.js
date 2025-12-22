@@ -5,7 +5,7 @@ import { BaseCard } from './BaseCard';
 import ShareButtons from './ShareButtons';
 import { trackClick, buildUTMLink } from '../utils/helpers';
 
-const CouponCard = ({ coupon, brand }) => {
+const CouponCard = ({ coupon, brand, compact = false }) => {
   const [showModal, setShowModal] = useState(false);
   const [copied, setCopied] = useState(false);
 
@@ -43,12 +43,20 @@ const CouponCard = ({ coupon, brand }) => {
 
   const isExpired = coupon.expiry_date && new Date(coupon.expiry_date) < new Date();
 
-  const actions = (
+  const actions = compact ? (
+    <button
+      onClick={handleGetCode}
+      disabled={isExpired || !coupon.is_active}
+      className="w-full px-4 py-2 bg-primary/90 hover:bg-primary rounded-lg text-sm font-medium transition-all disabled:opacity-50"
+    >
+      Kodu Göster
+    </button>
+  ) : (
     <div className="flex items-center space-x-2">
       <button
         onClick={handleGetCode}
         disabled={isExpired || !coupon.is_active}
-        className="flex-1 px-6 py-3 bg-gradient-to-r from-neon-purple to-neon-pink rounded-lg font-medium hover:shadow-lg hover:shadow-neon-purple/50 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+        className="flex-1 px-6 py-3 bg-gradient-to-r from-primary to-pink-500 rounded-lg font-medium hover:shadow-lg hover:shadow-primary/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
         data-testid="coupon-get-code-btn"
       >
         Kodu Göster
