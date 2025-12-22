@@ -93,14 +93,32 @@ const AdminDashboardPage = () => {
             <h2 className="text-xl font-heading font-bold mb-6">En Popüler İndirimler</h2>
             <div className="space-y-4">
               {analytics?.popular_discounts?.slice(0, 5).map((item, index) => (
-                <div key={item.discount_id} className="flex items-center justify-between p-4 bg-void-subtle rounded-xl">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-neon-blue to-neon-cyan flex items-center justify-center text-sm font-bold">
-                      {index + 1}
+                <div key={item.discount_id} className="p-4 bg-void-subtle rounded-xl">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-neon-blue to-neon-cyan flex items-center justify-center text-sm font-bold">
+                        {index + 1}
+                      </div>
+                      <div>
+                        <span className="font-medium block">{item.title}</span>
+                        <span className="text-xs text-muted-foreground">{item.brand_name}</span>
+                      </div>
                     </div>
-                    <span className="font-medium">{item.title}</span>
+                    <span className="text-muted-foreground">{item.count} tıklama</span>
                   </div>
-                  <span className="text-muted-foreground">{item.count} tıklama</span>
+                  <div className="flex space-x-2 mt-2">
+                    {item.brand_slug && (
+                      <a
+                        href={`/magaza/${item.brand_slug}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-xs px-3 py-1 rounded-lg bg-void-dark hover:bg-neon-purple/20 transition-colors"
+                        data-testid={`view-brand-${item.discount_id}`}
+                      >
+                        Mağazaya Git →
+                      </a>
+                    )}
+                  </div>
                 </div>
               )) || <p className="text-muted-foreground">Henüz veri yok</p>}
             </div>
