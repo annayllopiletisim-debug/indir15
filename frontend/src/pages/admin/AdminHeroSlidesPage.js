@@ -24,7 +24,7 @@ const AdminHeroSlidesPage = () => {
 
   const fetchSlides = async () => {
     try {
-      const res = await axios.get(`${API}/hero-slides`);
+      const res = await axios.get(`${API}/hero-slides?include_inactive=true`);
       setSlides(res.data);
     } catch (error) {
       console.error('Failed to fetch slides:', error);
