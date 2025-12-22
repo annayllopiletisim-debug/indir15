@@ -112,9 +112,10 @@ function App() {
           {/* ═══════════════════════════════════════════════════════════
               PROGRAMMATIC SEO ROUTES
               Tek template ile 1000+ sayfa
+              Pattern: /nike-indirimleri, /spor-indirimleri etc.
           ═══════════════════════════════════════════════════════════ */}
           <Route
-            path="/:slug-indirimleri"
+            path="/:slug"
             element={
               <PublicLayout>
                 <ProgrammaticSeoPage />
