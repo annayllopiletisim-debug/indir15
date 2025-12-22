@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Search, Menu, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import SearchModal from './SearchModal';
+import ThemeToggle from './ThemeToggle';
 
 const Header = () => {
   const [showMenu, setShowMenu] = useState(false);
