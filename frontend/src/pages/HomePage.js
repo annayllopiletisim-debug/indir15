@@ -5,7 +5,7 @@ import HeroSlider from '../components/HeroSlider';
 import BrandCard from '../components/BrandCard';
 import CouponCard from '../components/CouponCard';
 import DiscountCard from '../components/DiscountCard';
-import { ChevronRight, Flame } from 'lucide-react';
+import { ChevronRight, Flame, Tag, Store, FolderTree } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
@@ -23,7 +23,7 @@ const HomePage = () => {
         const [slidesRes, brandsRes, categoriesRes, expiringSoonRes] = await Promise.all([
           axios.get(`${API}/hero-slides`),
           axios.get(`${API}/brands`),
-          axios.get(`${API}/categories`),
+          axios.get(`${API}/categories/with-stats`),
           axios.get(`${API}/expiring-soon`),
         ]);
         
@@ -99,6 +99,68 @@ const HomePage = () => {
           </div>
         )}
 
+        {/* Categories Section with Stats */}
+        {categories.length > 0 && (
+          <div className="container mx-auto px-4 py-12 lg:py-16">
+            <div className="flex items-center justify-between mb-8">
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-xl bg-neon-purple/20">
+                  <FolderTree className="w-6 h-6 text-neon-purple" />
+                </div>
+                <div>
+                  <h2 className="text-2xl lg:text-3xl font-heading font-bold">Kategoriler</h2>
+                  <p className="text-muted-foreground text-sm">Favori kategorinizi keşfedin</p>
+                </div>
+              </div>
+              <Link
+                to="/kategoriler"
+                className="flex items-center space-x-2 text-neon-purple hover:text-neon-pink transition-colors"
+                data-testid="view-all-categories-link"
+              >
+                <span>Tümünü Gör</span>
+                <ChevronRight className="w-5 h-5" />
+              </Link>
+            </div>
+            
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              {categories.slice(0, 8).map((category) => (
+                <Link
+                  key={category.id}
+                  to={`/kategori/${category.slug}`}
+                  className="group p-5 glass-effect rounded-2xl hover:border-neon-purple/50 transition-all"
+                  data-testid={`category-card-${category.slug}`}
+                >
+                  <h3 className="text-lg font-heading font-bold mb-3 group-hover:text-gradient transition-all">
+                    {category.name}
+                  </h3>
+                  <div className="space-y-1.5">
+                    <div className="flex items-center gap-2 text-sm">
+                      <Tag className="w-3.5 h-3.5 text-neon-pink" />
+                      <span className="text-muted-foreground">
+                        {category.total_deals > 0 ? (
+                          <><span className="text-foreground font-medium">{category.total_deals}</span> indirim</>
+                        ) : (
+                          <span className="text-muted-foreground/60 text-xs">Henüz indirim yok</span>
+                        )}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm">
+                      <Store className="w-3.5 h-3.5 text-neon-blue" />
+                      <span className="text-muted-foreground">
+                        {category.store_count > 0 ? (
+                          <><span className="text-foreground font-medium">{category.store_count}</span> mağaza</>
+                        ) : (
+                          <span className="text-muted-foreground/60 text-xs">Henüz mağaza yok</span>
+                        )}
+                      </span>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* Popular Stores */}
         <div className="container mx-auto px-4 py-12 lg:py-16">
           <div className="flex items-center justify-between mb-8">
@@ -122,27 +184,6 @@ const HomePage = () => {
             ))}
           </div>
         </div>
-
-        {/* Categories */}
-        {categories.length > 0 && (
-          <div className="container mx-auto px-4 py-12 lg:py-16">
-            <h2 className="text-2xl lg:text-3xl font-heading font-bold mb-8">Kategoriler</h2>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              {categories.map((category) => (
-                <Link
-                  key={category.id}
-                  to={`/kategori/${category.slug}`}
-                  className="group p-6 glass-effect rounded-2xl hover:border-neon-purple/50 transition-all"
-                  data-testid={`category-card-${category.slug}`}
-                >
-                  <h3 className="text-lg font-heading font-bold group-hover:text-gradient transition-all">
-                    {category.name}
-                  </h3>
-                </Link>
-              ))}
-            </div>
-          </div>
-        )}
 
         {/* Submit Coupon CTA */}
         <div className="container mx-auto px-4 py-12 lg:py-16 text-center">
