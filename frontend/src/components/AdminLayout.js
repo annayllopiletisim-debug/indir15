@@ -24,6 +24,7 @@ const AdminLayout = () => {
     { path: '/admin/discounts', label: 'İndirimler', icon: Percent },
     { path: '/admin/keywords', label: 'Anahtar Kelimeler', icon: Search },
     { path: '/admin/hero-slides', label: 'Hero Slaytlar', icon: Image },
+    { path: '/admin/settings', label: 'Site Ayarları', icon: Settings },
   ];
 
   return (
