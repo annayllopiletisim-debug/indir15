@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { Helmet } from 'react-helmet-async';
 import axios from 'axios';
 import CouponCard from '../components/CouponCard';
 import DiscountCard from '../components/DiscountCard';
@@ -11,6 +10,33 @@ const ExpiringSoonPage = () => {
   const [data, setData] = useState({ coupons: [], discounts: [], total: 0 });
   const [brands, setBrands] = useState({});
   const [loading, setLoading] = useState(true);
+
+  // SEO Meta Tags via DOM manipulation
+  useEffect(() => {
+    document.title = 'Son 24 Saatte Bitecek İndirimler | İndirim Keşfet';
+    
+    // Set meta description
+    let metaDesc = document.querySelector('meta[name="description"]');
+    if (!metaDesc) {
+      metaDesc = document.createElement('meta');
+      metaDesc.setAttribute('name', 'description');
+      document.head.appendChild(metaDesc);
+    }
+    metaDesc.setAttribute('content', 'Son 24 saat içinde bitecek kupon kodları, indirimler ve kampanyalar. Kaçırmadan hemen kullanın!');
+    
+    // Set canonical
+    let canonical = document.querySelector('link[rel="canonical"]');
+    if (!canonical) {
+      canonical = document.createElement('link');
+      canonical.setAttribute('rel', 'canonical');
+      document.head.appendChild(canonical);
+    }
+    canonical.setAttribute('href', `${window.location.origin}/son-24-saat`);
+    
+    return () => {
+      document.title = 'İndirim Keşfet - Kupon Kodları ve İndirim Fırsatları';
+    };
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
