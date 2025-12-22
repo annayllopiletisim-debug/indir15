@@ -1,6 +1,6 @@
 import React from 'react';
 import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
-import { LayoutDashboard, Tag, Package, Percent, Image, FolderTree, LogOut } from 'lucide-react';
+import { LayoutDashboard, Tag, Package, Percent, Image, FolderTree, LogOut, FileText, Search } from 'lucide-react';
 import { removeAuthToken, removeAuthUser } from '../utils/auth';
 
 const AdminLayout = () => {
@@ -19,6 +19,8 @@ const AdminLayout = () => {
     { path: '/admin/brands', label: 'Mağazalar', icon: Package },
     { path: '/admin/coupons', label: 'Kuponlar', icon: Tag },
     { path: '/admin/discounts', label: 'İndirimler', icon: Percent },
+    { path: '/admin/catalogs', label: 'Kataloglar', icon: FileText },
+    { path: '/admin/keywords', label: 'Anahtar Kelimeler', icon: Search },
     { path: '/admin/hero-slides', label: 'Hero Slaytlar', icon: Image },
   ];
 
