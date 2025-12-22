@@ -68,7 +68,59 @@ const AdminBrandsPage = () => {
   const handleEdit = (brand) => {
     setFormData(brand);
     setEditingId(brand.id);
+    setLogoInputMode(brand.logo_url?.startsWith('/uploads/') ? 'upload' : 'url');
     setShowForm(true);
+  };
+
+  const handleLogoUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    if (file.size > 2 * 1024 * 1024) {
+      alert('Logo dosyası en fazla 2MB olabilir');
+      return;
+    }
+
+    setUploading(true);
+    const formDataUpload = new FormData();
+    formDataUpload.append('file', file);
+
+    try {
+      const res = await axios.post(`${API}/upload/logo`, formDataUpload, {
+        headers: {
+          Authorization: `Bearer ${getToken()}`,
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+      setFormData(prev => ({ ...prev, logo_url: res.data.url }));
+    } catch (error) {
+      alert(error.response?.data?.detail || 'Logo yüklenemedi');
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleImportFromUrl = async () => {
+    const url = formData.logo_url;
+    if (!url || url.startsWith('/uploads/')) return;
+
+    setUploading(true);
+    try {
+      const formDataUpload = new FormData();
+      formDataUpload.append('url', url);
+
+      const res = await axios.post(`${API}/upload/import-logo-from-url`, formDataUpload, {
+        headers: {
+          Authorization: `Bearer ${getToken()}`
+        }
+      });
+      setFormData(prev => ({ ...prev, logo_url: res.data.url }));
+      alert('Logo başarıyla sunucuya kaydedildi!');
+    } catch (error) {
+      alert(error.response?.data?.detail || 'Logo indirilemedi');
+    } finally {
+      setUploading(false);
+    }
   };
 
   const handleDelete = async (id) => {
