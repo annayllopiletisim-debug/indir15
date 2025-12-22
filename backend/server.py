@@ -313,6 +313,37 @@ async def get_categories():
             cat['created_at'] = datetime.fromisoformat(cat['created_at'])
     return categories
 
+@api_router.get("/categories/with-stats")
+async def get_categories_with_stats():
+    """Get categories with discount/coupon counts and store counts"""
+    categories = await db.categories.find({}, {'_id': 0}).to_list(1000)
+    
+    result = []
+    for cat in categories:
+        cat_id = cat['id']
+        
+        # Get brands in this category
+        brands_in_cat = await db.brands.find({'category_id': cat_id}, {'id': 1, '_id': 0}).to_list(1000)
+        brand_ids = [b['id'] for b in brands_in_cat]
+        
+        # Count coupons and discounts for these brands
+        coupon_count = await db.coupons.count_documents({'brand_id': {'$in': brand_ids}}) if brand_ids else 0
+        discount_count = await db.discounts.count_documents({'brand_id': {'$in': brand_ids}}) if brand_ids else 0
+        
+        result.append({
+            'id': cat['id'],
+            'name': cat['name'],
+            'slug': cat['slug'],
+            'icon_url': cat.get('icon_url'),
+            'is_popular': cat.get('is_popular', False),
+            'store_count': len(brand_ids),
+            'coupon_count': coupon_count,
+            'discount_count': discount_count,
+            'total_deals': coupon_count + discount_count
+        })
+    
+    return result
+
 @api_router.post("/categories", response_model=Category)
 async def create_category(category: CategoryCreate, user: AdminUser = Depends(get_current_user)):
     new_cat = Category(**category.model_dump())
