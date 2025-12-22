@@ -1,48 +1,102 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Search, Menu } from 'lucide-react';
+import { Search, Menu, X } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import SearchModal from './SearchModal';
 
-const Header = ({ onSearchClick, onMenuClick }) => {
+const Header = () => {
+  const [showMenu, setShowMenu] = useState(false);
+  const [showSearch, setShowSearch] = useState(false);
+
   return (
-    <header className="sticky top-0 z-50 w-full glass-effect border-b border-white/5">
-      <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between h-16">
-          <Link to="/" className="flex items-center space-x-2" data-testid="header-logo">
-            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-neon-purple to-neon-pink flex items-center justify-center">
-              <span className="text-white font-heading font-bold text-xl">SS</span>
+    <>
+      <header className="sticky top-0 z-50 w-full glass-effect border-b border-white/5">
+        <div className="container mx-auto px-4">
+          <div className="flex items-center justify-between h-16">
+            <Link to="/" className="flex items-center space-x-2" data-testid="header-logo">
+              <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-neon-purple to-neon-pink flex items-center justify-center">
+                <span className="text-white font-heading font-bold text-xl">SS</span>
+              </div>
+              <span className="text-xl font-heading font-bold text-gradient hidden sm:inline">SavvySaver</span>
+            </Link>
+            
+            <div className="flex items-center space-x-4">
+              <button
+                onClick={() => setShowSearch(true)}
+                className="p-2 rounded-lg hover:bg-white/5 transition-colors"
+                data-testid="header-search-btn"
+                aria-label="Ara"
+              >
+                <Search className="w-5 h-5" />
+              </button>
+              
+              <button
+                onClick={() => setShowMenu(!showMenu)}
+                className="p-2 rounded-lg hover:bg-white/5 transition-colors lg:hidden"
+                data-testid="header-menu-btn"
+                aria-label="Menü"
+              >
+                {showMenu ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+              </button>
+              
+              <nav className="hidden lg:flex items-center space-x-6">
+                <Link to="/magazalar" className="text-sm hover:text-neon-purple transition-colors" data-testid="header-stores-link">
+                  Mağazalar
+                </Link>
+                <Link to="/iletisim" className="text-sm hover:text-neon-purple transition-colors" data-testid="header-contact-link">
+                  İletişim
+                </Link>
+                <a href="https://forms.google.com/" target="_blank" rel="noopener noreferrer" className="text-sm hover:text-neon-purple transition-colors" data-testid="header-submit-coupon-link">
+                  Kupon Gönder
+                </a>
+              </nav>
             </div>
-            <span className="text-xl font-heading font-bold text-gradient hidden sm:inline">SavvySaver</span>
-          </Link>
-          
-          <div className="flex items-center space-x-4">
-            <button
-              onClick={onSearchClick}
-              className="p-2 rounded-lg hover:bg-white/5 transition-colors"
-              data-testid="header-search-btn"
-              aria-label="Ara"
-            >
-              <Search className="w-5 h-5" />
-            </button>
-            <button
-              onClick={onMenuClick}
-              className="p-2 rounded-lg hover:bg-white/5 transition-colors lg:hidden"
-              data-testid="header-menu-btn"
-              aria-label="Menü"
-            >
-              <Menu className="w-5 h-5" />
-            </button>
-            <nav className="hidden lg:flex items-center space-x-6">
-              <Link to="/magazalar" className="text-sm hover:text-neon-purple transition-colors" data-testid="header-stores-link">
+          </div>
+        </div>
+      </header>
+
+      <AnimatePresence>
+        {showMenu && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            className="lg:hidden glass-effect border-b border-white/5 overflow-hidden"
+            data-testid="mobile-menu"
+          >
+            <nav className="container mx-auto px-4 py-4 flex flex-col space-y-3">
+              <Link
+                to="/magazalar"
+                className="py-3 px-4 rounded-lg hover:bg-white/5 transition-colors text-lg"
+                onClick={() => setShowMenu(false)}
+                data-testid="mobile-stores-link"
+              >
                 Mağazalar
               </Link>
-              <a href="https://forms.google.com/" target="_blank" rel="noopener noreferrer" className="text-sm hover:text-neon-purple transition-colors" data-testid="header-submit-coupon-link">
+              <Link
+                to="/iletisim"
+                className="py-3 px-4 rounded-lg hover:bg-white/5 transition-colors text-lg"
+                onClick={() => setShowMenu(false)}
+                data-testid="mobile-contact-link"
+              >
+                İletişim
+              </Link>
+              <a
+                href="https://forms.google.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="py-3 px-4 rounded-lg hover:bg-white/5 transition-colors text-lg"
+                data-testid="mobile-submit-link"
+              >
                 Kupon Gönder
               </a>
             </nav>
-          </div>
-        </div>
-      </div>
-    </header>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <SearchModal isOpen={showSearch} onClose={() => setShowSearch(false)} />
+    </>
   );
 };
 
