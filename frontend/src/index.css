@@ -121,3 +121,12 @@ code {
     -webkit-text-fill-color: transparent;
     background-image: linear-gradient(135deg, #C084FC 0%, #F472B6 100%);
 }
+
+.scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+    display: none;
+}
