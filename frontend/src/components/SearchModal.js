@@ -155,6 +155,37 @@ const SearchModal = ({ isOpen, onClose }) => {
                     </div>
                   </div>
                 )}
+
+                {results.brands && results.brands.length > 0 && (
+                  <div>
+                    <h3 className="text-sm font-medium text-muted-foreground mb-3 flex items-center space-x-2">
+                      <TrendingUp className="w-4 h-4" />
+                      <span>Mağazalar ({results.brands.length})</span>
+                    </h3>
+                    <div className="space-y-2">
+                      {results.brands.map((brand) => (
+                        <Link
+                          key={brand.id}
+                          to={`/magaza/${brand.slug}`}
+                          onClick={handleClose}
+                          className="flex items-center space-x-3 p-3 rounded-lg hover:bg-white/5 dark:hover:bg-white/5 transition-colors"
+                          data-testid={`search-brand-${brand.slug}`}
+                        >
+                          {brand.logo_url ? (
+                            <img src={brand.logo_url} alt={brand.name} className="w-10 h-10 rounded-lg object-cover" />
+                          ) : (
+                            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-neon-purple to-neon-pink flex items-center justify-center">
+                              <span className="font-bold">{brand.name.charAt(0)}</span>
+                            </div>
+                          )}
+                          <div>
+                            <div className="font-medium">{brand.name}</div>
+                          </div>
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             )}
 
