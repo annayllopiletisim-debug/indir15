@@ -9,9 +9,14 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Brand */}
           <div>
-            <h3 className="text-lg font-heading font-bold mb-4 text-gradient">indirimliMi</h3>
+            <Link to="/" className="flex items-center space-x-2 mb-4">
+              <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-primary to-pink-500 flex items-center justify-center">
+                <span className="text-white font-heading font-bold text-sm">İK</span>
+              </div>
+              <span className="text-lg font-heading font-bold">İndirim Keşfet</span>
+            </Link>
             <p className="text-sm text-muted-foreground">
-              En güncel kupon ve indirimlerle tasarruf edin.
+              Kupon ve indirimleri keşfedin, tasarruf edin.
             </p>
           </div>
           
@@ -42,7 +47,7 @@ const Footer = () => {
             <h4 className="text-sm font-heading font-bold mb-4 text-foreground">Takip Edin</h4>
             <div className="flex">
               <a 
-                href="https://instagram.com/indirimli.mi" 
+                href="https://instagram.com/indirimkestet" 
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="p-3 rounded-xl bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400 hover:scale-110 transition-transform" 
@@ -56,7 +61,7 @@ const Footer = () => {
         
         {/* Copyright */}
         <div className="mt-12 pt-8 border-t border-border text-center text-sm text-muted-foreground">
-          <p>&copy; 2025 indirimliMi. Tüm hakları saklıdır.</p>
+          <p>&copy; 2025 İndirim Keşfet. Tüm hakları saklıdır.</p>
         </div>
       </div>
     </footer>
