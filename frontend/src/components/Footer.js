@@ -1,12 +1,13 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Facebook, Twitter, Instagram } from 'lucide-react';
+import { Instagram } from 'lucide-react';
 
 const Footer = () => {
   return (
-    <footer className="bg-void-paper border-t border-white/5 mt-24">
+    <footer className="bg-card border-t border-border mt-24">
       <div className="container mx-auto px-4 py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+          {/* Brand */}
           <div>
             <h3 className="text-lg font-heading font-bold mb-4 text-gradient">indirimliMi</h3>
             <p className="text-sm text-muted-foreground">
@@ -14,39 +15,47 @@ const Footer = () => {
             </p>
           </div>
           
+          {/* Quick Links */}
           <div>
-            <h4 className="text-sm font-heading font-bold mb-4">Hızlı Linkler</h4>
-            <ul className="space-y-2 text-sm text-muted-foreground">
-              <li><Link to="/magazalar" className="hover:text-neon-purple transition-colors">Mağazalar</Link></li>
-              <li><a href="https://forms.google.com/" target="_blank" rel="noopener noreferrer" className="hover:text-neon-purple transition-colors">Kupon Gönder</a></li>
+            <h4 className="text-sm font-heading font-bold mb-4 text-foreground">Hızlı Linkler</h4>
+            <ul className="space-y-2 text-sm">
+              <li><Link to="/magazalar" className="text-muted-foreground hover:text-primary transition-colors">Mağazalar</Link></li>
+              <li><Link to="/kategoriler" className="text-muted-foreground hover:text-primary transition-colors">Kategoriler</Link></li>
+              <li><Link to="/son-24-saat" className="text-muted-foreground hover:text-primary transition-colors">Son 24 Saat</Link></li>
+              <li><a href="https://forms.google.com/" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors">Kupon Gönder</a></li>
             </ul>
           </div>
           
+          {/* Categories */}
           <div>
-            <h4 className="text-sm font-heading font-bold mb-4">Kategoriler</h4>
-            <ul className="space-y-2 text-sm text-muted-foreground">
-              <li><Link to="/" className="hover:text-neon-purple transition-colors">Spor</Link></li>
-              <li><Link to="/" className="hover:text-neon-purple transition-colors">Teknoloji</Link></li>
+            <h4 className="text-sm font-heading font-bold mb-4 text-foreground">Kategoriler</h4>
+            <ul className="space-y-2 text-sm">
+              <li><Link to="/kategori/spor" className="text-muted-foreground hover:text-primary transition-colors">Spor</Link></li>
+              <li><Link to="/kategori/moda" className="text-muted-foreground hover:text-primary transition-colors">Moda</Link></li>
+              <li><Link to="/kategori/elektronik" className="text-muted-foreground hover:text-primary transition-colors">Elektronik</Link></li>
+              <li><Link to="/kategori/gida" className="text-muted-foreground hover:text-primary transition-colors">Gıda</Link></li>
             </ul>
           </div>
           
+          {/* Social - Only Instagram */}
           <div>
-            <h4 className="text-sm font-heading font-bold mb-4">Sosyal Medya</h4>
-            <div className="flex space-x-4">
-              <a href="#" className="p-2 rounded-lg bg-void-subtle hover:bg-neon-purple/20 transition-colors" aria-label="Facebook">
-                <Facebook className="w-5 h-5" />
-              </a>
-              <a href="#" className="p-2 rounded-lg bg-void-subtle hover:bg-neon-purple/20 transition-colors" aria-label="Twitter">
-                <Twitter className="w-5 h-5" />
-              </a>
-              <a href="#" className="p-2 rounded-lg bg-void-subtle hover:bg-neon-purple/20 transition-colors" aria-label="Instagram">
-                <Instagram className="w-5 h-5" />
+            <h4 className="text-sm font-heading font-bold mb-4 text-foreground">Takip Edin</h4>
+            <div className="flex">
+              <a 
+                href="https://instagram.com/indirimli.mi" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="p-3 rounded-xl bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400 hover:scale-110 transition-transform" 
+                aria-label="Instagram"
+              >
+                <Instagram className="w-5 h-5 text-white" />
               </a>
             </div>
           </div>
         </div>
         
-        <div className="mt-12 pt-8 border-t border-white/5 text-center text-sm text-muted-foreground">
+        {/* Copyright */}
+        <div className="mt-12 pt-8 border-t border-border text-center text-sm text-muted-foreground">
           <p>&copy; 2025 indirimliMi. Tüm hakları saklıdır.</p>
         </div>
       </div>
