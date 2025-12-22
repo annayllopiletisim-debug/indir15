@@ -237,12 +237,11 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Full site testing before deployment"
-    - "Homepage functionality"
-    - "pSEO pages with SEO verification"
-    - "Mağazalar page multi-select"
-    - "Son 24 Saat page"
-  stuck_tasks: []
+    - "Son 24 Saat Page title fix"
+    - "Mağazalar page multi-select functionality"
+  stuck_tasks: 
+    - "Son 24 Saat Page"
+    - "Mağazalar Page Multi-Select"
   test_all: true
   test_priority: "high_first"
 
