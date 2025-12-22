@@ -240,6 +240,12 @@ class AnalyticsDashboard(BaseModel):
     brand_clicks: List[dict]
     popular_discounts: List[dict]
     popular_brands: List[dict]
+    category_performance: List[dict] = []
+    coupon_conversions: List[dict] = []
+
+class UploadResponse(BaseModel):
+    url: str
+    filename: str
 
 def verify_password(plain_password, hashed_password):
     return pwd_context.verify(plain_password, hashed_password)
