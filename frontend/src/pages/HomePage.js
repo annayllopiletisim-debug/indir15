@@ -361,7 +361,7 @@ const HomePage = () => {
         {/* ═══════════════════════════════════════════════════════════════
             6️⃣ SEO / KEŞİF ALANI (EN ALT)
         ═══════════════════════════════════════════════════════════════ */}
-        <section className="container mx-auto px-4 py-8 lg:py-12 border-t border-white/5">
+        <section className="container mx-auto px-4 py-8 lg:py-12 border-t border-border">
           <div className="flex items-center gap-2 mb-6">
             <Search className="w-5 h-5 text-muted-foreground" />
             <h2 className="text-lg font-heading font-bold text-muted-foreground">
@@ -374,7 +374,7 @@ const HomePage = () => {
               <Link
                 key={index}
                 to={search.to}
-                className="px-4 py-2 bg-muted/50 hover:bg-muted rounded-lg text-sm text-muted-foreground hover:text-foreground transition-colors"
+                className="px-4 py-2 bg-muted hover:bg-primary/10 rounded-lg text-sm text-muted-foreground hover:text-foreground transition-colors"
                 data-testid={`popular-search-${index}`}
               >
                 {search.label}
@@ -382,6 +382,11 @@ const HomePage = () => {
             ))}
           </div>
         </section>
+
+        {/* ═══════════════════════════════════════════════════════════════
+            7️⃣ NEWSLETTER ALANI
+        ═══════════════════════════════════════════════════════════════ */}
+        <Newsletter />
 
         {/* Submit Coupon CTA */}
         <section className="container mx-auto px-4 py-8 lg:py-12">
