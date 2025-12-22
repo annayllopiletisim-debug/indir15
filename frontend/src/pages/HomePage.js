@@ -31,7 +31,7 @@ const HomePage = () => {
     const fetchData = async () => {
       try {
         const [brandsRes, categoriesRes, expiringSoonRes, popularRes] = await Promise.all([
-          axios.get(`${API}/brands/with-deal-count`),
+          axios.get(`${API}/homepage-brands`),
           axios.get(`${API}/categories/with-stats`),
           axios.get(`${API}/expiring-soon`),
           axios.get(`${API}/popular-today`),
