@@ -14,6 +14,7 @@ import CategoryPage from './pages/CategoryPage';
 import CategoriesPage from './pages/CategoriesPage';
 import ExpiringSoonPage from './pages/ExpiringSoonPage';
 import ContactPage from './pages/ContactPage';
+import ProgrammaticSeoPage from './pages/ProgrammaticSeoPage';
 import AdminLoginPage from './pages/admin/AdminLoginPage';
 import AdminDashboardPage from './pages/admin/AdminDashboardPage';
 import AdminBrandsPage from './pages/admin/AdminBrandsPage';
