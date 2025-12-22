@@ -923,6 +923,60 @@ async def track_click(event: ClickEventCreate):
     await db.click_events.insert_one(event_dict)
     return {"message": "Click tracked"}
 
+# ================== NEWSLETTER ENDPOINTS ==================
+class NewsletterSubscribeRequest(BaseModel):
+    email: str
+
+@api_router.post("/newsletter/subscribe")
+async def subscribe_newsletter(request: NewsletterSubscribeRequest):
+    """Subscribe to newsletter"""
+    email = request.email.lower().strip()
+    
+    # Check if already subscribed
+    existing = await db.newsletter_subscribers.find_one({'email': email})
+    if existing:
+        if existing.get('is_active'):
+            raise HTTPException(status_code=409, detail="Email already subscribed")
+        else:
+            # Reactivate subscription
+            await db.newsletter_subscribers.update_one(
+                {'email': email},
+                {'$set': {'is_active': True, 'subscribed_at': datetime.now(timezone.utc).isoformat()}}
+            )
+            return {"message": "Subscription reactivated"}
+    
+    # Create new subscriber
+    subscriber = NewsletterSubscriber(email=email)
+    subscriber_dict = subscriber.model_dump()
+    subscriber_dict['subscribed_at'] = subscriber_dict['subscribed_at'].isoformat()
+    await db.newsletter_subscribers.insert_one(subscriber_dict)
+    
+    return {"message": "Successfully subscribed"}
+
+@api_router.post("/newsletter/unsubscribe")
+async def unsubscribe_newsletter(request: NewsletterSubscribeRequest):
+    """Unsubscribe from newsletter"""
+    email = request.email.lower().strip()
+    
+    result = await db.newsletter_subscribers.update_one(
+        {'email': email},
+        {'$set': {'is_active': False}}
+    )
+    
+    if result.modified_count == 0:
+        raise HTTPException(status_code=404, detail="Email not found")
+    
+    return {"message": "Successfully unsubscribed"}
+
+@api_router.get("/newsletter/subscribers")
+async def get_newsletter_subscribers(user: AdminUser = Depends(get_current_user)):
+    """Get all newsletter subscribers (admin only)"""
+    subscribers = await db.newsletter_subscribers.find({'is_active': True}, {'_id': 0}).to_list(10000)
+    return {
+        'subscribers': subscribers,
+        'total': len(subscribers)
+    }
+
 @api_router.get("/analytics/dashboard")
 async def get_analytics_dashboard(period: str = "7d", user: AdminUser = Depends(get_current_user)):
     # Calculate date filter based on period
