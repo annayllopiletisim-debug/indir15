@@ -58,6 +58,14 @@ function App() {
               </PublicLayout>
             }
           />
+          <Route
+            path="/iletisim"
+            element={
+              <PublicLayout>
+                <ContactPage />
+              </PublicLayout>
+            }
+          />
 
           <Route path="/admin/login" element={<AdminLoginPage />} />
           <Route
