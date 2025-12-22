@@ -15,6 +15,8 @@ const AdminBrandsPage = () => {
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [uploading, setUploading] = useState(false);
+  const [logoInputMode, setLogoInputMode] = useState('upload'); // 'upload' or 'url'
   const [formData, setFormData] = useState({
     name: '',
     slug: '',
