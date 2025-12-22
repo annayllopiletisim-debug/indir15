@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import api from '../../utils/api';
-import { Plus, Edit, Trash2, X, Upload, Link as LinkIcon } from 'lucide-react';
+import { Plus, Edit, Trash2, X, Upload, Link as LinkIcon, Home, GripVertical } from 'lucide-react';
 import BrandLogo from '../../components/BrandLogo';
 import { getAuthToken } from '../../utils/auth';
 import axios from 'axios';
@@ -27,7 +27,9 @@ const AdminBrandsPage = () => {
     meta_description: '',
     app_install_enabled: false,
     ios_app_url: '',
-    android_app_url: ''
+    android_app_url: '',
+    show_on_homepage: false,
+    homepage_order: 0
   });
 
   useEffect(() => {
