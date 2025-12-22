@@ -296,7 +296,18 @@ const AdminBrandsPage = () => {
         )}
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {brands.map(brand => (
+          {filteredBrands.length === 0 ? (
+            <div className="col-span-full text-center py-16">
+              <p className="text-muted-foreground mb-4">Sonuç bulunamadı</p>
+              <button
+                onClick={() => setSearchQuery('')}
+                className="px-4 py-2 bg-void-subtle rounded-lg hover:bg-white/10"
+              >
+                Aramayı Temizle
+              </button>
+            </div>
+          ) : (
+            filteredBrands.map(brand => (
             <div key={brand.id} className="glass-effect p-6 rounded-2xl">
               <div className="flex items-start justify-between mb-4">
                 <div className="flex items-center space-x-3">
