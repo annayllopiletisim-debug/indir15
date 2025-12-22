@@ -83,12 +83,6 @@ const ExpiringSoonPage = () => {
 
   return (
     <>
-      <Helmet>
-        <title>Son 24 Saatte Bitecek İndirimler | İndirim Keşfet</title>
-        <meta name="description" content="Son 24 saat içinde bitecek kupon kodları, indirimler ve kampanyalar. Kaçırmadan hemen kullanın!" />
-        <meta name="robots" content="index, follow" />
-      </Helmet>
-
       <div className="min-h-screen" data-testid="expiring-soon-page">
         {/* Hero Section */}
         <div className="bg-gradient-to-br from-orange-500/20 via-red-500/10 to-transparent py-12 lg:py-16">
