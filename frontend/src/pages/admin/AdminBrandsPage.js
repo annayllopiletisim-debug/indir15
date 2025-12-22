@@ -498,7 +498,15 @@ const AdminBrandsPage = () => {
               )}
               <div className="flex items-center justify-between text-xs text-muted-foreground">
                 <span>Kategori: {categories.find(c => c.id === brand.category_id)?.name}</span>
-                {brand.app_install_enabled && <span>📱 App</span>}
+                <div className="flex items-center gap-2">
+                  {brand.show_on_homepage && (
+                    <span className="px-2 py-0.5 bg-neon-purple/20 text-neon-purple rounded-full flex items-center gap-1">
+                      <Home className="w-3 h-3" />
+                      #{brand.homepage_order || 0}
+                    </span>
+                  )}
+                  {brand.app_install_enabled && <span>📱 App</span>}
+                </div>
               </div>
             </div>
           ))
