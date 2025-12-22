@@ -650,6 +650,107 @@ async def delete_catalog(catalog_id: str, user: AdminUser = Depends(get_current_
         raise HTTPException(status_code=404, detail="Catalog not found")
     return {"message": "Catalog deleted"}
 
+# ================== KEYWORD MAPPING ENDPOINTS ==================
+
+@api_router.get("/keyword-mappings", response_model=List[KeywordMapping])
+async def get_keyword_mappings(user: AdminUser = Depends(get_current_user)):
+    mappings = await db.keyword_mappings.find({}, {'_id': 0}).sort('priority', -1).to_list(1000)
+    for mapping in mappings:
+        if isinstance(mapping.get('created_at'), str):
+            mapping['created_at'] = datetime.fromisoformat(mapping['created_at'])
+    return mappings
+
+@api_router.post("/keyword-mappings", response_model=KeywordMapping)
+async def create_keyword_mapping(mapping: KeywordMappingCreate, user: AdminUser = Depends(get_current_user)):
+    # Check if keyword already exists
+    existing = await db.keyword_mappings.find_one({'keyword': mapping.keyword.lower()}, {'_id': 0})
+    if existing:
+        raise HTTPException(status_code=400, detail="Bu anahtar kelime zaten mevcut")
+    
+    new_mapping = KeywordMapping(**mapping.model_dump())
+    new_mapping.keyword = new_mapping.keyword.lower()
+    mapping_dict = new_mapping.model_dump()
+    mapping_dict['created_at'] = mapping_dict['created_at'].isoformat()
+    await db.keyword_mappings.insert_one(mapping_dict)
+    return new_mapping
+
+@api_router.put("/keyword-mappings/{mapping_id}", response_model=KeywordMapping)
+async def update_keyword_mapping(mapping_id: str, mapping: KeywordMappingCreate, user: AdminUser = Depends(get_current_user)):
+    update_dict = mapping.model_dump()
+    update_dict['keyword'] = update_dict['keyword'].lower()
+    
+    result = await db.keyword_mappings.update_one(
+        {'id': mapping_id},
+        {'$set': update_dict}
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Keyword mapping not found")
+    updated = await db.keyword_mappings.find_one({'id': mapping_id}, {'_id': 0})
+    if isinstance(updated.get('created_at'), str):
+        updated['created_at'] = datetime.fromisoformat(updated['created_at'])
+    return KeywordMapping(**updated)
+
+@api_router.delete("/keyword-mappings/{mapping_id}")
+async def delete_keyword_mapping(mapping_id: str, user: AdminUser = Depends(get_current_user)):
+    result = await db.keyword_mappings.delete_one({'id': mapping_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Keyword mapping not found")
+    return {"message": "Keyword mapping deleted"}
+
+# ================== EXPIRING SOON ENDPOINT ==================
+
+@api_router.get("/expiring-soon")
+async def get_expiring_soon():
+    """Get coupons and discounts expiring within 24 hours"""
+    now = datetime.now(timezone.utc)
+    in_24_hours = now + timedelta(hours=24)
+    
+    # Get coupons expiring soon
+    coupons = await db.coupons.find({
+        'is_active': True,
+        'expiry_date': {
+            '$gte': now.isoformat(),
+            '$lte': in_24_hours.isoformat()
+        }
+    }, {'_id': 0}).to_list(20)
+    
+    # Get discounts expiring soon
+    discounts = await db.discounts.find({
+        'expiry_date': {
+            '$gte': now.isoformat(),
+            '$lte': in_24_hours.isoformat()
+        }
+    }, {'_id': 0}).to_list(20)
+    
+    # Enrich with brand info
+    for coupon in coupons:
+        brand = await db.brands.find_one({'id': coupon['brand_id']}, {'_id': 0})
+        if brand:
+            coupon['brand_name'] = brand['name']
+            coupon['brand_slug'] = brand['slug']
+            coupon['brand_logo_url'] = brand.get('logo_url')
+        if isinstance(coupon.get('expiry_date'), str):
+            coupon['expiry_date'] = datetime.fromisoformat(coupon['expiry_date'])
+        if isinstance(coupon.get('created_at'), str):
+            coupon['created_at'] = datetime.fromisoformat(coupon['created_at'])
+    
+    for discount in discounts:
+        brand = await db.brands.find_one({'id': discount['brand_id']}, {'_id': 0})
+        if brand:
+            discount['brand_name'] = brand['name']
+            discount['brand_slug'] = brand['slug']
+            discount['brand_logo_url'] = brand.get('logo_url')
+        if isinstance(discount.get('expiry_date'), str):
+            discount['expiry_date'] = datetime.fromisoformat(discount['expiry_date'])
+        if isinstance(discount.get('created_at'), str):
+            discount['created_at'] = datetime.fromisoformat(discount['created_at'])
+    
+    return {
+        'coupons': coupons,
+        'discounts': discounts,
+        'total': len(coupons) + len(discounts)
+    }
+
 @api_router.post("/analytics/track")
 async def track_click(event: ClickEventCreate):
     new_event = ClickEvent(**event.model_dump())
