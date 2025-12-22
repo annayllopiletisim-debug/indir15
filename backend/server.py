@@ -1031,6 +1031,148 @@ async def search(q: str):
         'keyword_matched': keyword_mapping is not None
     }
 
+# ================== SEO ENDPOINTS ==================
+from fastapi.responses import PlainTextResponse, Response
+
+@api_router.get("/sitemap.xml", response_class=Response)
+async def get_sitemap():
+    """Generate dynamic sitemap.xml"""
+    base_url = os.environ.get('SITE_URL', 'https://indirimli.mi')
+    now = datetime.now(timezone.utc).strftime('%Y-%m-%d')
+    
+    urls = []
+    
+    # Static pages
+    static_pages = [
+        ('/', '1.0', 'daily'),
+        ('/kategoriler', '0.9', 'daily'),
+        ('/magazalar', '0.9', 'daily'),
+        ('/son-24-saat', '0.9', 'hourly'),
+        ('/iletisim', '0.5', 'monthly'),
+    ]
+    
+    for path, priority, changefreq in static_pages:
+        urls.append(f'''  <url>
+    <loc>{base_url}{path}</loc>
+    <lastmod>{now}</lastmod>
+    <changefreq>{changefreq}</changefreq>
+    <priority>{priority}</priority>
+  </url>''')
+    
+    # Categories
+    categories = await db.categories.find({}, {'_id': 0, 'slug': 1}).to_list(1000)
+    for cat in categories:
+        urls.append(f'''  <url>
+    <loc>{base_url}/kategori/{cat['slug']}</loc>
+    <lastmod>{now}</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>''')
+    
+    # Brands
+    brands = await db.brands.find({}, {'_id': 0, 'slug': 1}).to_list(1000)
+    for brand in brands:
+        urls.append(f'''  <url>
+    <loc>{base_url}/magaza/{brand['slug']}</loc>
+    <lastmod>{now}</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>''')
+    
+    # Active coupons (not expired)
+    now_iso = datetime.now(timezone.utc).isoformat()
+    active_coupons = await db.coupons.find({
+        'is_active': True,
+        '$or': [
+            {'expiry_date': {'$gte': now_iso}},
+            {'expiry_date': None}
+        ]
+    }, {'_id': 0, 'id': 1}).to_list(1000)
+    
+    for coupon in active_coupons:
+        urls.append(f'''  <url>
+    <loc>{base_url}/kupon/{coupon['id']}</loc>
+    <lastmod>{now}</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.7</priority>
+  </url>''')
+    
+    # Active discounts (not expired)
+    active_discounts = await db.discounts.find({
+        '$or': [
+            {'expiry_date': {'$gte': now_iso}},
+            {'expiry_date': None}
+        ]
+    }, {'_id': 0, 'id': 1}).to_list(1000)
+    
+    for discount in active_discounts:
+        urls.append(f'''  <url>
+    <loc>{base_url}/indirim/{discount['id']}</loc>
+    <lastmod>{now}</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.7</priority>
+  </url>''')
+    
+    sitemap_content = f'''<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+{chr(10).join(urls)}
+</urlset>'''
+    
+    return Response(content=sitemap_content, media_type="application/xml")
+
+@api_router.get("/robots.txt", response_class=PlainTextResponse)
+async def get_robots_txt():
+    """Generate robots.txt"""
+    base_url = os.environ.get('SITE_URL', 'https://indirimli.mi')
+    
+    robots_content = f"""# indirimliMi Robots.txt
+# https://indirimli.mi
+
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /admin/*
+Disallow: /arama?*
+Disallow: /api/
+
+# Google Bot
+User-agent: Googlebot
+Allow: /
+Disallow: /admin/
+Disallow: /arama?*
+
+# Bing Bot
+User-agent: Bingbot
+Allow: /
+Disallow: /admin/
+Disallow: /arama?*
+
+# AI Crawlers - Allow sitemap access, block admin
+User-agent: GPTBot
+Allow: /sitemap.xml
+Disallow: /admin/
+Disallow: /api/
+
+User-agent: ChatGPT-User
+Allow: /sitemap.xml
+Disallow: /admin/
+Disallow: /api/
+
+User-agent: Claude-Web
+Allow: /sitemap.xml
+Disallow: /admin/
+Disallow: /api/
+
+User-agent: anthropic-ai
+Allow: /sitemap.xml
+Disallow: /admin/
+Disallow: /api/
+
+# Sitemap
+Sitemap: {base_url}/api/sitemap.xml
+"""
+    return robots_content
+
 app.include_router(api_router)
 
 app.add_middleware(
