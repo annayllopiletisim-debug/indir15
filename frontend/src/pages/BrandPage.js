@@ -5,6 +5,9 @@ import axios from 'axios';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
 import CouponCard from '../components/CouponCard';
 import DiscountCard from '../components/DiscountCard';
+import CatalogCard from '../components/CatalogCard';
+import CatalogViewer from '../components/CatalogViewer';
+import BrandLogo from '../components/BrandLogo';
 import { Smartphone, Download } from 'lucide-react';
 import { trackClick } from '../utils/helpers';
 
@@ -15,8 +18,10 @@ const BrandPage = () => {
   const [brand, setBrand] = useState(null);
   const [coupons, setCoupons] = useState([]);
   const [discounts, setDiscounts] = useState([]);
+  const [catalogs, setCatalogs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('all');
+  const [selectedCatalog, setSelectedCatalog] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -25,13 +30,15 @@ const BrandPage = () => {
         const brandData = brandRes.data;
         setBrand(brandData);
 
-        const [couponsRes, discountsRes] = await Promise.all([
+        const [couponsRes, discountsRes, catalogsRes] = await Promise.all([
           axios.get(`${API}/coupons?brand_id=${brandData.id}`),
           axios.get(`${API}/discounts?brand_id=${brandData.id}`),
+          axios.get(`${API}/catalogs?brand_id=${brandData.id}`),
         ]);
 
         setCoupons(couponsRes.data);
         setDiscounts(discountsRes.data);
+        setCatalogs(catalogsRes.data);
       } catch (error) {
         console.error('Failed to fetch brand data:', error);
       } finally {
@@ -47,6 +54,11 @@ const BrandPage = () => {
       trackClick('app_install', brand.id, brand.id);
       window.open(url, '_blank');
     }
+  };
+
+  const handleViewCatalog = (catalog) => {
+    trackClick('catalog_view', catalog.id, brand.id);
+    setSelectedCatalog(catalog);
   };
 
   if (loading) {
@@ -75,6 +87,9 @@ const BrandPage = () => {
   const metaTitle = brand.meta_title || `${brand.name} Kupon ve İndirimler - SavvySaver`;
   const metaDescription = brand.meta_description || `${brand.name} için en güncel kupon kodları ve indirimler. Hemen tasarruf etmeye başlayın!`;
 
+  // Calculate tab count
+  const tabCount = 3 + (catalogs.length > 0 ? 1 : 0) + (brand.app_install_enabled ? 1 : 0);
+
   return (
     <>
       <Helmet>
@@ -92,17 +107,13 @@ const BrandPage = () => {
 
       <div className="min-h-screen" data-testid="brand-page">
         <div className="bg-void-paper border-b border-white/5">
-          <div className="container mx-auto px-4 py-12">
+          <div className="container mx-auto px-4 py-8 lg:py-12">
             <div className="flex items-center space-x-6">
-              {brand.logo_url && (
-                <div className="w-24 h-24 rounded-2xl bg-void-subtle p-4 flex items-center justify-center">
-                  <img src={brand.logo_url} alt={brand.name} className="max-w-full max-h-full object-contain" />
-                </div>
-              )}
+              <BrandLogo logoUrl={brand.logo_url} brandName={brand.name} size="lg" />
               <div>
-                <h1 className="text-4xl lg:text-5xl font-heading font-bold mb-2">{brand.name}</h1>
+                <h1 className="text-3xl lg:text-4xl font-heading font-bold mb-2">{brand.name}</h1>
                 {brand.description && (
-                  <p className="text-lg text-muted-foreground">{brand.description}</p>
+                  <p className="text-base text-muted-foreground">{brand.description}</p>
                 )}
               </div>
             </div>
@@ -111,25 +122,30 @@ const BrandPage = () => {
 
         <div className="container mx-auto px-4 py-8">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-4 max-w-3xl mx-auto mb-8" data-testid="brand-tabs">
-              <TabsTrigger value="all" data-testid="tab-all" className="text-base font-semibold">
-                Tümü <span className="ml-2 px-2 py-0.5 rounded-full bg-accent/20 text-sm font-bold">{allItems.length}</span>
+            <TabsList className={`grid w-full max-w-4xl mx-auto mb-8`} style={{ gridTemplateColumns: `repeat(${tabCount}, 1fr)` }} data-testid="brand-tabs">
+              <TabsTrigger value="all" data-testid="tab-all" className="text-sm font-semibold">
+                Tümü <span className="ml-1.5 px-2 py-0.5 rounded-full bg-accent/20 text-xs font-bold">{allItems.length}</span>
               </TabsTrigger>
-              <TabsTrigger value="coupons" data-testid="tab-coupons" className="text-base font-semibold">
-                Kuponlar <span className="ml-2 px-2 py-0.5 rounded-full bg-neon-purple/20 text-sm font-bold">{coupons.length}</span>
+              <TabsTrigger value="coupons" data-testid="tab-coupons" className="text-sm font-semibold">
+                Kuponlar <span className="ml-1.5 px-2 py-0.5 rounded-full bg-neon-purple/20 text-xs font-bold">{coupons.length}</span>
               </TabsTrigger>
-              <TabsTrigger value="discounts" data-testid="tab-discounts" className="text-base font-semibold">
-                İndirimler <span className="ml-2 px-2 py-0.5 rounded-full bg-neon-blue/20 text-sm font-bold">{discounts.length}</span>
+              <TabsTrigger value="discounts" data-testid="tab-discounts" className="text-sm font-semibold">
+                İndirimler <span className="ml-1.5 px-2 py-0.5 rounded-full bg-neon-blue/20 text-xs font-bold">{discounts.length}</span>
               </TabsTrigger>
+              {catalogs.length > 0 && (
+                <TabsTrigger value="catalogs" data-testid="tab-catalogs" className="text-sm font-semibold">
+                  Kataloglar <span className="ml-1.5 px-2 py-0.5 rounded-full bg-neon-pink/20 text-xs font-bold">{catalogs.length}</span>
+                </TabsTrigger>
+              )}
               {brand.app_install_enabled && (
-                <TabsTrigger value="app" data-testid="tab-app" className="text-base font-semibold">
+                <TabsTrigger value="app" data-testid="tab-app" className="text-sm font-semibold">
                   App
                 </TabsTrigger>
               )}
             </TabsList>
 
             <TabsContent value="all" className="space-y-6">
-              <h2 className="text-2xl font-heading font-bold mb-4">Tüm Teklifler</h2>
+              <h2 className="text-xl font-heading font-bold mb-4">Tüm Teklifler</h2>
               {allItems.length === 0 ? (
                 <div className="text-center py-16">
                   <p className="text-muted-foreground">Henüz teklif bulunmuyor.</p>
@@ -148,7 +164,7 @@ const BrandPage = () => {
             </TabsContent>
 
             <TabsContent value="coupons" className="space-y-6">
-              <h2 className="text-2xl font-heading font-bold mb-4">Kupon Kodları</h2>
+              <h2 className="text-xl font-heading font-bold mb-4">Kupon Kodları</h2>
               {coupons.length === 0 ? (
                 <div className="text-center py-16">
                   <p className="text-muted-foreground">Henüz kupon bulunmuyor.</p>
@@ -163,7 +179,7 @@ const BrandPage = () => {
             </TabsContent>
 
             <TabsContent value="discounts" className="space-y-6">
-              <h2 className="text-2xl font-heading font-bold mb-4">İndirimler</h2>
+              <h2 className="text-xl font-heading font-bold mb-4">İndirimler</h2>
               {discounts.length === 0 ? (
                 <div className="text-center py-16">
                   <p className="text-muted-foreground">Henüz indirim bulunmuyor.</p>
@@ -177,14 +193,30 @@ const BrandPage = () => {
               )}
             </TabsContent>
 
+            {catalogs.length > 0 && (
+              <TabsContent value="catalogs" className="space-y-6">
+                <h2 className="text-xl font-heading font-bold mb-4">Kataloglar</h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {catalogs.map((catalog) => (
+                    <CatalogCard 
+                      key={catalog.id} 
+                      catalog={catalog} 
+                      brand={brand}
+                      onView={handleViewCatalog}
+                    />
+                  ))}
+                </div>
+              </TabsContent>
+            )}
+
             {brand.app_install_enabled && (
               <TabsContent value="app">
                 <div className="max-w-2xl mx-auto">
-                  <h2 className="text-2xl font-heading font-bold mb-6 text-center">Mobil Uygulamayı İndir</h2>
+                  <h2 className="text-xl font-heading font-bold mb-6 text-center">Mobil Uygulamayı İndir</h2>
                   <div className="glass-effect p-8 rounded-3xl">
                     <div className="text-center mb-8">
                       <Smartphone className="w-16 h-16 mx-auto mb-4 text-neon-purple" />
-                      <p className="text-lg text-muted-foreground">
+                      <p className="text-base text-muted-foreground">
                         {brand.name} mobil uygulamasını indirerek özel fırsatlardan yararlanın!
                       </p>
                     </div>
@@ -223,6 +255,11 @@ const BrandPage = () => {
           </Tabs>
         </div>
       </div>
+
+      {/* Catalog Viewer Modal */}
+      {selectedCatalog && (
+        <CatalogViewer catalog={selectedCatalog} onClose={() => setSelectedCatalog(null)} />
+      )}
     </>
   );
 };
