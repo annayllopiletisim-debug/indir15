@@ -48,7 +48,9 @@ async def seed_data():
     ]
     
     brands = []
-    for brand_data in brands_data:
+    for i, brand_data in enumerate(brands_data):
+        # First 6 brands show on homepage
+        show_on_homepage = i < 6
         brand = {
             'id': str(uuid.uuid4()),
             'name': brand_data['name'],
@@ -61,6 +63,8 @@ async def seed_data():
             'app_install_enabled': brand_data['name'] in ['Nike', 'Adidas', 'Puma'],
             'ios_app_url': f'https://apps.apple.com/app/{brand_data["slug"]}' if brand_data['name'] in ['Nike', 'Adidas', 'Puma'] else None,
             'android_app_url': f'https://play.google.com/store/apps/{brand_data["slug"]}' if brand_data['name'] in ['Nike', 'Adidas', 'Puma'] else None,
+            'show_on_homepage': show_on_homepage,
+            'homepage_order': i if show_on_homepage else 999,
             'created_at': datetime.now(timezone.utc).isoformat()
         }
         brands.append(brand)
