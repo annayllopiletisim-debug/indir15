@@ -118,31 +118,22 @@ const DealCardCompact = ({
       <div className="flex-1 flex flex-col justify-center min-h-0">
         {/* İndirim Oranı - ANA MESAJ */}
         {item.discount_text && (
-          <div className="text-discount-sm md:text-discount text-primary font-heading leading-tight mb-1">
+          <div className="text-lg md:text-xl text-primary font-heading font-bold leading-tight">
             {item.discount_text}
           </div>
         )}
         
         {/* Başlık - Tek satır */}
-        <p className="text-card-title text-muted-foreground line-clamp-1">
+        <p className="text-xs text-muted-foreground line-clamp-1 mt-0.5">
           {item.title}
         </p>
       </div>
 
       {/* ═══ ALT BAR: CTA ═══ */}
-      <div className="h-6 md:h-7 flex items-center">
-        <button
-          onClick={handleClick}
-          disabled={isExpired}
-          className="
-            text-card-cta text-primary 
-            hover:underline 
-            disabled:opacity-40 disabled:no-underline
-            transition-colors
-          "
-        >
+      <div className="h-5 flex items-center mt-1">
+        <span className="text-xs text-primary hover:underline">
           {type === 'coupon' ? 'Kodu Gör →' : 'Fırsata Git →'}
-        </button>
+        </span>
       </div>
     </div>
   );
