@@ -348,7 +348,8 @@ const AdminBrandsPage = () => {
                 {brand.app_install_enabled && <span>📱 App</span>}
               </div>
             </div>
-          ))}
+          ))
+          )}
         </div>
       </div>
     </>
