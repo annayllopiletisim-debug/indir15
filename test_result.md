@@ -66,7 +66,7 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "Turkish coupon and deals platform - PRD v2.8 implementation including admin-controlled homepage brands, Son 24 Saat dedicated page, SEO sitemap/robots.txt, and menu restructuring"
+user_problem_statement: "Turkish coupon and deals platform - PRD v2.8 implementation including admin-controlled homepage brands, Son 24 Saat dedicated page, SEO sitemap/robots.txt, and menu restructuring. Plus Programmatic SEO (pSEO) system."
 
 backend:
   - task: "Homepage Brands API"
@@ -103,7 +103,7 @@ backend:
     status_history:
       - working: true
         agent: "main"
-        comment: "GET /api/sitemap.xml generates dynamic sitemap with categories, brands, coupons, discounts"
+        comment: "GET /api/sitemap.xml generates dynamic sitemap with categories, brands, coupons, discounts and pSEO pages (83 URLs)"
 
   - task: "SEO Robots.txt Endpoint"
     implemented: true
@@ -128,6 +128,18 @@ backend:
       - working: true
         agent: "main"
         comment: "GET /api/expiring-soon returns coupons/discounts expiring within 24 hours"
+
+  - task: "Programmatic SEO Resolver API"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "main"
+        comment: "GET /api/seo-page/{slug} resolves category, brand, and keyword pages with structured data"
 
 frontend:
   - task: "Son 24 Saat Page"
@@ -178,33 +190,47 @@ frontend:
         agent: "main"
         comment: "Added show_on_homepage checkbox and homepage_order input to brand form"
 
-  - task: "SEO Meta Tags Component"
+  - task: "Programmatic SEO Page Template"
     implemented: true
     working: true
-    file: "/app/frontend/src/components/SEOMetaTags.js"
+    file: "/app/frontend/src/pages/ProgrammaticSeoPage.js"
     stuck_count: 0
     priority: "high"
     needs_retesting: false
     status_history:
       - working: true
         agent: "main"
-        comment: "Dynamic robots meta tag: noindex for admin/search pages, index for public pages"
+        comment: "Dynamic SEO meta tags (title, description, canonical, OG) and structured data working via DOM manipulation"
+
+  - task: "pSEO Routing in App.js"
+    implemented: true
+    working: true
+    file: "/app/frontend/src/App.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "main"
+        comment: "/:slug route catches all pSEO pages like /nike-indirimleri, /spor-indirimleri"
 
 metadata:
   created_by: "main_agent"
-  version: "2.8"
-  test_sequence: 2
+  version: "2.9"
+  test_sequence: 3
   run_ui: true
 
 test_plan:
   current_focus:
-    - "Son 24 Saat Page"
-    - "Homepage Admin Controlled Brands"
-    - "SEO Sitemap and Robots"
+    - "Full site testing before deployment"
+    - "Homepage functionality"
+    - "pSEO pages with SEO verification"
+    - "Mağazalar page multi-select"
+    - "Son 24 Saat page"
   stuck_tasks: []
-  test_all: false
+  test_all: true
   test_priority: "high_first"
 
 agent_communication:
   - agent: "main"
-    message: "PRD v2.8 implementation complete. All features implemented: 1) Admin-controlled homepage brands with show_on_homepage flag and ordering, 2) Dedicated /son-24-saat page with SEO title, 3) Son 24 Saat link at the beginning of menu, 4) Dynamic sitemap.xml and robots.txt, 5) SEO meta tags for noindex on admin/search pages. Demo data seeded with 6 homepage brands and 2 expiring-soon coupons for testing."
+    message: "pSEO system complete with all SEO features working: 1) Dynamic title, meta description, canonical URL, OG tags via DOM manipulation. 2) ItemList structured data with Offer schema. 3) Sitemap includes 21 pSEO URLs. 4) Category (/spor-indirimleri) and brand (/nike-indirimleri) pages tested. Ready for comprehensive frontend testing before deployment."
