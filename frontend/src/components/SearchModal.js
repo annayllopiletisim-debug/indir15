@@ -123,13 +123,18 @@ const SearchModal = ({ isOpen, onClose }) => {
                       {results.coupons.map((coupon) => (
                         <Link
                           key={coupon.id}
-                          to={`/magaza/${coupon.brand_id}`}
+                          to={coupon.brand_slug ? `/magaza/${coupon.brand_slug}` : '#'}
                           onClick={handleClose}
-                          className="block p-3 rounded-lg hover:bg-white/5 transition-colors"
+                          className="block p-3 rounded-lg hover:bg-white/5 dark:hover:bg-white/5 transition-colors"
                           data-testid={`search-coupon-${coupon.id}`}
                         >
-                          <div className="font-medium mb-1">{coupon.title}</div>
-                          <div className="text-sm text-gradient font-bold">{coupon.discount_text}</div>
+                          <div className="flex items-center justify-between mb-1">
+                            <div className="font-medium">{coupon.title}</div>
+                            <div className="text-xs text-gradient font-bold">{coupon.discount_text}</div>
+                          </div>
+                          {coupon.brand_name && (
+                            <div className="text-xs text-muted-foreground">{coupon.brand_name}</div>
+                          )}
                         </Link>
                       ))}
                     </div>
