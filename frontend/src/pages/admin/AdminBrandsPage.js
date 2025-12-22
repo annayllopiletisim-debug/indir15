@@ -112,9 +112,16 @@ const AdminBrandsPage = () => {
           'Content-Type': 'multipart/form-data'
         }
       });
-      setFormData(prev => ({ ...prev, logo_url: res.data.url }));
+      
+      if (res.data && res.data.url) {
+        setFormData(prev => ({ ...prev, logo_url: res.data.url }));
+        alert('✓ Logo başarıyla yüklendi!');
+      } else {
+        throw new Error('Logo URL alınamadı');
+      }
     } catch (error) {
-      alert(error.response?.data?.detail || 'Logo yüklenemedi');
+      console.error('Logo upload error:', error);
+      alert('Hata: ' + (error.response?.data?.detail || 'Logo yüklenemedi'));
     } finally {
       setUploading(false);
     }
