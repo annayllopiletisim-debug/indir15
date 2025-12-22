@@ -568,10 +568,13 @@ async def get_analytics_dashboard(user: AdminUser = Depends(get_current_user)):
     for item in discount_clicks_raw:
         discount = await db.discounts.find_one({'id': item['_id']}, {'_id': 0})
         if discount:
+            brand = await db.brands.find_one({'id': discount.get('brand_id')}, {'_id': 0})
             popular_discounts.append({
                 'discount_id': item['_id'],
                 'title': discount.get('title', 'Unknown'),
-                'count': item['count']
+                'count': item['count'],
+                'brand_name': brand.get('name', 'Unknown') if brand else 'Unknown',
+                'brand_slug': brand.get('slug', '') if brand else ''
             })
     
     return AnalyticsDashboard(
