@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Copy, Check, Clock, ExternalLink } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { Copy, Check, Clock, ExternalLink, X } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { getTimeRemaining, trackClick, buildUTMLink, shareOnWhatsApp, shareOnFacebook } from '../utils/helpers';
 import { Share2 } from 'lucide-react';
 
 const CouponCard = ({ coupon, brand }) => {
+  const [showModal, setShowModal] = useState(false);
   const [copied, setCopied] = useState(false);
   const [timeLeft, setTimeLeft] = useState(null);
 
@@ -19,20 +20,22 @@ const CouponCard = ({ coupon, brand }) => {
     }
   }, [coupon.expiry_date]);
 
+  const handleGetCode = async () => {
+    trackClick('coupon', coupon.id, coupon.brand_id);
+    
+    if (coupon.destination_url) {
+      const finalUrl = buildUTMLink(coupon.destination_url, coupon.utm_template, coupon.id);
+      window.open(finalUrl, '_blank');
+    }
+    
+    setShowModal(true);
+  };
+
   const handleCopyCode = async () => {
     try {
       await navigator.clipboard.writeText(coupon.code);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
-      
-      trackClick('coupon', coupon.id, coupon.brand_id);
-      
-      if (coupon.destination_url) {
-        const finalUrl = buildUTMLink(coupon.destination_url, coupon.utm_template, coupon.id);
-        setTimeout(() => {
-          window.open(finalUrl, '_blank');
-        }, 500);
-      }
     } catch (err) {
       console.error('Failed to copy:', err);
     }
