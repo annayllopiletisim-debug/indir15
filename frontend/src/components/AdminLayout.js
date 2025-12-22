@@ -6,6 +6,9 @@ import { removeAuthToken, removeAuthUser } from '../utils/auth';
 const AdminLayout = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  
+  // Debug: v2
+  console.log('AdminLayout loaded - version 2');
 
   const handleLogout = () => {
     removeAuthToken();
