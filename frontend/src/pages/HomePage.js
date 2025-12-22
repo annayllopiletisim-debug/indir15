@@ -7,13 +7,10 @@ import BrandLogo from '../components/BrandLogo';
 import Newsletter from '../components/Newsletter';
 import { 
   ChevronRight, 
-  Flame, 
+  Clock, 
   Tag, 
   Store, 
   TrendingUp,
-  Shirt,
-  Smartphone,
-  ShoppingCart,
   Search
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -84,14 +81,6 @@ const HomePage = () => {
     return b.total_deals - a.total_deals;
   });
 
-  // Quick action buttons config
-  const quickActions = [
-    { icon: Flame, label: 'Acil Fırsatlar', to: '/son-24-saat', color: 'from-orange-500 to-red-500' },
-    { icon: Shirt, label: 'Moda', to: '/kategori/moda', color: 'from-pink-500 to-purple-500' },
-    { icon: Smartphone, label: 'Elektronik', to: '/kategori/elektronik', color: 'from-blue-500 to-cyan-500' },
-    { icon: ShoppingCart, label: 'Market', to: '/kategori/gida', color: 'from-green-500 to-emerald-500' },
-  ];
-
   // Popular searches for SEO
   const popularSearches = [
     { label: 'Ayakkabı indirimleri', to: '/arama?q=ayakkabı' },
@@ -105,46 +94,41 @@ const HomePage = () => {
   return (
     <>
       <Helmet>
-        <title>indirimliMi - En Güncel Kupon ve İndirimler</title>
-        <meta name="description" content="Son 24 saatte bitecek indirimler, kupon kodları ve kampanyalar. Yüzlerce marka, binlerce fırsat tek bir yerde!" />
+        <title>İndirim Keşfet - Kupon ve İndirimler</title>
+        <meta name="description" content="Kupon kodları, indirimler ve kampanyaları keşfedin. Yüzlerce marka, binlerce fırsat." />
       </Helmet>
 
       <div className="min-h-screen" data-testid="home-page">
 
         {/* ═══════════════════════════════════════════════════════════════
-            1️⃣ SIK TERCİH EDİLEN MAĞAZALAR (EN ÜST - MENÜ ALTINDA)
+            1️⃣ SIK TERCİH EDİLEN MAĞAZALAR
         ═══════════════════════════════════════════════════════════════ */}
         {brands.length > 0 && (
-          <section className="container mx-auto px-4 py-6 lg:py-8">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg lg:text-xl font-heading font-bold">
-                Sık Tercih Edilen Mağazalar
+          <section className="container mx-auto px-4 py-5">
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="text-base font-heading font-bold text-muted-foreground">
+                Popüler Mağazalar
               </h2>
               <Link
                 to="/magazalar"
-                className="flex items-center gap-1 text-primary hover:text-pink-500 transition-colors text-sm"
-                data-testid="view-all-stores-link"
+                className="text-sm text-muted-foreground hover:text-primary transition-colors"
               >
-                <span>Tümü</span>
-                <ChevronRight className="w-4 h-4" />
+                Tümü →
               </Link>
             </div>
 
-            <div className="flex gap-3 overflow-x-auto pb-2 -mx-4 px-4 snap-x snap-mandatory scrollbar-hide">
-              {brands.slice(0, 12).map((brand) => (
+            <div className="flex gap-2 overflow-x-auto pb-2 -mx-4 px-4 scrollbar-hide">
+              {brands.slice(0, 10).map((brand) => (
                 <Link
                   key={brand.id}
                   to={`/magaza/${brand.slug}`}
-                  className="flex-shrink-0 snap-start glass-effect px-4 py-3 rounded-xl hover:border-primary/50 transition-all flex items-center gap-3 min-w-[160px]"
-                  data-testid={`brand-card-${brand.slug}`}
+                  className="flex-shrink-0 glass-effect px-3 py-2 rounded-lg hover:border-primary/30 transition-all flex items-center gap-2"
                 >
-                  <BrandLogo logoUrl={brand.logo_url} brandName={brand.name} size="sm" />
-                  <div className="min-w-0">
-                    <h3 className="font-medium text-sm truncate">{brand.name}</h3>
-                    {brand.active_deal_count > 0 && (
-                      <p className="text-xs text-primary">{brand.active_deal_count} indirim</p>
-                    )}
-                  </div>
+                  <BrandLogo logoUrl={brand.logo_url} brandName={brand.name} size="xs" />
+                  <span className="text-sm font-medium whitespace-nowrap">{brand.name}</span>
+                  {brand.active_deal_count > 0 && (
+                    <span className="text-xs text-primary">({brand.active_deal_count})</span>
+                  )}
                 </Link>
               ))}
             </div>
@@ -152,120 +136,67 @@ const HomePage = () => {
         )}
 
         {/* ═══════════════════════════════════════════════════════════════
-            2️⃣ HERO AREA = SON 24 SAAT
+            2️⃣ SON 24 SAAT - KOMPAKT VERSİYON
         ═══════════════════════════════════════════════════════════════ */}
-        <section className="bg-gradient-to-br from-orange-500/20 via-red-500/10 to-transparent">
-          <div className="container mx-auto px-4 py-8 lg:py-12">
-            {/* Hero Header */}
-            <div className="text-center mb-6 lg:mb-8">
-              <div className="inline-flex items-center gap-2 px-4 py-2 bg-orange-500/20 rounded-full mb-4">
-                <Flame className="w-5 h-5 text-orange-500 animate-pulse" />
-                <span className="text-orange-400 font-medium text-sm">Acele edin!</span>
+        {expiringItems.length > 0 && (
+          <section className="container mx-auto px-4 py-6">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2">
+                <Clock className="w-4 h-4 text-orange-500" />
+                <h2 className="text-base font-heading font-bold">
+                  Son 24 Saatte Bitecek Fırsatlar
+                </h2>
               </div>
-              <h1 className="text-3xl lg:text-4xl xl:text-5xl font-heading font-bold mb-3">
-                🔥 Son 24 Saatte Bitecek İndirimler
-              </h1>
-              <p className="text-muted-foreground text-lg">
-                Kaçıran üzülür, bugün bitiyor!
-              </p>
+              <Link
+                to="/son-24-saat"
+                className="text-sm text-muted-foreground hover:text-primary transition-colors"
+              >
+                Tümünü gör →
+              </Link>
             </div>
 
-            {/* Expiring Soon Cards - Horizontal Scroll */}
-            {expiringItems.length > 0 ? (
-              <>
-                <div className="relative">
-                  <div className="flex gap-4 overflow-x-auto pb-4 -mx-4 px-4 snap-x snap-mandatory scrollbar-hide">
-                    {expiringItems.map((item) => {
-                      const brand = brandMap[item.brand_id] || { 
-                        name: item.brand_name, 
-                        slug: item.brand_slug,
-                        logo_url: item.brand_logo_url
-                      };
-                      
-                      return (
-                        <div 
-                          key={`${item.type}-${item.id}`} 
-                          className="flex-shrink-0 w-[320px] md:w-[360px] snap-start"
-                        >
-                          {item.type === 'coupon' ? (
-                            <CouponCard coupon={item} brand={brand} />
-                          ) : (
-                            <DiscountCard discount={item} brand={brand} />
-                          )}
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                {/* CTA Button */}
-                <div className="text-center mt-6">
-                  <Link
-                    to="/son-24-saat"
-                    className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-orange-500 to-red-500 rounded-xl font-medium hover:shadow-lg hover:shadow-orange-500/30 transition-all"
-                    data-testid="view-all-expiring-link"
+            <div className="flex gap-3 overflow-x-auto pb-2 -mx-4 px-4 scrollbar-hide">
+              {expiringItems.map((item) => {
+                const brand = brandMap[item.brand_id] || { 
+                  name: item.brand_name, 
+                  slug: item.brand_slug,
+                  logo_url: item.brand_logo_url
+                };
+                
+                return (
+                  <div 
+                    key={`${item.type}-${item.id}`} 
+                    className="flex-shrink-0 w-[280px] sm:w-[300px]"
                   >
-                    <span>Tüm Son 24 Saat Fırsatlarını Gör</span>
-                    <ChevronRight className="w-5 h-5" />
-                  </Link>
-                </div>
-              </>
-            ) : (
-              /* Empty State */
-              <div className="text-center py-8 glass-effect rounded-2xl">
-                <Flame className="w-12 h-12 text-orange-500/50 mx-auto mb-4" />
-                <p className="text-muted-foreground">
-                  Şu an acil biten fırsat yok. Yeni fırsatlar için takipte kalın!
-                </p>
-              </div>
-            )}
-          </div>
-        </section>
+                    {item.type === 'coupon' ? (
+                      <CouponCard coupon={item} brand={brand} compact />
+                    ) : (
+                      <DiscountCard discount={item} brand={brand} compact />
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </section>
+        )}
 
         {/* ═══════════════════════════════════════════════════════════════
-            3️⃣ HIZLI KARAR ALANI
+            3️⃣ KATEGORİLER (ANA YÖNLENDİRİCİ)
         ═══════════════════════════════════════════════════════════════ */}
-        <section className="container mx-auto px-4 py-8 lg:py-10">
-          <div className="text-center mb-6">
-            <h2 className="text-xl lg:text-2xl font-heading font-bold mb-2">
-              Ne yapmak istiyorsun?
-            </h2>
-          </div>
-
-          <div className="flex flex-wrap justify-center gap-3 lg:gap-4">
-            {quickActions.map((action, index) => (
-              <Link
-                key={index}
-                to={action.to}
-                className={`flex items-center gap-2.5 px-5 py-3 rounded-xl bg-gradient-to-r ${action.color} text-white font-medium hover:scale-105 hover:shadow-lg transition-all`}
-                data-testid={`quick-action-${index}`}
-              >
-                <action.icon className="w-5 h-5" />
-                <span>{action.label}</span>
-              </Link>
-            ))}
-          </div>
-        </section>
-
-        {/* ═══════════════════════════════════════════════════════════════
-            4️⃣ KATEGORİLER (İSTATİSTİKLİ)
-        ═══════════════════════════════════════════════════════════════ */}
-        <section className="container mx-auto px-4 py-8 lg:py-12">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl lg:text-3xl font-heading font-bold">
+        <section className="container mx-auto px-4 py-8">
+          <div className="flex items-center justify-between mb-5">
+            <h2 className="text-xl font-heading font-bold">
               Kategoriler
             </h2>
             <Link
               to="/kategoriler"
-              className="flex items-center gap-1 text-primary hover:text-pink-500 transition-colors text-sm"
-              data-testid="view-all-categories-link"
+              className="text-sm text-muted-foreground hover:text-primary transition-colors"
             >
-              <span>Tümü</span>
-              <ChevronRight className="w-4 h-4" />
+              Tümü →
             </Link>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 lg:gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
             {sortedCategories.slice(0, 8).map((category) => {
               const hasDeals = category.total_deals > 0;
               
@@ -273,37 +204,28 @@ const HomePage = () => {
                 <Link
                   key={category.id}
                   to={`/kategori/${category.slug}`}
-                  className={`group p-4 lg:p-5 rounded-2xl transition-all ${
+                  className={`group p-4 rounded-xl transition-all ${
                     hasDeals 
-                      ? 'glass-effect hover:border-primary/50' 
-                      : 'bg-muted/30 opacity-60 hover:opacity-80'
+                      ? 'glass-effect hover:border-primary/30' 
+                      : 'bg-muted/20 opacity-50'
                   }`}
-                  data-testid={`category-card-${category.slug}`}
                 >
-                  <h3 className={`text-base lg:text-lg font-heading font-bold mb-2 ${
-                    hasDeals ? 'group-hover:text-gradient' : 'text-muted-foreground'
+                  <h3 className={`text-base font-heading font-semibold mb-2 ${
+                    hasDeals ? 'group-hover:text-primary' : 'text-muted-foreground'
                   }`}>
                     {category.name}
                   </h3>
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-2 text-sm">
-                      <Tag className={`w-3.5 h-3.5 ${hasDeals ? 'text-pink-500' : 'text-muted-foreground/50'}`} />
-                      <span className={hasDeals ? 'text-foreground' : 'text-muted-foreground/60'}>
-                        {hasDeals ? (
-                          <><span className="font-medium">{category.total_deals}</span> indirim</>
-                        ) : (
-                          <span className="text-xs">Henüz indirim yok</span>
-                        )}
+                  <div className="space-y-1 text-sm">
+                    <div className="flex items-center gap-1.5">
+                      <Tag className={`w-3 h-3 ${hasDeals ? 'text-pink-500' : 'text-muted-foreground/40'}`} />
+                      <span className={hasDeals ? 'text-muted-foreground' : 'text-muted-foreground/40'}>
+                        {category.total_deals || 0} indirim
                       </span>
                     </div>
-                    <div className="flex items-center gap-2 text-sm">
-                      <Store className={`w-3.5 h-3.5 ${category.store_count > 0 ? 'text-blue-500' : 'text-muted-foreground/50'}`} />
-                      <span className={category.store_count > 0 ? 'text-foreground' : 'text-muted-foreground/60'}>
-                        {category.store_count > 0 ? (
-                          <><span className="font-medium">{category.store_count}</span> mağaza</>
-                        ) : (
-                          <span className="text-xs">Henüz mağaza yok</span>
-                        )}
+                    <div className="flex items-center gap-1.5">
+                      <Store className={`w-3 h-3 ${category.store_count > 0 ? 'text-blue-500' : 'text-muted-foreground/40'}`} />
+                      <span className={category.store_count > 0 ? 'text-muted-foreground' : 'text-muted-foreground/40'}>
+                        {category.store_count || 0} mağaza
                       </span>
                     </div>
                   </div>
@@ -314,25 +236,18 @@ const HomePage = () => {
         </section>
 
         {/* ═══════════════════════════════════════════════════════════════
-            5️⃣ BUGÜN POPÜLER BÖLÜMÜ
+            4️⃣ BUGÜN POPÜLER
         ═══════════════════════════════════════════════════════════════ */}
         {popularItems.length > 0 && (
-          <section className="container mx-auto px-4 py-8 lg:py-12">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="p-2 rounded-xl bg-primary/20">
-                <TrendingUp className="w-6 h-6 text-primary" />
-              </div>
-              <div>
-                <h2 className="text-2xl lg:text-3xl font-heading font-bold">
-                  Bugün En Çok Tıklananlar
-                </h2>
-                <p className="text-muted-foreground text-sm">
-                  indirimliMi kullanıcılarına göre
-                </p>
-              </div>
+          <section className="container mx-auto px-4 py-8">
+            <div className="flex items-center gap-2 mb-5">
+              <TrendingUp className="w-5 h-5 text-primary" />
+              <h2 className="text-xl font-heading font-bold">
+                Bugün Popüler
+              </h2>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {popularItems.map((item) => {
                 const brand = brandMap[item.brand_id] || { 
                   name: item.brand_name, 
@@ -351,14 +266,14 @@ const HomePage = () => {
         )}
 
         {/* ═══════════════════════════════════════════════════════════════
-            6️⃣ SEO / KEŞİF ALANI
+            5️⃣ POPÜLER ARAMALAR (SEO)
         ═══════════════════════════════════════════════════════════════ */}
-        <section className="container mx-auto px-4 py-8 lg:py-12 border-t border-border">
-          <div className="flex items-center gap-2 mb-6">
-            <Search className="w-5 h-5 text-muted-foreground" />
-            <h2 className="text-lg font-heading font-bold text-muted-foreground">
+        <section className="container mx-auto px-4 py-8 border-t border-border">
+          <div className="flex items-center gap-2 mb-4">
+            <Search className="w-4 h-4 text-muted-foreground" />
+            <h3 className="text-sm font-heading text-muted-foreground">
               Popüler Aramalar
-            </h2>
+            </h3>
           </div>
 
           <div className="flex flex-wrap gap-2">
@@ -366,8 +281,7 @@ const HomePage = () => {
               <Link
                 key={index}
                 to={search.to}
-                className="px-4 py-2 bg-muted hover:bg-primary/10 rounded-lg text-sm text-muted-foreground hover:text-foreground transition-colors"
-                data-testid={`popular-search-${index}`}
+                className="px-3 py-1.5 bg-muted/50 hover:bg-muted rounded-md text-sm text-muted-foreground hover:text-foreground transition-colors"
               >
                 {search.label}
               </Link>
@@ -376,30 +290,10 @@ const HomePage = () => {
         </section>
 
         {/* ═══════════════════════════════════════════════════════════════
-            7️⃣ NEWSLETTER ALANI
+            6️⃣ NEWSLETTER
         ═══════════════════════════════════════════════════════════════ */}
         <Newsletter />
 
-        {/* Submit Coupon CTA */}
-        <section className="container mx-auto px-4 py-8 lg:py-12">
-          <div className="max-w-2xl mx-auto glass-effect p-6 lg:p-10 rounded-3xl text-center">
-            <h2 className="text-xl lg:text-2xl font-heading font-bold mb-3 text-gradient">
-              Kuponunuz mu Var?
-            </h2>
-            <p className="text-muted-foreground mb-6 text-sm lg:text-base">
-              Paylaşın, diğer kullanıcılar da faydalanıp tasarruf etsin!
-            </p>
-            <a
-              href="https://forms.google.com/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-block px-6 py-3 bg-gradient-to-r from-primary to-pink-500 rounded-lg font-medium hover:shadow-lg hover:shadow-primary/50 transition-all"
-              data-testid="submit-coupon-cta"
-            >
-              Kupon Gönder
-            </a>
-          </div>
-        </section>
       </div>
     </>
   );
