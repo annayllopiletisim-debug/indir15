@@ -3,7 +3,7 @@ import axios from 'axios';
 import { Plus, Pencil, Trash2, Search, FileText, Upload } from 'lucide-react';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
-import { getToken } from '../../utils/auth';
+import { getAuthToken } from '../../utils/auth';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 

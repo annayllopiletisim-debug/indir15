@@ -3,7 +3,7 @@ import { Helmet } from 'react-helmet-async';
 import api from '../../utils/api';
 import { Plus, Edit, Trash2, X, Upload, Link as LinkIcon } from 'lucide-react';
 import BrandLogo from '../../components/BrandLogo';
-import { getToken } from '../../utils/auth';
+import { getAuthToken } from '../../utils/auth';
 import axios from 'axios';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
