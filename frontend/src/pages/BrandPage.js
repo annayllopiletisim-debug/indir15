@@ -112,18 +112,18 @@ const BrandPage = () => {
         <div className="container mx-auto px-4 py-8">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             <TabsList className="grid w-full grid-cols-4 max-w-3xl mx-auto mb-8" data-testid="brand-tabs">
-              <TabsTrigger value="all" data-testid="tab-all">
-                Tümü <span className="ml-2 text-xs">({allItems.length})</span>
+              <TabsTrigger value="all" data-testid="tab-all" className="text-base font-semibold">
+                Tümü <span className="ml-2 px-2 py-0.5 rounded-full bg-accent/20 text-sm font-bold">{allItems.length}</span>
               </TabsTrigger>
-              <TabsTrigger value="coupons" data-testid="tab-coupons">
-                Kuponlar <span className="ml-2 text-xs">({coupons.length})</span>
+              <TabsTrigger value="coupons" data-testid="tab-coupons" className="text-base font-semibold">
+                Kuponlar <span className="ml-2 px-2 py-0.5 rounded-full bg-neon-purple/20 text-sm font-bold">{coupons.length}</span>
               </TabsTrigger>
-              <TabsTrigger value="discounts" data-testid="tab-discounts">
-                İndirimler <span className="ml-2 text-xs">({discounts.length})</span>
+              <TabsTrigger value="discounts" data-testid="tab-discounts" className="text-base font-semibold">
+                İndirimler <span className="ml-2 px-2 py-0.5 rounded-full bg-neon-blue/20 text-sm font-bold">{discounts.length}</span>
               </TabsTrigger>
               {brand.app_install_enabled && (
-                <TabsTrigger value="app" data-testid="tab-app">
-                  Uygulama
+                <TabsTrigger value="app" data-testid="tab-app" className="text-base font-semibold">
+                  App
                 </TabsTrigger>
               )}
             </TabsList>
