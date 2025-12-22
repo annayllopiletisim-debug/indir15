@@ -90,6 +90,14 @@ function App() {
             }
           />
           <Route
+            path="/son-24-saat"
+            element={
+              <PublicLayout>
+                <ExpiringSoonPage />
+              </PublicLayout>
+            }
+          />
+          <Route
             path="/iletisim"
             element={
               <PublicLayout>
