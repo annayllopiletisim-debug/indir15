@@ -283,7 +283,7 @@ const AdminBrandsPage = () => {
                     }`}
                   >
                     <LinkIcon className="w-4 h-4" />
-                    URL'den Al
+                    URL&apos;den Al
                   </button>
                 </div>
 
