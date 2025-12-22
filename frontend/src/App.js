@@ -103,7 +103,6 @@ function App() {
             <Route path="brands" element={<AdminBrandsPage />} />
             <Route path="coupons" element={<AdminCouponsPage />} />
             <Route path="discounts" element={<AdminDiscountsPage />} />
-            <Route path="catalogs" element={<AdminCatalogsPage />} />
             <Route path="keywords" element={<AdminKeywordsPage />} />
             <Route path="hero-slides" element={<AdminHeroSlidesPage />} />
           </Route>
