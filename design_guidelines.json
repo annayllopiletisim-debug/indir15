@@ -1,0 +1,152 @@
+{
+  "identity": {
+    "name": "E1",
+    "role": "Anti-AI Creative Designer",
+    "mission": "Create a 'Neon Noir' tech-style coupon platform that feels like a cyberpunk marketplace, not a spreadsheet."
+  },
+  "theme": {
+    "name": "Neon Noir",
+    "mode": "dark",
+    "vibe": "Cyberpunk, Vaporwave, High-Tech, Glassmorphism",
+    "emotional_tone": "Excitement, Exclusivity, Speed"
+  },
+  "typography": {
+    "headings": {
+      "family": "Outfit, sans-serif",
+      "weights": ["500", "700"],
+      "usage": "All section titles, brand names, and hero text. Use tight tracking (-0.02em)."
+    },
+    "body": {
+      "family": "Inter, sans-serif",
+      "weights": ["400", "500"],
+      "usage": "Descriptions, terms, buttons, and metadata."
+    },
+    "mono": {
+      "family": "JetBrains Mono, monospace",
+      "usage": "Coupon codes and countdown timers."
+    }
+  },
+  "colors": {
+    "background": {
+      "default": "#0B0C15",
+      "paper": "#12141C",
+      "subtle": "#181823"
+    },
+    "primary": {
+      "main": "#8B5CF6",
+      "gradient": "linear-gradient(135deg, #8B5CF6 0%, #EC4899 100%)",
+      "glow": "0 0 20px rgba(139, 92, 246, 0.5)"
+    },
+    "secondary": {
+      "main": "#3B82F6",
+      "gradient": "linear-gradient(135deg, #3B82F6 0%, #06B6D4 100%)"
+    },
+    "text": {
+      "primary": "#FFFFFF",
+      "secondary": "#94A3B8",
+      "muted": "#64748B"
+    },
+    "status": {
+      "active": "#10B981",
+      "expired": "#EF4444",
+      "warning": "#F59E0B"
+    },
+    "border": {
+      "default": "rgba(255, 255, 255, 0.1)",
+      "hover": "rgba(255, 255, 255, 0.2)"
+    }
+  },
+  "visual_enhancers": {
+    "glassmorphism": {
+      "default": "backdrop-filter: blur(12px); background: rgba(18, 20, 28, 0.7); border: 1px solid rgba(255, 255, 255, 0.08);",
+      "heavy": "backdrop-filter: blur(24px); background: rgba(11, 12, 21, 0.85); border-bottom: 1px solid rgba(255, 255, 255, 0.05);"
+    },
+    "gradients": {
+      "hero_overlay": "linear-gradient(to top, #0B0C15 0%, transparent 100%)",
+      "text_gradient": "background-clip: text; -webkit-text-fill-color: transparent; background-image: linear-gradient(135deg, #C084FC 0%, #F472B6 100%);"
+    },
+    "shadows": {
+      "neon": "0 0 15px rgba(139, 92, 246, 0.3), 0 4px 6px rgba(0, 0, 0, 0.3)",
+      "card": "0 4px 20px rgba(0, 0, 0, 0.4)"
+    }
+  },
+  "layout_strategy": {
+    "container": {
+      "maxWidth": "max-w-7xl",
+      "padding": "px-4 md:px-8"
+    },
+    "grid": {
+      "brands": "grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4",
+      "coupons": "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+    },
+    "spacing": {
+      "section": "py-16 md:py-24",
+      "element": "mb-6"
+    }
+  },
+  "components": {
+    "HeroSlider": {
+      "description": "Full-width immersive slider with neon city vibes.",
+      "specs": "Height: 60vh (mobile) / 70vh (desktop). Content: Bottom-left aligned text with glassmorphic backing.",
+      "animation": "Parallax effect on scroll. Fade transition between slides."
+    },
+    "BrandCard": {
+      "description": "Minimalist logo container that glows on hover.",
+      "specs": "Aspect ratio 1:1 or 4:3. Centered logo. Background: Dark Grey (#181823). Border: 1px solid transparent (gradient on hover).",
+      "interaction": "Scale up 1.05 on hover. Border lights up with primary gradient."
+    },
+    "CouponCard": {
+      "description": "Digital ticket metaphor with a 'tear-off' section.",
+      "specs": "Left side: Brand info & Discount amount. Right side: Action button (Get Code). Separator: Dashed vertical line with semi-circle cutouts.",
+      "style": "Glassmorphism background. Dashed border separator."
+    },
+    "Tabs": {
+      "description": "Floating pill tabs or Underline tabs with sliding indicator.",
+      "specs": "Active state: Text gradient + Bottom border (or full pill background). Inactive: Text grey.",
+      "animation": "Framer Motion 'layoutId' for smooth sliding background/underline."
+    },
+    "Search": {
+      "description": "Global command center.",
+      "specs": "Large input field with search icon. Real-time filtering. Glassmorphic dropdown results.",
+      "location": "Sticky header or prominent hero section."
+    }
+  },
+  "image_urls": {
+    "hero": [
+      {
+        "url": "https://images.unsplash.com/photo-1758401690227-c1e8ab0fb456?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1Nzl8MHwxfHNlYXJjaHw0fHxzaG9wcGluZyUyMGV4Y2l0ZW1lbnQlMjBuZW9ufGVufDB8fHx8MTc2NjQwMTUwMHww&ixlib=rb-4.1.0&q=85",
+        "alt": "Neon City Shopping Night",
+        "category": "hero_background"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1765496307009-b1b7ec9fc7cf?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1Nzl8MHwxfHNlYXJjaHwzfHxzaG9wcGluZyUyMGV4Y2l0ZW1lbnQlMjBuZW9ufGVufDB8fHx8MTc2NjQwMTUwMHww&ixlib=rb-4.1.0&q=85",
+        "alt": "Vibrant Street Scene",
+        "category": "hero_background"
+      }
+    ],
+    "brands": [
+      {
+        "name": "Nike",
+        "url": "https://images.unsplash.com/photo-1637844528447-aee837ccfc7f?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2NzZ8MHwxfHNlYXJjaHwxfHxuaWtlJTIwbG9nbyUyMHdoaXRlJTIwYmFja2dyb3VuZHxlbnwwfHx8fDE3NjY0MDE1MDF8MA&ixlib=rb-4.1.0&q=85",
+        "alt": "Nike Neon Logo",
+        "category": "brand_logo"
+      }
+    ]
+  },
+  "instructions_to_main_agent": [
+    "1. SETUP: Install 'framer-motion', 'lucide-react', 'clsx', 'tailwind-merge' immediately.",
+    "2. THEME: Implement the 'Neon Noir' color palette in 'tailwind.config.js' extending the theme. Do NOT overwrite standard colors, EXTEND them.",
+    "3. FONTS: Import 'Outfit' and 'Inter' from Google Fonts in 'index.css'.",
+    "4. COMPONENTS: Build the 'CouponCard' with CSS masks for the 'ticket cutout' effect. This is a signature E1 move.",
+    "5. GRADIENTS: Use the primary gradient (Purple->Pink) for all primary CTAs and active states.",
+    "6. MOBILE: Ensure touch targets are at least 44px. Use bottom sheet drawers (Shadcn Drawer) for filters on mobile.",
+    "7. ADMIN: Keep the admin panel simple but use the same dark theme. Don't make it look like a boring dashboard. Use the 'Glassmorphism' cards for stats.",
+    "8. TESTID: Add 'data-testid' to all interactive elements (buttons, inputs, tabs)."
+  ],
+  "universal_guidelines": {
+    "design_philosophy": "Fusion over Imitation. Emotion First. Content is King.",
+    "anti_patterns": ["Purple/Teal for CTA (Use Gradient instead)", "Inter everywhere (Use Outfit for heads)", "Center-Everything (Use Asymmetry)"],
+    "spacing": "Use generous padding (p-6, p-8). Avoid cramped layouts.",
+    "accessibility": "Ensure text contrast is high. Use 'aria-label' for icon-only buttons."
+  }
+}
