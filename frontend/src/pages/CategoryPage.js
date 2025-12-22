@@ -4,7 +4,8 @@ import axios from 'axios';
 import BrandLogo from '../components/BrandLogo';
 import CouponCard from '../components/CouponCard';
 import DiscountCard from '../components/DiscountCard';
-import { Search, Check, X, Filter, ChevronRight, Tag } from 'lucide-react';
+import StickyActionBar from '../components/StickyActionBar';
+import { Search, Check, X, ChevronRight, Tag } from 'lucide-react';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
@@ -19,6 +20,22 @@ const CategoryPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedStores, setSelectedStores] = useState(new Set());
   const [showDeals, setShowDeals] = useState(false);
+  
+  // Site settings for sticky bar
+  const [siteSettings, setSiteSettings] = useState({ sticky_cta_enabled: true, sticky_cta_variant: "A" });
+
+  // Fetch site settings
+  useEffect(() => {
+    const fetchSettings = async () => {
+      try {
+        const res = await axios.get(`${API}/site-settings`);
+        setSiteSettings(res.data);
+      } catch (error) {
+        console.log('Using default site settings');
+      }
+    };
+    fetchSettings();
+  }, []);
 
   // SEO Meta Tags via DOM manipulation
   useEffect(() => {
@@ -122,19 +139,22 @@ const CategoryPage = () => {
     setShowDeals(false);
   };
 
+  // Get selected brand IDs for StickyActionBar
+  const selectedBrandIds = useMemo(() => {
+    return brands
+      .filter(b => selectedStores.has(b.slug))
+      .map(b => b.id);
+  }, [selectedStores, brands]);
+
   // Get filtered deals based on selected stores
   const filteredDeals = useMemo(() => {
     if (selectedStores.size === 0) return { coupons: [], discounts: [] };
-    
-    const selectedBrandIds = brands
-      .filter(b => selectedStores.has(b.slug))
-      .map(b => b.id);
     
     return {
       coupons: allCoupons.filter(c => selectedBrandIds.includes(c.brand_id)),
       discounts: allDiscounts.filter(d => selectedBrandIds.includes(d.brand_id))
     };
-  }, [selectedStores, brands, allCoupons, allDiscounts]);
+  }, [selectedStores, selectedBrandIds, allCoupons, allDiscounts]);
 
   // Brand map for cards
   const brandMap = useMemo(() => {
@@ -186,177 +206,171 @@ const CategoryPage = () => {
   const totalDeals = allCoupons.length + allDiscounts.length;
 
   return (
-    <div className="min-h-screen" data-testid="category-page">
-      {/* Header */}
-      <div className="bg-card border-b border-border">
-        <div className="container mx-auto px-4 py-8">
-          <h1 className="text-3xl font-heading font-bold mb-2">{category.name}</h1>
-          <p className="text-muted-foreground">
-            {brands.length} mağaza, {totalDeals} aktif indirim
-          </p>
+    <>
+      <div className="min-h-screen pb-20" data-testid="category-page">
+        {/* Header */}
+        <div className="bg-card border-b border-border">
+          <div className="container mx-auto px-4 py-8">
+            <h1 className="text-3xl font-heading font-bold mb-2">{category.name}</h1>
+            <p className="text-muted-foreground">
+              {brands.length} mağaza, {totalDeals} aktif indirim
+            </p>
+          </div>
         </div>
-      </div>
 
-      <div className="container mx-auto px-4 py-6">
-        {/* Search & Selection Bar */}
-        <div className="flex flex-col sm:flex-row gap-4 mb-6">
+        <div className="container mx-auto px-4 py-6">
           {/* Search */}
-          <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-            <input
-              type="text"
-              placeholder="Mağaza ara..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-3 bg-card border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary text-foreground"
-            />
+          <div className="flex flex-col sm:flex-row gap-4 mb-6">
+            <div className="flex-1 relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+              <input
+                type="text"
+                placeholder="Mağaza ara..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-10 pr-4 py-3 bg-card border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary text-foreground"
+              />
+            </div>
           </div>
 
-          {/* Selection Actions */}
-          {selectedStores.size > 0 && (
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => setShowDeals(true)}
-                className="flex items-center gap-2 px-4 py-3 bg-primary text-white rounded-xl font-medium hover:bg-primary/90 transition-colors"
-              >
-                <Filter className="w-4 h-4" />
-                <span>İndirimleri Göster ({selectedStores.size})</span>
-              </button>
-              <button
-                onClick={clearSelection}
-                className="p-3 bg-muted rounded-xl hover:bg-muted/80 transition-colors"
-                title="Seçimi temizle"
-              >
-                <X className="w-5 h-5" />
-              </button>
+          {/* Selected Stores Pills */}
+          {selectedStores.size > 0 && !showDeals && (
+            <div className="flex flex-wrap gap-2 mb-6">
+              <span className="text-sm text-muted-foreground py-1">Seçili:</span>
+              {Array.from(selectedStores).map(slug => {
+                const brand = brands.find(b => b.slug === slug);
+                return brand ? (
+                  <button
+                    key={slug}
+                    onClick={() => toggleStore(slug)}
+                    className="flex items-center gap-1.5 px-3 py-1.5 bg-primary/10 text-primary rounded-full text-sm hover:bg-primary/20 transition-colors"
+                  >
+                    {brand.name}
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                ) : null;
+              })}
             </div>
           )}
-        </div>
 
-        {/* Selected Stores Pills */}
-        {selectedStores.size > 0 && (
-          <div className="flex flex-wrap gap-2 mb-6">
-            <span className="text-sm text-muted-foreground py-1">Seçili:</span>
-            {Array.from(selectedStores).map(slug => {
-              const brand = brands.find(b => b.slug === slug);
-              return brand ? (
+          {/* Deals View */}
+          {showDeals && selectedStores.size > 0 ? (
+            <div>
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-xl font-heading font-bold">
+                  Seçili Mağazaların İndirimleri ({filteredDeals.coupons.length + filteredDeals.discounts.length})
+                </h2>
                 <button
-                  key={slug}
-                  onClick={() => toggleStore(slug)}
-                  className="flex items-center gap-1.5 px-3 py-1.5 bg-primary/10 text-primary rounded-full text-sm hover:bg-primary/20 transition-colors"
+                  onClick={() => setShowDeals(false)}
+                  className="text-sm text-muted-foreground hover:text-foreground transition-colors"
                 >
-                  {brand.name}
-                  <X className="w-3.5 h-3.5" />
+                  ← Mağazalara dön
                 </button>
-              ) : null;
-            })}
-          </div>
-        )}
+              </div>
 
-        {/* Deals View */}
-        {showDeals && selectedStores.size > 0 ? (
-          <div>
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-heading font-bold">
-                Seçili Mağazaların İndirimleri
-              </h2>
-              <button
-                onClick={() => setShowDeals(false)}
-                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-              >
-                ← Mağazalara dön
-              </button>
+              {filteredDeals.coupons.length === 0 && filteredDeals.discounts.length === 0 ? (
+                <div className="text-center py-16 glass-effect rounded-2xl">
+                  <Tag className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
+                  <p className="text-muted-foreground">Seçili mağazalarda aktif indirim bulunamadı.</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {filteredDeals.coupons.map(coupon => (
+                    <CouponCard 
+                      key={coupon.id} 
+                      coupon={coupon} 
+                      brand={brandMap[coupon.brand_id]} 
+                    />
+                  ))}
+                  {filteredDeals.discounts.map(discount => (
+                    <DiscountCard 
+                      key={discount.id} 
+                      discount={discount} 
+                      brand={brandMap[discount.brand_id]} 
+                    />
+                  ))}
+                </div>
+              )}
             </div>
+          ) : (
+            /* Stores Grid - Alphabetically sorted like StoresPage */
+            <>
+              {letters.length === 0 ? (
+                <div className="text-center py-16">
+                  <p className="text-muted-foreground">Mağaza bulunamadı.</p>
+                </div>
+              ) : (
+                <div className="space-y-8">
+                  {letters.map((letter) => (
+                    <div key={letter}>
+                      <h2 className="text-2xl font-heading font-bold text-primary mb-4">
+                        {letter}
+                      </h2>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+                        {groupedBrands[letter].map((brand) => {
+                          const isSelected = selectedStores.has(brand.slug);
+                          return (
+                            <button
+                              key={brand.id}
+                              onClick={() => toggleStore(brand.slug)}
+                              className={`group p-4 rounded-xl text-left transition-all flex items-center gap-3 ${
+                                isSelected 
+                                  ? 'bg-primary/10 border-2 border-primary' 
+                                  : 'glass-effect hover:border-primary/30'
+                              }`}
+                            >
+                              {/* Checkbox */}
+                              <div className={`w-5 h-5 rounded flex-shrink-0 flex items-center justify-center border-2 transition-colors ${
+                                isSelected 
+                                  ? 'bg-primary border-primary' 
+                                  : 'border-muted-foreground/30'
+                              }`}>
+                                {isSelected && <Check className="w-3 h-3 text-white" />}
+                              </div>
 
-            {filteredDeals.coupons.length === 0 && filteredDeals.discounts.length === 0 ? (
-              <div className="text-center py-16 glass-effect rounded-2xl">
-                <Tag className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
-                <p className="text-muted-foreground">Seçili mağazalarda aktif indirim bulunamadı.</p>
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {filteredDeals.coupons.map(coupon => (
-                  <CouponCard 
-                    key={coupon.id} 
-                    coupon={coupon} 
-                    brand={brandMap[coupon.brand_id]} 
-                  />
-                ))}
-                {filteredDeals.discounts.map(discount => (
-                  <DiscountCard 
-                    key={discount.id} 
-                    discount={discount} 
-                    brand={brandMap[discount.brand_id]} 
-                  />
-                ))}
-              </div>
-            )}
-          </div>
-        ) : (
-          /* Stores Grid - Alphabetically sorted like StoresPage */
-          <>
-            {letters.length === 0 ? (
-              <div className="text-center py-16">
-                <p className="text-muted-foreground">Mağaza bulunamadı.</p>
-              </div>
-            ) : (
-              <div className="space-y-8">
-                {letters.map((letter) => (
-                  <div key={letter}>
-                    <h2 className="text-2xl font-heading font-bold text-primary mb-4">
-                      {letter}
-                    </h2>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
-                      {groupedBrands[letter].map((brand) => {
-                        const isSelected = selectedStores.has(brand.slug);
-                        return (
-                          <button
-                            key={brand.id}
-                            onClick={() => toggleStore(brand.slug)}
-                            className={`group p-4 rounded-xl text-left transition-all flex items-center gap-3 ${
-                              isSelected 
-                                ? 'bg-primary/10 border-2 border-primary' 
-                                : 'glass-effect hover:border-primary/30'
-                            }`}
-                          >
-                            {/* Checkbox */}
-                            <div className={`w-5 h-5 rounded flex-shrink-0 flex items-center justify-center border-2 transition-colors ${
-                              isSelected 
-                                ? 'bg-primary border-primary' 
-                                : 'border-muted-foreground/30'
-                            }`}>
-                              {isSelected && <Check className="w-3 h-3 text-white" />}
-                            </div>
+                              {/* Logo */}
+                              <BrandLogo logoUrl={brand.logo_url} brandName={brand.name} size="sm" />
 
-                            {/* Logo */}
-                            <BrandLogo logoUrl={brand.logo_url} brandName={brand.name} size="sm" />
+                              {/* Info */}
+                              <div className="flex-1 min-w-0">
+                                <h3 className="font-medium truncate">{brand.name}</h3>
+                                {brand.deal_count > 0 ? (
+                                  <p className="text-sm text-primary">{brand.deal_count} indirim</p>
+                                ) : (
+                                  <p className="text-xs text-muted-foreground">İndirim yok</p>
+                                )}
+                              </div>
 
-                            {/* Info */}
-                            <div className="flex-1 min-w-0">
-                              <h3 className="font-medium truncate">{brand.name}</h3>
-                              {brand.deal_count > 0 ? (
-                                <p className="text-sm text-primary">{brand.deal_count} indirim</p>
-                              ) : (
-                                <p className="text-xs text-muted-foreground">İndirim yok</p>
-                              )}
-                            </div>
-
-                            {/* Arrow */}
-                            <ChevronRight className={`w-4 h-4 text-muted-foreground transition-transform ${
-                              isSelected ? 'rotate-90' : ''
-                            }`} />
-                          </button>
-                        );
-                      })}
+                              {/* Arrow */}
+                              <ChevronRight className={`w-4 h-4 text-muted-foreground transition-transform ${
+                                isSelected ? 'rotate-90' : ''
+                              }`} />
+                            </button>
+                          );
+                        })}
+                      </div>
                     </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </>
-        )}
+                  ))}
+                </div>
+              )}
+            </>
+          )}
+        </div>
       </div>
-    </div>
+
+      {/* Sticky Action Bar */}
+      {!showDeals && (
+        <StickyActionBar
+          selectedCount={selectedStores.size}
+          selectedBrandIds={selectedBrandIds}
+          categoryId={category?.id}
+          onShowDeals={() => setShowDeals(true)}
+          onClear={clearSelection}
+          variant={siteSettings.sticky_cta_variant}
+          isEnabled={siteSettings.sticky_cta_enabled}
+        />
+      )}
+    </>
   );
 };
 
