@@ -20,12 +20,26 @@ import aiofiles
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
 
+# Create uploads directory
+UPLOADS_DIR = ROOT_DIR / 'uploads'
+LOGOS_DIR = UPLOADS_DIR / 'logos'
+PDFS_DIR = UPLOADS_DIR / 'pdfs'
+LOGOS_DIR.mkdir(parents=True, exist_ok=True)
+PDFS_DIR.mkdir(parents=True, exist_ok=True)
+
+# File size limits
+MAX_LOGO_SIZE = 2 * 1024 * 1024  # 2MB
+MAX_PDF_SIZE = 10 * 1024 * 1024  # 10MB
+
 mongo_url = os.environ['MONGO_URL']
 client = AsyncIOMotorClient(mongo_url)
 db = client[os.environ['DB_NAME']]
 
 app = FastAPI()
 api_router = APIRouter(prefix="/api")
+
+# Serve static files for uploads
+app.mount("/uploads", StaticFiles(directory=str(UPLOADS_DIR)), name="uploads")
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 security = HTTPBearer()
