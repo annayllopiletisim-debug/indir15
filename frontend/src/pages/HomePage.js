@@ -10,8 +10,6 @@ import { trackClick, buildUTMLink } from '../utils/helpers';
 import { 
   ChevronRight, 
   Clock, 
-  Tag, 
-  Store, 
   TrendingUp,
   Search,
   Copy,
