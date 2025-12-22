@@ -892,12 +892,26 @@ async def get_analytics_dashboard(period: str = "7d", user: AdminUser = Depends(
 @api_router.get("/search")
 async def search(q: str):
     query_regex = {'$regex': q, '$options': 'i'}
+    query_lower = q.lower()
     
-    # Category match (highest priority)
+    # First, check keyword mappings for intent-based search
+    keyword_mapping = await db.keyword_mappings.find_one({
+        'keyword': query_lower,
+        'is_active': True
+    }, {'_id': 0})
+    
+    mapped_brands = []
+    if keyword_mapping:
+        # Get brands from keyword mapping (in priority order)
+        for brand_id in keyword_mapping.get('brand_ids', []):
+            brand = await db.brands.find_one({'id': brand_id}, {'_id': 0})
+            if brand:
+                mapped_brands.append(brand)
+    
+    # Category match
     categories = await db.categories.find({'name': query_regex}, {'_id': 0}).limit(5).to_list(5)
     
     # If category found, get brands in that category
-    category_brand_ids = []
     if categories:
         category_ids = [cat['id'] for cat in categories]
         category_brands = await db.brands.find(
@@ -908,10 +922,19 @@ async def search(q: str):
         category_brands = []
     
     # Direct brand match
-    brands = await db.brands.find({'name': query_regex}, {'_id': 0}).limit(10).to_list(10)
+    direct_brands = await db.brands.find({'name': query_regex}, {'_id': 0}).limit(10).to_list(10)
     
-    # Merge and dedupe brands
-    all_brands_dict = {b['id']: b for b in category_brands + brands}
+    # Merge brands: mapped brands first (priority), then category brands, then direct matches
+    all_brands_dict = {}
+    for b in mapped_brands:
+        all_brands_dict[b['id']] = b
+    for b in category_brands:
+        if b['id'] not in all_brands_dict:
+            all_brands_dict[b['id']] = b
+    for b in direct_brands:
+        if b['id'] not in all_brands_dict:
+            all_brands_dict[b['id']] = b
+    
     all_brands = list(all_brands_dict.values())[:15]
     
     # Get coupons
@@ -956,7 +979,8 @@ async def search(q: str):
         'brands': all_brands,
         'coupons': coupons,
         'discounts': discounts,
-        'catalogs': catalogs
+        'catalogs': catalogs,
+        'keyword_matched': keyword_mapping is not None
     }
 
 app.include_router(api_router)
