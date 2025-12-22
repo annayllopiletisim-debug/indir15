@@ -585,19 +585,70 @@ async def get_analytics_dashboard(user: AdminUser = Depends(get_current_user)):
 async def search(q: str):
     query_regex = {'$regex': q, '$options': 'i'}
     
+    # Category match (highest priority)
     categories = await db.categories.find({'name': query_regex}, {'_id': 0}).limit(5).to_list(5)
+    
+    # If category found, get brands in that category
+    category_brand_ids = []
+    if categories:
+        category_ids = [cat['id'] for cat in categories]
+        category_brands = await db.brands.find(
+            {'category_id': {'$in': category_ids}},
+            {'_id': 0}
+        ).limit(20).to_list(20)
+    else:
+        category_brands = []
+    
+    # Direct brand match
     brands = await db.brands.find({'name': query_regex}, {'_id': 0}).limit(10).to_list(10)
+    
+    # Merge and dedupe brands
+    all_brands_dict = {b['id']: b for b in category_brands + brands}
+    all_brands = list(all_brands_dict.values())[:15]
+    
+    # Get coupons
     coupons = await db.coupons.find(
-        {'$or': [{'title': query_regex}, {'code': query_regex}]},
+        {'$or': [{'title': query_regex}, {'code': query_regex}, {'description': query_regex}]},
+        {'_id': 0}
+    ).limit(15).to_list(15)
+    
+    # Get discounts
+    discounts = await db.discounts.find(
+        {'$or': [{'title': query_regex}, {'description': query_regex}]},
+        {'_id': 0}
+    ).limit(15).to_list(15)
+    
+    # Get catalogs
+    catalogs = await db.catalogs.find(
+        {'$or': [{'title': query_regex}, {'description': query_regex}]},
         {'_id': 0}
     ).limit(10).to_list(10)
-    discounts = await db.discounts.find({'title': query_regex}, {'_id': 0}).limit(10).to_list(10)
+    
+    # For each result type, enrich with brand info if needed
+    for coupon in coupons:
+        brand = await db.brands.find_one({'id': coupon['brand_id']}, {'_id': 0})
+        if brand:
+            coupon['brand_name'] = brand['name']
+            coupon['brand_slug'] = brand['slug']
+    
+    for discount in discounts:
+        brand = await db.brands.find_one({'id': discount['brand_id']}, {'_id': 0})
+        if brand:
+            discount['brand_name'] = brand['name']
+            discount['brand_slug'] = brand['slug']
+    
+    for catalog in catalogs:
+        brand = await db.brands.find_one({'id': catalog['brand_id']}, {'_id': 0})
+        if brand:
+            catalog['brand_name'] = brand['name']
+            catalog['brand_slug'] = brand['slug']
     
     return {
         'categories': categories,
-        'brands': brands,
+        'brands': all_brands,
         'coupons': coupons,
-        'discounts': discounts
+        'discounts': discounts,
+        'catalogs': catalogs
     }
 
 app.include_router(api_router)
