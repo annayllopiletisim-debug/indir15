@@ -6,11 +6,17 @@ import { trackClick, buildUTMLink } from '../utils/helpers';
 const DiscountCard = ({ discount, brand }) => {
   const handleClick = () => {
     trackClick('discount_click', discount.id, discount.brand_id, brand?.category_id);
-    const finalUrl = buildUTMLink(discount.destination_url, discount.utm_template, discount.id);
-    window.open(finalUrl, '_blank');
+    if (discount.destination_url) {
+      const finalUrl = buildUTMLink(discount.destination_url, discount.utm_template, discount.id);
+      window.open(finalUrl, '_blank');
+    }
   };
 
   const isExpired = discount.expiry_date && new Date(discount.expiry_date) < new Date();
+
+  // Get brand info - either from passed brand object or from discount itself
+  const brandName = brand?.name || discount.brand_name;
+  const brandSlug = brand?.slug || discount.brand_slug;
 
   const actions = (
     <div className="flex items-center space-x-2">
@@ -35,6 +41,8 @@ const DiscountCard = ({ discount, brand }) => {
       expiryDate={discount.expiry_date}
       isActive={true}
       showActiveStatus={false}
+      brandName={brandName}
+      brandSlug={brandSlug}
       actions={actions}
       testId={`discount-card-${discount.id}`}
     />
