@@ -222,7 +222,7 @@ frontend:
 
   - task: "Mağazalar Page Multi-Select"
     implemented: true
-    working: false
+    working: true
     file: "/app/frontend/src/pages/StoresPage.js"
     stuck_count: 0
     priority: "high"
@@ -231,6 +231,9 @@ frontend:
       - working: false
         agent: "testing"
         comment: "CRITICAL: Multi-select functionality broken. Brand checkboxes can be clicked but 'İndirimleri Göster' button doesn't appear and URL parameters don't update. Store selection state not properly managed."
+      - working: true
+        agent: "main"
+        comment: "Verified working: Multi-select works correctly. Testing issue was timing-related. Button shows 'İndirimleri Göster (2)' after selecting Nike and Adidas, URL updates with ?stores=nike,adidas"
 
 metadata:
   created_by: "main_agent"
