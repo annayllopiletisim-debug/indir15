@@ -10,7 +10,6 @@ import {
   Flame, 
   Tag, 
   Store, 
-  Zap,
   TrendingUp,
   Shirt,
   Smartphone,
@@ -111,9 +110,49 @@ const HomePage = () => {
       </Helmet>
 
       <div className="min-h-screen" data-testid="home-page">
-        
+
         {/* ═══════════════════════════════════════════════════════════════
-            1️⃣ HERO AREA = SON 24 SAAT (ZORUNLU - EN ÜST)
+            1️⃣ SIK TERCİH EDİLEN MAĞAZALAR (EN ÜST - MENÜ ALTINDA)
+        ═══════════════════════════════════════════════════════════════ */}
+        {brands.length > 0 && (
+          <section className="container mx-auto px-4 py-6 lg:py-8">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg lg:text-xl font-heading font-bold">
+                Sık Tercih Edilen Mağazalar
+              </h2>
+              <Link
+                to="/magazalar"
+                className="flex items-center gap-1 text-primary hover:text-pink-500 transition-colors text-sm"
+                data-testid="view-all-stores-link"
+              >
+                <span>Tümü</span>
+                <ChevronRight className="w-4 h-4" />
+              </Link>
+            </div>
+
+            <div className="flex gap-3 overflow-x-auto pb-2 -mx-4 px-4 snap-x snap-mandatory scrollbar-hide">
+              {brands.slice(0, 12).map((brand) => (
+                <Link
+                  key={brand.id}
+                  to={`/magaza/${brand.slug}`}
+                  className="flex-shrink-0 snap-start glass-effect px-4 py-3 rounded-xl hover:border-primary/50 transition-all flex items-center gap-3 min-w-[160px]"
+                  data-testid={`brand-card-${brand.slug}`}
+                >
+                  <BrandLogo logoUrl={brand.logo_url} brandName={brand.name} size="sm" />
+                  <div className="min-w-0">
+                    <h3 className="font-medium text-sm truncate">{brand.name}</h3>
+                    {brand.active_deal_count > 0 && (
+                      <p className="text-xs text-primary">{brand.active_deal_count} indirim</p>
+                    )}
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* ═══════════════════════════════════════════════════════════════
+            2️⃣ HERO AREA = SON 24 SAAT
         ═══════════════════════════════════════════════════════════════ */}
         <section className="bg-gradient-to-br from-orange-500/20 via-red-500/10 to-transparent">
           <div className="container mx-auto px-4 py-8 lg:py-12">
@@ -184,7 +223,7 @@ const HomePage = () => {
         </section>
 
         {/* ═══════════════════════════════════════════════════════════════
-            2️⃣ HIZLI KARAR ALANI
+            3️⃣ HIZLI KARAR ALANI
         ═══════════════════════════════════════════════════════════════ */}
         <section className="container mx-auto px-4 py-8 lg:py-10">
           <div className="text-center mb-6">
@@ -209,7 +248,7 @@ const HomePage = () => {
         </section>
 
         {/* ═══════════════════════════════════════════════════════════════
-            3️⃣ KATEGORİLER (İSTATİSTİKLİ)
+            4️⃣ KATEGORİLER (İSTATİSTİKLİ)
         ═══════════════════════════════════════════════════════════════ */}
         <section className="container mx-auto px-4 py-8 lg:py-12">
           <div className="flex items-center justify-between mb-6">
@@ -218,7 +257,7 @@ const HomePage = () => {
             </h2>
             <Link
               to="/kategoriler"
-              className="flex items-center gap-1 text-neon-purple hover:text-neon-pink transition-colors text-sm"
+              className="flex items-center gap-1 text-primary hover:text-pink-500 transition-colors text-sm"
               data-testid="view-all-categories-link"
             >
               <span>Tümü</span>
@@ -236,7 +275,7 @@ const HomePage = () => {
                   to={`/kategori/${category.slug}`}
                   className={`group p-4 lg:p-5 rounded-2xl transition-all ${
                     hasDeals 
-                      ? 'glass-effect hover:border-neon-purple/50' 
+                      ? 'glass-effect hover:border-primary/50' 
                       : 'bg-muted/30 opacity-60 hover:opacity-80'
                   }`}
                   data-testid={`category-card-${category.slug}`}
@@ -248,7 +287,7 @@ const HomePage = () => {
                   </h3>
                   <div className="space-y-1">
                     <div className="flex items-center gap-2 text-sm">
-                      <Tag className={`w-3.5 h-3.5 ${hasDeals ? 'text-neon-pink' : 'text-muted-foreground/50'}`} />
+                      <Tag className={`w-3.5 h-3.5 ${hasDeals ? 'text-pink-500' : 'text-muted-foreground/50'}`} />
                       <span className={hasDeals ? 'text-foreground' : 'text-muted-foreground/60'}>
                         {hasDeals ? (
                           <><span className="font-medium">{category.total_deals}</span> indirim</>
@@ -258,7 +297,7 @@ const HomePage = () => {
                       </span>
                     </div>
                     <div className="flex items-center gap-2 text-sm">
-                      <Store className={`w-3.5 h-3.5 ${category.store_count > 0 ? 'text-neon-blue' : 'text-muted-foreground/50'}`} />
+                      <Store className={`w-3.5 h-3.5 ${category.store_count > 0 ? 'text-blue-500' : 'text-muted-foreground/50'}`} />
                       <span className={category.store_count > 0 ? 'text-foreground' : 'text-muted-foreground/60'}>
                         {category.store_count > 0 ? (
                           <><span className="font-medium">{category.store_count}</span> mağaza</>
@@ -275,13 +314,13 @@ const HomePage = () => {
         </section>
 
         {/* ═══════════════════════════════════════════════════════════════
-            4️⃣ BUGÜN POPÜLER BÖLÜMÜ
+            5️⃣ BUGÜN POPÜLER BÖLÜMÜ
         ═══════════════════════════════════════════════════════════════ */}
         {popularItems.length > 0 && (
           <section className="container mx-auto px-4 py-8 lg:py-12">
             <div className="flex items-center gap-3 mb-6">
-              <div className="p-2 rounded-xl bg-neon-purple/20">
-                <TrendingUp className="w-6 h-6 text-neon-purple" />
+              <div className="p-2 rounded-xl bg-primary/20">
+                <TrendingUp className="w-6 h-6 text-primary" />
               </div>
               <div>
                 <h2 className="text-2xl lg:text-3xl font-heading font-bold">
@@ -312,54 +351,7 @@ const HomePage = () => {
         )}
 
         {/* ═══════════════════════════════════════════════════════════════
-            5️⃣ SIK TERCİH EDİLEN MAĞAZALAR (AŞAĞI TAŞINDI)
-        ═══════════════════════════════════════════════════════════════ */}
-        {brands.length > 0 && (
-          <section className="container mx-auto px-4 py-8 lg:py-12">
-            <div className="flex items-center justify-between mb-6">
-              <div>
-                <h2 className="text-2xl lg:text-3xl font-heading font-bold mb-1">
-                  Sık Tercih Edilen Mağazalar
-                </h2>
-                <p className="text-muted-foreground text-sm">En çok ziyaret edilen markalar</p>
-              </div>
-              <Link
-                to="/magazalar"
-                className="flex items-center gap-1 text-neon-purple hover:text-neon-pink transition-colors text-sm"
-                data-testid="view-all-stores-link"
-              >
-                <span>Tümü</span>
-                <ChevronRight className="w-4 h-4" />
-              </Link>
-            </div>
-
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 lg:gap-4">
-              {brands.slice(0, 12).map((brand) => (
-                <Link
-                  key={brand.id}
-                  to={`/magaza/${brand.slug}`}
-                  className="group glass-effect p-4 rounded-xl hover:border-neon-purple/50 transition-all text-center"
-                  data-testid={`brand-card-${brand.slug}`}
-                >
-                  <div className="mb-3 flex justify-center">
-                    <BrandLogo logoUrl={brand.logo_url} brandName={brand.name} size="md" />
-                  </div>
-                  <h3 className="font-medium text-sm group-hover:text-neon-purple transition-colors mb-1">
-                    {brand.name}
-                  </h3>
-                  {brand.active_deal_count > 0 && (
-                    <p className="text-xs text-neon-pink">
-                      {brand.active_deal_count} aktif indirim
-                    </p>
-                  )}
-                </Link>
-              ))}
-            </div>
-          </section>
-        )}
-
-        {/* ═══════════════════════════════════════════════════════════════
-            6️⃣ SEO / KEŞİF ALANI (EN ALT)
+            6️⃣ SEO / KEŞİF ALANI
         ═══════════════════════════════════════════════════════════════ */}
         <section className="container mx-auto px-4 py-8 lg:py-12 border-t border-border">
           <div className="flex items-center gap-2 mb-6">
@@ -401,7 +393,7 @@ const HomePage = () => {
               href="https://forms.google.com/"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-block px-6 py-3 bg-gradient-to-r from-neon-purple to-neon-pink rounded-lg font-medium hover:shadow-lg hover:shadow-neon-purple/50 transition-all"
+              className="inline-block px-6 py-3 bg-gradient-to-r from-primary to-pink-500 rounded-lg font-medium hover:shadow-lg hover:shadow-primary/50 transition-all"
               data-testid="submit-coupon-cta"
             >
               Kupon Gönder
