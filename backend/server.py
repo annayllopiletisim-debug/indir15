@@ -341,6 +341,85 @@ async def delete_category(category_id: str, user: AdminUser = Depends(get_curren
         raise HTTPException(status_code=404, detail="Category not found")
     return {"message": "Category deleted"}
 
+# ================== UPLOAD ENDPOINTS ==================
+
+@api_router.post("/upload/logo", response_model=UploadResponse)
+async def upload_logo(file: UploadFile = File(...), user: AdminUser = Depends(get_current_user)):
+    # Validate file type
+    allowed_types = ['image/jpeg', 'image/png', 'image/webp', 'image/svg+xml']
+    if file.content_type not in allowed_types:
+        raise HTTPException(status_code=400, detail="Logo dosyası JPEG, PNG, WebP veya SVG formatında olmalıdır")
+    
+    # Read and check file size
+    content = await file.read()
+    if len(content) > MAX_LOGO_SIZE:
+        raise HTTPException(status_code=400, detail=f"Logo dosyası en fazla {MAX_LOGO_SIZE // (1024*1024)}MB olabilir")
+    
+    # Generate unique filename
+    ext = file.filename.split('.')[-1] if '.' in file.filename else 'png'
+    filename = f"{uuid.uuid4()}.{ext}"
+    filepath = LOGOS_DIR / filename
+    
+    # Save file
+    async with aiofiles.open(filepath, 'wb') as f:
+        await f.write(content)
+    
+    return UploadResponse(url=f"/uploads/logos/{filename}", filename=filename)
+
+@api_router.post("/upload/import-logo-from-url", response_model=UploadResponse)
+async def import_logo_from_url(url: str = Form(...), user: AdminUser = Depends(get_current_user)):
+    try:
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url, timeout=aiohttp.ClientTimeout(total=30)) as response:
+                if response.status != 200:
+                    raise HTTPException(status_code=400, detail="Logo URL'den indirilemedi")
+                
+                content = await response.read()
+                if len(content) > MAX_LOGO_SIZE:
+                    raise HTTPException(status_code=400, detail=f"Logo dosyası en fazla {MAX_LOGO_SIZE // (1024*1024)}MB olabilir")
+                
+                # Determine extension from content type or URL
+                content_type = response.headers.get('content-type', '')
+                if 'png' in content_type or url.endswith('.png'):
+                    ext = 'png'
+                elif 'svg' in content_type or url.endswith('.svg'):
+                    ext = 'svg'
+                elif 'webp' in content_type or url.endswith('.webp'):
+                    ext = 'webp'
+                else:
+                    ext = 'jpg'
+                
+                filename = f"{uuid.uuid4()}.{ext}"
+                filepath = LOGOS_DIR / filename
+                
+                async with aiofiles.open(filepath, 'wb') as f:
+                    await f.write(content)
+                
+                return UploadResponse(url=f"/uploads/logos/{filename}", filename=filename)
+    except aiohttp.ClientError as e:
+        raise HTTPException(status_code=400, detail=f"Logo URL'den indirilemedi: {str(e)}")
+
+@api_router.post("/upload/pdf", response_model=UploadResponse)
+async def upload_pdf(file: UploadFile = File(...), user: AdminUser = Depends(get_current_user)):
+    # Validate file type
+    if file.content_type != 'application/pdf':
+        raise HTTPException(status_code=400, detail="Dosya PDF formatında olmalıdır")
+    
+    # Read and check file size
+    content = await file.read()
+    if len(content) > MAX_PDF_SIZE:
+        raise HTTPException(status_code=400, detail=f"PDF dosyası en fazla {MAX_PDF_SIZE // (1024*1024)}MB olabilir. Daha büyük dosyalar yüklenemez.")
+    
+    # Generate unique filename
+    filename = f"{uuid.uuid4()}.pdf"
+    filepath = PDFS_DIR / filename
+    
+    # Save file
+    async with aiofiles.open(filepath, 'wb') as f:
+        await f.write(content)
+    
+    return UploadResponse(url=f"/uploads/pdfs/{filename}", filename=filename)
+
 @api_router.get("/brands", response_model=List[Brand])
 async def get_brands(category_id: Optional[str] = None):
     query = {'category_id': category_id} if category_id else {}
