@@ -22,8 +22,10 @@ async def seed_data():
     
     # Categories
     categories = [
-        {'id': str(uuid.uuid4()), 'name': 'Spor', 'slug': 'spor', 'created_at': datetime.now(timezone.utc).isoformat()},
-        {'id': str(uuid.uuid4()), 'name': 'Moda', 'slug': 'moda', 'created_at': datetime.now(timezone.utc).isoformat()},
+        {'id': str(uuid.uuid4()), 'name': 'Spor', 'slug': 'spor', 'icon_url': None, 'parent_id': None, 'order': 0, 'is_popular': True, 'created_at': datetime.now(timezone.utc).isoformat()},
+        {'id': str(uuid.uuid4()), 'name': 'Moda', 'slug': 'moda', 'icon_url': None, 'parent_id': None, 'order': 1, 'is_popular': True, 'created_at': datetime.now(timezone.utc).isoformat()},
+        {'id': str(uuid.uuid4()), 'name': 'Elektronik', 'slug': 'elektronik', 'icon_url': None, 'parent_id': None, 'order': 2, 'is_popular': True, 'created_at': datetime.now(timezone.utc).isoformat()},
+        {'id': str(uuid.uuid4()), 'name': 'Gıda', 'slug': 'gida', 'icon_url': None, 'parent_id': None, 'order': 3, 'is_popular': True, 'created_at': datetime.now(timezone.utc).isoformat()},
     ]
     
     await db.categories.insert_many(categories)
