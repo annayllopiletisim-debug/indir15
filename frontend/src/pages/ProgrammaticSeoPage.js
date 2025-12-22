@@ -23,6 +23,57 @@ const ProgrammaticSeoPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // SEO Meta Tags via DOM manipulation for reliability
+  useEffect(() => {
+    if (!pageData) return;
+    
+    const { seo_meta, canonical_url, structured_data } = pageData;
+    const baseUrl = window.location.origin;
+    const fullCanonicalUrl = `${baseUrl}${canonical_url}`;
+    
+    // Update title
+    document.title = seo_meta.title;
+    
+    // Helper to update or create meta tag
+    const setMetaTag = (selector, attribute, value) => {
+      let element = document.querySelector(selector);
+      if (!element) {
+        element = document.createElement('meta');
+        if (selector.includes('property=')) {
+          element.setAttribute('property', selector.match(/property="([^"]+)"/)[1]);
+        } else if (selector.includes('name=')) {
+          element.setAttribute('name', selector.match(/name="([^"]+)"/)[1]);
+        }
+        document.head.appendChild(element);
+      }
+      element.setAttribute(attribute, value);
+    };
+    
+    // Set meta tags
+    setMetaTag('meta[name="description"]', 'content', seo_meta.description);
+    setMetaTag('meta[name="robots"]', 'content', seo_meta.robots || 'index, follow');
+    setMetaTag('meta[property="og:title"]', 'content', seo_meta.title);
+    setMetaTag('meta[property="og:description"]', 'content', seo_meta.description);
+    setMetaTag('meta[property="og:url"]', 'content', fullCanonicalUrl);
+    setMetaTag('meta[property="og:type"]', 'content', 'website');
+    setMetaTag('meta[property="og:site_name"]', 'content', 'İndirim Keşfet');
+    
+    // Canonical link
+    let canonical = document.querySelector('link[rel="canonical"]');
+    if (!canonical) {
+      canonical = document.createElement('link');
+      canonical.setAttribute('rel', 'canonical');
+      document.head.appendChild(canonical);
+    }
+    canonical.setAttribute('href', fullCanonicalUrl);
+    
+    // Cleanup on unmount
+    return () => {
+      // Reset to defaults when leaving page
+      document.title = 'İndirim Keşfet - Kupon Kodları ve İndirim Fırsatları';
+    };
+  }, [pageData]);
+
   useEffect(() => {
     const fetchPageData = async () => {
       setLoading(true);
