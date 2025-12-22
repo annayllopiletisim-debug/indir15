@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { Clock, Flame } from 'lucide-react';
 import { motion } from 'framer-motion';
 import ShareButtons from './ShareButtons';
@@ -43,6 +44,8 @@ const BaseCard = ({
   expiryDate,
   isActive = true,
   showActiveStatus = false,
+  brandName,
+  brandSlug,
   children,
   actions,
   testId,
@@ -60,47 +63,62 @@ const BaseCard = ({
       data-testid={testId}
     >
       <div className="glass-effect rounded-2xl p-6 hover:border-neon-purple/50 transition-all duration-300 h-full flex flex-col">
-        {/* Top Right: Expiry Date - ALWAYS */}
-        <div className="absolute top-4 right-4 flex flex-col items-end gap-1">
-          {/* Expiring Soon Badge */}
-          {expiringSoon && !isExpired && (
-            <span 
-              className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-orange-500/20 text-orange-400 text-xs font-medium animate-pulse"
-              data-testid="expiring-soon-badge"
-            >
-              <Flame className="w-3 h-3" />
-              Son 24 Saat
-            </span>
-          )}
-          
-          {/* Time remaining or Status */}
-          {timeLeft && (
-            <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${
-              isExpired 
-                ? 'bg-destructive/20 text-destructive' 
-                : 'bg-void-subtle text-muted-foreground'
-            }`}>
-              <Clock className="w-3 h-3" />
-              {timeLeft.text}
-            </span>
-          )}
-          
-          {/* Active/Expired Status Badge */}
-          {showActiveStatus && (
-            isExpired ? (
-              <span className="px-2 py-1 rounded-full bg-destructive/20 text-destructive text-xs font-medium">
-                Süresi Doldu
+        {/* Top Row: Brand (left) + Expiry (right) */}
+        <div className="flex items-start justify-between mb-4">
+          {/* Left: Brand Name */}
+          <div className="flex flex-col gap-1">
+            {brandName && (
+              <Link 
+                to={brandSlug ? `/magaza/${brandSlug}` : '#'}
+                className="inline-flex items-center px-3 py-1 rounded-full bg-neon-purple/20 text-neon-purple text-xs font-semibold hover:bg-neon-purple/30 transition-colors truncate max-w-[150px]"
+                title={brandName}
+              >
+                {brandName}
+              </Link>
+            )}
+            {/* Expiring Soon Badge */}
+            {expiringSoon && !isExpired && (
+              <span 
+                className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-orange-500/20 text-orange-400 text-xs font-medium animate-pulse w-fit"
+                data-testid="expiring-soon-badge"
+              >
+                <Flame className="w-3 h-3" />
+                Son 24 Saat
               </span>
-            ) : (
-              <span className="px-2 py-1 rounded-full bg-green-500/20 text-green-400 text-xs font-medium">
-                Aktif
+            )}
+          </div>
+
+          {/* Right: Expiry Date */}
+          <div className="flex flex-col items-end gap-1">
+            {/* Time remaining or Status */}
+            {timeLeft && (
+              <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${
+                isExpired 
+                  ? 'bg-destructive/20 text-destructive' 
+                  : 'bg-void-subtle text-muted-foreground'
+              }`}>
+                <Clock className="w-3 h-3" />
+                {timeLeft.text}
               </span>
-            )
-          )}
+            )}
+            
+            {/* Active/Expired Status Badge */}
+            {showActiveStatus && (
+              isExpired ? (
+                <span className="px-2 py-1 rounded-full bg-destructive/20 text-destructive text-xs font-medium">
+                  Süresi Doldu
+                </span>
+              ) : (
+                <span className="px-2 py-1 rounded-full bg-green-500/20 text-green-400 text-xs font-medium">
+                  Aktif
+                </span>
+              )
+            )}
+          </div>
         </div>
 
         {/* Content */}
-        <div className="flex-1 pr-24">
+        <div className="flex-1">
           <h3 className="text-lg font-heading font-bold mb-1">{title}</h3>
           {description && (
             <p className="text-sm text-muted-foreground mb-4 line-clamp-2">{description}</p>
