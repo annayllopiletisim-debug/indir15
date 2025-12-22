@@ -121,6 +121,36 @@ const AdminBrandsPage = () => {
           </button>
         </div>
 
+        <div className="mb-6">
+          <div className="relative max-w-md">
+            <input
+              type="text"
+              placeholder="Mağaza adı veya slug ile ara..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-10 pr-10 py-3 bg-void-subtle rounded-lg focus:outline-none focus:ring-2 focus:ring-neon-purple"
+              data-testid="brands-search-input"
+            />
+            <div className="absolute left-3 top-1/2 -translate-y-1/2">
+              <svg className="w-5 h-5 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </div>
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery('')}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                data-testid="clear-search-btn"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            )}
+          </div>
+          <p className="text-sm text-muted-foreground mt-2">
+            {filteredBrands.length} sonuç bulundu
+          </p>
+        </div>
+
         {showForm && (
           <div className="glass-effect p-6 rounded-2xl mb-8">
             <div className="flex items-center justify-between mb-4">
