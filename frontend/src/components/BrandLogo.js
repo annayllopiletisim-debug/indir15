@@ -5,6 +5,7 @@ const BrandLogo = ({ logoUrl, brandName, size = 'md', className = '' }) => {
   const [hasError, setHasError] = useState(false);
 
   const sizeClasses = {
+    xs: 'w-7 h-7',
     sm: 'w-10 h-10',
     md: 'w-16 h-16',
     lg: 'w-24 h-24',
@@ -12,6 +13,7 @@ const BrandLogo = ({ logoUrl, brandName, size = 'md', className = '' }) => {
   };
 
   const iconSizes = {
+    xs: 'w-3.5 h-3.5',
     sm: 'w-5 h-5',
     md: 'w-8 h-8',
     lg: 'w-12 h-12',
