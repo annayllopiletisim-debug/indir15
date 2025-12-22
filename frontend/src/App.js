@@ -100,13 +100,13 @@ function App() {
           >
             <Route index element={<Navigate to="/admin/dashboard" />} />
             <Route path="dashboard" element={<AdminDashboardPage />} />
-            <Route path="categories" element={<div className="p-8 text-center">Kategoriler sayfası çok yakında...</div>} />
+            <Route path="categories" element={<AdminCategoriesPage />} />
             <Route path="brands" element={<AdminBrandsPage />} />
             <Route path="coupons" element={<AdminCouponsPage />} />
             <Route path="discounts" element={<AdminDiscountsPage />} />
             <Route path="catalogs" element={<AdminCatalogsPage />} />
             <Route path="keywords" element={<AdminKeywordsPage />} />
-            <Route path="hero-slides" element={<div className="p-8 text-center">Hero Slaytlar sayfası çok yakında...</div>} />
+            <Route path="hero-slides" element={<AdminHeroSlidesPage />} />
           </Route>
         </Routes>
       </BrowserRouter>
