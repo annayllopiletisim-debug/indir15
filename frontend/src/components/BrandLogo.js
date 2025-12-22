@@ -23,7 +23,11 @@ const BrandLogo = ({ logoUrl, brandName, size = 'md', className = '' }) => {
   // Determine if it's a local upload or external URL
   const getLogoSrc = () => {
     if (!logoUrl) return null;
+    // Handle both old /uploads/ and new /api/uploads/ paths
     if (logoUrl.startsWith('/uploads/')) {
+      return `${process.env.REACT_APP_BACKEND_URL}/api${logoUrl}`;
+    }
+    if (logoUrl.startsWith('/api/uploads/')) {
       return `${process.env.REACT_APP_BACKEND_URL}${logoUrl}`;
     }
     return logoUrl;
