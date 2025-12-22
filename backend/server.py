@@ -408,7 +408,7 @@ async def upload_logo(file: UploadFile = File(...), user: AdminUser = Depends(ge
     async with aiofiles.open(filepath, 'wb') as f:
         await f.write(content)
     
-    return UploadResponse(url=f"/uploads/logos/{filename}", filename=filename)
+    return UploadResponse(url=f"/api/uploads/logos/{filename}", filename=filename)
 
 @api_router.post("/upload/import-logo-from-url", response_model=UploadResponse)
 async def import_logo_from_url(url: str = Form(...), user: AdminUser = Depends(get_current_user)):
@@ -439,7 +439,7 @@ async def import_logo_from_url(url: str = Form(...), user: AdminUser = Depends(g
                 async with aiofiles.open(filepath, 'wb') as f:
                     await f.write(content)
                 
-                return UploadResponse(url=f"/uploads/logos/{filename}", filename=filename)
+                return UploadResponse(url=f"/api/uploads/logos/{filename}", filename=filename)
     except aiohttp.ClientError as e:
         raise HTTPException(status_code=400, detail=f"Logo URL'den indirilemedi: {str(e)}")
 
