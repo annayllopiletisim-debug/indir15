@@ -121,7 +121,7 @@ const ProgrammaticSeoPage = () => {
         />
       )}
 
-      <div className="min-h-screen" data-testid="programmatic-seo-page">
+      <div className="min-h-screen" data-testid="programmatic-seo-page" data-page-type={page_type}>
         {/* Header Section */}
         <div className="bg-card border-b border-border">
           <div className="container mx-auto px-4 py-8 lg:py-12">
