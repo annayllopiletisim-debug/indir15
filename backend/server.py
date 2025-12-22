@@ -1343,6 +1343,369 @@ Sitemap: {base_url}/api/sitemap.xml
 """
     return robots_content
 
+# ================== PROGRAMMATIC SEO SYSTEM ==================
+
+class SeoPageResponse(BaseModel):
+    page_type: str  # category, brand, category_brand, keyword, time
+    slug: str
+    canonical_url: str
+    seo_meta: dict
+    h1: str
+    short_description: str
+    items: list
+    total_items: int
+    structured_data: dict
+    related_pages: list
+
+def generate_seo_meta(page_type: str, name: str, count: int, parent_name: str = None):
+    """Generate SEO meta tags based on page type and content"""
+    site_name = "İndirim Keşfet"
+    
+    templates = {
+        'category': {
+            'title': f"{name} İndirimleri – Güncel Kampanyalar | {site_name}",
+            'description': f"{name} kategorisindeki {count} güncel indirim ve kampanyayı keşfet. En iyi fırsatları kaçırma!",
+            'h1': f"{name} Kategorisindeki Güncel İndirimler",
+            'short_desc': f"{name} kategorisinde {count} aktif indirim ve kampanya bulunuyor. Hemen keşfedin!"
+        },
+        'brand': {
+            'title': f"{name} İndirim ve Kuponları – {site_name}",
+            'description': f"{name} mağazasının güncel kupon kodları ve indirimleri. {count} aktif fırsat!",
+            'h1': f"{name} Güncel İndirim ve Kuponları",
+            'short_desc': f"{name} mağazasında şu an {count} aktif indirim ve kupon kodu bulunuyor."
+        },
+        'category_brand': {
+            'title': f"{name} {parent_name} İndirimleri | {site_name}",
+            'description': f"{parent_name} kategorisinde {name} mağazasının güncel indirimleri. {count} fırsat!",
+            'h1': f"{name} – {parent_name} İndirimleri",
+            'short_desc': f"{parent_name} kategorisinde {name} mağazasının {count} aktif indirimi."
+        },
+        'keyword': {
+            'title': f"{name} İndirimleri ve Kampanyaları | {site_name}",
+            'description': f"{name} ile ilgili en güncel indirim ve kampanyalar. {count} fırsat keşfet!",
+            'h1': f"{name} İndirimleri",
+            'short_desc': f"{name} araması için {count} güncel indirim ve kampanya bulundu."
+        },
+        'time': {
+            'title': f"Son 24 Saatte Bitecek İndirimler | {site_name}",
+            'description': f"Bugün sona erecek {count} indirim ve kampanya. Acele edin, fırsatlar bitiyor!",
+            'h1': "Son 24 Saatte Bitecek Fırsatlar",
+            'short_desc': f"Önümüzdeki 24 saat içinde bitecek {count} fırsat var. Kaçırmayın!"
+        }
+    }
+    
+    template = templates.get(page_type, templates['category'])
+    return {
+        'title': template['title'],
+        'description': template['description'],
+        'h1': template['h1'],
+        'short_desc': template['short_desc']
+    }
+
+def generate_structured_data(page_type: str, items: list, page_url: str, name: str):
+    """Generate JSON-LD structured data for SEO"""
+    base_url = os.environ.get('SITE_URL', 'https://indirimkestet.com')
+    
+    # ItemList schema
+    item_list = {
+        "@context": "https://schema.org",
+        "@type": "ItemList",
+        "name": f"{name} İndirimleri",
+        "url": f"{base_url}{page_url}",
+        "numberOfItems": len(items),
+        "itemListElement": []
+    }
+    
+    for i, item in enumerate(items[:10], 1):  # Limit to 10 for schema
+        list_item = {
+            "@type": "ListItem",
+            "position": i,
+            "item": {
+                "@type": "Offer",
+                "name": item.get('title', ''),
+                "description": item.get('description', item.get('title', '')),
+                "url": f"{base_url}/indirim/{item.get('id', '')}",
+                "priceCurrency": "TRY",
+                "availability": "https://schema.org/InStock"
+            }
+        }
+        
+        if item.get('discount_text'):
+            list_item['item']['discount'] = item.get('discount_text')
+        
+        if item.get('expiry_date'):
+            list_item['item']['validThrough'] = item.get('expiry_date')
+        
+        item_list['itemListElement'].append(list_item)
+    
+    return item_list
+
+@api_router.get("/seo-page/{slug}")
+async def get_seo_page(slug: str):
+    """
+    Programmatic SEO Page Resolver
+    Resolves slug to appropriate page type and returns SEO-optimized data
+    """
+    base_url = os.environ.get('SITE_URL', 'https://indirimkestet.com')
+    now = datetime.now(timezone.utc)
+    now_iso = now.isoformat()
+    
+    # Clean slug
+    clean_slug = slug.lower().strip()
+    
+    # Remove common suffixes for matching
+    search_slug = clean_slug.replace('-indirimleri', '').replace('-kampanyalari', '').replace('-kuponlari', '')
+    
+    page_data = None
+    page_type = None
+    items = []
+    related_pages = []
+    name = ""
+    parent_name = None
+    
+    # 1. Check if it's a category slug
+    category = await db.categories.find_one({'slug': search_slug}, {'_id': 0})
+    if category:
+        page_type = 'category'
+        name = category['name']
+        
+        # Get brands in this category
+        brands_in_cat = await db.brands.find({'category_id': category['id']}, {'_id': 0}).to_list(100)
+        brand_ids = [b['id'] for b in brands_in_cat]
+        
+        # Get active coupons
+        coupons = await db.coupons.find({
+            'brand_id': {'$in': brand_ids},
+            'is_active': True,
+            '$or': [{'expiry_date': {'$gte': now_iso}}, {'expiry_date': None}]
+        }, {'_id': 0}).to_list(100)
+        
+        # Get discounts
+        discounts = await db.discounts.find({
+            'brand_id': {'$in': brand_ids},
+            '$or': [{'expiry_date': {'$gte': now_iso}}, {'expiry_date': None}]
+        }, {'_id': 0}).to_list(100)
+        
+        # Add brand info to items
+        brand_map = {b['id']: b for b in brands_in_cat}
+        for c in coupons:
+            c['item_type'] = 'coupon'
+            brand = brand_map.get(c['brand_id'], {})
+            c['brand_name'] = brand.get('name', '')
+            c['brand_slug'] = brand.get('slug', '')
+            c['brand_logo_url'] = brand.get('logo_url', '')
+        for d in discounts:
+            d['item_type'] = 'discount'
+            brand = brand_map.get(d['brand_id'], {})
+            d['brand_name'] = brand.get('name', '')
+            d['brand_slug'] = brand.get('slug', '')
+            d['brand_logo_url'] = brand.get('logo_url', '')
+        
+        items = coupons + discounts
+        
+        # Related: brands in category
+        related_pages = [{'slug': f"{b['slug']}-indirimleri", 'name': b['name'], 'type': 'brand'} for b in brands_in_cat[:5]]
+    
+    # 2. Check if it's a brand slug
+    if not page_type:
+        brand = await db.brands.find_one({'slug': search_slug}, {'_id': 0})
+        if brand:
+            page_type = 'brand'
+            name = brand['name']
+            
+            # Get coupons
+            coupons = await db.coupons.find({
+                'brand_id': brand['id'],
+                'is_active': True,
+                '$or': [{'expiry_date': {'$gte': now_iso}}, {'expiry_date': None}]
+            }, {'_id': 0}).to_list(100)
+            
+            # Get discounts
+            discounts = await db.discounts.find({
+                'brand_id': brand['id'],
+                '$or': [{'expiry_date': {'$gte': now_iso}}, {'expiry_date': None}]
+            }, {'_id': 0}).to_list(100)
+            
+            for c in coupons:
+                c['item_type'] = 'coupon'
+                c['brand_name'] = brand['name']
+                c['brand_slug'] = brand['slug']
+                c['brand_logo_url'] = brand.get('logo_url', '')
+            for d in discounts:
+                d['item_type'] = 'discount'
+                d['brand_name'] = brand['name']
+                d['brand_slug'] = brand['slug']
+                d['brand_logo_url'] = brand.get('logo_url', '')
+            
+            items = coupons + discounts
+            
+            # Get category for related
+            cat = await db.categories.find_one({'id': brand.get('category_id')}, {'_id': 0})
+            if cat:
+                parent_name = cat['name']
+                related_pages.append({'slug': f"{cat['slug']}-indirimleri", 'name': cat['name'], 'type': 'category'})
+    
+    # 3. Check keyword mappings
+    if not page_type:
+        keyword_mapping = await db.keyword_mappings.find_one({
+            'keyword': search_slug,
+            'is_active': True
+        }, {'_id': 0})
+        
+        if keyword_mapping:
+            page_type = 'keyword'
+            name = search_slug.replace('-', ' ').title()
+            
+            brand_ids = keyword_mapping.get('brand_ids', [])
+            brands = await db.brands.find({'id': {'$in': brand_ids}}, {'_id': 0}).to_list(100)
+            brand_map = {b['id']: b for b in brands}
+            
+            coupons = await db.coupons.find({
+                'brand_id': {'$in': brand_ids},
+                'is_active': True,
+                '$or': [{'expiry_date': {'$gte': now_iso}}, {'expiry_date': None}]
+            }, {'_id': 0}).to_list(100)
+            
+            discounts = await db.discounts.find({
+                'brand_id': {'$in': brand_ids},
+                '$or': [{'expiry_date': {'$gte': now_iso}}, {'expiry_date': None}]
+            }, {'_id': 0}).to_list(100)
+            
+            for c in coupons:
+                c['item_type'] = 'coupon'
+                brand = brand_map.get(c['brand_id'], {})
+                c['brand_name'] = brand.get('name', '')
+                c['brand_slug'] = brand.get('slug', '')
+                c['brand_logo_url'] = brand.get('logo_url', '')
+            for d in discounts:
+                d['item_type'] = 'discount'
+                brand = brand_map.get(d['brand_id'], {})
+                d['brand_name'] = brand.get('name', '')
+                d['brand_slug'] = brand.get('slug', '')
+                d['brand_logo_url'] = brand.get('logo_url', '')
+            
+            items = coupons + discounts
+            related_pages = [{'slug': f"{b['slug']}-indirimleri", 'name': b['name'], 'type': 'brand'} for b in brands[:5]]
+    
+    # 4. Handle "son-24-saat" special case
+    if not page_type and clean_slug in ['son-24-saat', 'bugun-biten', 'acil-firsatlar']:
+        page_type = 'time'
+        name = "Son 24 Saat"
+        
+        expiry_threshold = (now + timedelta(hours=24)).isoformat()
+        
+        coupons = await db.coupons.find({
+            'is_active': True,
+            'expiry_date': {'$gte': now_iso, '$lte': expiry_threshold}
+        }, {'_id': 0}).to_list(100)
+        
+        discounts = await db.discounts.find({
+            'expiry_date': {'$gte': now_iso, '$lte': expiry_threshold}
+        }, {'_id': 0}).to_list(100)
+        
+        # Add brand info
+        for c in coupons:
+            c['item_type'] = 'coupon'
+            brand = await db.brands.find_one({'id': c.get('brand_id')}, {'_id': 0})
+            if brand:
+                c['brand_name'] = brand['name']
+                c['brand_slug'] = brand['slug']
+                c['brand_logo_url'] = brand.get('logo_url', '')
+        for d in discounts:
+            d['item_type'] = 'discount'
+            brand = await db.brands.find_one({'id': d.get('brand_id')}, {'_id': 0})
+            if brand:
+                d['brand_name'] = brand['name']
+                d['brand_slug'] = brand['slug']
+                d['brand_logo_url'] = brand.get('logo_url', '')
+        
+        items = coupons + discounts
+    
+    # If no match found, return empty state (not 404)
+    if not page_type:
+        return {
+            'page_type': 'unknown',
+            'slug': clean_slug,
+            'canonical_url': f"/{clean_slug}-indirimleri",
+            'seo_meta': {
+                'title': f"{clean_slug.replace('-', ' ').title()} İndirimleri | İndirim Keşfet",
+                'description': f"{clean_slug.replace('-', ' ').title()} ile ilgili indirimler aranıyor.",
+                'robots': 'noindex, follow'
+            },
+            'h1': f"{clean_slug.replace('-', ' ').title()} İndirimleri",
+            'short_description': "Bu arama için henüz aktif indirim bulunamadı.",
+            'items': [],
+            'total_items': 0,
+            'structured_data': None,
+            'related_pages': []
+        }
+    
+    # Generate SEO meta
+    seo_meta = generate_seo_meta(page_type, name, len(items), parent_name)
+    seo_meta['robots'] = 'index, follow'
+    
+    # Canonical URL
+    canonical_url = f"/{clean_slug}-indirimleri" if not clean_slug.endswith('-indirimleri') else f"/{clean_slug}"
+    if page_type == 'time':
+        canonical_url = '/son-24-saat'
+    
+    # Generate structured data
+    structured_data = generate_structured_data(page_type, items, canonical_url, name)
+    
+    return {
+        'page_type': page_type,
+        'slug': clean_slug,
+        'canonical_url': canonical_url,
+        'seo_meta': {
+            'title': seo_meta['title'],
+            'description': seo_meta['description'],
+            'robots': seo_meta['robots']
+        },
+        'h1': seo_meta['h1'],
+        'short_description': seo_meta['short_desc'],
+        'items': items,
+        'total_items': len(items),
+        'structured_data': structured_data,
+        'related_pages': related_pages
+    }
+
+@api_router.get("/seo-slugs")
+async def get_all_seo_slugs():
+    """Get all valid SEO slugs for sitemap generation"""
+    slugs = []
+    
+    # Categories
+    categories = await db.categories.find({}, {'_id': 0, 'slug': 1, 'name': 1}).to_list(1000)
+    for cat in categories:
+        slugs.append({
+            'slug': f"{cat['slug']}-indirimleri",
+            'type': 'category',
+            'name': cat['name']
+        })
+    
+    # Brands
+    brands = await db.brands.find({}, {'_id': 0, 'slug': 1, 'name': 1}).to_list(1000)
+    for brand in brands:
+        slugs.append({
+            'slug': f"{brand['slug']}-indirimleri",
+            'type': 'brand',
+            'name': brand['name']
+        })
+    
+    # Keywords
+    keywords = await db.keyword_mappings.find({'is_active': True}, {'_id': 0, 'keyword': 1}).to_list(1000)
+    for kw in keywords:
+        slugs.append({
+            'slug': f"{kw['keyword']}-indirimleri",
+            'type': 'keyword',
+            'name': kw['keyword'].replace('-', ' ').title()
+        })
+    
+    # Time-based
+    slugs.append({'slug': 'son-24-saat', 'type': 'time', 'name': 'Son 24 Saat'})
+    
+    return {'slugs': slugs, 'total': len(slugs)}
+
 app.include_router(api_router)
 
 app.add_middleware(
