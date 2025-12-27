@@ -58,47 +58,8 @@ const CategoryPage = () => {
   // Description expand state (mobile)
   const [showFullDescription, setShowFullDescription] = useState(false);
   
-  // Scroll state for mobile header
-  const [hideHeader, setHideHeader] = useState(false);
-  const lastScrollY = useRef(0);
-  const headerRef = useRef(null);
-  
-  // Filter modal state
-  const [showFilterModal, setShowFilterModal] = useState(false);
-  
-  // Filter values
-  const [filterDiscountRate, setFilterDiscountRate] = useState('all');
-  const [filterCampaignType, setFilterCampaignType] = useState('all');
-  const [filterExpiry, setFilterExpiry] = useState('all');
-  const [filterSort, setFilterSort] = useState('newest');
-  
   // Site settings for sticky bar
   const [siteSettings, setSiteSettings] = useState({ sticky_cta_enabled: true, sticky_cta_variant: "A" });
-
-  // Handle scroll for mobile header hide/show
-  useEffect(() => {
-    const handleScroll = () => {
-      const currentScrollY = window.scrollY;
-      const isMobile = window.innerWidth < 768;
-      
-      if (!isMobile) {
-        setHideHeader(false);
-        return;
-      }
-      
-      // Hide header when scrolling down past 50px, show when scrolling up
-      if (currentScrollY > lastScrollY.current + 5 && currentScrollY > 50) {
-        setHideHeader(true);
-      } else if (currentScrollY < lastScrollY.current - 5) {
-        setHideHeader(false);
-      }
-      
-      lastScrollY.current = currentScrollY;
-    };
-
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
 
   // Fetch site settings
   useEffect(() => {
