@@ -1,8 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Clock, Flame, ImageIcon } from 'lucide-react';
+import { Clock, ImageIcon, MapPin } from 'lucide-react';
 import { motion } from 'framer-motion';
-import BrandLogo from './BrandLogo';
 
 // Helper to check if expiring within 24 hours
 const isExpiringSoon = (expiryDate) => {
@@ -13,7 +12,7 @@ const isExpiringSoon = (expiryDate) => {
   return diff > 0 && diff <= 24 * 60 * 60 * 1000;
 };
 
-// Helper to get time remaining
+// Helper to get time remaining with color coding
 const getTimeRemaining = (expiryDate) => {
   if (!expiryDate) return null;
   const now = new Date();
@@ -21,31 +20,42 @@ const getTimeRemaining = (expiryDate) => {
   const diff = expiry - now;
 
   if (diff <= 0) {
-    return { expired: true, text: 'Süresi Doldu' };
+    return { expired: true, text: 'Süresi Doldu', days: 0, color: '#ef4444' };
   }
 
   const days = Math.floor(diff / (1000 * 60 * 60 * 24));
   const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
   const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
 
-  if (days > 0) {
-    return { expired: false, text: `${days}g ${hours}s` };
-  } else if (hours > 0) {
-    return { expired: false, text: `${hours}s ${minutes}dk` };
-  } else {
-    return { expired: false, text: `${minutes}dk` };
+  // Color coding based on days remaining
+  let color = '#22c55e'; // green - more than 7 days
+  if (days < 3) {
+    color = '#ef4444'; // red - less than 3 days
+  } else if (days <= 7) {
+    color = '#f59e0b'; // orange - 3-7 days
   }
+
+  let text;
+  if (days > 0) {
+    text = `${days}g ${hours}s`;
+  } else if (hours > 0) {
+    text = `${hours}s ${minutes}dk`;
+  } else {
+    text = `${minutes}dk`;
+  }
+
+  return { expired: false, text, days, color };
 };
 
 const BaseCard = ({
   type = 'coupon', // 'coupon', 'discount', or 'giveaway'
   title,
-  description, // kept for backward compatibility but not displayed
+  description,
   discountText,
   expiryDate,
-  imageUrl, // NEW: Card image URL
+  imageUrl,
+  destinationUrl,
   isActive = true,
-  showActiveStatus = false,
   brandName,
   brandSlug,
   brandLogoUrl,
@@ -53,19 +63,23 @@ const BaseCard = ({
   actions,
   testId,
   className = '',
-  compact = false
+  compact = false,
+  onCtaClick
 }) => {
   const timeLeft = getTimeRemaining(expiryDate);
   const isExpired = timeLeft?.expired || !isActive;
-  const expiringSoon = isExpiringSoon(expiryDate);
-  
-  // Type-specific colors
-  const typeColors = {
-    coupon: { text: 'text-primary', bg: 'from-primary/20 to-pink-500/20', icon: 'text-primary' },
-    discount: { text: 'text-primary', bg: 'from-blue-500/20 to-primary/20', icon: 'text-blue-400' },
-    giveaway: { text: 'text-emerald-400', bg: 'from-emerald-500/20 to-teal-500/20', icon: 'text-emerald-400' }
+
+  // Extract domain from destination URL
+  const getDomain = (url) => {
+    if (!url) return null;
+    try {
+      const domain = new URL(url).hostname.replace('www.', '');
+      return domain;
+    } catch {
+      return null;
+    }
   };
-  const colors = typeColors[type] || typeColors.coupon;
+  const domain = getDomain(destinationUrl);
 
   // Compact version for horizontal scrolling lists
   if (compact) {
@@ -73,147 +87,150 @@ const BaseCard = ({
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
+        whileHover={{ y: -2 }}
+        transition={{ duration: 0.2 }}
         className={`${isExpired ? 'opacity-60' : ''} ${className}`}
         data-testid={testId}
       >
-        <div className="glass-effect rounded-xl p-3 h-full flex gap-3">
-          {/* Left: Image */}
-          <div className="flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden bg-gradient-to-br from-muted to-muted/50 flex items-center justify-center">
-            {imageUrl ? (
-              <img src={imageUrl} alt={title} className="w-full h-full object-cover" loading="lazy" />
-            ) : (
-              <div className={`w-full h-full bg-gradient-to-br ${colors.bg} flex items-center justify-center`}>
-                <ImageIcon className={`w-6 h-6 ${colors.icon} opacity-50`} />
+        <div className="bg-white rounded-xl p-3 shadow-sm hover:shadow-md transition-shadow duration-200 h-full flex gap-3">
+          {/* Image with brand logo */}
+          <div className="relative flex-shrink-0 w-16 h-16">
+            <div className="w-full h-full rounded-lg overflow-hidden bg-gradient-to-br from-violet-100 to-violet-200 flex items-center justify-center">
+              {imageUrl ? (
+                <img src={imageUrl} alt={title} className="w-full h-full object-cover" loading="lazy" />
+              ) : (
+                <ImageIcon className="w-6 h-6 text-violet-400 opacity-50" />
+              )}
+            </div>
+            {/* Brand logo overlay */}
+            {brandLogoUrl && (
+              <div className="absolute -top-1 -left-1 w-6 h-6 bg-white rounded-md shadow-md flex items-center justify-center p-0.5">
+                <img src={brandLogoUrl} alt={brandName} className="w-full h-full object-contain" />
               </div>
             )}
           </div>
           
-          {/* Right: Content */}
+          {/* Content */}
           <div className="flex-1 flex flex-col min-w-0">
-            {/* Brand */}
-            {brandName && (
-              <div className="flex items-center gap-1.5 mb-1">
-                <BrandLogo logoUrl={brandLogoUrl} brandName={brandName} size="xs" />
-                <span className="text-xs font-medium text-muted-foreground truncate">{brandName}</span>
-              </div>
-            )}
-            
-            {/* Title */}
-            <h3 className="text-sm font-medium line-clamp-1 mb-1">{title}</h3>
-            
-            {/* Discount */}
             {discountText && (
-              <div className={`text-base font-heading font-bold ${colors.text} mb-2`}>
+              <span className="inline-flex self-start px-2 py-0.5 bg-gradient-to-r from-violet-500 to-purple-600 text-white text-xs font-bold rounded-full mb-1">
                 {discountText}
-              </div>
+              </span>
             )}
-
-            {/* Actions */}
-            <div className="mt-auto">
-              {actions}
-            </div>
+            <h3 className="text-sm font-semibold text-gray-900 line-clamp-2">{title}</h3>
           </div>
         </div>
       </motion.div>
     );
   }
 
-  // Full version - NEW LAYOUT with image on left (desktop) / top (mobile)
+  // Full card - New Design
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className={`relative group ${isExpired ? 'opacity-60' : ''} ${className}`}
+      whileHover={{ y: -2 }}
+      transition={{ duration: 0.2 }}
+      className={`relative ${isExpired ? 'opacity-60' : ''} ${className}`}
       data-testid={testId}
     >
-      <div className="glass-effect rounded-2xl p-3 sm:p-4 hover:border-primary/30 transition-all duration-300 h-full">
-        {/* Mobile: Vertical layout | Desktop: Horizontal layout */}
-        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
-          
-          {/* Image Area */}
-          <div className="flex-shrink-0 w-full sm:w-40 md:w-44">
-            <div className="aspect-video sm:aspect-square rounded-xl overflow-hidden bg-gradient-to-br from-muted to-muted/50 relative">
-              {imageUrl ? (
-                <img 
-                  src={imageUrl} 
-                  alt={title} 
-                  className="w-full h-full object-cover" 
-                  loading="lazy"
-                />
-              ) : (
-                <div className={`w-full h-full bg-gradient-to-br ${colors.bg} flex items-center justify-center`}>
-                  <ImageIcon className={`w-10 h-10 sm:w-12 sm:h-12 ${colors.icon} opacity-40`} />
+      <div className="bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all duration-200 overflow-hidden">
+        {/* Main Content Area */}
+        <div className="p-4">
+          <div className="flex gap-4">
+            {/* Left: Square Image with Brand Logo */}
+            <div className="relative flex-shrink-0">
+              <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-xl overflow-hidden bg-gradient-to-br from-violet-100 to-violet-200 flex items-center justify-center">
+                {imageUrl ? (
+                  <img 
+                    src={imageUrl} 
+                    alt={title} 
+                    className="w-full h-full object-cover" 
+                    loading="lazy"
+                  />
+                ) : (
+                  <ImageIcon className="w-8 h-8 text-violet-400 opacity-50" />
+                )}
+              </div>
+              {/* Brand logo - top left corner of image */}
+              {brandName && (
+                <div className="absolute -top-2 -left-2 bg-white rounded-lg shadow-md p-1 min-w-[28px] h-7 flex items-center justify-center">
+                  {brandLogoUrl ? (
+                    <img 
+                      src={brandLogoUrl.startsWith('/uploads/') ? `${process.env.REACT_APP_BACKEND_URL}/api${brandLogoUrl}` : brandLogoUrl} 
+                      alt={brandName} 
+                      className="max-w-[40px] max-h-5 object-contain"
+                    />
+                  ) : (
+                    <span className="text-xs font-bold text-gray-700 px-1">{brandName.substring(0, 6)}</span>
+                  )}
                 </div>
               )}
-              
-              {/* Expiring Soon Badge - overlay on image */}
-              {expiringSoon && !isExpired && (
-                <span 
-                  className="absolute top-2 left-2 inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-orange-500 text-white text-xs font-medium"
-                  data-testid="expiring-soon-badge"
-                >
-                  <Flame className="w-3 h-3" />
-                  Son 24s
-                </span>
-              )}
             </div>
-          </div>
 
-          {/* Content Area */}
-          <div className="flex-1 flex flex-col min-w-0">
-            {/* Top Row: Brand + Time */}
-            <div className="flex items-center justify-between gap-2 mb-2 sm:mb-3">
-              {/* Brand */}
-              {brandName && (
-                <Link 
-                  to={brandSlug ? `/magaza/${brandSlug}` : '#'}
-                  className="inline-flex items-center gap-1.5 sm:gap-2 hover:opacity-80 transition-opacity min-w-0 flex-1"
-                  title={brandName}
-                >
-                  <BrandLogo logoUrl={brandLogoUrl} brandName={brandName} size="sm" className="flex-shrink-0" />
-                  <span className="text-base sm:text-xl font-bold text-foreground truncate">{brandName}</span>
-                </Link>
-              )}
-              
-              {/* Time Badge */}
-              {timeLeft ? (
-                timeLeft.expired ? (
-                  <span className="flex-shrink-0 inline-flex items-center gap-1 px-2 py-1 rounded-full text-[10px] sm:text-xs font-medium bg-destructive/15 text-destructive">
-                    <Clock className="w-3 h-3" />
-                    <span className="hidden xs:inline">Süresi </span>Doldu
+            {/* Right: Content */}
+            <div className="flex-1 min-w-0 flex flex-col">
+              {/* Top Row: Discount Badge + Time */}
+              <div className="flex items-center justify-between gap-2 mb-2">
+                {/* Discount Badge */}
+                {discountText && (
+                  <span className="inline-flex px-3 py-1.5 bg-gradient-to-r from-violet-500 to-purple-600 text-white text-sm font-bold rounded-[20px] uppercase tracking-wide">
+                    {discountText}
+                  </span>
+                )}
+                
+                {/* Time Remaining */}
+                {timeLeft ? (
+                  <span 
+                    className="flex-shrink-0 inline-flex items-center gap-1 text-sm font-semibold"
+                    style={{ color: timeLeft.color }}
+                  >
+                    <Clock className="w-4 h-4" />
+                    {timeLeft.text}
                   </span>
                 ) : (
-                  <span className="flex-shrink-0 inline-flex items-center gap-1 px-2 py-1 rounded-full text-[10px] sm:text-xs font-medium bg-muted/80 text-muted-foreground">
-                    <Clock className="w-3 h-3" />
-                    <span className="hidden sm:inline">Kalan Süre: </span>{timeLeft.text}
+                  <span className="flex-shrink-0 inline-flex items-center gap-1 text-sm font-semibold text-green-500">
+                    <Clock className="w-4 h-4" />
+                    Süresiz
                   </span>
-                )
-              ) : (
-                <span className="flex-shrink-0 inline-flex items-center gap-1 px-2 py-1 rounded-full text-[10px] sm:text-xs font-medium bg-emerald-500/15 text-emerald-400">
-                  Süresiz
-                </span>
-              )}
+                )}
+              </div>
+
+              {/* Campaign Title */}
+              <h3 className="text-base sm:text-lg font-semibold text-gray-900 line-clamp-2 leading-snug">
+                {title}
+              </h3>
+              
+              {children}
             </div>
-
-            {/* Title */}
-            <h3 className="text-sm sm:text-base font-heading font-bold mb-1.5 sm:mb-2 line-clamp-2">{title}</h3>
-            
-            {/* Discount Text */}
-            {discountText && (
-              <div className={`text-lg sm:text-xl font-heading font-bold ${colors.text} mb-2 sm:mb-3`}>
-                {discountText}
-              </div>
-            )}
-            
-            {children}
-
-            {/* Actions - Stack on mobile */}
-            {actions && (
-              <div className="mt-auto pt-2">
-                {actions}
-              </div>
-            )}
           </div>
+        </div>
+
+        {/* Divider */}
+        <div className="border-t border-gray-100" />
+
+        {/* Bottom Row: Domain + CTA Button */}
+        <div className="px-4 py-3 flex items-center justify-between">
+          {/* Domain/Website */}
+          {domain && (
+            <div className="flex items-center gap-1.5 text-gray-500">
+              <MapPin className="w-4 h-4" />
+              <span className="text-sm">{domain}</span>
+            </div>
+          )}
+          {!domain && brandSlug && (
+            <Link 
+              to={`/magaza/${brandSlug}`}
+              className="flex items-center gap-1.5 text-gray-500 hover:text-violet-600 transition-colors"
+            >
+              <MapPin className="w-4 h-4" />
+              <span className="text-sm">{brandName}</span>
+            </Link>
+          )}
+          {!domain && !brandSlug && <div />}
+
+          {/* Actions / CTA Button */}
+          {actions}
         </div>
       </div>
     </motion.div>
