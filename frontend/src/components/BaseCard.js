@@ -165,11 +165,11 @@ const BaseCard = ({
               {brandName && (
                 <Link 
                   to={brandSlug ? `/magaza/${brandSlug}` : '#'}
-                  className="inline-flex items-center gap-2 hover:opacity-80 transition-opacity max-w-[200px]"
+                  className="inline-flex items-center gap-2 hover:opacity-80 transition-opacity max-w-[220px]"
                   title={brandName}
                 >
-                  <BrandLogo logoUrl={brandLogoUrl} brandName={brandName} size="md" />
-                  <span className="text-lg font-bold truncate">{brandName}</span>
+                  <BrandLogo logoUrl={brandLogoUrl} brandName={brandName} size="sm" />
+                  <span className="text-lg font-bold text-foreground truncate">{brandName}</span>
                 </Link>
               )}
               
