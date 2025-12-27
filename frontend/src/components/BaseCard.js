@@ -97,7 +97,7 @@ const BaseCard = ({
 
           {/* Discount */}
           {discountText && (
-            <div className="text-lg font-heading font-bold text-primary mb-1">
+            <div className={`text-lg font-heading font-bold ${discountColor} mb-1`}>
               {discountText}
             </div>
           )}
