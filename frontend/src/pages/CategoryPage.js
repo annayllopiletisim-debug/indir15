@@ -498,9 +498,13 @@ const CategoryPage = () => {
           </div>
         </div>
 
-        {/* Popular Brands Bar - Sticky on mobile when scrolling */}
+        {/* Popular Brands Bar - Sticky on mobile when scrolling down */}
         {popularBrands.length > 0 && !showDeals && (
-          <div className="bg-muted/50 dark:bg-muted/30 border-b border-border sticky top-0 z-30 md:relative md:z-auto backdrop-blur-sm">
+          <div className={`bg-card/95 dark:bg-card/95 border-b border-border backdrop-blur-md transition-all duration-300 ${
+            hideHeader 
+              ? 'sticky top-0 z-40 shadow-sm' 
+              : 'relative'
+          } md:relative md:z-auto md:shadow-none`}>
             <div className="container mx-auto px-4 py-3">
               <div className="flex items-center gap-2 mb-2">
                 <span className="text-xs font-medium text-muted-foreground">Popüler Mağazalar:</span>
