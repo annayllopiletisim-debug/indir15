@@ -113,9 +113,10 @@ function App() {
           />
 
           {/* ═══════════════════════════════════════════════════════════
-              DEAL DETAIL PAGES (Kupon/İndirim Detay)
+              DEAL DETAIL PAGES (Kupon/İndirim/Çekiliş Detay)
               SEO-friendly URLs: /magaza/{brand}/kupon/{slug}-{id}
                                  /magaza/{brand}/indirim/{slug}-{id}
+                                 /magaza/{brand}/cekilis/{slug}-{id}
           ═══════════════════════════════════════════════════════════ */}
           <Route
             path="/magaza/:brandSlug/kupon/:dealSlug"
@@ -127,6 +128,14 @@ function App() {
           />
           <Route
             path="/magaza/:brandSlug/indirim/:dealSlug"
+            element={
+              <PublicLayout>
+                <DealDetailPage />
+              </PublicLayout>
+            }
+          />
+          <Route
+            path="/magaza/:brandSlug/cekilis/:dealSlug"
             element={
               <PublicLayout>
                 <DealDetailPage />
