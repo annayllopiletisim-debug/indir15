@@ -144,7 +144,7 @@ frontend:
 metadata:
   created_by: "testing_agent"
   version: "1.0"
-  test_sequence: 2
+  test_sequence: 3
   run_ui: true
 
 test_plan:
@@ -158,3 +158,5 @@ agent_communication:
     message: "Fixed mobile scroll behavior on category page. The main header now hides when scrolling down (using translateY(-100%)) and the Popular Stores bar becomes sticky at top-0. When scrolling up, the header returns and Popular Stores moves to top-16. Implementation uses requestAnimationFrame for smooth performance. Test on /kategori/moda with mobile viewport (375x800)."
   - agent: "testing"
     message: "✅ Mobile scroll behavior testing completed successfully. All critical scenarios verified: header hide/show on scroll, popular stores sticky positioning, desktop behavior, and smooth animations. Implementation working as designed with no JavaScript errors. The fix addresses the original bug where multiple sticky elements conflicted - now the header dynamically hides/shows and popular stores bar correctly adjusts its position (top-0 when header hidden, top-16 when header visible)."
+  - agent: "testing"
+    message: "✅ Image URL field addition testing completed successfully. Comprehensive backend API testing performed with 100% success rate (24/24 tests passed). All CRUD operations for Coupon, Discount, and Giveaway models now properly support image_url field. Verified: GET endpoints return image_url field (can be null for existing records), POST endpoints accept and persist image_url field, PUT endpoints successfully update image_url values. No breaking changes detected to existing functionality. Admin authentication working correctly. All test data cleaned up properly."
