@@ -112,6 +112,28 @@ function App() {
           />
 
           {/* ═══════════════════════════════════════════════════════════
+              DEAL DETAIL PAGES (Kupon/İndirim Detay)
+              SEO-friendly URLs: /magaza/{brand}/kupon/{slug}-{id}
+                                 /magaza/{brand}/indirim/{slug}-{id}
+          ═══════════════════════════════════════════════════════════ */}
+          <Route
+            path="/magaza/:brandSlug/kupon/:dealSlug"
+            element={
+              <PublicLayout>
+                <DealDetailPage />
+              </PublicLayout>
+            }
+          />
+          <Route
+            path="/magaza/:brandSlug/indirim/:dealSlug"
+            element={
+              <PublicLayout>
+                <DealDetailPage />
+              </PublicLayout>
+            }
+          />
+
+          {/* ═══════════════════════════════════════════════════════════
               PROGRAMMATIC SEO ROUTES
               Tek template ile 1000+ sayfa
               Pattern: /nike-indirimleri, /spor-indirimleri etc.
