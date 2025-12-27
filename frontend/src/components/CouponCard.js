@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
-import { Copy, Check, X } from 'lucide-react';
+import { Copy, Check, X, Scissors } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { BaseCard } from './BaseCard';
-import ShareButtons from './ShareButtons';
 import { trackClick, buildUTMLink } from '../utils/helpers';
 
 const CouponCard = ({ coupon, brand, compact = false }) => {
@@ -12,7 +11,7 @@ const CouponCard = ({ coupon, brand, compact = false }) => {
   // Get brand info - either from passed brand object or from coupon itself
   const brandName = brand?.name || coupon.brand_name;
   const brandSlug = brand?.slug || coupon.brand_slug;
-  const brandLogoUrl = brand?.logo_url || coupon.brand_logo_url; // #5
+  const brandLogoUrl = brand?.logo_url || coupon.brand_logo_url;
 
   const handleGetCode = async () => {
     trackClick('coupon_view', coupon.id, coupon.brand_id, brand?.category_id);
@@ -39,26 +38,39 @@ const CouponCard = ({ coupon, brand, compact = false }) => {
 
   const isExpired = coupon.expiry_date && new Date(coupon.expiry_date) < new Date();
 
+  // Kupon kodunun ilk 3 karakterini göster (peek efekti için)
+  const codePreview = coupon.code ? coupon.code.substring(0, 3) : '***';
+
   const actions = compact ? (
     <button
       onClick={handleGetCode}
       disabled={isExpired || !coupon.is_active}
-      className="w-full px-4 py-2 bg-primary/90 hover:bg-primary rounded-lg text-sm font-medium transition-all disabled:opacity-50"
+      className="w-full px-4 py-2 bg-primary/90 hover:bg-primary rounded-lg text-sm font-medium transition-all disabled:opacity-50 relative overflow-hidden group"
     >
-      Kodu Göster
+      <span className="relative z-10">Kodu Göster</span>
+      {/* Peek efekti - köşede kod görünür */}
+      <span className="absolute -right-1 top-1/2 -translate-y-1/2 px-2 py-1 bg-white/20 rounded-l-md text-xs font-mono opacity-70 group-hover:opacity-100 transition-opacity">
+        {codePreview}...
+      </span>
     </button>
   ) : (
-    <div className="flex items-center space-x-2">
-      <button
-        onClick={handleGetCode}
-        disabled={isExpired || !coupon.is_active}
-        className="flex-1 px-6 py-3 bg-gradient-to-r from-primary to-pink-500 rounded-lg font-medium hover:shadow-lg hover:shadow-primary/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-        data-testid="coupon-get-code-btn"
-      >
+    <button
+      onClick={handleGetCode}
+      disabled={isExpired || !coupon.is_active}
+      className="w-full px-6 py-3 bg-gradient-to-r from-primary to-pink-500 rounded-lg font-medium hover:shadow-lg hover:shadow-primary/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden group"
+      data-testid="coupon-get-code-btn"
+    >
+      <span className="flex items-center justify-center gap-2">
+        <Scissors className="w-4 h-4" />
         Kodu Göster
-      </button>
-      <ShareButtons title={coupon.title} size="md" />
-    </div>
+      </span>
+      {/* Peek efekti - köşede kod görünür */}
+      <span className="absolute right-0 top-0 bottom-0 w-16 bg-white/10 flex items-center justify-center border-l border-white/20 rounded-r-lg">
+        <span className="font-mono text-xs opacity-80 group-hover:opacity-100 transition-opacity tracking-wider">
+          {codePreview}...
+        </span>
+      </span>
+    </button>
   );
 
   return (
