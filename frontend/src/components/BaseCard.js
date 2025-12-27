@@ -38,6 +38,7 @@ const getTimeRemaining = (expiryDate) => {
 };
 
 const BaseCard = ({
+  type = 'coupon', // 'coupon', 'discount', or 'giveaway'
   title,
   description,
   discountText,
@@ -56,6 +57,14 @@ const BaseCard = ({
   const timeLeft = getTimeRemaining(expiryDate);
   const isExpired = timeLeft?.expired || !isActive;
   const expiringSoon = isExpiringSoon(expiryDate);
+  
+  // Type-specific colors
+  const typeColors = {
+    coupon: 'text-primary',
+    discount: 'text-primary',
+    giveaway: 'text-emerald-400'
+  };
+  const discountColor = typeColors[type] || 'text-primary';
 
   // Compact version for horizontal scrolling lists
   if (compact) {
