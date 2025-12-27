@@ -90,7 +90,6 @@ const CouponCard = ({ coupon, brand, compact = false }) => {
     trackClick('coupon_store_click', coupon.id, coupon.brand_id, brand?.category_id);
     if (coupon.destination_url) {
       const finalUrl = buildUTMLink(coupon.destination_url, coupon.utm_template, coupon.id);
-      console.log('Opening URL with UTM:', finalUrl);
       window.open(finalUrl, '_blank');
     }
   };
