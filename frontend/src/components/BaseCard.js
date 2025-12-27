@@ -68,8 +68,17 @@ const BaseCard = ({
   compact = false,
   onCtaClick
 }) => {
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
   const timeLeft = getTimeRemaining(expiryDate);
   const isExpired = timeLeft?.expired || !isActive;
+
+  // Get time color - dark mode: always orange, light mode: color-coded
+  const getTimeColor = () => {
+    if (isDark) return '#fb923c'; // orange-400
+    if (!timeLeft) return '#22c55e'; // green-500
+    return timeLeft.color;
+  };
 
   // Get proper logo URL
   const getLogoUrl = (url) => {
