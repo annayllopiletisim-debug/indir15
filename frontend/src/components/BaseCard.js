@@ -175,14 +175,17 @@ const BaseCard = ({
               
               {/* Time remaining - improved label */}
               {timeLeft ? (
-                <span className={`flex-shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium ${
-                  isExpired 
-                    ? 'bg-destructive/15 text-destructive' 
-                    : 'bg-muted/80 text-muted-foreground'
-                }`}>
-                  <Clock className="w-3.5 h-3.5" />
-                  <span>Kalan Süre: {timeLeft.text}</span>
-                </span>
+                timeLeft.expired ? (
+                  <span className="flex-shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-destructive/15 text-destructive">
+                    <Clock className="w-3.5 h-3.5" />
+                    Süresi Doldu
+                  </span>
+                ) : (
+                  <span className="flex-shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-muted/80 text-muted-foreground">
+                    <Clock className="w-3.5 h-3.5" />
+                    <span>Kalan Süre: {timeLeft.text}</span>
+                  </span>
+                )
               ) : (
                 <span className="flex-shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-emerald-500/15 text-emerald-400">
                   Süresiz
