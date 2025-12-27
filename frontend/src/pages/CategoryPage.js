@@ -61,6 +61,58 @@ const CategoryPage = () => {
   // Filter modal state
   const [showFilterModal, setShowFilterModal] = useState(false);
   
+  // Mobile scroll state - hide header when scrolling down
+  const [headerHidden, setHeaderHidden] = useState(false);
+  const lastScrollY = useRef(0);
+  const ticking = useRef(false);
+  
+  // Handle scroll for mobile header behavior
+  const handleScroll = useCallback(() => {
+    if (ticking.current) return;
+    
+    ticking.current = true;
+    
+    requestAnimationFrame(() => {
+      const currentScrollY = window.scrollY;
+      const header = document.getElementById('main-header');
+      
+      // Only apply on mobile (< 768px)
+      if (window.innerWidth < 768 && header) {
+        // Scrolling down and past threshold
+        if (currentScrollY > lastScrollY.current && currentScrollY > 100) {
+          header.style.transform = 'translateY(-100%)';
+          setHeaderHidden(true);
+        } 
+        // Scrolling up
+        else if (currentScrollY < lastScrollY.current) {
+          header.style.transform = 'translateY(0)';
+          setHeaderHidden(false);
+        }
+      } else if (header) {
+        // Desktop - always show header
+        header.style.transform = 'translateY(0)';
+        setHeaderHidden(false);
+      }
+      
+      lastScrollY.current = currentScrollY;
+      ticking.current = false;
+    });
+  }, []);
+  
+  // Add/remove scroll listener
+  useEffect(() => {
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    
+    // Reset header on unmount
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      const header = document.getElementById('main-header');
+      if (header) {
+        header.style.transform = 'translateY(0)';
+      }
+    };
+  }, [handleScroll]);
+  
   // Filter values
   const [filterDiscountRate, setFilterDiscountRate] = useState('all');
   const [filterCampaignType, setFilterCampaignType] = useState('all');
