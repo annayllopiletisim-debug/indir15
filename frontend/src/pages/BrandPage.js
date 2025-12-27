@@ -146,6 +146,8 @@ const BrandPage = () => {
                   {allItems.map((item) =>
                     item.code ? (
                       <CouponCard key={item.id} coupon={item} brand={brand} />
+                    ) : item.prize_text ? (
+                      <GiveawayCard key={item.id} giveaway={item} brand={brand} />
                     ) : (
                       <DiscountCard key={item.id} discount={item} brand={brand} />
                     )
@@ -179,6 +181,28 @@ const BrandPage = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {discounts.map((discount) => (
                     <DiscountCard key={discount.id} discount={discount} brand={brand} />
+                  ))}
+                </div>
+              )}
+            </TabsContent>
+
+            <TabsContent value="giveaways" className="space-y-6">
+              <h2 className="text-xl font-heading font-bold mb-4 flex items-center gap-2">
+                <Gift className="w-6 h-6 text-emerald-400" />
+                Çekilişler
+              </h2>
+              {giveaways.length === 0 ? (
+                <div className="text-center py-16">
+                  <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-emerald-500/10 flex items-center justify-center">
+                    <Gift className="w-8 h-8 text-emerald-400" />
+                  </div>
+                  <p className="text-muted-foreground">Henüz çekiliş bulunmuyor.</p>
+                  <p className="text-sm text-muted-foreground mt-2">Yakında yeni çekilişler eklenecek!</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {giveaways.map((giveaway) => (
+                    <GiveawayCard key={giveaway.id} giveaway={giveaway} brand={brand} />
                   ))}
                 </div>
               )}
