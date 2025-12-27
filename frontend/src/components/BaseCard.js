@@ -155,14 +155,14 @@ const BaseCard = ({
       className={`relative ${isExpired ? 'opacity-60' : ''} ${className}`}
       data-testid={testId}
     >
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm hover:shadow-lg transition-all duration-200 overflow-hidden">
+      <div className="bg-card rounded-2xl shadow-sm hover:shadow-lg transition-all duration-200 overflow-hidden border border-border">
         {/* Main Content Area - Clickable */}
         <CardContent>
-          <div className="p-0 cursor-pointer">
+          <div className="p-3 cursor-pointer">
             <div className="flex gap-4 items-start">
-              {/* Left: Large Square Image - flush to left edge */}
+              {/* Left: Large Square Image - with padding */}
               <div className="flex-shrink-0">
-                <div className="w-28 h-28 sm:w-36 sm:h-36 rounded-r-xl overflow-hidden bg-gradient-to-br from-violet-100 to-violet-200 dark:from-violet-900/30 dark:to-violet-800/30 flex items-center justify-center">
+                <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-xl overflow-hidden bg-gradient-to-br from-violet-100 to-violet-200 dark:from-violet-900/30 dark:to-violet-800/30 flex items-center justify-center">
                   {imageUrl ? (
                     <img 
                       src={imageUrl} 
@@ -177,7 +177,7 @@ const BaseCard = ({
               </div>
 
               {/* Right: Content - aligned with image top */}
-              <div className="flex-1 min-w-0 flex flex-col pt-0 pb-4 pr-4">
+              <div className="flex-1 min-w-0 flex flex-col py-0 pr-1">
                 {/* Brand Logo + Name */}
                 {brandName && (
                   <div className="inline-flex items-center gap-2.5 mb-2 self-start">
@@ -190,7 +190,7 @@ const BaseCard = ({
                         />
                       </div>
                     )}
-                    <span className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">{brandName}</span>
+                    <span className="text-xl sm:text-2xl font-bold text-foreground">{brandName}</span>
                   </div>
                 )}
 
@@ -202,7 +202,7 @@ const BaseCard = ({
                 )}
 
                 {/* Campaign Title */}
-                <h3 className="text-base font-semibold text-gray-800 dark:text-gray-100 line-clamp-2 leading-snug">
+                <h3 className="text-base font-semibold text-foreground line-clamp-2 leading-snug">
                   {title}
                 </h3>
                 
@@ -213,18 +213,22 @@ const BaseCard = ({
         </CardContent>
 
         {/* Divider */}
-        <div className="border-t border-gray-100 dark:border-gray-700" />
+        <div className="border-t border-border" />
 
-        {/* Bottom Row: Time (left) + CTA Button (right) */}
+        {/* Bottom Row: Time (left, only if < 3 days) + CTA Button (right) */}
         <div className="px-4 py-3 flex items-center justify-between">
-          {/* Time Remaining */}
-          <span 
-            className="inline-flex items-center gap-1.5 text-sm font-semibold"
-            style={{ color: getTimeColor() }}
-          >
-            <Clock className="w-4 h-4" />
-            {timeLeft ? timeLeft.text : 'Süresiz'}
-          </span>
+          {/* Time Remaining - only show if less than 3 days */}
+          {timeLeft ? (
+            <span 
+              className="inline-flex items-center gap-1.5 text-sm font-semibold"
+              style={{ color: getTimeColor() }}
+            >
+              <Clock className="w-4 h-4" />
+              {timeLeft.text}
+            </span>
+          ) : (
+            <span></span>
+          )}
 
           {/* Actions / CTA Button */}
           {actions}
