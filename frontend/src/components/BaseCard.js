@@ -161,27 +161,31 @@ const BaseCard = ({
           <div className="flex-1 flex flex-col min-w-0">
             {/* Top: Brand + Time */}
             <div className="flex items-center justify-between gap-2 mb-3">
-              {/* Brand - BIGGER */}
+              {/* Brand - LARGER */}
               {brandName && (
                 <Link 
                   to={brandSlug ? `/magaza/${brandSlug}` : '#'}
-                  className="inline-flex items-center gap-2 hover:opacity-80 transition-opacity max-w-[220px]"
+                  className="inline-flex items-center gap-2 hover:opacity-80 transition-opacity max-w-[250px]"
                   title={brandName}
                 >
                   <BrandLogo logoUrl={brandLogoUrl} brandName={brandName} size="sm" />
-                  <span className="text-lg font-bold text-foreground truncate">{brandName}</span>
+                  <span className="text-xl font-bold text-foreground truncate">{brandName}</span>
                 </Link>
               )}
               
-              {/* Time remaining */}
-              {timeLeft && (
-                <span className={`flex-shrink-0 inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs ${
+              {/* Time remaining - improved label */}
+              {timeLeft ? (
+                <span className={`flex-shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium ${
                   isExpired 
                     ? 'bg-destructive/15 text-destructive' 
-                    : 'bg-muted text-muted-foreground'
+                    : 'bg-muted/80 text-muted-foreground'
                 }`}>
-                  <Clock className="w-3 h-3" />
-                  {timeLeft.text}
+                  <Clock className="w-3.5 h-3.5" />
+                  <span>Kalan Süre: {timeLeft.text}</span>
+                </span>
+              ) : (
+                <span className="flex-shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-emerald-500/15 text-emerald-400">
+                  Süresiz
                 </span>
               )}
             </div>
