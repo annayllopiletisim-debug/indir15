@@ -129,7 +129,7 @@ const BaseCard = ({
       <div className="bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all duration-200 overflow-hidden">
         {/* Main Content Area */}
         <div className="p-0">
-          <div className="flex gap-4">
+          <div className="flex gap-4 items-start">
             {/* Left: Large Square Image - flush to left edge */}
             <div className="flex-shrink-0">
               <div className="w-28 h-28 sm:w-36 sm:h-36 rounded-r-xl overflow-hidden bg-gradient-to-br from-violet-100 to-violet-200 flex items-center justify-center">
@@ -146,16 +146,16 @@ const BaseCard = ({
               </div>
             </div>
 
-            {/* Right: Content */}
-            <div className="flex-1 min-w-0 flex flex-col py-4 pr-4">
+            {/* Right: Content - aligned with image top */}
+            <div className="flex-1 min-w-0 flex flex-col pt-0 pb-4 pr-4">
               {/* Brand Logo + Name */}
               {brandName && (
                 <Link 
                   to={brandSlug ? `/magaza/${brandSlug}` : '#'}
-                  className="inline-flex items-center gap-2 mb-2 hover:opacity-80 transition-opacity self-start"
+                  className="inline-flex items-center gap-2.5 mb-2 hover:opacity-80 transition-opacity self-start"
                 >
                   {brandLogoUrl && (
-                    <div className="w-7 h-7 bg-white rounded-lg shadow-sm border border-gray-100 flex items-center justify-center p-1 flex-shrink-0">
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 bg-white rounded-xl shadow-sm border border-gray-100 flex items-center justify-center p-1.5 flex-shrink-0">
                       <img 
                         src={getLogoUrl(brandLogoUrl)} 
                         alt={brandName} 
@@ -163,7 +163,7 @@ const BaseCard = ({
                       />
                     </div>
                   )}
-                  <span className="text-lg sm:text-xl font-bold text-gray-900">{brandName}</span>
+                  <span className="text-xl sm:text-2xl font-bold text-gray-900">{brandName}</span>
                 </Link>
               )}
 
