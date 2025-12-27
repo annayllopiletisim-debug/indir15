@@ -73,15 +73,15 @@ const BrandPage = () => {
     );
   }
 
-  const allItems = [...coupons, ...discounts].sort(
+  const allItems = [...coupons, ...discounts, ...giveaways].sort(
     (a, b) => new Date(b.created_at) - new Date(a.created_at)
   );
 
   const metaTitle = brand.meta_title || `${brand.name} Kupon ve İndirimler - İndirim Keşfet`;
   const metaDescription = brand.meta_description || `${brand.name} için en güncel kupon kodları ve indirimler. Hemen tasarruf etmeye başlayın!`;
 
-  // Calculate tab count
-  const tabCount = 3 + (brand.app_install_enabled ? 1 : 0);
+  // Calculate tab count: Kuponlar, İndirimler, Çekilişler + App (if enabled)
+  const tabCount = 4 + (brand.app_install_enabled ? 1 : 0);
 
   return (
     <>
