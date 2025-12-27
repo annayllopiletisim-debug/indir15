@@ -985,6 +985,22 @@ async def get_homepage_brands_with_deals():
     
     return brands
 
+
+@api_router.get("/brands/list-with-deal-counts")
+async def get_all_brands_with_deal_counts():
+    """Get all brands with their deal counts for homepage use"""
+    brands = await db.brands.find({}, {'_id': 0}).sort('name', 1).to_list(500)
+    
+    for brand in brands:
+        brand_id = brand['id']
+        # Count active coupons
+        coupon_count = await db.coupons.count_documents({'brand_id': brand_id, 'is_active': True})
+        # Count discounts
+        discount_count = await db.discounts.count_documents({'brand_id': brand_id})
+        brand['deal_count'] = coupon_count + discount_count
+    
+    return brands
+
 @api_router.post("/analytics/track")
 async def track_click(event: ClickEventCreate):
     new_event = ClickEvent(**event.model_dump())
