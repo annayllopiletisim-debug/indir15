@@ -147,7 +147,7 @@ const BaseCard = ({
             </div>
 
             {/* Right: Content */}
-            <div className="flex-1 min-w-0 flex flex-col">
+            <div className="flex-1 min-w-0 flex flex-col py-4 pr-4">
               {/* Brand Logo + Name */}
               {brandName && (
                 <Link 
