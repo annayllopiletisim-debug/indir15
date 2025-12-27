@@ -226,14 +226,14 @@ const StoresPage = () => {
             {/* #4 - Filtrele butonu */}
             <button
               onClick={() => setShowFilters(!showFilters)}
-              className={`flex items-center gap-2 px-4 py-3 rounded-xl font-medium transition-all ${
+              className={`flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-medium transition-all ${
                 showFilters || selectedLetter
                   ? 'bg-primary text-white'
                   : 'bg-muted hover:bg-muted/80'
               }`}
             >
               <Filter className="w-5 h-5" />
-              <span className="hidden sm:inline">Filtrele</span>
+              <span>Filtrele</span>
               <ChevronDown className={`w-4 h-4 transition-transform ${showFilters ? 'rotate-180' : ''}`} />
             </button>
           </div>
