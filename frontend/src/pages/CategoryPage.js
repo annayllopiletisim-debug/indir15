@@ -6,7 +6,7 @@ import CouponCard from '../components/CouponCard';
 import DiscountCard from '../components/DiscountCard';
 import StickyActionBar from '../components/StickyActionBar';
 import AlphabetNav from '../components/AlphabetNav';
-import { Search, Check, X, Tag, Filter, ChevronDown, Package } from 'lucide-react';
+import { Search, Check, X, Tag, Filter, ChevronDown, Package, Percent, Clock, TrendingUp } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
@@ -15,7 +15,7 @@ const CategoryPage = () => {
   const { slug } = useParams();
   const [category, setCategory] = useState(null);
   const [brands, setBrands] = useState([]);
-  const [allBrands, setAllBrands] = useState([]); // For popular brands bar - #3
+  const [allBrands, setAllBrands] = useState([]);
   const [allCoupons, setAllCoupons] = useState([]);
   const [allDiscounts, setAllDiscounts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -24,7 +24,11 @@ const CategoryPage = () => {
   const [selectedStores, setSelectedStores] = useState(new Set());
   const [showDeals, setShowDeals] = useState(false);
   const [selectedLetter, setSelectedLetter] = useState(null);
-  const [showFilters, setShowFilters] = useState(false); // #4 - Filter toggle
+  const [showFilters, setShowFilters] = useState(false);
+  
+  // New filter options
+  const [filterHighDiscount, setFilterHighDiscount] = useState(false);
+  const [filterExpiringSoon, setFilterExpiringSoon] = useState(false);
   
   // Site settings for sticky bar
   const [siteSettings, setSiteSettings] = useState({ sticky_cta_enabled: true, sticky_cta_variant: "A" });
@@ -65,11 +69,12 @@ const CategoryPage = () => {
     const fetchData = async () => {
       setLoading(true);
       setNotFound(false);
-      // Reset states when slug changes - #1 Bug fix
       setSelectedStores(new Set());
       setShowDeals(false);
       setSearchTerm('');
       setSelectedLetter(null);
+      setFilterHighDiscount(false);
+      setFilterExpiringSoon(false);
       
       try {
         const categoriesRes = await axios.get(`${API}/categories`);
@@ -108,7 +113,7 @@ const CategoryPage = () => {
         })).sort((a, b) => a.name.localeCompare(b.name, 'tr'));
 
         setBrands(brandsWithDeals);
-        setAllBrands(brandsWithDeals); // Store all brands for popular bar
+        setAllBrands(brandsWithDeals);
         setAllCoupons(categoryCoupons);
         setAllDiscounts(categoryDiscounts);
       } catch (error) {
@@ -120,7 +125,7 @@ const CategoryPage = () => {
     };
 
     fetchData();
-  }, [slug]); // Re-fetch when slug changes
+  }, [slug]);
 
   // Get available letters
   const availableLetters = useMemo(() => {
@@ -151,13 +156,23 @@ const CategoryPage = () => {
     return result;
   }, [searchTerm, selectedLetter, brands]);
 
-  // #3 - Popular brands in this category (sorted by deal count)
+  // Popular brands in this category (sorted by deal count)
   const popularBrands = useMemo(() => {
     return [...allBrands]
       .filter(b => b.deal_count > 0)
       .sort((a, b) => b.deal_count - a.deal_count)
       .slice(0, 8);
   }, [allBrands]);
+
+  // Top 3 campaigns for category (most recent or could be by views)
+  const topCampaigns = useMemo(() => {
+    const allDeals = [
+      ...allCoupons.map(c => ({ ...c, type: 'coupon' })),
+      ...allDiscounts.map(d => ({ ...d, type: 'discount' }))
+    ];
+    // Sort by created_at desc or just take first 3
+    return allDeals.slice(0, 3);
+  }, [allCoupons, allDiscounts]);
 
   // Toggle store selection
   const toggleStore = (brandSlug) => {
@@ -174,6 +189,8 @@ const CategoryPage = () => {
   const clearSelection = () => {
     setSelectedStores(new Set());
     setShowDeals(false);
+    setFilterHighDiscount(false);
+    setFilterExpiringSoon(false);
   };
 
   // Get selected brand IDs
@@ -183,17 +200,52 @@ const CategoryPage = () => {
       .map(b => b.id);
   }, [selectedStores, brands]);
 
+  // Helper to check if deal is expiring soon (within 3 days)
+  const isExpiringSoon = (expiryDate) => {
+    if (!expiryDate) return false;
+    const now = new Date();
+    const expiry = new Date(expiryDate);
+    const diff = expiry - now;
+    return diff > 0 && diff <= 3 * 24 * 60 * 60 * 1000;
+  };
+
+  // Helper to check if high discount (contains %20 or higher)
+  const isHighDiscount = (discountText) => {
+    if (!discountText) return false;
+    const match = discountText.match(/(\d+)/);
+    if (match) {
+      const num = parseInt(match[1]);
+      return num >= 20;
+    }
+    return false;
+  };
+
   // Get filtered deals
   const filteredDeals = useMemo(() => {
-    if (selectedStores.size === 0) return { coupons: [], discounts: [] };
+    let coupons = allCoupons;
+    let discounts = allDiscounts;
+
+    // Filter by selected stores
+    if (selectedStores.size > 0) {
+      const selectedBrandIdSet = new Set(selectedBrandIds);
+      coupons = coupons.filter(c => selectedBrandIdSet.has(c.brand_id));
+      discounts = discounts.filter(d => selectedBrandIdSet.has(d.brand_id));
+    }
+
+    // Filter by high discount
+    if (filterHighDiscount) {
+      coupons = coupons.filter(c => isHighDiscount(c.discount_text));
+      discounts = discounts.filter(d => isHighDiscount(d.discount_text));
+    }
+
+    // Filter by expiring soon
+    if (filterExpiringSoon) {
+      coupons = coupons.filter(c => isExpiringSoon(c.expiry_date));
+      discounts = discounts.filter(d => isExpiringSoon(d.expiry_date));
+    }
     
-    const selectedBrandIdSet = new Set(selectedBrandIds);
-    
-    return {
-      coupons: allCoupons.filter(c => selectedBrandIdSet.has(c.brand_id)),
-      discounts: allDiscounts.filter(d => selectedBrandIdSet.has(d.brand_id))
-    };
-  }, [selectedStores, selectedBrandIds, allCoupons, allDiscounts]);
+    return { coupons, discounts };
+  }, [selectedStores, selectedBrandIds, allCoupons, allDiscounts, filterHighDiscount, filterExpiringSoon]);
 
   // Brand map
   const brandMap = useMemo(() => {
@@ -202,6 +254,21 @@ const CategoryPage = () => {
       return acc;
     }, {});
   }, [brands]);
+
+  // Generate deal URL
+  const getDealUrl = (deal, type) => {
+    const brand = brandMap[deal.brand_id];
+    if (!brand) return '#';
+    const slug = deal.title?.toLowerCase()
+      .replace(/[ıİ]/g, 'i').replace(/[ğĞ]/g, 'g').replace(/[üÜ]/g, 'u')
+      .replace(/[şŞ]/g, 's').replace(/[öÖ]/g, 'o').replace(/[çÇ]/g, 'c')
+      .replace(/[^a-z0-9\s-]/g, '').replace(/[\s_]+/g, '-').replace(/-+/g, '-')
+      .substring(0, 50) || 'deal';
+    return `/magaza/${brand.slug}/${type === 'coupon' ? 'kupon' : 'indirim'}/${slug}-${deal.id}`;
+  };
+
+  // Check if any filter is active
+  const hasActiveFilters = selectedStores.size > 0 || filterHighDiscount || filterExpiringSoon;
 
   if (loading) {
     return (
@@ -240,10 +307,27 @@ const CategoryPage = () => {
             <p className="text-muted-foreground">
               {brands.length} mağaza, {totalDeals} aktif indirim
             </p>
+            
+            {/* Top Campaigns Tags */}
+            {topCampaigns.length > 0 && (
+              <div className="mt-4 flex flex-wrap gap-2">
+                <span className="text-sm text-muted-foreground">Öne Çıkanlar:</span>
+                {topCampaigns.map((deal) => (
+                  <Link
+                    key={deal.id}
+                    to={getDealUrl(deal, deal.type)}
+                    className="inline-flex items-center gap-1 px-3 py-1 bg-primary/10 hover:bg-primary/20 text-primary rounded-full text-sm transition-colors"
+                  >
+                    <TrendingUp className="w-3 h-3" />
+                    <span className="truncate max-w-[150px]">{deal.title}</span>
+                  </Link>
+                ))}
+              </div>
+            )}
           </div>
         </div>
 
-        {/* #3 - Popular Brands Bar (always visible, shows category's popular stores) */}
+        {/* Popular Brands Bar - Direct links, NOT filter mode */}
         {popularBrands.length > 0 && !showDeals && (
           <div className="bg-muted/30 border-b border-border">
             <div className="container mx-auto px-4 py-3">
@@ -251,38 +335,26 @@ const CategoryPage = () => {
                 <span className="text-xs text-muted-foreground">Popüler Mağazalar:</span>
               </div>
               <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
-                {popularBrands.map((brand) => {
-                  const isSelected = selectedStores.has(brand.slug);
-                  return (
-                    <button
-                      key={brand.id}
-                      onClick={() => toggleStore(brand.slug)}
-                      className={`flex-shrink-0 flex items-center gap-2 px-3 py-2 rounded-lg transition-all relative ${
-                        isSelected 
-                          ? 'bg-primary text-white' 
-                          : 'bg-card border border-border hover:border-primary/30'
-                      }`}
-                    >
-                      <BrandLogo logoUrl={brand.logo_url} brandName={brand.name} size="xs" />
-                      <span className="text-sm whitespace-nowrap">{brand.name}</span>
-                      {/* #3 - Deal count badge */}
-                      <span className={`text-xs px-1.5 py-0.5 rounded-full ${
-                        isSelected 
-                          ? 'bg-white/20 text-white' 
-                          : 'bg-primary/10 text-primary'
-                      }`}>
-                        {brand.deal_count}
-                      </span>
-                    </button>
-                  );
-                })}
+                {popularBrands.map((brand) => (
+                  <Link
+                    key={brand.id}
+                    to={`/magaza/${brand.slug}`}
+                    className="flex-shrink-0 flex items-center gap-2 px-3 py-2 rounded-lg transition-all bg-card border border-border hover:border-primary/50 hover:bg-primary/5"
+                  >
+                    <BrandLogo logoUrl={brand.logo_url} brandName={brand.name} size="xs" />
+                    <span className="text-sm whitespace-nowrap">{brand.name}</span>
+                    <span className="text-xs px-1.5 py-0.5 rounded-full bg-primary/10 text-primary">
+                      {brand.deal_count}
+                    </span>
+                  </Link>
+                ))}
               </div>
             </div>
           </div>
         )}
 
         <div className="container mx-auto px-4 py-6">
-          {/* Search & Filter Toggle - #4 */}
+          {/* Search & Filter Toggle */}
           <div className="flex flex-col sm:flex-row gap-3 mb-4">
             <div className="flex-1 relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
@@ -298,38 +370,110 @@ const CategoryPage = () => {
               />
             </div>
 
-            {/* #4 - Filtrele butonu */}
+            {/* Filtrele butonu */}
             <button
               onClick={() => setShowFilters(!showFilters)}
-              className={`flex items-center gap-2 px-4 py-3 rounded-xl font-medium transition-all ${
-                showFilters || selectedLetter
+              className={`flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-medium transition-all ${
+                showFilters || hasActiveFilters
                   ? 'bg-primary text-white'
                   : 'bg-muted hover:bg-muted/80'
               }`}
             >
               <Filter className="w-5 h-5" />
-              <span className="hidden sm:inline">Filtrele</span>
+              <span>Filtrele</span>
+              {hasActiveFilters && (
+                <span className="bg-white/20 text-white text-xs px-1.5 py-0.5 rounded-full">
+                  {(selectedStores.size > 0 ? 1 : 0) + (filterHighDiscount ? 1 : 0) + (filterExpiringSoon ? 1 : 0)}
+                </span>
+              )}
               <ChevronDown className={`w-4 h-4 transition-transform ${showFilters ? 'rotate-180' : ''}`} />
             </button>
           </div>
 
-          {/* #4 - Collapsible Alphabet Filter */}
+          {/* Expanded Filter Area */}
           <AnimatePresence>
-            {(showFilters || selectedLetter) && !searchTerm && (
+            {showFilters && (
               <motion.div
                 initial={{ height: 0, opacity: 0 }}
                 animate={{ height: 'auto', opacity: 1 }}
                 exit={{ height: 0, opacity: 0 }}
-                className="overflow-hidden"
+                className="overflow-hidden mb-4"
               >
-                <AlphabetNav
-                  letters={availableLetters}
-                  selectedLetter={selectedLetter}
-                  onSelect={(letter) => {
-                    setSelectedLetter(letter);
-                    if (!letter) setShowFilters(false);
-                  }}
-                />
+                <div className="p-4 bg-card border border-border rounded-xl space-y-4">
+                  {/* Filter Options */}
+                  <div className="flex flex-wrap gap-3">
+                    {/* Multiple Store Selection */}
+                    <button
+                      onClick={() => {
+                        if (selectedStores.size > 0) {
+                          setSelectedStores(new Set());
+                        }
+                      }}
+                      className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
+                        selectedStores.size > 0
+                          ? 'bg-primary text-white'
+                          : 'bg-muted hover:bg-muted/80'
+                      }`}
+                    >
+                      <Check className="w-4 h-4" />
+                      <span>Çoklu Seçim</span>
+                      {selectedStores.size > 0 && (
+                        <span className="bg-white/20 text-xs px-1.5 py-0.5 rounded-full">
+                          {selectedStores.size}
+                        </span>
+                      )}
+                    </button>
+
+                    {/* High Discount Filter */}
+                    <button
+                      onClick={() => setFilterHighDiscount(!filterHighDiscount)}
+                      className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
+                        filterHighDiscount
+                          ? 'bg-primary text-white'
+                          : 'bg-muted hover:bg-muted/80'
+                      }`}
+                    >
+                      <Percent className="w-4 h-4" />
+                      <span>Yüksek İndirim (%20+)</span>
+                    </button>
+
+                    {/* Expiring Soon Filter */}
+                    <button
+                      onClick={() => setFilterExpiringSoon(!filterExpiringSoon)}
+                      className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
+                        filterExpiringSoon
+                          ? 'bg-orange-500 text-white'
+                          : 'bg-muted hover:bg-muted/80'
+                      }`}
+                    >
+                      <Clock className="w-4 h-4" />
+                      <span>Süresi Bitmek Üzere</span>
+                    </button>
+                  </div>
+
+                  {/* Alphabet Filter */}
+                  {!searchTerm && (
+                    <div>
+                      <p className="text-sm text-muted-foreground mb-2">Harfe Göre:</p>
+                      <AlphabetNav
+                        letters={availableLetters}
+                        selectedLetter={selectedLetter}
+                        onSelect={(letter) => setSelectedLetter(letter)}
+                      />
+                    </div>
+                  )}
+
+                  {/* Clear Filters */}
+                  {hasActiveFilters && (
+                    <button
+                      onClick={clearSelection}
+                      className="text-sm text-muted-foreground hover:text-foreground flex items-center gap-1"
+                    >
+                      <X className="w-4 h-4" />
+                      Filtreleri Temizle
+                    </button>
+                  )}
+                </div>
               </motion.div>
             )}
           </AnimatePresence>
@@ -354,8 +498,39 @@ const CategoryPage = () => {
             </div>
           )}
 
-          {/* Deals View */}
-          {showDeals && selectedStores.size > 0 ? (
+          {/* Deals View - Show when filters are active */}
+          {(showDeals || (hasActiveFilters && (filterHighDiscount || filterExpiringSoon))) && (filteredDeals.coupons.length > 0 || filteredDeals.discounts.length > 0) ? (
+            <div>
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-xl font-heading font-bold">
+                  Filtrelenmiş İndirimler ({filteredDeals.coupons.length + filteredDeals.discounts.length})
+                </h2>
+                <button
+                  onClick={clearSelection}
+                  className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  ← Filtreleri Temizle
+                </button>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {filteredDeals.coupons.map(coupon => (
+                  <CouponCard 
+                    key={coupon.id} 
+                    coupon={coupon} 
+                    brand={brandMap[coupon.brand_id]} 
+                  />
+                ))}
+                {filteredDeals.discounts.map(discount => (
+                  <DiscountCard 
+                    key={discount.id} 
+                    discount={discount} 
+                    brand={brandMap[discount.brand_id]} 
+                  />
+                ))}
+              </div>
+            </div>
+          ) : showDeals && selectedStores.size > 0 ? (
             <div>
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-xl font-heading font-bold">
@@ -422,58 +597,58 @@ const CategoryPage = () => {
                     {filteredBrands.map((brand) => {
                       const isSelected = selectedStores.has(brand.slug);
                       
-                      // Filtrele aktif değilse, mağaza sayfasına git
-                      if (!showFilters) {
+                      // If filter mode is active, show checkboxes
+                      if (showFilters) {
                         return (
-                          <Link
+                          <button
                             key={brand.id}
-                            to={`/magaza/${brand.slug}`}
-                            className="group p-3 rounded-xl text-center transition-all glass-effect hover:border-primary/30"
+                            onClick={() => toggleStore(brand.slug)}
+                            className={`group p-3 rounded-xl text-center transition-all relative ${
+                              isSelected 
+                                ? 'bg-primary/10 border-2 border-primary' 
+                                : 'glass-effect hover:border-primary/30'
+                            }`}
                           >
+                            {/* Checkbox */}
+                            <div className={`absolute top-2 right-2 w-5 h-5 rounded flex items-center justify-center transition-all ${
+                              isSelected 
+                                ? 'bg-primary' 
+                                : 'border-2 border-muted-foreground/30'
+                            }`}>
+                              {isSelected && <Check className="w-3 h-3 text-white" />}
+                            </div>
+
                             <div className="flex justify-center mb-2">
                               <BrandLogo logoUrl={brand.logo_url} brandName={brand.name} size="md" />
                             </div>
+
                             <h3 className="font-medium text-sm truncate mb-1">{brand.name}</h3>
                             {brand.deal_count > 0 ? (
                               <p className="text-xs text-primary">{brand.deal_count} indirim</p>
                             ) : (
                               <p className="text-xs text-muted-foreground">-</p>
                             )}
-                          </Link>
+                          </button>
                         );
                       }
                       
-                      // Filtrele aktifse, checkbox seçimi
+                      // Default: direct link to store page
                       return (
-                        <button
+                        <Link
                           key={brand.id}
-                          onClick={() => toggleStore(brand.slug)}
-                          className={`group p-3 rounded-xl text-center transition-all relative ${
-                            isSelected 
-                              ? 'bg-primary/10 border-2 border-primary' 
-                              : 'glass-effect hover:border-primary/30'
-                          }`}
+                          to={`/magaza/${brand.slug}`}
+                          className="group p-3 rounded-xl text-center transition-all glass-effect hover:border-primary/30"
                         >
-                          {/* Checkbox her zaman görünür - seçilmemişse border, seçilmişse tick */}
-                          <div className={`absolute top-2 right-2 w-5 h-5 rounded flex items-center justify-center transition-all ${
-                            isSelected 
-                              ? 'bg-primary' 
-                              : 'border-2 border-muted-foreground/30'
-                          }`}>
-                            {isSelected && <Check className="w-3 h-3 text-white" />}
-                          </div>
-
                           <div className="flex justify-center mb-2">
                             <BrandLogo logoUrl={brand.logo_url} brandName={brand.name} size="md" />
                           </div>
-
                           <h3 className="font-medium text-sm truncate mb-1">{brand.name}</h3>
                           {brand.deal_count > 0 ? (
                             <p className="text-xs text-primary">{brand.deal_count} indirim</p>
                           ) : (
                             <p className="text-xs text-muted-foreground">-</p>
                           )}
-                        </button>
+                        </Link>
                       );
                     })}
                   </div>
@@ -485,7 +660,7 @@ const CategoryPage = () => {
       </div>
 
       {/* Sticky Action Bar */}
-      {!showDeals && (
+      {!showDeals && selectedStores.size > 0 && (
         <StickyActionBar
           selectedCount={selectedStores.size}
           selectedBrandIds={selectedBrandIds}
