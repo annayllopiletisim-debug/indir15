@@ -500,11 +500,9 @@ const CategoryPage = () => {
         {/* Spacer when header is fixed on mobile */}
         {hideHeader && <div className="h-32 md:h-0" />}
 
-        {/* Popular Brands Bar - Sticky on mobile */}
+        {/* Popular Brands Bar - Sticky on mobile when scrolling */}
         {popularBrands.length > 0 && !showDeals && (
-          <div className={`bg-muted/30 border-b border-border ${
-            hideHeader ? 'sticky top-0 z-30' : ''
-          } md:relative md:z-auto`}>
+          <div className="bg-muted/50 dark:bg-muted/30 border-b border-border sticky top-0 z-30 md:relative md:z-auto backdrop-blur-sm">
             <div className="container mx-auto px-4 py-3">
               <div className="flex items-center gap-2 mb-2">
                 <span className="text-xs font-medium text-muted-foreground">Popüler Mağazalar:</span>
