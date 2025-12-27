@@ -2465,11 +2465,18 @@ async def import_from_google_sheet(
             # Parse expiry date
             expiry_date = parse_turkish_date(expiry_str)
             
-            # Determine if coupon or discount
-            is_coupon = 'kupon' in item_type.lower() if item_type else bool(coupon_code)
+            # Determine type: kupon, indirim, or çekiliş
+            item_type_lower = item_type.lower() if item_type else ''
+            is_coupon = 'kupon' in item_type_lower or (not item_type and bool(coupon_code))
+            is_giveaway = 'çekiliş' in item_type_lower or 'cekilis' in item_type_lower
             
             # Check for duplicates (same brand + title)
-            if is_coupon:
+            if is_giveaway:
+                existing = await db.giveaways.find_one({
+                    'brand_id': matched_brand['id'],
+                    'title': title
+                })
+            elif is_coupon:
                 existing = await db.coupons.find_one({
                     'brand_id': matched_brand['id'],
                     'title': title
@@ -2493,7 +2500,30 @@ async def import_from_google_sheet(
             item_id = str(uuid.uuid4())
             now = datetime.now(timezone.utc)
             
-            if is_coupon:
+            if is_giveaway:
+                # Create giveaway
+                giveaway_data = {
+                    'id': item_id,
+                    'brand_id': matched_brand['id'],
+                    'title': title,
+                    'description': short_desc or title,
+                    'long_description': long_desc or None,
+                    'terms_conditions': terms or None,
+                    'prize_text': discount_text or 'Harika Ödüller',
+                    'expiry_date': expiry_date,
+                    'is_active': True,
+                    'utm_template': 'utm_source=indirimkesset&utm_medium=giveaway',
+                    'destination_url': url or f"https://{matched_brand['slug']}.com.tr",
+                    'created_at': now
+                }
+                await db.giveaways.insert_one(giveaway_data)
+                results['imported_items'].append({
+                    'type': 'çekiliş',
+                    'title': title,
+                    'brand': matched_brand['name'],
+                    'id': item_id
+                })
+            elif is_coupon:
                 # Create coupon
                 coupon_data = {
                     'id': item_id,
