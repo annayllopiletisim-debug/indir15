@@ -17,6 +17,7 @@ const DiscountCard = ({ discount, brand, compact = false }) => {
   // Get brand info - either from passed brand object or from discount itself
   const brandName = brand?.name || discount.brand_name;
   const brandSlug = brand?.slug || discount.brand_slug;
+  const brandLogoUrl = brand?.logo_url || discount.brand_logo_url; // #5
 
   const actions = compact ? (
     <button
@@ -36,7 +37,6 @@ const DiscountCard = ({ discount, brand, compact = false }) => {
       >
         Mağazaya Git
       </button>
-      
       <ShareButtons title={discount.title} size="md" />
     </div>
   );
@@ -51,6 +51,7 @@ const DiscountCard = ({ discount, brand, compact = false }) => {
       showActiveStatus={false}
       brandName={brandName}
       brandSlug={brandSlug}
+      brandLogoUrl={brandLogoUrl}
       actions={actions}
       testId={`discount-card-${discount.id}`}
       compact={compact}

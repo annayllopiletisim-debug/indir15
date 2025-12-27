@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { ChevronDown } from 'lucide-react';
 import axios from 'axios';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -9,11 +9,11 @@ const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 const CategoryNav = () => {
   const [categories, setCategories] = useState([]);
   const [showAll, setShowAll] = useState(false);
+  const location = useLocation();
 
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        // Use with-stats endpoint to get deal counts
         const response = await axios.get(`${API}/categories/with-stats`);
         const sorted = response.data.sort((a, b) => (a.order || 0) - (b.order || 0));
         setCategories(sorted);
@@ -28,23 +28,46 @@ const CategoryNav = () => {
   const visibleCategories = categories.slice(0, 6);
   const hiddenCategories = categories.slice(6);
 
+  // Check if "Tümü" should be active (home page or no category selected)
+  const isAllActive = location.pathname === '/' || location.pathname === '/kategoriler';
+
   return (
     <div className="hidden lg:block bg-card border-b border-border sticky top-16 z-40">
       <div className="container mx-auto px-4">
         <nav className="flex items-center space-x-1 py-3">
-          {visibleCategories.map((category) => (
-            <Link
-              key={category.id}
-              to={`/kategori/${category.slug}`}
-              className="px-4 py-2 rounded-lg hover:bg-accent/10 hover:text-accent transition-colors font-medium text-sm flex items-center gap-1.5"
-              data-testid={`category-nav-${category.slug}`}
-            >
-              {category.name}
-              {category.total_deals > 0 && (
-                <span className="text-xs text-muted-foreground">({category.total_deals})</span>
-              )}
-            </Link>
-          ))}
+          {/* Tümü butonu - #6 */}
+          <Link
+            to="/"
+            className={`px-4 py-2 rounded-lg transition-colors font-medium text-sm ${
+              isAllActive 
+                ? 'bg-primary text-white' 
+                : 'hover:bg-accent/10 hover:text-accent'
+            }`}
+            data-testid="category-nav-all"
+          >
+            Tümü
+          </Link>
+
+          {visibleCategories.map((category) => {
+            const isActive = location.pathname === `/kategori/${category.slug}`;
+            return (
+              <Link
+                key={category.id}
+                to={`/kategori/${category.slug}`}
+                className={`px-4 py-2 rounded-lg transition-colors font-medium text-sm flex items-center gap-1.5 ${
+                  isActive 
+                    ? 'bg-primary/20 text-primary' 
+                    : 'hover:bg-accent/10 hover:text-accent'
+                }`}
+                data-testid={`category-nav-${category.slug}`}
+              >
+                {category.name}
+                {category.total_deals > 0 && (
+                  <span className="text-xs text-muted-foreground">({category.total_deals})</span>
+                )}
+              </Link>
+            );
+          })}
           
           {hiddenCategories.length > 0 && (
             <div className="relative">
@@ -66,19 +89,26 @@ const CategoryNav = () => {
                     className="absolute top-full left-0 mt-2 w-64 glass-effect rounded-xl p-2 shadow-lg"
                     data-testid="category-dropdown"
                   >
-                    {hiddenCategories.map((category) => (
-                      <Link
-                        key={category.id}
-                        to={`/kategori/${category.slug}`}
-                        className="block px-4 py-2 rounded-lg hover:bg-accent/10 hover:text-accent transition-colors text-sm"
-                        onClick={() => setShowAll(false)}
-                      >
-                        {category.name}
-                        {category.total_deals > 0 && (
-                          <span className="text-xs text-muted-foreground ml-1">({category.total_deals})</span>
-                        )}
-                      </Link>
-                    ))}
+                    {hiddenCategories.map((category) => {
+                      const isActive = location.pathname === `/kategori/${category.slug}`;
+                      return (
+                        <Link
+                          key={category.id}
+                          to={`/kategori/${category.slug}`}
+                          className={`block px-4 py-2 rounded-lg transition-colors text-sm ${
+                            isActive 
+                              ? 'bg-primary/20 text-primary' 
+                              : 'hover:bg-accent/10 hover:text-accent'
+                          }`}
+                          onClick={() => setShowAll(false)}
+                        >
+                          {category.name}
+                          {category.total_deals > 0 && (
+                            <span className="text-xs text-muted-foreground ml-1">({category.total_deals})</span>
+                          )}
+                        </Link>
+                      );
+                    })}
                   </motion.div>
                 )}
               </AnimatePresence>

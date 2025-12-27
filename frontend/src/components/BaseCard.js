@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Clock, Flame } from 'lucide-react';
 import { motion } from 'framer-motion';
+import BrandLogo from './BrandLogo';
 
 // Helper to check if expiring within 24 hours
 const isExpiringSoon = (expiryDate) => {
@@ -45,6 +46,7 @@ const BaseCard = ({
   showActiveStatus = false,
   brandName,
   brandSlug,
+  brandLogoUrl, // #5 - Logo URL for brand
   children,
   actions,
   testId,
@@ -70,15 +72,14 @@ const BaseCard = ({
             {brandName && (
               <Link 
                 to={brandSlug ? `/magaza/${brandSlug}` : '#'}
-                className="text-xs font-medium text-primary hover:underline truncate max-w-[100px]"
+                className="flex items-center gap-1.5 text-xs font-medium text-primary hover:underline truncate max-w-[120px]"
               >
-                {brandName}
+                {brandLogoUrl && <BrandLogo logoUrl={brandLogoUrl} brandName={brandName} size="xs" />}
+                <span className="truncate">{brandName}</span>
               </Link>
             )}
             {timeLeft && (
-              <span className={`text-xs flex items-center gap-1 ${
-                expiringSoon ? 'text-orange-400' : 'text-muted-foreground'
-              }`}>
+              <span className={`text-xs flex items-center gap-1 ${expiringSoon ? 'text-orange-400' : 'text-muted-foreground'}`}>
                 <Clock className="w-3 h-3" />
                 {timeLeft.text}
               </span>
@@ -113,15 +114,16 @@ const BaseCard = ({
       <div className="glass-effect rounded-2xl p-5 hover:border-primary/30 transition-all duration-300 h-full flex flex-col">
         {/* Top Row: Brand (left) + Expiry (right) */}
         <div className="flex items-start justify-between mb-3">
-          {/* Left: Brand Name */}
+          {/* Left: Brand Name with Logo - #5 */}
           <div className="flex flex-col gap-1">
             {brandName && (
               <Link 
                 to={brandSlug ? `/magaza/${brandSlug}` : '#'}
-                className="inline-flex items-center px-2.5 py-1 rounded-full bg-primary/10 text-primary text-xs font-medium hover:bg-primary/20 transition-colors truncate max-w-[140px]"
+                className="inline-flex items-center gap-2 px-2.5 py-1.5 rounded-full bg-primary/10 hover:bg-primary/20 transition-colors max-w-[180px]"
                 title={brandName}
               >
-                {brandName}
+                <BrandLogo logoUrl={brandLogoUrl} brandName={brandName} size="xs" />
+                <span className="text-primary text-xs font-medium truncate">{brandName}</span>
               </Link>
             )}
             {/* Expiring Soon Badge */}

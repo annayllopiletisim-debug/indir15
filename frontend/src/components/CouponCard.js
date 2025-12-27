@@ -12,15 +12,12 @@ const CouponCard = ({ coupon, brand, compact = false }) => {
   // Get brand info - either from passed brand object or from coupon itself
   const brandName = brand?.name || coupon.brand_name;
   const brandSlug = brand?.slug || coupon.brand_slug;
+  const brandLogoUrl = brand?.logo_url || coupon.brand_logo_url; // #5
 
   const handleGetCode = async () => {
-    // Track coupon view
     trackClick('coupon_view', coupon.id, coupon.brand_id, brand?.category_id);
-    
-    // First show modal
     setShowModal(true);
     
-    // Then redirect after a small delay
     if (coupon.destination_url) {
       setTimeout(() => {
         const finalUrl = buildUTMLink(coupon.destination_url, coupon.utm_template, coupon.id);
@@ -33,7 +30,6 @@ const CouponCard = ({ coupon, brand, compact = false }) => {
     try {
       await navigator.clipboard.writeText(coupon.code);
       setCopied(true);
-      // Track coupon copy
       trackClick('coupon_copy', coupon.id, coupon.brand_id, brand?.category_id);
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
@@ -61,7 +57,6 @@ const CouponCard = ({ coupon, brand, compact = false }) => {
       >
         Kodu Göster
       </button>
-      
       <ShareButtons title={coupon.title} size="md" />
     </div>
   );
@@ -77,6 +72,7 @@ const CouponCard = ({ coupon, brand, compact = false }) => {
         showActiveStatus={!compact}
         brandName={brandName}
         brandSlug={brandSlug}
+        brandLogoUrl={brandLogoUrl}
         actions={actions}
         testId={`coupon-card-${coupon.id}`}
         compact={compact}
@@ -113,9 +109,7 @@ const CouponCard = ({ coupon, brand, compact = false }) => {
                 </div>
                 
                 <h3 className="text-2xl font-heading font-bold mb-2">Mağazaya Yönlendirildiniz!</h3>
-                <p className="text-muted-foreground mb-6">
-                  İşte kupon kodunuz:
-                </p>
+                <p className="text-muted-foreground mb-6">İşte kupon kodunuz:</p>
 
                 <div className="mb-6">
                   <div className="font-mono text-3xl font-bold mb-4 px-6 py-4 rounded-xl bg-void-subtle border-2 border-neon-purple/50">
@@ -128,15 +122,9 @@ const CouponCard = ({ coupon, brand, compact = false }) => {
                     data-testid="modal-copy-btn"
                   >
                     {copied ? (
-                      <>
-                        <Check className="w-5 h-5" />
-                        <span>Kopyalandı!</span>
-                      </>
+                      <><Check className="w-5 h-5" /><span>Kopyalandı!</span></>
                     ) : (
-                      <>
-                        <Copy className="w-5 h-5" />
-                        <span>Kodu Kopyala</span>
-                      </>
+                      <><Copy className="w-5 h-5" /><span>Kodu Kopyala</span></>
                     )}
                   </button>
                 </div>
