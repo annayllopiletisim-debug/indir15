@@ -432,8 +432,14 @@ const CategoryPage = () => {
   return (
     <>
       <div className="min-h-screen pb-20" data-testid="category-page">
-        {/* Header */}
-        <div className="bg-card border-b border-border">
+        {/* Header - Hides on mobile when scrolling down */}
+        <div 
+          className={`bg-card border-b border-border transition-all duration-300 ${
+            hideHeader 
+              ? 'md:block hidden' 
+              : 'block'
+          }`}
+        >
           <div className="container mx-auto px-4 py-6 md:py-8">
             {/* Desktop: Two columns / Mobile: Single column */}
             <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4 md:gap-8">
