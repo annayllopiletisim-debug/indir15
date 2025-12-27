@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Clock, ImageIcon } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useTheme } from '../context/ThemeContext';
 
 // Helper to check if expiring within 24 hours
 const isExpiringSoon = (expiryDate) => {
