@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Clock, Flame } from 'lucide-react';
+import { Clock, Flame, ImageIcon } from 'lucide-react';
 import { motion } from 'framer-motion';
 import BrandLogo from './BrandLogo';
 
@@ -40,14 +40,15 @@ const getTimeRemaining = (expiryDate) => {
 const BaseCard = ({
   type = 'coupon', // 'coupon', 'discount', or 'giveaway'
   title,
-  description,
+  description, // kept for backward compatibility but not displayed
   discountText,
   expiryDate,
+  imageUrl, // NEW: Card image URL
   isActive = true,
   showActiveStatus = false,
   brandName,
   brandSlug,
-  brandLogoUrl, // #5 - Logo URL for brand
+  brandLogoUrl,
   children,
   actions,
   testId,
@@ -60,11 +61,11 @@ const BaseCard = ({
   
   // Type-specific colors
   const typeColors = {
-    coupon: 'text-primary',
-    discount: 'text-primary',
-    giveaway: 'text-emerald-400'
+    coupon: { text: 'text-primary', bg: 'from-primary/20 to-pink-500/20', icon: 'text-primary' },
+    discount: { text: 'text-primary', bg: 'from-blue-500/20 to-primary/20', icon: 'text-blue-400' },
+    giveaway: { text: 'text-emerald-400', bg: 'from-emerald-500/20 to-teal-500/20', icon: 'text-emerald-400' }
   };
-  const discountColor = typeColors[type] || 'text-primary';
+  const colors = typeColors[type] || typeColors.coupon;
 
   // Compact version for horizontal scrolling lists
   if (compact) {
@@ -75,44 +76,49 @@ const BaseCard = ({
         className={`${isExpired ? 'opacity-60' : ''} ${className}`}
         data-testid={testId}
       >
-        <div className="glass-effect rounded-xl p-4 h-full flex flex-col">
-          {/* Top Row: Brand + Time */}
-          <div className="flex items-center justify-between mb-2">
-            {brandName && (
-              <Link 
-                to={brandSlug ? `/magaza/${brandSlug}` : '#'}
-                className="flex items-center gap-1.5 text-xs font-medium text-primary hover:underline truncate max-w-[120px]"
-              >
-                {brandLogoUrl && <BrandLogo logoUrl={brandLogoUrl} brandName={brandName} size="xs" />}
-                <span className="truncate">{brandName}</span>
-              </Link>
-            )}
-            {timeLeft && (
-              <span className={`text-xs flex items-center gap-1 ${expiringSoon ? 'text-orange-400' : 'text-muted-foreground'}`}>
-                <Clock className="w-3 h-3" />
-                {timeLeft.text}
-              </span>
+        <div className="glass-effect rounded-xl p-3 h-full flex gap-3">
+          {/* Left: Image */}
+          <div className="flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden bg-gradient-to-br from-muted to-muted/50 flex items-center justify-center">
+            {imageUrl ? (
+              <img src={imageUrl} alt={title} className="w-full h-full object-cover" loading="lazy" />
+            ) : (
+              <div className={`w-full h-full bg-gradient-to-br ${colors.bg} flex items-center justify-center`}>
+                <ImageIcon className={`w-6 h-6 ${colors.icon} opacity-50`} />
+              </div>
             )}
           </div>
+          
+          {/* Right: Content */}
+          <div className="flex-1 flex flex-col min-w-0">
+            {/* Brand */}
+            {brandName && (
+              <div className="flex items-center gap-1.5 mb-1">
+                <BrandLogo logoUrl={brandLogoUrl} brandName={brandName} size="xs" />
+                <span className="text-xs font-medium text-muted-foreground truncate">{brandName}</span>
+              </div>
+            )}
+            
+            {/* Title */}
+            <h3 className="text-sm font-medium line-clamp-1 mb-1">{title}</h3>
+            
+            {/* Discount */}
+            {discountText && (
+              <div className={`text-base font-heading font-bold ${colors.text} mb-2`}>
+                {discountText}
+              </div>
+            )}
 
-          {/* Discount */}
-          {discountText && (
-            <div className={`text-lg font-heading font-bold ${discountColor} mb-1`}>
-              {discountText}
+            {/* Actions */}
+            <div className="mt-auto">
+              {actions}
             </div>
-          )}
-
-          {/* Title */}
-          <h3 className="text-sm font-medium mb-3 line-clamp-2 flex-1">{title}</h3>
-
-          {/* Actions */}
-          {actions}
+          </div>
         </div>
       </motion.div>
     );
   }
 
-  // Full version
+  // Full version - NEW LAYOUT with image on left
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -120,82 +126,86 @@ const BaseCard = ({
       className={`relative group ${isExpired ? 'opacity-60' : ''} ${className}`}
       data-testid={testId}
     >
-      <div className="glass-effect rounded-2xl p-5 hover:border-primary/30 transition-all duration-300 h-full flex flex-col">
-        {/* Top Row: Brand (left) + Expiry (right) */}
-        <div className="flex items-start justify-between mb-3">
-          {/* Left: Brand Name with Logo - #5 */}
-          <div className="flex flex-col gap-1">
-            {brandName && (
-              <Link 
-                to={brandSlug ? `/magaza/${brandSlug}` : '#'}
-                className="inline-flex items-center gap-2 px-2.5 py-1.5 rounded-full bg-primary/10 hover:bg-primary/20 transition-colors max-w-[180px]"
-                title={brandName}
-              >
-                <BrandLogo logoUrl={brandLogoUrl} brandName={brandName} size="xs" />
-                <span className="text-primary text-xs font-medium truncate">{brandName}</span>
-              </Link>
-            )}
-            {/* Expiring Soon Badge */}
-            {expiringSoon && !isExpired && (
-              <span 
-                className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-orange-500/15 text-orange-400 text-xs font-medium w-fit"
-                data-testid="expiring-soon-badge"
-              >
-                <Flame className="w-3 h-3" />
-                Son 24 Saat
-              </span>
-            )}
+      <div className="glass-effect rounded-2xl p-4 hover:border-primary/30 transition-all duration-300 h-full">
+        <div className="flex gap-4">
+          {/* Left: Image Area */}
+          <div className="flex-shrink-0 w-28 sm:w-32">
+            <div className="aspect-square rounded-xl overflow-hidden bg-gradient-to-br from-muted to-muted/50 relative">
+              {imageUrl ? (
+                <img 
+                  src={imageUrl} 
+                  alt={title} 
+                  className="w-full h-full object-cover" 
+                  loading="lazy"
+                />
+              ) : (
+                <div className={`w-full h-full bg-gradient-to-br ${colors.bg} flex items-center justify-center`}>
+                  <ImageIcon className={`w-10 h-10 ${colors.icon} opacity-40`} />
+                </div>
+              )}
+              
+              {/* Expiring Soon Badge - overlay on image */}
+              {expiringSoon && !isExpired && (
+                <span 
+                  className="absolute top-2 left-2 inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-orange-500 text-white text-xs font-medium"
+                  data-testid="expiring-soon-badge"
+                >
+                  <Flame className="w-3 h-3" />
+                  Son 24s
+                </span>
+              )}
+            </div>
           </div>
 
-          {/* Right: Expiry Date */}
-          <div className="flex flex-col items-end gap-1">
-            {timeLeft && (
-              <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs ${
-                isExpired 
-                  ? 'bg-destructive/15 text-destructive' 
-                  : 'bg-muted text-muted-foreground'
-              }`}>
-                <Clock className="w-3 h-3" />
-                {timeLeft.text}
-              </span>
+          {/* Right: Content */}
+          <div className="flex-1 flex flex-col min-w-0">
+            {/* Top: Brand + Time */}
+            <div className="flex items-center justify-between gap-2 mb-2">
+              {/* Brand */}
+              {brandName && (
+                <Link 
+                  to={brandSlug ? `/magaza/${brandSlug}` : '#'}
+                  className="inline-flex items-center gap-1.5 hover:opacity-80 transition-opacity max-w-[140px]"
+                  title={brandName}
+                >
+                  <BrandLogo logoUrl={brandLogoUrl} brandName={brandName} size="sm" />
+                  <span className="text-sm font-medium truncate">{brandName}</span>
+                </Link>
+              )}
+              
+              {/* Time remaining */}
+              {timeLeft && (
+                <span className={`flex-shrink-0 inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs ${
+                  isExpired 
+                    ? 'bg-destructive/15 text-destructive' 
+                    : 'bg-muted text-muted-foreground'
+                }`}>
+                  <Clock className="w-3 h-3" />
+                  {timeLeft.text}
+                </span>
+              )}
+            </div>
+
+            {/* Title */}
+            <h3 className="text-base font-heading font-bold mb-2 line-clamp-2">{title}</h3>
+            
+            {/* Discount Text */}
+            {discountText && (
+              <div className={`text-xl font-heading font-bold ${colors.text} mb-3`}>
+                {discountText}
+              </div>
             )}
             
-            {showActiveStatus && (
-              isExpired ? (
-                <span className="px-2 py-0.5 rounded-full bg-destructive/15 text-destructive text-xs">
-                  Süresi Doldu
-                </span>
-              ) : (
-                <span className="px-2 py-0.5 rounded-full bg-green-500/15 text-green-500 text-xs">
-                  Aktif
-                </span>
-              )
+            {children}
+
+            {/* Actions */}
+            {actions && (
+              <div className="mt-auto pt-2">
+                {actions}
+              </div>
             )}
           </div>
         </div>
-
-        {/* Content */}
-        <div className="flex-1">
-          <h3 className="text-base font-heading font-bold mb-1">{title}</h3>
-          {description && (
-            <p className="text-sm text-muted-foreground mb-3 line-clamp-2">{description}</p>
-          )}
-          
-          {discountText && (
-            <div className={`text-xl font-heading font-bold ${discountColor} mb-3`}>
-              {discountText}
-            </div>
-          )}
-          
-          {children}
-        </div>
-
-        {/* Actions */}
-        {actions && (
-          <div className="mt-3 pt-3 border-t border-border">
-            {actions}
-          </div>
-        )}
       </div>
     </motion.div>
   );
