@@ -140,6 +140,7 @@ class Coupon(BaseModel):
     is_active: bool = True
     utm_template: Optional[str] = None
     destination_url: str
+    image_url: Optional[str] = None  # Kampanya görseli
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 class CouponCreate(BaseModel):
@@ -154,6 +155,7 @@ class CouponCreate(BaseModel):
     is_active: bool = True
     utm_template: Optional[str] = None
     destination_url: str
+    image_url: Optional[str] = None  # Kampanya görseli
 
 class Discount(BaseModel):
     model_config = ConfigDict(extra="ignore")
@@ -167,6 +169,7 @@ class Discount(BaseModel):
     expiry_date: Optional[datetime] = None
     utm_template: Optional[str] = None
     destination_url: str
+    image_url: Optional[str] = None  # Kampanya görseli
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 class DiscountCreate(BaseModel):
@@ -179,6 +182,7 @@ class DiscountCreate(BaseModel):
     expiry_date: Optional[datetime] = None
     utm_template: Optional[str] = None
     destination_url: str
+    image_url: Optional[str] = None  # Kampanya görseli
 
 
 # ================== GIVEAWAY (ÇEKİLİŞ) MODELS ==================
@@ -197,6 +201,7 @@ class Giveaway(BaseModel):
     is_active: bool = True
     utm_template: Optional[str] = None
     destination_url: str
+    image_url: Optional[str] = None  # Kampanya görseli
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 
@@ -211,6 +216,7 @@ class GiveawayCreate(BaseModel):
     is_active: bool = True
     utm_template: Optional[str] = None
     destination_url: str
+    image_url: Optional[str] = None  # Kampanya görseli
 
 
 class HeroSlide(BaseModel):
