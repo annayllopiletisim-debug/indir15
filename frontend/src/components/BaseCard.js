@@ -118,7 +118,7 @@ const BaseCard = ({
     );
   }
 
-  // Full version - NEW LAYOUT with image on left
+  // Full version - NEW LAYOUT with image on left (desktop) / top (mobile)
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -126,11 +126,13 @@ const BaseCard = ({
       className={`relative group ${isExpired ? 'opacity-60' : ''} ${className}`}
       data-testid={testId}
     >
-      <div className="glass-effect rounded-2xl p-4 hover:border-primary/30 transition-all duration-300 h-full">
-        <div className="flex gap-4">
-          {/* Left: Image Area - LARGER */}
-          <div className="flex-shrink-0 w-36 sm:w-44">
-            <div className="aspect-square rounded-xl overflow-hidden bg-gradient-to-br from-muted to-muted/50 relative">
+      <div className="glass-effect rounded-2xl p-3 sm:p-4 hover:border-primary/30 transition-all duration-300 h-full">
+        {/* Mobile: Vertical layout | Desktop: Horizontal layout */}
+        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
+          
+          {/* Image Area */}
+          <div className="flex-shrink-0 w-full sm:w-40 md:w-44">
+            <div className="aspect-video sm:aspect-square rounded-xl overflow-hidden bg-gradient-to-br from-muted to-muted/50 relative">
               {imageUrl ? (
                 <img 
                   src={imageUrl} 
@@ -140,7 +142,7 @@ const BaseCard = ({
                 />
               ) : (
                 <div className={`w-full h-full bg-gradient-to-br ${colors.bg} flex items-center justify-center`}>
-                  <ImageIcon className={`w-12 h-12 ${colors.icon} opacity-40`} />
+                  <ImageIcon className={`w-10 h-10 sm:w-12 sm:h-12 ${colors.icon} opacity-40`} />
                 </div>
               )}
               
@@ -157,55 +159,55 @@ const BaseCard = ({
             </div>
           </div>
 
-          {/* Right: Content */}
+          {/* Content Area */}
           <div className="flex-1 flex flex-col min-w-0">
-            {/* Top: Brand + Time */}
-            <div className="flex items-center justify-between gap-2 mb-3">
-              {/* Brand - LARGER */}
+            {/* Top Row: Brand + Time */}
+            <div className="flex items-center justify-between gap-2 mb-2 sm:mb-3">
+              {/* Brand */}
               {brandName && (
                 <Link 
                   to={brandSlug ? `/magaza/${brandSlug}` : '#'}
-                  className="inline-flex items-center gap-2 hover:opacity-80 transition-opacity max-w-[250px]"
+                  className="inline-flex items-center gap-1.5 sm:gap-2 hover:opacity-80 transition-opacity min-w-0 flex-1"
                   title={brandName}
                 >
-                  <BrandLogo logoUrl={brandLogoUrl} brandName={brandName} size="sm" />
-                  <span className="text-xl font-bold text-foreground truncate">{brandName}</span>
+                  <BrandLogo logoUrl={brandLogoUrl} brandName={brandName} size="sm" className="flex-shrink-0" />
+                  <span className="text-base sm:text-xl font-bold text-foreground truncate">{brandName}</span>
                 </Link>
               )}
               
-              {/* Time remaining - improved label */}
+              {/* Time Badge */}
               {timeLeft ? (
                 timeLeft.expired ? (
-                  <span className="flex-shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-destructive/15 text-destructive">
-                    <Clock className="w-3.5 h-3.5" />
-                    Süresi Doldu
+                  <span className="flex-shrink-0 inline-flex items-center gap-1 px-2 py-1 rounded-full text-[10px] sm:text-xs font-medium bg-destructive/15 text-destructive">
+                    <Clock className="w-3 h-3" />
+                    <span className="hidden xs:inline">Süresi </span>Doldu
                   </span>
                 ) : (
-                  <span className="flex-shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-muted/80 text-muted-foreground">
-                    <Clock className="w-3.5 h-3.5" />
-                    <span>Kalan Süre: {timeLeft.text}</span>
+                  <span className="flex-shrink-0 inline-flex items-center gap-1 px-2 py-1 rounded-full text-[10px] sm:text-xs font-medium bg-muted/80 text-muted-foreground">
+                    <Clock className="w-3 h-3" />
+                    <span className="hidden sm:inline">Kalan Süre: </span>{timeLeft.text}
                   </span>
                 )
               ) : (
-                <span className="flex-shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-emerald-500/15 text-emerald-400">
+                <span className="flex-shrink-0 inline-flex items-center gap-1 px-2 py-1 rounded-full text-[10px] sm:text-xs font-medium bg-emerald-500/15 text-emerald-400">
                   Süresiz
                 </span>
               )}
             </div>
 
             {/* Title */}
-            <h3 className="text-base font-heading font-bold mb-2 line-clamp-2">{title}</h3>
+            <h3 className="text-sm sm:text-base font-heading font-bold mb-1.5 sm:mb-2 line-clamp-2">{title}</h3>
             
             {/* Discount Text */}
             {discountText && (
-              <div className={`text-xl font-heading font-bold ${colors.text} mb-3`}>
+              <div className={`text-lg sm:text-xl font-heading font-bold ${colors.text} mb-2 sm:mb-3`}>
                 {discountText}
               </div>
             )}
             
             {children}
 
-            {/* Actions */}
+            {/* Actions - Stack on mobile */}
             {actions && (
               <div className="mt-auto pt-2">
                 {actions}
