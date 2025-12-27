@@ -190,6 +190,11 @@ const AdminGiveawaysPage = () => {
                   <Input value={formData.destination_url} onChange={(e) => setFormData({...formData, destination_url: e.target.value})} required />
                 </div>
                 <div>
+                  <label className="block text-sm font-medium mb-1">Kampanya Görseli (URL)</label>
+                  <Input value={formData.image_url} onChange={(e) => setFormData({...formData, image_url: e.target.value})} placeholder="https://example.com/image.jpg" />
+                  <p className="text-xs text-muted-foreground mt-1">Kartlarda görünecek kampanya görseli URL'i</p>
+                </div>
+                <div>
                   <label className="block text-sm font-medium mb-1">UTM Template</label>
                   <Input value={formData.utm_template} onChange={(e) => setFormData({...formData, utm_template: e.target.value})} />
                 </div>
