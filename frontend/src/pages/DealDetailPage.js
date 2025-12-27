@@ -85,6 +85,8 @@ const DealDetailPage = () => {
       try {
         const endpoint = dealType === 'coupon' 
           ? `${API}/coupon/${dealId}/detail`
+          : dealType === 'giveaway'
+          ? `${API}/giveaway/${dealId}/detail`
           : `${API}/discount/${dealId}/detail`;
         
         const response = await axios.get(endpoint);
