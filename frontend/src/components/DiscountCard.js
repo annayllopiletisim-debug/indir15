@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { ChevronRight } from 'lucide-react';
 import { BaseCard } from './BaseCard';
 import { trackClick, buildUTMLink } from '../utils/helpers';
@@ -19,7 +20,9 @@ const generateSlug = (title) => {
 };
 
 const DiscountCard = ({ discount, brand, compact = false }) => {
-  const handleClick = () => {
+  const handleGoToStore = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
     trackClick('discount_click', discount.id, discount.brand_id, brand?.category_id);
     if (discount.destination_url) {
       const finalUrl = buildUTMLink(discount.destination_url, discount.utm_template, discount.id);
@@ -40,7 +43,7 @@ const DiscountCard = ({ discount, brand, compact = false }) => {
 
   const actions = (
     <button
-      onClick={handleClick}
+      onClick={handleGoToStore}
       disabled={isExpired}
       className="inline-flex items-center gap-1.5 px-5 py-2.5 bg-gradient-to-r from-violet-500 to-purple-600 text-white font-semibold rounded-xl hover:from-violet-600 hover:to-purple-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-sm hover:shadow-md"
       data-testid="discount-get-deal-btn"
@@ -63,6 +66,7 @@ const DiscountCard = ({ discount, brand, compact = false }) => {
       brandName={brandName}
       brandSlug={brandSlug}
       brandLogoUrl={brandLogoUrl}
+      detailUrl={detailUrl}
       actions={actions}
       testId={`discount-card-${discount.id}`}
       compact={compact}
