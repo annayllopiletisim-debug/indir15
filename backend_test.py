@@ -180,6 +180,123 @@ class CouponAPITester:
         
         return success
 
+    def test_deal_detail_endpoints(self):
+        """Test the new Deal Detail Pages endpoints"""
+        print("\n🎯 Testing Deal Detail Pages Endpoints...")
+        
+        # Test valid coupon detail
+        print("\n   Testing Coupon Detail with valid ID...")
+        coupon_id = "e0b1f8b6-e141-470b-84da-c8b88b64fbf2"
+        success, coupon_detail = self.run_test(
+            f"Get Coupon Detail - {coupon_id}",
+            "GET",
+            f"coupon/{coupon_id}/detail",
+            200
+        )
+        
+        if success and coupon_detail:
+            # Verify response structure
+            required_fields = ['item_type', 'item', 'brand', 'is_expired', 'canonical_url', 'seo_meta', 'structured_data', 'related_deals']
+            missing_fields = [field for field in required_fields if field not in coupon_detail]
+            
+            if not missing_fields:
+                print(f"   ✅ Coupon detail response has all required fields")
+                
+                # Verify SEO meta structure
+                seo_meta = coupon_detail.get('seo_meta', {})
+                seo_required = ['title', 'description', 'canonical', 'robots', 'og_type']
+                seo_missing = [field for field in seo_required if field not in seo_meta]
+                
+                if not seo_missing:
+                    print(f"   ✅ SEO meta has all required fields")
+                else:
+                    print(f"   ❌ SEO meta missing fields: {seo_missing}")
+                
+                # Verify structured data
+                structured_data = coupon_detail.get('structured_data', {})
+                schema_required = ['@context', '@type', 'name', 'description', 'url', 'seller']
+                schema_missing = [field for field in schema_required if field not in structured_data]
+                
+                if not schema_missing:
+                    print(f"   ✅ Structured data has all required fields")
+                else:
+                    print(f"   ❌ Structured data missing fields: {schema_missing}")
+                    
+                # Verify item_type
+                if coupon_detail.get('item_type') == 'coupon':
+                    print(f"   ✅ Item type is correctly set to 'coupon'")
+                else:
+                    print(f"   ❌ Item type is '{coupon_detail.get('item_type')}', expected 'coupon'")
+                    
+            else:
+                print(f"   ❌ Coupon detail response missing fields: {missing_fields}")
+        
+        # Test valid discount detail
+        print("\n   Testing Discount Detail with valid ID...")
+        discount_id = "e0f35eef-c694-4c57-94ac-bbbfb624e97e"
+        success, discount_detail = self.run_test(
+            f"Get Discount Detail - {discount_id}",
+            "GET",
+            f"discount/{discount_id}/detail",
+            200
+        )
+        
+        if success and discount_detail:
+            # Verify response structure (same as coupon)
+            required_fields = ['item_type', 'item', 'brand', 'is_expired', 'canonical_url', 'seo_meta', 'structured_data', 'related_deals']
+            missing_fields = [field for field in required_fields if field not in discount_detail]
+            
+            if not missing_fields:
+                print(f"   ✅ Discount detail response has all required fields")
+                
+                # Verify item_type
+                if discount_detail.get('item_type') == 'discount':
+                    print(f"   ✅ Item type is correctly set to 'discount'")
+                else:
+                    print(f"   ❌ Item type is '{discount_detail.get('item_type')}', expected 'discount'")
+                    
+            else:
+                print(f"   ❌ Discount detail response missing fields: {missing_fields}")
+        
+        # Test 404 handling with invalid coupon ID
+        print("\n   Testing 404 handling with invalid coupon ID...")
+        invalid_id = "invalid-uuid-here"
+        success, error_response = self.run_test(
+            f"Get Coupon Detail - Invalid ID",
+            "GET",
+            f"coupon/{invalid_id}/detail",
+            404
+        )
+        
+        if success:
+            print(f"   ✅ Invalid coupon ID correctly returns 404")
+            if error_response and 'detail' in error_response:
+                detail = error_response['detail']
+                if 'bulunamadı' in detail.lower() or 'not found' in detail.lower():
+                    print(f"   ✅ Error message is appropriate: '{detail}'")
+                else:
+                    print(f"   ⚠️  Error message: '{detail}'")
+        
+        # Test 404 handling with invalid discount ID
+        print("\n   Testing 404 handling with invalid discount ID...")
+        success, error_response = self.run_test(
+            f"Get Discount Detail - Invalid ID",
+            "GET",
+            f"discount/{invalid_id}/detail",
+            404
+        )
+        
+        if success:
+            print(f"   ✅ Invalid discount ID correctly returns 404")
+            if error_response and 'detail' in error_response:
+                detail = error_response['detail']
+                if 'bulunamadı' in detail.lower() or 'not found' in detail.lower():
+                    print(f"   ✅ Error message is appropriate: '{detail}'")
+                else:
+                    print(f"   ⚠️  Error message: '{detail}'")
+        
+        return True
+
 def main():
     print("🚀 Starting SavvySaver API Tests...")
     print("=" * 50)
