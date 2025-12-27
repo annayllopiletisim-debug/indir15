@@ -506,6 +506,9 @@ def main():
     # Test new Deal Detail Pages endpoints
     tester.test_deal_detail_endpoints()
     
+    # Test image_url field addition (NEW TEST)
+    tester.test_image_url_field_addition()
+    
     # Test admin endpoints if authenticated
     if tester.token:
         tester.test_admin_endpoints()
