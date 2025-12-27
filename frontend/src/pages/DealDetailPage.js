@@ -70,7 +70,9 @@ const DealDetailPage = () => {
   
   // Determine type from URL path
   const currentPath = window.location.pathname;
-  const dealType = currentPath.includes('/kupon/') ? 'coupon' : 'discount';
+  const dealType = currentPath.includes('/kupon/') ? 'coupon' 
+    : currentPath.includes('/cekilis/') ? 'giveaway' 
+    : 'discount';
 
   useEffect(() => {
     const fetchData = async () => {
