@@ -80,6 +80,7 @@ const CouponModal = ({ coupon, brand, isOpen, onClose }) => {
 
 const HomePage = () => {
   const [brands, setBrands] = useState([]);
+  const [allBrands, setAllBrands] = useState([]); // All brands with deal counts
   const [categories, setCategories] = useState([]);
   const [expiringSoon, setExpiringSoon] = useState({ coupons: [], discounts: [], total: 0 });
   const [popularToday, setPopularToday] = useState({ coupons: [], discounts: [], total: 0 });
@@ -92,14 +93,16 @@ const HomePage = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [brandsRes, categoriesRes, expiringSoonRes, popularRes] = await Promise.all([
+        const [brandsRes, allBrandsRes, categoriesRes, expiringSoonRes, popularRes] = await Promise.all([
           axios.get(`${API}/homepage-brands`),
+          axios.get(`${API}/brands/list-with-deal-counts`),
           axios.get(`${API}/categories/with-stats`),
           axios.get(`${API}/expiring-soon`),
           axios.get(`${API}/popular-today`),
         ]);
         
         setBrands(brandsRes.data);
+        setAllBrands(allBrandsRes.data);
         setCategories(categoriesRes.data);
         setExpiringSoon(expiringSoonRes.data);
         setPopularToday(popularRes.data);
@@ -120,6 +123,12 @@ const HomePage = () => {
       </div>
     );
   }
+
+  // Create brand map from allBrands for deal counts
+  const brandDealCounts = allBrands.reduce((acc, brand) => {
+    acc[brand.id] = brand.deal_count || 0;
+    return acc;
+  }, {});
 
   // Get brand map for quick lookup
   const brandMap = brands.reduce((acc, brand) => {
@@ -153,7 +162,6 @@ const HomePage = () => {
       setSelectedCoupon(item);
       setSelectedBrand(brand);
       
-      // Open store in new tab
       if (item.destination_url) {
         setTimeout(() => {
           const finalUrl = buildUTMLink(item.destination_url, item.utm_template, item.id);
@@ -187,7 +195,7 @@ const HomePage = () => {
       <div className="min-h-screen" data-testid="home-page">
 
         {/* ═══════════════════════════════════════════════════════════════
-            1️⃣ POPÜLER MAĞAZALAR (Yatay scroll)
+            1️⃣ POPÜLER MAĞAZALAR (Büyütülmüş logolar + indirim sayısı badge) - #3, #7
         ═══════════════════════════════════════════════════════════════ */}
         {brands.length > 0 && (
           <section className="container mx-auto px-4 py-4">
@@ -198,17 +206,28 @@ const HomePage = () => {
               </Link>
             </div>
 
-            <div className="flex gap-2 overflow-x-auto pb-1 -mx-4 px-4 scrollbar-hide">
-              {brands.slice(0, 10).map((brand) => (
-                <Link
-                  key={brand.id}
-                  to={`/magaza/${brand.slug}`}
-                  className="flex-shrink-0 flex items-center gap-2 px-3 py-2 bg-card border border-border rounded-lg hover:border-primary/30 transition-colors"
-                >
-                  <BrandLogo logoUrl={brand.logo_url} brandName={brand.name} size="xs" />
-                  <span className="text-sm whitespace-nowrap">{brand.name}</span>
-                </Link>
-              ))}
+            <div className="flex gap-3 overflow-x-auto pb-2 -mx-4 px-4 scrollbar-hide">
+              {brands.slice(0, 10).map((brand) => {
+                const dealCount = brandDealCounts[brand.id] || 0;
+                return (
+                  <Link
+                    key={brand.id}
+                    to={`/magaza/${brand.slug}`}
+                    className="flex-shrink-0 flex items-center gap-3 px-4 py-2.5 bg-card border border-border rounded-xl hover:border-primary/30 transition-colors relative"
+                  >
+                    {/* #7 - Büyütülmüş logo */}
+                    <BrandLogo logoUrl={brand.logo_url} brandName={brand.name} size="sm" />
+                    <span className="text-sm font-medium whitespace-nowrap">{brand.name}</span>
+                    
+                    {/* #3 - İndirim sayısı badge */}
+                    {dealCount > 0 && (
+                      <span className="absolute -top-1 -right-1 min-w-[20px] h-5 px-1.5 flex items-center justify-center bg-primary text-white text-xs font-bold rounded-full">
+                        {dealCount}
+                      </span>
+                    )}
+                  </Link>
+                );
+              })}
             </div>
           </section>
         )}
