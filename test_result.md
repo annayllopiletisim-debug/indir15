@@ -117,6 +117,18 @@ frontend:
         agent: "testing"
         comment: "✅ Brand Page Card Updates fully functional. Verified on /magaza/adidas: 'Devamını Gör' buttons (5 found) with Info icon and purple border, 'Kodu Göster' buttons (3 found) with scissors icon and peek effect, 'Mağazaya Git' buttons (2 found) with arrow icon. Navigation flow from brand page to detail pages works correctly. All button styles and interactions working as expected."
 
+  - task: "Mobile Scroll Behavior on Category Page"
+    implemented: true
+    working: true
+    file: "frontend/src/pages/CategoryPage.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "✅ Mobile scroll behavior working perfectly on /kategori/moda. Verified: Initial load shows header and 'Popüler Mağazalar' section correctly. When scrolling down past 100px, header hides with translateY(-100%) and popular stores bar becomes sticky at top-0. When scrolling up, header reappears with translateY(0px) and popular stores bar moves to top-16. Desktop behavior correct - header never hides and popular stores has md:relative class. All animations smooth with requestAnimationFrame implementation. No JavaScript errors found."
+
 metadata:
   created_by: "testing_agent"
   version: "1.0"
