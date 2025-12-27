@@ -373,55 +373,25 @@ const DealDetailPage = () => {
             {/* CTA Section */}
             <div className="mt-8">
               {isCoupon ? (
-                // Coupon CTA
-                <div className="space-y-4">
-                  {showCode ? (
-                    // Show code after click
-                    <div className="bg-muted rounded-xl p-6 text-center">
-                      <p className="text-sm text-muted-foreground mb-2">Kupon Kodu:</p>
-                      <div className="font-mono text-2xl md:text-3xl font-bold tracking-wider mb-4">
-                        {item.code}
-                      </div>
-                      <button
-                        onClick={handleCopyCode}
-                        disabled={is_expired}
-                        className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50"
-                      >
-                        {copied ? (
-                          <>
-                            <Check className="w-5 h-5" />
-                            Kopyalandı!
-                          </>
-                        ) : (
-                          <>
-                            <Copy className="w-5 h-5" />
-                            Kodu Kopyala
-                          </>
-                        )}
-                      </button>
-                    </div>
-                  ) : (
-                    // Initial state - show button
-                    <button
-                      onClick={handleShowCode}
-                      disabled={is_expired}
-                      className="w-full py-4 bg-gradient-to-r from-primary to-pink-500 rounded-xl font-medium text-lg hover:shadow-lg hover:shadow-primary/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden group"
-                    >
-                      <span className="flex items-center justify-center gap-2">
-                        <Scissors className="w-5 h-5" />
-                        {is_expired ? 'Süresi Doldu' : 'Kodu Göster ve Mağazaya Git'}
+                // Coupon CTA - Show button to open modal
+                <button
+                  onClick={handleShowCode}
+                  disabled={is_expired}
+                  className="w-full py-4 bg-gradient-to-r from-primary to-pink-500 rounded-xl font-medium text-lg hover:shadow-lg hover:shadow-primary/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden group"
+                >
+                  <span className="flex items-center justify-center gap-2">
+                    <Scissors className="w-5 h-5" />
+                    {is_expired ? 'Süresi Doldu' : 'Kodu Göster'}
+                  </span>
+                  {/* Peek effect */}
+                  {!is_expired && item.code && (
+                    <span className="absolute right-0 top-0 bottom-0 w-20 bg-white/10 flex items-center justify-center border-l border-white/20 rounded-r-xl">
+                      <span className="font-mono text-sm opacity-80">
+                        {item.code.substring(0, 3)}...
                       </span>
-                      {/* Peek effect */}
-                      {!is_expired && item.code && (
-                        <span className="absolute right-0 top-0 bottom-0 w-20 bg-white/10 flex items-center justify-center border-l border-white/20 rounded-r-xl">
-                          <span className="font-mono text-sm opacity-80">
-                            {item.code.substring(0, 3)}...
-                          </span>
-                        </span>
-                      )}
-                    </button>
+                    </span>
                   )}
-                </div>
+                </button>
               ) : isGiveaway ? (
                 // Giveaway CTA
                 <button
