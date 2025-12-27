@@ -38,7 +38,7 @@ const AdminLayout = () => {
   ];
 
   return (
-    <div className="min-h-screen flex" data-testid="admin-layout">
+    <div className="min-h-screen flex bg-void-base text-white" data-testid="admin-layout">
       <aside className="w-64 bg-void-paper border-r border-white/5 flex flex-col">
         <div className="p-6 border-b border-white/5">
           <Link to="/" className="flex items-center space-x-2">
