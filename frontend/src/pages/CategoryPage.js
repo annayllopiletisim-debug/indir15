@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import axios from 'axios';
 import BrandLogo from '../components/BrandLogo';
@@ -6,23 +6,12 @@ import CouponCard from '../components/CouponCard';
 import DiscountCard from '../components/DiscountCard';
 import GiveawayCard from '../components/GiveawayCard';
 import StickyActionBar from '../components/StickyActionBar';
-import AlphabetNav from '../components/AlphabetNav';
-import { Search, Check, X, Tag, Filter, ChevronDown, Package, TrendingUp, SlidersHorizontal } from 'lucide-react';
+import { Search, Check, X, Tag, Package, TrendingUp, SlidersHorizontal, ChevronDown } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
 // Filter options
-const FILTER_CATEGORIES = [
-  { id: 'all', name: 'Tümü' },
-  { id: 'market', name: 'Market' },
-  { id: 'giyim', name: 'Giyim' },
-  { id: 'elektronik', name: 'Elektronik' },
-  { id: 'kozmetik', name: 'Kozmetik' },
-  { id: 'yeme-icme', name: 'Yeme-İçme' },
-  { id: 'seyahat', name: 'Seyahat' }
-];
-
 const FILTER_DISCOUNT_RATES = [
   { id: 'all', name: 'Tümü' },
   { id: '10', name: '%10+' },
@@ -65,13 +54,19 @@ const CategoryPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedStores, setSelectedStores] = useState(new Set());
   const [showDeals, setShowDeals] = useState(false);
-  const [selectedLetter, setSelectedLetter] = useState(null);
+  
+  // Description expand state (mobile)
+  const [showFullDescription, setShowFullDescription] = useState(false);
+  
+  // Scroll state for mobile header
+  const [hideHeader, setHideHeader] = useState(false);
+  const lastScrollY = useRef(0);
+  const headerRef = useRef(null);
   
   // Filter modal state
   const [showFilterModal, setShowFilterModal] = useState(false);
   
   // Filter values
-  const [filterCategory, setFilterCategory] = useState('all');
   const [filterDiscountRate, setFilterDiscountRate] = useState('all');
   const [filterCampaignType, setFilterCampaignType] = useState('all');
   const [filterExpiry, setFilterExpiry] = useState('all');
@@ -79,6 +74,31 @@ const CategoryPage = () => {
   
   // Site settings for sticky bar
   const [siteSettings, setSiteSettings] = useState({ sticky_cta_enabled: true, sticky_cta_variant: "A" });
+
+  // Handle scroll for mobile header hide/show
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      const isMobile = window.innerWidth < 768;
+      
+      if (!isMobile) {
+        setHideHeader(false);
+        return;
+      }
+      
+      // Hide header when scrolling down past 100px, show when scrolling up
+      if (currentScrollY > lastScrollY.current && currentScrollY > 100) {
+        setHideHeader(true);
+      } else if (currentScrollY < lastScrollY.current) {
+        setHideHeader(false);
+      }
+      
+      lastScrollY.current = currentScrollY;
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   // Fetch site settings
   useEffect(() => {
@@ -104,7 +124,7 @@ const CategoryPage = () => {
         metaDesc.setAttribute('name', 'description');
         document.head.appendChild(metaDesc);
       }
-      metaDesc.setAttribute('content', `${category.name} kategorisindeki mağazalar, kuponlar ve indirimler.`);
+      metaDesc.setAttribute('content', category.description || `${category.name} kategorisindeki mağazalar, kuponlar ve indirimler.`);
     }
     
     return () => {
@@ -119,7 +139,7 @@ const CategoryPage = () => {
       setSelectedStores(new Set());
       setShowDeals(false);
       setSearchTerm('');
-      setSelectedLetter(null);
+      setShowFullDescription(false);
       resetFilters();
       
       try {
@@ -181,7 +201,6 @@ const CategoryPage = () => {
 
   // Reset all filters
   const resetFilters = () => {
-    setFilterCategory('all');
     setFilterDiscountRate('all');
     setFilterCampaignType('all');
     setFilterExpiry('all');
@@ -190,49 +209,26 @@ const CategoryPage = () => {
   };
 
   // Check if any filter is active
-  const hasActiveFilters = filterCategory !== 'all' || 
-    filterDiscountRate !== 'all' || 
+  const hasActiveFilters = filterDiscountRate !== 'all' || 
     filterCampaignType !== 'all' || 
     filterExpiry !== 'all' ||
     selectedStores.size > 0;
 
   // Count active filters
   const activeFilterCount = [
-    filterCategory !== 'all',
     filterDiscountRate !== 'all',
     filterCampaignType !== 'all',
     filterExpiry !== 'all',
     selectedStores.size > 0
   ].filter(Boolean).length;
 
-  // Get available letters
-  const availableLetters = useMemo(() => {
-    const letters = new Set();
-    brands.forEach(brand => {
-      const firstLetter = brand.name.charAt(0).toUpperCase();
-      letters.add(firstLetter);
-    });
-    return Array.from(letters).sort((a, b) => a.localeCompare(b, 'tr'));
-  }, [brands]);
-
-  // Filter brands
+  // Filter brands by search
   const filteredBrands = useMemo(() => {
-    let result = brands;
-    
-    if (searchTerm) {
-      result = result.filter(brand =>
-        brand.name.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    }
-    
-    if (selectedLetter) {
-      result = result.filter(brand =>
-        brand.name.charAt(0).toUpperCase() === selectedLetter
-      );
-    }
-    
-    return result;
-  }, [searchTerm, selectedLetter, brands]);
+    if (!searchTerm) return brands;
+    return brands.filter(brand =>
+      brand.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [searchTerm, brands]);
 
   // Popular brands in this category
   const popularBrands = useMemo(() => {
@@ -385,11 +381,20 @@ const CategoryPage = () => {
     return `/magaza/${brand.slug}/${typeSlug}/${slug}-${deal.id}`;
   };
 
-  // Truncate text to max 40 characters
+  // Truncate text
   const truncateText = (text, maxLength = 40) => {
     if (!text) return '';
     return text.length > maxLength ? text.substring(0, maxLength) + '...' : text;
   };
+
+  // Get category description (default if not set)
+  const categoryDescription = category?.description || 
+    `${category?.name} kategorisindeki en güncel indirimler, kupon kodları ve kampanyalar. ${brands.length} farklı mağazadan ${allCoupons.length + allDiscounts.length + allGiveaways.length} aktif fırsat sizi bekliyor.`;
+
+  // Truncated description for mobile
+  const truncatedDescription = categoryDescription.length > 150 
+    ? categoryDescription.substring(0, 150) + '...' 
+    : categoryDescription;
 
   // Apply filters and show deals
   const applyFilters = () => {
@@ -427,41 +432,82 @@ const CategoryPage = () => {
   return (
     <>
       <div className="min-h-screen pb-20" data-testid="category-page">
-        {/* Header */}
-        <div className="bg-card border-b border-border">
-          <div className="container mx-auto px-4 py-8">
-            <h1 className="text-3xl font-heading font-bold mb-2">{category.name}</h1>
-            <p className="text-muted-foreground">
-              {brands.length} mağaza, {totalDeals} aktif indirim
-            </p>
-            
-            {/* Top Campaigns - Vertical list with truncated names */}
-            {topCampaigns.length > 0 && (
-              <div className="mt-4">
-                <span className="text-sm text-muted-foreground mb-2 block">Öne Çıkanlar:</span>
-                <div className="flex flex-col gap-2">
-                  {topCampaigns.map((deal) => (
-                    <Link
-                      key={deal.id}
-                      to={getDealUrl(deal, deal.type)}
-                      className="inline-flex items-center gap-2 px-3 py-2 bg-primary/10 hover:bg-primary/20 text-primary rounded-lg text-sm transition-colors w-fit"
+        {/* Header - Hides on mobile scroll */}
+        <div 
+          ref={headerRef}
+          className={`bg-card border-b border-border transition-transform duration-300 md:translate-y-0 ${
+            hideHeader ? '-translate-y-full fixed top-0 left-0 right-0 z-40 md:relative md:z-auto' : ''
+          }`}
+        >
+          <div className="container mx-auto px-4 py-6 md:py-8">
+            {/* Desktop: Two columns / Mobile: Single column */}
+            <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4 md:gap-8">
+              {/* Left: Category info & description */}
+              <div className="flex-1">
+                <h1 className="text-2xl md:text-3xl font-heading font-bold mb-2">{category.name}</h1>
+                <p className="text-sm text-muted-foreground mb-3">
+                  {brands.length} mağaza, {totalDeals} aktif indirim
+                </p>
+                
+                {/* Description - Mobile: collapsible / Desktop: full */}
+                <div className="hidden md:block">
+                  <p className="text-muted-foreground text-sm leading-relaxed">
+                    {categoryDescription}
+                  </p>
+                </div>
+                
+                {/* Mobile description with expand */}
+                <div className="md:hidden">
+                  <p className="text-muted-foreground text-sm leading-relaxed">
+                    {showFullDescription ? categoryDescription : truncatedDescription}
+                  </p>
+                  {categoryDescription.length > 150 && (
+                    <button
+                      onClick={() => setShowFullDescription(!showFullDescription)}
+                      className="text-primary text-sm font-medium mt-1 flex items-center gap-1"
                     >
-                      <TrendingUp className="w-4 h-4 flex-shrink-0" />
-                      <span>{truncateText(deal.title, 40)}</span>
-                    </Link>
-                  ))}
+                      {showFullDescription ? 'Daha az göster' : 'Devamını oku'}
+                      <ChevronDown className={`w-4 h-4 transition-transform ${showFullDescription ? 'rotate-180' : ''}`} />
+                    </button>
+                  )}
                 </div>
               </div>
-            )}
+
+              {/* Right: Top campaigns (Desktop only) */}
+              {topCampaigns.length > 0 && (
+                <div className="hidden md:block w-80 flex-shrink-0">
+                  <span className="text-sm font-medium text-muted-foreground mb-3 block">Öne Çıkan Kampanyalar</span>
+                  <div className="flex flex-col gap-2">
+                    {topCampaigns.map((deal) => (
+                      <Link
+                        key={deal.id}
+                        to={getDealUrl(deal, deal.type)}
+                        className="flex items-center gap-2 px-3 py-2.5 bg-primary/5 hover:bg-primary/10 border border-primary/20 rounded-lg text-sm transition-colors group"
+                      >
+                        <TrendingUp className="w-4 h-4 text-primary flex-shrink-0" />
+                        <span className="text-foreground group-hover:text-primary transition-colors truncate">
+                          {truncateText(deal.title, 40)}
+                        </span>
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
-        {/* Popular Brands Bar */}
+        {/* Spacer when header is fixed on mobile */}
+        {hideHeader && <div className="h-32 md:h-0" />}
+
+        {/* Popular Brands Bar - Sticky on mobile */}
         {popularBrands.length > 0 && !showDeals && (
-          <div className="bg-muted/30 border-b border-border">
+          <div className={`bg-muted/30 border-b border-border ${
+            hideHeader ? 'sticky top-0 z-30' : ''
+          } md:relative md:z-auto`}>
             <div className="container mx-auto px-4 py-3">
               <div className="flex items-center gap-2 mb-2">
-                <span className="text-xs text-muted-foreground">Popüler Mağazalar:</span>
+                <span className="text-xs font-medium text-muted-foreground">Popüler Mağazalar:</span>
               </div>
               <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
                 {popularBrands.map((brand) => (
@@ -470,9 +516,9 @@ const CategoryPage = () => {
                     to={`/magaza/${brand.slug}`}
                     className="flex-shrink-0 flex items-center gap-2 px-3 py-2 rounded-lg transition-all bg-card border border-border hover:border-primary/50 hover:bg-primary/5"
                   >
-                    <BrandLogo logoUrl={brand.logo_url} brandName={brand.name} size="xs" />
-                    <span className="text-sm whitespace-nowrap">{brand.name}</span>
-                    <span className="text-xs px-1.5 py-0.5 rounded-full bg-primary/10 text-primary">
+                    <BrandLogo logoUrl={brand.logo_url} brandName={brand.name} size="sm" />
+                    <span className="text-sm font-medium whitespace-nowrap">{brand.name}</span>
+                    <span className="text-xs px-1.5 py-0.5 rounded-full bg-primary/10 text-primary font-medium">
                       {brand.deal_count}
                     </span>
                   </Link>
@@ -484,17 +530,14 @@ const CategoryPage = () => {
 
         <div className="container mx-auto px-4 py-6">
           {/* Search & Filter Toggle */}
-          <div className="flex flex-col sm:flex-row gap-3 mb-4">
+          <div className="flex flex-col sm:flex-row gap-3 mb-6">
             <div className="flex-1 relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
               <input
                 type="text"
                 placeholder="Mağaza ara..."
                 value={searchTerm}
-                onChange={(e) => {
-                  setSearchTerm(e.target.value);
-                  setSelectedLetter(null);
-                }}
+                onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full pl-10 pr-4 py-3 bg-card border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary text-foreground"
               />
             </div>
@@ -502,7 +545,7 @@ const CategoryPage = () => {
             {/* Filter Button */}
             <button
               onClick={() => setShowFilterModal(true)}
-              className={`flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-medium transition-all ${
+              className={`flex items-center justify-center gap-2 px-5 py-3 rounded-xl font-medium transition-all ${
                 hasActiveFilters
                   ? 'bg-primary text-white'
                   : 'bg-card border border-border hover:border-primary/50'
@@ -518,20 +561,9 @@ const CategoryPage = () => {
             </button>
           </div>
 
-          {/* Alphabet Nav */}
-          {!searchTerm && !showDeals && (
-            <div className="mb-4">
-              <AlphabetNav
-                letters={availableLetters}
-                selectedLetter={selectedLetter}
-                onSelect={setSelectedLetter}
-              />
-            </div>
-          )}
-
           {/* Active Filter Pills */}
           {hasActiveFilters && (
-            <div className="flex flex-wrap gap-2 mb-4">
+            <div className="flex flex-wrap gap-2 mb-6">
               {filterCampaignType !== 'all' && (
                 <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-primary/10 text-primary rounded-full text-sm">
                   {FILTER_CAMPAIGN_TYPES.find(t => t.id === filterCampaignType)?.name}
@@ -609,7 +641,7 @@ const CategoryPage = () => {
               )}
             </div>
           ) : (
-            /* Stores Grid */
+            /* Stores Grid - Bigger logos and text */
             <>
               {filteredBrands.length === 0 ? (
                 <div className="text-center py-16 glass-effect rounded-2xl">
@@ -618,33 +650,28 @@ const CategoryPage = () => {
                   <p className="text-muted-foreground">Arama kriterlerinize uygun mağaza yok.</p>
                 </div>
               ) : (
-                <>
-                  {selectedLetter && (
-                    <h2 className="text-2xl font-heading font-bold text-primary mb-4">
-                      {selectedLetter}
-                    </h2>
-                  )}
-                  
-                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
-                    {filteredBrands.map((brand) => (
-                      <Link
-                        key={brand.id}
-                        to={`/magaza/${brand.slug}`}
-                        className="group p-3 rounded-xl text-center transition-all glass-effect hover:border-primary/30"
-                      >
-                        <div className="flex justify-center mb-2">
-                          <BrandLogo logoUrl={brand.logo_url} brandName={brand.name} size="md" />
-                        </div>
-                        <h3 className="font-medium text-sm truncate mb-1">{brand.name}</h3>
-                        {brand.deal_count > 0 ? (
-                          <p className="text-xs text-primary">{brand.deal_count} indirim</p>
-                        ) : (
-                          <p className="text-xs text-muted-foreground">-</p>
-                        )}
-                      </Link>
-                    ))}
-                  </div>
-                </>
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+                  {filteredBrands.map((brand) => (
+                    <Link
+                      key={brand.id}
+                      to={`/magaza/${brand.slug}`}
+                      className="group p-4 rounded-xl text-center transition-all glass-effect hover:border-primary/30 hover:shadow-lg"
+                    >
+                      {/* Bigger logo */}
+                      <div className="flex justify-center mb-3">
+                        <BrandLogo logoUrl={brand.logo_url} brandName={brand.name} size="lg" />
+                      </div>
+                      {/* Bigger brand name */}
+                      <h3 className="font-semibold text-base truncate mb-1.5">{brand.name}</h3>
+                      {/* Bigger deal count */}
+                      {brand.deal_count > 0 ? (
+                        <p className="text-sm font-medium text-primary">{brand.deal_count} indirim</p>
+                      ) : (
+                        <p className="text-sm text-muted-foreground">-</p>
+                      )}
+                    </Link>
+                  ))}
+                </div>
               )}
             </>
           )}
