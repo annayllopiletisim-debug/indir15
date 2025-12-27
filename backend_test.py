@@ -297,6 +297,192 @@ class CouponAPITester:
         
         return True
 
+    def test_image_url_field_addition(self):
+        """Test image_url field addition to Coupon, Discount, and Giveaway models"""
+        print("\n🖼️  Testing Image URL Field Addition...")
+        
+        if not self.token:
+            print("   ❌ No admin token available, skipping image_url tests")
+            return False
+        
+        # Get a brand ID for testing (we'll use the first available brand)
+        success, brands = self.run_test("Get Brands for Testing", "GET", "brands", 200)
+        if not success or not brands:
+            print("   ❌ No brands available for testing")
+            return False
+        
+        test_brand_id = brands[0]['id']
+        test_image_url = "https://example.com/test-image.jpg"
+        
+        # Test 1: GET /api/coupons - Verify image_url field exists
+        print("\n   1. Testing GET /api/coupons - Verify image_url field exists...")
+        success, coupons = self.run_test("Get Coupons - Check image_url field", "GET", "coupons", 200)
+        
+        if success and coupons:
+            # Check if any coupon has image_url field (even if null)
+            has_image_url_field = any('image_url' in coupon for coupon in coupons)
+            if has_image_url_field:
+                print(f"   ✅ Coupons response includes image_url field")
+            else:
+                print(f"   ❌ Coupons response missing image_url field")
+        
+        # Test 2: POST /api/coupons - Create coupon with image_url
+        print("\n   2. Testing POST /api/coupons - Create coupon with image_url...")
+        coupon_data = {
+            "brand_id": test_brand_id,
+            "title": "Test Coupon with Image",
+            "description": "Test coupon for image_url field testing",
+            "code": "TESTIMG20",
+            "discount_text": "%20 İndirim",
+            "destination_url": "https://example.com/test",
+            "image_url": test_image_url,
+            "is_active": True
+        }
+        
+        success, created_coupon = self.run_test(
+            "Create Coupon with image_url",
+            "POST",
+            "coupons",
+            200,
+            data=coupon_data
+        )
+        
+        created_coupon_id = None
+        if success and created_coupon:
+            created_coupon_id = created_coupon.get('id')
+            if created_coupon.get('image_url') == test_image_url:
+                print(f"   ✅ Coupon created successfully with image_url: {created_coupon.get('image_url')}")
+            else:
+                print(f"   ❌ Coupon image_url not set correctly. Expected: {test_image_url}, Got: {created_coupon.get('image_url')}")
+        
+        # Test 3: PUT /api/coupons/{id} - Update coupon with image_url
+        if created_coupon_id:
+            print("\n   3. Testing PUT /api/coupons/{id} - Update coupon with image_url...")
+            updated_image_url = "https://example.com/updated-image.jpg"
+            update_data = coupon_data.copy()
+            update_data['image_url'] = updated_image_url
+            update_data['title'] = "Updated Test Coupon with Image"
+            
+            success, updated_coupon = self.run_test(
+                f"Update Coupon {created_coupon_id} with new image_url",
+                "PUT",
+                f"coupons/{created_coupon_id}",
+                200,
+                data=update_data
+            )
+            
+            if success and updated_coupon:
+                if updated_coupon.get('image_url') == updated_image_url:
+                    print(f"   ✅ Coupon updated successfully with new image_url: {updated_coupon.get('image_url')}")
+                else:
+                    print(f"   ❌ Coupon image_url not updated correctly. Expected: {updated_image_url}, Got: {updated_coupon.get('image_url')}")
+        
+        # Test 4: GET /api/discounts - Verify image_url field exists
+        print("\n   4. Testing GET /api/discounts - Verify image_url field exists...")
+        success, discounts = self.run_test("Get Discounts - Check image_url field", "GET", "discounts", 200)
+        
+        if success and discounts:
+            # Check if any discount has image_url field (even if null)
+            has_image_url_field = any('image_url' in discount for discount in discounts)
+            if has_image_url_field:
+                print(f"   ✅ Discounts response includes image_url field")
+            else:
+                print(f"   ❌ Discounts response missing image_url field")
+        
+        # Test 5: POST /api/discounts - Create discount with image_url
+        print("\n   5. Testing POST /api/discounts - Create discount with image_url...")
+        discount_data = {
+            "brand_id": test_brand_id,
+            "title": "Test Discount with Image",
+            "description": "Test discount for image_url field testing",
+            "discount_text": "%30 İndirim",
+            "destination_url": "https://example.com/test-discount",
+            "image_url": test_image_url
+        }
+        
+        success, created_discount = self.run_test(
+            "Create Discount with image_url",
+            "POST",
+            "discounts",
+            200,
+            data=discount_data
+        )
+        
+        if success and created_discount:
+            if created_discount.get('image_url') == test_image_url:
+                print(f"   ✅ Discount created successfully with image_url: {created_discount.get('image_url')}")
+            else:
+                print(f"   ❌ Discount image_url not set correctly. Expected: {test_image_url}, Got: {created_discount.get('image_url')}")
+        
+        # Test 6: GET /api/giveaways - Verify image_url field exists
+        print("\n   6. Testing GET /api/giveaways - Verify image_url field exists...")
+        success, giveaways = self.run_test("Get Giveaways - Check image_url field", "GET", "giveaways", 200)
+        
+        if success and giveaways:
+            # Check if any giveaway has image_url field (even if null)
+            has_image_url_field = any('image_url' in giveaway for giveaway in giveaways)
+            if has_image_url_field:
+                print(f"   ✅ Giveaways response includes image_url field")
+            else:
+                print(f"   ❌ Giveaways response missing image_url field")
+        
+        # Test 7: POST /api/giveaways - Create giveaway with image_url
+        print("\n   7. Testing POST /api/giveaways - Create giveaway with image_url...")
+        giveaway_data = {
+            "brand_id": test_brand_id,
+            "title": "Test Giveaway with Image",
+            "description": "Test giveaway for image_url field testing",
+            "prize_text": "iPhone 15 Pro",
+            "destination_url": "https://example.com/test-giveaway",
+            "image_url": test_image_url,
+            "is_active": True
+        }
+        
+        success, created_giveaway = self.run_test(
+            "Create Giveaway with image_url",
+            "POST",
+            "giveaways",
+            200,
+            data=giveaway_data
+        )
+        
+        if success and created_giveaway:
+            if created_giveaway.get('image_url') == test_image_url:
+                print(f"   ✅ Giveaway created successfully with image_url: {created_giveaway.get('image_url')}")
+            else:
+                print(f"   ❌ Giveaway image_url not set correctly. Expected: {test_image_url}, Got: {created_giveaway.get('image_url')}")
+        
+        # Clean up test data
+        if created_coupon_id:
+            print("\n   🧹 Cleaning up test coupon...")
+            self.run_test(
+                f"Delete Test Coupon {created_coupon_id}",
+                "DELETE",
+                f"coupons/{created_coupon_id}",
+                200
+            )
+        
+        if success and created_discount and created_discount.get('id'):
+            print("   🧹 Cleaning up test discount...")
+            self.run_test(
+                f"Delete Test Discount {created_discount['id']}",
+                "DELETE",
+                f"discounts/{created_discount['id']}",
+                200
+            )
+        
+        if success and created_giveaway and created_giveaway.get('id'):
+            print("   🧹 Cleaning up test giveaway...")
+            self.run_test(
+                f"Delete Test Giveaway {created_giveaway['id']}",
+                "DELETE",
+                f"giveaways/{created_giveaway['id']}",
+                200
+            )
+        
+        print("\n   ✅ Image URL field testing completed!")
+        return True
+
 def main():
     print("🚀 Starting SavvySaver API Tests...")
     print("=" * 50)
