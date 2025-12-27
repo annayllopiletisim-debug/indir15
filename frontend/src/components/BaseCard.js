@@ -4,16 +4,17 @@ import { Clock, ImageIcon } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useTheme } from '../context/ThemeContext';
 
-// Helper to check if expiring within 24 hours
+// Helper to check if expiring within 3 days
 const isExpiringSoon = (expiryDate) => {
   if (!expiryDate) return false;
   const now = new Date();
   const expiry = new Date(expiryDate);
   const diff = expiry - now;
-  return diff > 0 && diff <= 24 * 60 * 60 * 1000;
+  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+  return diff > 0 && days < 3;
 };
 
-// Helper to get time remaining (color will be determined in component based on theme)
+// Helper to get time remaining - only returns if less than 3 days
 const getTimeRemaining = (expiryDate) => {
   if (!expiryDate) return null;
   const now = new Date();
@@ -28,13 +29,18 @@ const getTimeRemaining = (expiryDate) => {
   const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
   const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
 
+  // Only return time info if less than 3 days remaining
+  if (days >= 3) {
+    return null;
+  }
+
   let text;
   if (days > 0) {
-    text = `${days}g ${hours}s`;
+    text = `${days}g ${hours}s kaldı`;
   } else if (hours > 0) {
-    text = `${hours}s ${minutes}dk`;
+    text = `${hours}s ${minutes}dk kaldı`;
   } else {
-    text = `${minutes}dk`;
+    text = `${minutes}dk kaldı`;
   }
 
   return { expired: false, text, days };
