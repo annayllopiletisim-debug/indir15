@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Clock, ImageIcon, MapPin } from 'lucide-react';
+import { Clock, ImageIcon } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 // Helper to check if expiring within 24 hours
@@ -48,7 +48,7 @@ const getTimeRemaining = (expiryDate) => {
 };
 
 const BaseCard = ({
-  type = 'coupon', // 'coupon', 'discount', or 'giveaway'
+  type = 'coupon',
   title,
   description,
   discountText,
@@ -69,17 +69,17 @@ const BaseCard = ({
   const timeLeft = getTimeRemaining(expiryDate);
   const isExpired = timeLeft?.expired || !isActive;
 
-  // Extract domain from destination URL
-  const getDomain = (url) => {
+  // Get proper logo URL
+  const getLogoUrl = (url) => {
     if (!url) return null;
-    try {
-      const domain = new URL(url).hostname.replace('www.', '');
-      return domain;
-    } catch {
-      return null;
+    if (url.startsWith('/uploads/')) {
+      return `${process.env.REACT_APP_BACKEND_URL}/api${url}`;
     }
+    if (url.startsWith('/api/uploads/')) {
+      return `${process.env.REACT_APP_BACKEND_URL}${url}`;
+    }
+    return url;
   };
-  const domain = getDomain(destinationUrl);
 
   // Compact version for horizontal scrolling lists
   if (compact) {
@@ -93,27 +93,19 @@ const BaseCard = ({
         data-testid={testId}
       >
         <div className="bg-white rounded-xl p-3 shadow-sm hover:shadow-md transition-shadow duration-200 h-full flex gap-3">
-          {/* Image with brand logo */}
-          <div className="relative flex-shrink-0 w-16 h-16">
-            <div className="w-full h-full rounded-lg overflow-hidden bg-gradient-to-br from-violet-100 to-violet-200 flex items-center justify-center">
-              {imageUrl ? (
-                <img src={imageUrl} alt={title} className="w-full h-full object-cover" loading="lazy" />
-              ) : (
-                <ImageIcon className="w-6 h-6 text-violet-400 opacity-50" />
-              )}
-            </div>
-            {/* Brand logo overlay */}
-            {brandLogoUrl && (
-              <div className="absolute -top-1 -left-1 w-6 h-6 bg-white rounded-md shadow-md flex items-center justify-center p-0.5">
-                <img src={brandLogoUrl} alt={brandName} className="w-full h-full object-contain" />
-              </div>
+          {/* Image */}
+          <div className="flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden bg-gradient-to-br from-violet-100 to-violet-200 flex items-center justify-center">
+            {imageUrl ? (
+              <img src={imageUrl} alt={title} className="w-full h-full object-cover" loading="lazy" />
+            ) : (
+              <ImageIcon className="w-6 h-6 text-violet-400 opacity-50" />
             )}
           </div>
           
           {/* Content */}
           <div className="flex-1 flex flex-col min-w-0">
             {discountText && (
-              <span className="inline-flex self-start px-2 py-0.5 bg-gradient-to-r from-violet-500 to-purple-600 text-white text-xs font-bold rounded-full mb-1">
+              <span className="inline-flex self-start px-2 py-0.5 bg-violet-100 text-violet-700 text-xs font-bold rounded-full mb-1">
                 {discountText}
               </span>
             )}
@@ -138,8 +130,8 @@ const BaseCard = ({
         {/* Main Content Area */}
         <div className="p-4">
           <div className="flex gap-4">
-            {/* Left: Square Image with Brand Logo */}
-            <div className="relative flex-shrink-0">
+            {/* Left: Square Image */}
+            <div className="flex-shrink-0">
               <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-xl overflow-hidden bg-gradient-to-br from-violet-100 to-violet-200 flex items-center justify-center">
                 {imageUrl ? (
                   <img 
@@ -152,52 +144,38 @@ const BaseCard = ({
                   <ImageIcon className="w-8 h-8 text-violet-400 opacity-50" />
                 )}
               </div>
-              {/* Brand logo - top left corner of image */}
-              {brandName && (
-                <div className="absolute -top-2 -left-2 bg-white rounded-lg shadow-md p-1 min-w-[28px] h-7 flex items-center justify-center">
-                  {brandLogoUrl ? (
-                    <img 
-                      src={brandLogoUrl.startsWith('/uploads/') ? `${process.env.REACT_APP_BACKEND_URL}/api${brandLogoUrl}` : brandLogoUrl} 
-                      alt={brandName} 
-                      className="max-w-[40px] max-h-5 object-contain"
-                    />
-                  ) : (
-                    <span className="text-xs font-bold text-gray-700 px-1">{brandName.substring(0, 6)}</span>
-                  )}
-                </div>
-              )}
             </div>
 
             {/* Right: Content */}
             <div className="flex-1 min-w-0 flex flex-col">
-              {/* Top Row: Discount Badge + Time */}
-              <div className="flex items-start justify-between gap-2 mb-2 flex-wrap sm:flex-nowrap">
-                {/* Discount Badge */}
-                {discountText && (
-                  <span className="inline-flex px-3 py-1 bg-gradient-to-r from-violet-500 to-purple-600 text-white text-xs sm:text-sm font-bold rounded-[20px] uppercase tracking-wide whitespace-nowrap">
-                    {discountText}
-                  </span>
-                )}
-                
-                {/* Time Remaining */}
-                {timeLeft ? (
-                  <span 
-                    className="flex-shrink-0 inline-flex items-center gap-1 text-sm font-semibold whitespace-nowrap"
-                    style={{ color: timeLeft.color }}
-                  >
-                    <Clock className="w-4 h-4" />
-                    {timeLeft.text}
-                  </span>
-                ) : (
-                  <span className="flex-shrink-0 inline-flex items-center gap-1 text-sm font-semibold text-green-500 whitespace-nowrap">
-                    <Clock className="w-4 h-4" />
-                    Süresiz
-                  </span>
-                )}
-              </div>
+              {/* Brand Logo + Name */}
+              {brandName && (
+                <Link 
+                  to={brandSlug ? `/magaza/${brandSlug}` : '#'}
+                  className="inline-flex items-center gap-2 mb-2 hover:opacity-80 transition-opacity self-start"
+                >
+                  {brandLogoUrl && (
+                    <div className="w-7 h-7 bg-white rounded-lg shadow-sm border border-gray-100 flex items-center justify-center p-1 flex-shrink-0">
+                      <img 
+                        src={getLogoUrl(brandLogoUrl)} 
+                        alt={brandName} 
+                        className="max-w-full max-h-full object-contain"
+                      />
+                    </div>
+                  )}
+                  <span className="text-lg sm:text-xl font-bold text-gray-900">{brandName}</span>
+                </Link>
+              )}
+
+              {/* Discount Badge - Soft purple style */}
+              {discountText && (
+                <span className="inline-flex self-start px-3 py-1 bg-violet-100 text-violet-700 text-sm font-bold rounded-full mb-2">
+                  {discountText}
+                </span>
+              )}
 
               {/* Campaign Title */}
-              <h3 className="text-base sm:text-lg font-semibold text-gray-900 line-clamp-2 leading-snug">
+              <h3 className="text-base font-semibold text-gray-800 line-clamp-2 leading-snug">
                 {title}
               </h3>
               
@@ -209,25 +187,23 @@ const BaseCard = ({
         {/* Divider */}
         <div className="border-t border-gray-100" />
 
-        {/* Bottom Row: Domain + CTA Button */}
+        {/* Bottom Row: Time (left) + CTA Button (right) */}
         <div className="px-4 py-3 flex items-center justify-between">
-          {/* Domain/Website */}
-          {domain && (
-            <div className="flex items-center gap-1.5 text-gray-500">
-              <MapPin className="w-4 h-4" />
-              <span className="text-sm">{domain}</span>
-            </div>
-          )}
-          {!domain && brandSlug && (
-            <Link 
-              to={`/magaza/${brandSlug}`}
-              className="flex items-center gap-1.5 text-gray-500 hover:text-violet-600 transition-colors"
+          {/* Time Remaining - Now on the left */}
+          {timeLeft ? (
+            <span 
+              className="inline-flex items-center gap-1.5 text-sm font-semibold"
+              style={{ color: timeLeft.color }}
             >
-              <MapPin className="w-4 h-4" />
-              <span className="text-sm">{brandName}</span>
-            </Link>
+              <Clock className="w-4 h-4" />
+              {timeLeft.text}
+            </span>
+          ) : (
+            <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-green-500">
+              <Clock className="w-4 h-4" />
+              Süresiz
+            </span>
           )}
-          {!domain && !brandSlug && <div />}
 
           {/* Actions / CTA Button */}
           {actions}
