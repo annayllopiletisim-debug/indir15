@@ -10,6 +10,14 @@ const AdminLayout = () => {
   // Debug: v2
   console.log('AdminLayout loaded - version 2');
 
+  // Force dark theme for admin panel
+  React.useEffect(() => {
+    document.documentElement.classList.add('dark');
+    return () => {
+      // Don't remove dark class on unmount - let ThemeContext handle it
+    };
+  }, []);
+
   const handleLogout = () => {
     removeAuthToken();
     removeAuthUser();
