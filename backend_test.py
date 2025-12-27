@@ -317,6 +317,9 @@ def main():
     # Test click tracking
     tester.test_click_tracking()
     
+    # Test new Deal Detail Pages endpoints
+    tester.test_deal_detail_endpoints()
+    
     # Test admin endpoints if authenticated
     if tester.token:
         tester.test_admin_endpoints()
