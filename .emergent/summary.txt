@@ -1,275 +1,155 @@
 <analysis>**original_problem_statement:**
-The user wants to build a modern, mobile-first coupon and deals website in Turkish.
+The user's goal is to build a highly optimized, SEO-driven Turkish deals platform named İndirim Keşfet.
 
-**PRODUCT REQUIREMENTS:**
-
-**Core Architecture:**
-- The site structure is Categories -> Brands.
-- Each brand has a dedicated page with 4 tabs: All, Coupon Codes, Discounts, and App Install (which can be toggled from the admin panel).
-- Item counts must be displayed next to each tab label.
-
-**SEO & Content:**
-- SEO-friendly URL structure (e.g., ).
-- Admin can edit meta title/description per page.
-- Automatic H1/H2 structure.
-- Schema markup for Coupons and Offers.
-
-**Features:**
-- **Homepage:** Hero slider (admin-managed), horizontally swipeable brand logo carousel.
-- **Search:** A global, site-wide search for categories, brands, and deals. A Stores page should list all brands alphabetically.
-- **Coupons/Discounts:**
-    - Discounts must show an expiration date and a countdown timer.
-    - Coupons must have an Active or Expired status badge.
-    - **Revised Coupon Flow:** Clicking a coupon should first redirect to the brand's site with a UTM link, and then a modal should appear on the site to show the code.
-- **App Install Tab:** Can be enabled/disabled per brand from the admin panel, with links for iOS and Android.
-- **UTM Links:** Clickable items should redirect via UTM-enabled links, editable from the admin panel.
-- **Social Sharing:** WhatsApp and Facebook share buttons with clear icons.
-- **User Submissions:** A Submit a Coupon button linking to a Google Form.
-- **Light/Dark Mode:** A user-toggleable theme saved in localStorage.
-- **Category Navigation:**
-    - **Desktop:** Horizontal menu under the header.
-    - **Mobile:** Swipeable buttons above the hero slider.
-- **Advanced Search:** Intent-based search (e.g., searching shoes shows shoe-related brands and categories). Admin should have a panel to map keywords to brands.
-- **PDF Catalogs:** A Catalogs section where admins can upload PDF catalogs for brands (e.g., weekly grocery flyers). This includes a PDF viewer.
-- **Logo Management:** Admin should upload logo files directly, not use external URLs, to ensure consistency and avoid broken links.
-- **Expiring Soon Feature:** Highlight coupons/discounts expiring in the next 24 hours on the homepage and via a special badge.
-- **Card Design Consistency:** All coupon and discount cards must follow a standard layout, with the expiration date always in the top-right corner.
-
-**Admin Panel:**
-- Simple, non-technical UI.
-- **Dashboard:** Analytics showing click counts per brand, most clicked discounts, and most popular stores. The dashboard should have time filters (24h, 7d, 30d) and show conversion metrics.
-- **CRUD Operations:** Full management for Categories, Brands, Coupons, Discounts, Hero Slides, and the new PDF Catalogs and Keyword Mappings.
-- **Search:** Add search bars to the list pages for Brands, Coupons, and Discounts.
-
-**Bug Fixes & UX Improvements:**
-- The hamburger menu must be fixed and functional.
-- The global search must be fixed and functional.
-- The hero slider height should be reduced on mobile.
-- The category pages must not be blank; they should list associated brands and deals.
-- On the brand page, coupon/discount counts should be more visible (using badges, not small text).
-- On the admin dashboard, the Most Popular Discounts list should show which brand the discount belongs to and have a direct link.
-- Add at least 10 demo stores with sample data.
+**PRODUCT REQUIREMENTS (latest consolidated version):**
+- **Core Functionality:** A full-stack application (React, FastAPI, MongoDB) that serves as a deals, coupons, and giveaways platform.
+- **Content Types:** The platform must support three distinct content types: İndirim (Discount), Kupon (Coupon), and Çekiliş (Giveaway).
+- **Programmatic SEO (pSEO):**
+    - A dynamic system to generate SEO-optimized pages for categories, brands, and keywords.
+    - **Unique Detail Pages:** Every deal, coupon, and giveaway must have its own unique, SEO-friendly detail page (e.g., ). These pages must include unique titles, meta descriptions, canonical tags, and Schema.org structured data.
+    - **Expired Content Handling:** Expired deals must not lead to a 404. The page should remain accessible, display an expired message, and show alternative active deals from the same store to retain SEO value.
+- **Admin Panel:**
+    - Full CRUD functionality for all three content types (Discounts, Coupons, Giveaways).
+    - **Google Sheet Import:** A dedicated admin page to automatically import deals, coupons, and giveaways from a provided Google Sheet URL. The system must intelligently match stores, generate content, and prevent duplicates.
+    - **Custom Fields:** Ability to add long description and terms and conditions to deals, which are conditionally displayed on the detail page.
+- **UI/UX:**
+    - **Homepage:** A functional homepage displaying Popüler Mağazalar (Popular Stores) and other sections.
+    - **Listing Pages (, ):**
+        - A Filtrele (Filter) button that toggles a filtering mode.
+        - By default, store cards are direct links. In filter mode, they become selectable with checkboxes.
+        - An A-Z alphabet navigation bar.
+    - **Deal Cards:**
+        - **New Design:** Cards should feature a product/deal image on the left, with the brand logo, name, deal title, and discount text on the right. The description text should be removed from the listing card.
+        - **CTA Buttons:** A Devamını Gör (See More) button linking to the detail page, and a context-specific CTA button (Kodu Göster, Mağazaya Git, Çekilişe Katıl).
+    - **Brand Pages:** Must have tabs to filter content by type: Kuponlar, İndirimler, Çekilişler.
 
 **User's preferred language**: Turkish
 
 **what currently exists?**
-A full-stack application has been developed using a FastAPI backend, a React frontend, and a MongoDB database. Key features are implemented, including user authentication (JWT), a basic admin panel, and CRUD functionalities for brands, coupons, and categories. The application includes a light/dark mode, a revised coupon modal flow, and initial implementations for the hamburger menu, search, and category pages. Several UI/UX improvements, such as enhanced brand page badges and admin search bars, have also been completed based on user feedback. A comprehensive Product Requirements Document (PRD v2.6) has been created based on the latest user requests, and it outlines the plan for all remaining work.
+A full-stack application with a FastAPI backend, React frontend, and MongoDB. The initial homepage regression has been fixed. The platform now fully supports three content types: Discounts, Coupons, and Giveaways, each with its own admin management, card UI, and detail pages. A Google Sheet import feature is implemented in the admin panel. The user has just requested a redesign of the deal cards on listing pages to include an image and remove the description.
 
 **Last working item**:
-- Last item agent was working: The agent's last action was to analyze a comprehensive set of new requirements and bug fixes from the user. It consolidated everything into a detailed Product Requirements Document (PRD v2.6) and created a multi-phase implementation checklist. The agent was just about to begin the implementation of this plan, starting with Phase 1: Critical Features.
-- Status: NOT STARTED
-- Agent Testing Done: N
-- Which testing method agent to use? both
-- User Testing Done: N
+- **Last item agent was working:** The agent was beginning to implement a redesign of the  component. The goal is to remove the description text from all listing cards (coupons, discounts, giveaways) and add a placeholder for an image on the left side, as per the user's request to see a design mock-up before backend changes are made.
+- **Status:** IN PROGRESS
+- **Agent Testing Done:** N
+- **Which testing method agent to use?** screenshot tool (To show the user the new card design on a listing page like  or the homepage).
+- **User Testing Done:** N
 
 **All Pending/In progress Issue list**:
-- **Issue 1 (P0): Logo Management System:** The platform relies on external logo URLs, which are unreliable. The system needs to be updated to allow admins to upload logo files directly to the server.
-- **Issue 2 (P0): Expiring Soon System:** The feature to highlight items expiring within 24 hours is missing. This requires a new backend endpoint, a homepage section, and a special badge on item cards.
-- **Issue 3 (P0): PDF Catalog System:** The backend model for catalogs exists, but the frontend is not implemented. This includes creating catalog cards, a PDF viewer modal, an admin management page, and adding a Catalogs tab to brand pages.
-- **Issue 4 (P0): Keyword Mapping Admin UI:** The backend logic for intent-based search needs a corresponding admin interface. Admins must be able to create, edit, and manage keyword-to-brand mappings.
-- **Issue 5 (P0): Enhanced Analytics Dashboard:** The current dashboard is basic. It needs to be enhanced with time-based filters (24h, 7d, 30d), category performance metrics, and coupon conversion tracking (views vs. copies).
-- **Issue 6 (P1): Card Design Standardization:** Coupon and Discount cards have inconsistent layouts. They must be refactored to use a single  component for a uniform look, with the expiration date always in the top-right corner.
-- **Issue 7 (P2): Share Button Improvement:** The social media share buttons are unclear. They need to be updated with proper brand icons (WhatsApp, Facebook) and tooltips for better usability.
-
-**Issues Detail**:
-- **Issue 1: Logo Management System**
-    - Attempted fixes: None. This is a new requirement.
-    - Next debug checklist: Implement the backend endpoints (, ) for file handling. Create the file upload UI in the admin panel's brand management form. Update brand display components to use locally hosted logos and include a placeholder for missing logos.
-    - Why fix this issue and what will be achieved with the fix?: This will prevent broken images, improve site reliability, and ensure visual consistency across all brand logos.
-    - Status: NOT STARTED
-    - Is recurring issue? N
-    - Should Test frontend/backend/both after fix? both
-    - Blocked on other issue: None
-
-- **Issue 2: Expiring Soon System**
-    - Attempted fixes: None. This is a new requirement.
-    - Next debug checklist: Create the  backend endpoint. Add the 🔥 Son 24 Saat! section to the  component. Implement the  helper function and add the animated ⏰ Son 24 Saat badge to the  component. Add the Süresi Dolmak Üzere sort option to the .
-    - Why fix this issue and what will be achieved with the fix?: This will create a sense of urgency (FOMO) for users, potentially increasing engagement and click-through rates on time-sensitive deals.
-    - Status: NOT STARTED
-    - Is recurring issue? N
-    - Should Test frontend/backend/both after fix? both
-    - Blocked on other issue: None
-
-- **Issue 3: PDF Catalog System**
-    - Attempted fixes: The backend model and basic API endpoints were created.
-    - Next debug checklist: Implement the  and  (modal) frontend components. Create the  for CRUD operations. Add the Kataloglar tab and content section to the  file.
-    - Why fix this issue and what will be achieved with the fix?: This will allow the platform to feature brands (like supermarkets) that primarily use weekly flyers instead of coupon codes, broadening the site's content and appeal.
-    - Status: IN PROGRESS
-    - Is recurring issue? N
-    - Should Test frontend/backend/both after fix? both
-    - Blocked on other issue: None
-
-- **Issue 4: Keyword Mapping Admin UI**
-    - Attempted fixes: The backend model and API endpoints are planned in the PRD.
-    - Next debug checklist: Implement the  model and all associated CRUD API endpoints on the backend. Create the  with a full interface for managing keywords and their associated brand priorities. Update the  endpoint to use this mapping.
-    - Why fix this issue and what will be achieved with the fix?: This will significantly improve the search experience by making it intent-based, allowing users to find relevant brands even if they search for a generic product term (e.g., shoes).
-    - Status: NOT STARTED
-    - Is recurring issue? N
-    - Should Test frontend/backend/both after fix? both
-    - Blocked on other issue: None
-
-- **Issue 5: Enhanced Analytics Dashboard**
-    - Attempted fixes: None. This is a new requirement.
-    - Next debug checklist: Expand the  model and tracking logic to include  and differentiate between view and copy events. Implement the backend aggregation queries for the new metrics. Redesign the  to include time filters and tables for category performance and top coupon conversions.
-    - Why fix this issue and what will be achieved with the fix?: This will provide the site administrator with actionable insights into what content is performing well, enabling data-driven decisions to optimize the platform.
-    - Status: NOT STARTED
-    - Is recurring issue? N
-    - Should Test frontend/backend/both after fix? both
-    - Blocked on other issue: None
-
-- **Issue 6: Card Design Standardization**
-    - Attempted fixes: None. This is a new requirement.
-    - Next debug checklist: Create a new  component that encapsulates the standard layout. Refactor  and  to use this new base component, passing their specific content as props.
-    - Why fix this issue and what will be achieved with the fix?: This will create a more professional and visually cohesive user interface, improving the overall user experience. It also simplifies future maintenance.
-    - Status: NOT STARTED
-    - Is recurring issue? N
-    - Should Test frontend/backend/both after fix? frontend
-    - Blocked on other issue: None
-
-- **Issue 7: Share Button Improvement**
-    - Attempted fixes: None. This is a new requirement.
-    - Next debug checklist: Create a dedicated  component. Use  or another icon library to add branded icons for WhatsApp and Facebook. Implement hover tooltips for clarity.
-    - Why fix this issue and what will be achieved with the fix?: Clearer buttons will encourage more social sharing, increasing the platform's visibility and user-driven marketing.
-    - Status: NOT STARTED
-    - Is recurring issue? N
-    - Should Test frontend/backend/both after fix? frontend
-    - Blocked on other issue: None
+- None. All previously reported issues have been resolved.
 
 **In progress Task List**:
-- **Task 1: Implement PRD v2.6 - Phase 1 (Critical Features)**
-    - Where to resume: Start with the backend implementation checklist in the PRD. The first item is setting up static file serving for logo uploads.
-    - What will be achieved with this?: This will deliver the most critical features requested by the user, including the logo management system, keyword mapping, the expiring soon feature, the catalog system, and the enhanced analytics dashboard.
-    - Status: IN PROGRESS
-    - Should Test frontend/backend/both after fix? both
-    - Blocked on something: None
+- **Task 1: Redesign Deal Cards with Image (P0)**
+    - **Where to resume:** The agent has viewed the  file. The next step is to use  to modify the JSX structure to create a two-column layout: an image on the left and the deal information (title, discount, buttons) on the right. The description paragraph should be removed.
+    - **What will be achieved with this?** A new visual design for the deal cards on all listing pages that is cleaner and includes a dedicated space for an image. This is the first step of a two-part task (design first, then backend).
+    - **Status:** IN PROGRESS
+    - **Should Test frontend/backend/both after fix?** frontend
+    - **Blocked on something:** None.
 
 **Upcoming and Future Tasks**
-- **Upcoming Tasks (P1):**
-    - Implement drag-and-drop reordering for keyword mappings in the admin panel.
-    - Add CSV import functionality for bulk-adding keyword mappings.
-    - Refine and optimize card layouts for mobile devices.
-- **Future Tasks (P2):**
-    - Integrate the native mobile share API for a better sharing experience.
-    - Implement advanced filtering and bulk actions in the admin panel.
-    - Add functionality for users to favorite coupons.
+- **Upcoming Tasks:**
+    - **P0: Implement Backend for Card Images:** After the user approves the new card design, implement the backend functionality. This includes adding an  field to the Coupon, Discount, and Giveaway models and updating the Admin Panel forms to allow image uploads for each deal.
+    - **P1: Full Turkish Alphabet Support:** The user requested adding the full Turkish alphabet () to the  component. While the agent hardcoded this during a fix, a more robust implementation might be needed.
+- **Future Tasks:**
+    - **P2: Email Provider Integration:** Integrate a real email service provider (like SendGrid or Resend) for the newsletter functionality.
+    - **P3: Analytics Integration:** Integrate a web analytics tool (e.g., Google Analytics).
 
 **Completed work in this session**
-- **Core application structure:** Initialized the FastAPI backend, React frontend, and connected to MongoDB.
-- **User Authentication:** Implemented a JWT-based login system for the admin panel.
-- **Basic CRUD:** Created APIs and UI for managing Brands, Coupons, Categories, and Discounts.
-- **Initial UI/UX:**
-    - Implemented a dark theme with a purple/blue/pink gradient.
-    - Created a coupon modal flow where clicking a coupon reveals the code.
-    - Implemented a light/dark mode toggle.
-    - Fixed an issue with the hamburger menu and global search.
-    - Developed functional category pages that display associated content.
-- **Admin Enhancements:**
-    - Added search bars to the Brands, Coupons, and Discounts list pages.
-    - Improved the dashboard to show brand names in the Most Popular Discounts list.
-- **Advanced Features (Initial versions):**
-    - Implemented new category navigation menus for both desktop and mobile.
-    - Enhanced the backend search logic to be more comprehensive.
-- **Planning & Documentation:**
-    - Analyzed extensive user feedback and compiled it into a detailed Product Requirements Document (PRD v2.6) with a clear implementation plan.
-
-- **Recently completed:**
-    - PRD v2.6 creation and finalization (DONE)
-    - Admin panel search functionality (DONE)
-    - Kategori sayfası içeriğinin doldurulması (DONE)
-    - Mağaza sayfasında kupon/indirim sayılarının badge olarak gösterimi (DONE)
-
-**Earlier issues found/mentioned but not fixed**
-All known issues have been captured in the  and the  document. There are no known issues that were missed by the agent.
-
-**Known issue recurrence from previous fork**
-- Issue recurrence in previous fork: None
-- Recurrence count: 0
-- Status: NA
+- **Homepage Regression Fix:** Diagnosed and fixed the broken homepage. The issue was a missing backend endpoint () and a FastAPI route ordering problem.
+- **Filter Logic and UI Fixes:** Corrected the filter behavior on  and  so that cards are links by default and switch to selectable checkboxes only after the Filtrele button is clicked.
+- **Deal Card Redesign (Phase 1):** Removed share buttons, added a peek effect to Kodu Göster, added an arrow icon to Mağazaya Git, and centered the buttons.
+- **Feature: Deal Detail Pages:**
+    - Created new backend endpoints to fetch individual deals (, ).
+    - Built a new  component to display detailed information, including related deals.
+    - Updated deal cards with a Devamını Gör button linking to the new detail pages.
+- **Feature: Custom Deal Fields:**
+    - Added long_description and terms_and_conditions fields to deal models.
+    - Updated the Admin Panel to allow editing these fields.
+    - Updated the  to conditionally render these new fields.
+- **Feature: Google Sheet Import:**
+    - Created a new  backend endpoint to parse a Google Sheet and create deals automatically.
+    - Built a new  page for users to paste a sheet URL and trigger the import.
+- **Feature: Çekiliş (Giveaway) Content Type:**
+    - Implemented Giveaway as a third content type across the entire stack.
+    - Created the  model, backend CRUD endpoints, and an .
+    - Created a new  with a unique Çekilişe Katıl CTA.
+    - Added a Çekilişler tab to Brand pages.
+- **Bug Fixes:**
+    - Fixed misaligned deal count badges on the homepage.
+    - Fixed a  in the backend related to comparing timezone-aware and naive datetimes.
 
 **Code Architecture**
 
 
 **Key Technical Concepts**
-- **Backend:** FastAPI, Pydantic, MongoDB (via  driver), JWT for authentication.
-- **Frontend:** React, React Router, Axios for API calls, TailwindCSS for styling,  for SEO.
-- **Database:** MongoDB (NoSQL).
-- **Architecture:** Decoupled full-stack application with a REST API connecting the frontend and backend.
-- **Development:** The environment uses  to manage processes and supports hot-reloading for both frontend and backend.
+- **Backend:** FastAPI, Pydantic, MongoDB ().
+- **Frontend:** React, React Router, Axios, TailwindCSS.
+- **Dynamic Routing & Slug Parsing:** Implemented complex routing for detail pages () and logic to extract the UUID from the slug.
+- **3rd Party Integration:** Used  library to read data from a public Google Sheet.
+- **Conditional Rendering:** Extensively used in  (to hide empty custom fields) and  (to render the correct card type).
+- **Timezone Handling:** Fixed a bug by ensuring all  comparisons in the backend are timezone-aware ().
 
 **key DB schema**
-- **categories:** 
-- **brands:** 
-- **coupons:** 
-- **discounts:** 
-- **catalogs:** 
-- **keyword_mappings:** 
-- **click_events:** 
+- **coupons:**  (Updated)
+- **discounts:**  (Updated)
+- **giveaways:** **(New Collection)** 
 
 **changes in tech stack**
 - None.
 
 **All files of reference**
-- : The single file containing all backend logic, including models, API endpoints, and database interactions. It needs to be updated for all new features.
-- : The main React component that handles all frontend routing. It needs to be updated with routes for new admin pages.
-- : The page displaying brand details. Needs to be updated to include the Catalogs tab.
-- : The admin analytics page. Needs a major overhaul to implement the enhanced analytics features.
-- : Used to populate the database with demo content. Needs to be updated to include data for new features like catalogs and keyword mappings.
-- **New Files to be Created:**
-    - : For standardizing card layouts.
-    - : For improved social sharing UI.
-    -  & : For the PDF catalog feature.
-    - : For managing keyword mappings.
-    - : For managing PDF catalogs.
+- **/app/backend/server.py**: Heavily modified to add detail endpoints, Giveaway CRUD, Google Sheet import logic, and timezone fixes.
+- **/app/frontend/src/components/BaseCard.js**: The central component for rendering all card types. About to be modified again for the new design.
+- **/app/frontend/src/pages/DealDetailPage.js**: New file. The template for all coupon, discount, and giveaway detail pages.
+- **/app/frontend/src/pages/admin/AdminImportPage.js**: New file. UI for the Google Sheet import feature.
+- **/app/frontend/src/pages/admin/AdminGiveawaysPage.js**: New file. Admin CRUD for giveaways.
+- **/app/frontend/src/pages/BrandPage.js**: Updated to include the Çekilişler tab.
+- **/app/frontend/src/App.js**: Updated with routes for detail pages and new admin pages.
 
 **Areas that need refactoring**:
--  and  must be refactored to use the new  component to ensure a consistent UI and reduce code duplication.
+- **Backend Monolith:**  is now over 2500 lines long and handles all application logic. It should be broken down into separate files for routes, models, and services (e.g., , , ).
+- **Frontend State Management:** Complex pages like  could benefit from custom hooks to manage data fetching and tab state.
 
 **key api endpoints**
-- : The main search endpoint, to be enhanced with keyword mapping.
-- , : For fetching brand data.
-- , : For fetching deal data.
-- : For tracking user interactions.
-- : The enhanced analytics endpoint to be implemented.
-- : New endpoint for uploading logo files.
-- : New endpoint to fetch items expiring in 24 hours.
-- : New set of CRUD endpoints for managing search mappings.
-- : Existing CRUD endpoints for managing PDF catalogs.
+- : **(New)** Fetches details for a single coupon.
+- : **(New)** Fetches details for a single discount.
+- : **(New)** Fetches details for a single giveaway.
+- : **(New)** Triggers the import process from a Google Sheet URL.
+- : **(New)** Full CRUD endpoints for the Giveaway content type.
 
 **Critical Info for New Agent**
-- The project's entire future direction is defined in the **FINAL PRD v2.6** (Chat Message 304). This document is the single source of truth.
-- You must follow the **IMPLEMENTATION CHECKLIST** at the end of the PRD, starting with Phase 1 (Critical Features).
-- The user is highly engaged and provides very specific, detailed feedback. Adhering to the PRD is crucial.
-- The immediate task is to begin backend implementation for logo management, as outlined in the checklist.
+- You are currently in the middle of a two-step task for redesigning the deal cards. **Your immediate job is to implement the visual change first.** Do not implement any backend changes for image handling yet. The user wants to see and approve the new design with a placeholder image.
+- The  file is very large. Use  to find endpoints and functions quickly before editing.
+- Be mindful of the FastAPI route order. Specific routes like  must be defined *before* generic dynamic routes like .
+- Timezone issues with  have occurred. Always use  for comparisons and creation of new timestamps in the backend to avoid .
 
-**documents and test_reports created in this job**
-- 
-- 
-- 
+**documents and test reports created in this job**
+-  (Updated by testing agent).
 
 **Last 10 User Messages and any pending HUMAN messages**
-1. Elindeki PRD v2.5 dokümanı için şu düzeltmeleri yap ve projeyi **tamamlanacak şekilde finalize et**: ... (Requests finalization of PRD and outlines key features like logo management, card design, and analytics)
-2. **Akıllı İndirim Kuponu, Kampanya & PDF Katalog Platformu** ... (Provides a comprehensive list of requirements for the PRD)
-3. **Akıllı İndirim Kuponu & Kampanya Platformu** ... (Provides another detailed list of requirements for the PRD, focusing on navigation, search, catalogs, and analytics)
-4. MÜKEMMEL! 🎉 Tüm özellikler çalışıyor! Screenshot'larda görüldüğü gibi: ... (User provides new feature requests after a successful implementation round)
-5. İndirim kuponu/kampanya platformu projemize aşağıdaki yeni bug/iyileştirme taleplerini ekle... (User provides a list of bugs and improvements for the admin panel and category pages)
-6. Siteye eriştim ama özellikle çalışmıyor sanırım. Hepsinin çalışır hallederine ihtiyacım var. ayrıca slider alanını da gösterip gizleme ayarı yapalım (User reports features are not working on the preview URL and requests more features)
-7. http://localhost:3000/admin/login bununla grişi yapamadım, cant be reached diyor (User has trouble accessing the admin panel via localhost)
-8. Admin paneli oluştu mu? nasıl giriş yapabilirim? (User asks for admin panel credentials and status)
-9. ### 1) Kategori Navigasyonu – Desktop ... (User provides a very detailed set of new requirements focusing on advanced navigation, search, and PDF catalogs)
-10. Feedback’lerim ve revize isteklerim: ## 1) Kupon kodu gösterimi (değişiklik) ... (User provides the first major set of feedback and revision requests after the initial build)
+1.  **Request (Current):** User asked to remove the description from deal cards and add an image to the left. They specified to do the visual design first before any backend changes.
+2.  **Question:** User asked if adding images would impact page speed. (Agent provided a detailed analysis of optimization techniques).
+3.  **Question:** User asked if removing descriptions from listing cards would hurt SEO. (Agent confirmed it would not, as long as the detail pages retain the content).
+4.  **Question:** User asked how to prevent the agent from sleeping and how deployed apps stay online. (Agent used the support agent to provide correct answers).
+5.  **Request (Done):** User requested to add a new Çekiliş (Giveaway) content type.
+6.  **Request (Done):** User requested a feature to import deals from a Google Sheet via the Admin Panel.
+7.  **Request (Done):** User requested adding optional long description and terms and conditions fields to deals.
+8.  **Feedback (Done):** User reported a misaligned badge on the homepage popular stores bar.
+9.  **Request (Done):** User requested the creation of unique detail pages for every deal.
+10. **Feedback (Done):** User provided a list of UI fixes, including checkbox visibility, removing share buttons, and updating button designs.
 
 **Project Health Check:**
-- Broken: While the core is functional, many features are in a partially implemented state from the user's perspective, awaiting the work outlined in the final PRD. The coupon modal was a recurring source of bugs.
-- Mocked: The entire application relies heavily on seeded demo data created by . No real user data exists.
+- **Broken:** None. The application is stable.
+- **Mocked:** Application data is a mix of seeded data and data imported from the user's Google Sheet.
 
 **3rd Party Integrations**
-- **Google Forms:** A Submit a Coupon button links to an external Google Form. No API integration.
+- **Emergent Integrations (Google Sheets):** Used to read data from the user's public Google Sheet for the import feature.
 
 **Testing status**
-- Testing agent used after significant changes: YES
-- Troubleshoot agent used after agent stuck in loop: NO
-- Test files created: None by the main agent.
-- Known regressions: The coupon modal functionality has been buggy and required multiple fixes. It should be tested thoroughly after any related changes.
+- **Testing agent used after significant changes:** YES (For the Deal Detail Pages feature).
+- **Troubleshoot agent used after agent stuck in loop:** NO
+- **Test files created:**  was created/updated.
+- **Known regressions:** None.
 
 **Credentials to test flow:**
 - **Admin Panel URL:** 
@@ -277,5 +157,4 @@ All known issues have been captured in the  and the  document. There are no know
 - **Password:** 
 
 **What agent forgot to execute**
-- The agent has not yet implemented any of the critical features outlined in the . It has created the plan but has not started writing the code for features like Logo Management, the Expiring Soon system, the PDF Catalog viewer, the Keyword Mapping UI, or the enhanced Analytics Dashboard.
-- It did not create the  with search, or the  and  at all, despite planning to. It also planned to add a . These are now part of the final PRD implementation.</analysis>
+- The user's request from the previous session to provide full Turkish alphabet support () in the  component is still pending as a formal task, although the letters were added in an ad-hoc manner during a fix.</analysis>
