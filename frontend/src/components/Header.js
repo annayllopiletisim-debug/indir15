@@ -29,7 +29,7 @@ const Header = () => {
 
   return (
     <>
-      <header className="sticky top-0 z-50 w-full glass-effect border-b border-border">
+      <header id="main-header" className="sticky top-0 z-50 w-full glass-effect border-b border-border transition-transform duration-300">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between h-16 gap-2 sm:gap-4">
             {/* Logo - Hide when search expanded on mobile */}
