@@ -31,17 +31,29 @@ export const getSessionId = () => {
 };
 
 export const buildUTMLink = (baseUrl, utmTemplate, itemId) => {
-  if (!utmTemplate) return baseUrl;
+  if (!baseUrl) return baseUrl;
   
   const params = new URLSearchParams();
-  const utmParts = utmTemplate.split('&');
   
-  utmParts.forEach(part => {
-    const [key, value] = part.split('=');
-    if (key && value) {
-      params.append(key, value.replace('{item_id}', itemId));
-    }
-  });
+  // Always add default UTM parameters
+  params.append('utm_source', 'indirimkesfet');
+  params.append('utm_medium', 'discount');
+  
+  // Add item_id as utm_content for tracking
+  if (itemId) {
+    params.append('utm_content', itemId);
+  }
+  
+  // If there's a custom template, add those params too (they can override defaults)
+  if (utmTemplate) {
+    const utmParts = utmTemplate.split('&');
+    utmParts.forEach(part => {
+      const [key, value] = part.split('=');
+      if (key && value) {
+        params.set(key, value.replace('{item_id}', itemId || ''));
+      }
+    });
+  }
   
   const separator = baseUrl.includes('?') ? '&' : '?';
   return `${baseUrl}${separator}${params.toString()}`;
