@@ -4,12 +4,53 @@ import axios from 'axios';
 import BrandLogo from '../components/BrandLogo';
 import CouponCard from '../components/CouponCard';
 import DiscountCard from '../components/DiscountCard';
+import GiveawayCard from '../components/GiveawayCard';
 import StickyActionBar from '../components/StickyActionBar';
 import AlphabetNav from '../components/AlphabetNav';
-import { Search, Check, X, Tag, Filter, ChevronDown, Package, Percent, Clock, TrendingUp } from 'lucide-react';
+import { Search, Check, X, Tag, Filter, ChevronDown, Package, TrendingUp, SlidersHorizontal } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
+
+// Filter options
+const FILTER_CATEGORIES = [
+  { id: 'all', name: 'Tümü' },
+  { id: 'market', name: 'Market' },
+  { id: 'giyim', name: 'Giyim' },
+  { id: 'elektronik', name: 'Elektronik' },
+  { id: 'kozmetik', name: 'Kozmetik' },
+  { id: 'yeme-icme', name: 'Yeme-İçme' },
+  { id: 'seyahat', name: 'Seyahat' }
+];
+
+const FILTER_DISCOUNT_RATES = [
+  { id: 'all', name: 'Tümü' },
+  { id: '10', name: '%10+' },
+  { id: '20', name: '%20+' },
+  { id: '30', name: '%30+' },
+  { id: '50', name: '%50+' }
+];
+
+const FILTER_CAMPAIGN_TYPES = [
+  { id: 'all', name: 'Tümü' },
+  { id: 'discount', name: 'İndirim' },
+  { id: 'coupon', name: 'Kupon' },
+  { id: 'giveaway', name: 'Çekiliş' }
+];
+
+const FILTER_EXPIRY = [
+  { id: 'all', name: 'Tümü' },
+  { id: 'today', name: 'Bugün' },
+  { id: 'week', name: 'Bu Hafta' },
+  { id: 'month', name: 'Bu Ay' }
+];
+
+const FILTER_SORT = [
+  { id: 'newest', name: 'Yeni Eklenen' },
+  { id: 'popular', name: 'Popüler' },
+  { id: 'highest', name: 'En Yüksek İndirim' },
+  { id: 'ending', name: 'Son Bitenler' }
+];
 
 const CategoryPage = () => {
   const { slug } = useParams();
@@ -18,17 +59,23 @@ const CategoryPage = () => {
   const [allBrands, setAllBrands] = useState([]);
   const [allCoupons, setAllCoupons] = useState([]);
   const [allDiscounts, setAllDiscounts] = useState([]);
+  const [allGiveaways, setAllGiveaways] = useState([]);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedStores, setSelectedStores] = useState(new Set());
   const [showDeals, setShowDeals] = useState(false);
   const [selectedLetter, setSelectedLetter] = useState(null);
-  const [showFilters, setShowFilters] = useState(false);
   
-  // New filter options
-  const [filterHighDiscount, setFilterHighDiscount] = useState(false);
-  const [filterExpiringSoon, setFilterExpiringSoon] = useState(false);
+  // Filter modal state
+  const [showFilterModal, setShowFilterModal] = useState(false);
+  
+  // Filter values
+  const [filterCategory, setFilterCategory] = useState('all');
+  const [filterDiscountRate, setFilterDiscountRate] = useState('all');
+  const [filterCampaignType, setFilterCampaignType] = useState('all');
+  const [filterExpiry, setFilterExpiry] = useState('all');
+  const [filterSort, setFilterSort] = useState('newest');
   
   // Site settings for sticky bar
   const [siteSettings, setSiteSettings] = useState({ sticky_cta_enabled: true, sticky_cta_variant: "A" });
@@ -73,8 +120,7 @@ const CategoryPage = () => {
       setShowDeals(false);
       setSearchTerm('');
       setSelectedLetter(null);
-      setFilterHighDiscount(false);
-      setFilterExpiringSoon(false);
+      resetFilters();
       
       try {
         const categoriesRes = await axios.get(`${API}/categories`);
@@ -90,14 +136,16 @@ const CategoryPage = () => {
 
         const brandsRes = await axios.get(`${API}/brands?category_id=${foundCategory.id}`);
         
-        const [couponsRes, discountsRes] = await Promise.all([
+        const [couponsRes, discountsRes, giveawaysRes] = await Promise.all([
           axios.get(`${API}/coupons`),
-          axios.get(`${API}/discounts`)
+          axios.get(`${API}/discounts`),
+          axios.get(`${API}/giveaways`).catch(() => ({ data: [] }))
         ]);
         
         const brandIds = brandsRes.data.map(b => b.id);
         const categoryCoupons = couponsRes.data.filter(c => brandIds.includes(c.brand_id) && c.is_active !== false);
         const categoryDiscounts = discountsRes.data.filter(d => brandIds.includes(d.brand_id));
+        const categoryGiveaways = giveawaysRes.data.filter(g => brandIds.includes(g.brand_id));
         
         const brandDealCounts = {};
         categoryCoupons.forEach(c => {
@@ -105,6 +153,9 @@ const CategoryPage = () => {
         });
         categoryDiscounts.forEach(d => {
           brandDealCounts[d.brand_id] = (brandDealCounts[d.brand_id] || 0) + 1;
+        });
+        categoryGiveaways.forEach(g => {
+          brandDealCounts[g.brand_id] = (brandDealCounts[g.brand_id] || 0) + 1;
         });
 
         const brandsWithDeals = brandsRes.data.map(b => ({
@@ -116,6 +167,7 @@ const CategoryPage = () => {
         setAllBrands(brandsWithDeals);
         setAllCoupons(categoryCoupons);
         setAllDiscounts(categoryDiscounts);
+        setAllGiveaways(categoryGiveaways);
       } catch (error) {
         console.error('Failed to fetch category data:', error);
         setNotFound(true);
@@ -126,6 +178,32 @@ const CategoryPage = () => {
 
     fetchData();
   }, [slug]);
+
+  // Reset all filters
+  const resetFilters = () => {
+    setFilterCategory('all');
+    setFilterDiscountRate('all');
+    setFilterCampaignType('all');
+    setFilterExpiry('all');
+    setFilterSort('newest');
+    setSelectedStores(new Set());
+  };
+
+  // Check if any filter is active
+  const hasActiveFilters = filterCategory !== 'all' || 
+    filterDiscountRate !== 'all' || 
+    filterCampaignType !== 'all' || 
+    filterExpiry !== 'all' ||
+    selectedStores.size > 0;
+
+  // Count active filters
+  const activeFilterCount = [
+    filterCategory !== 'all',
+    filterDiscountRate !== 'all',
+    filterCampaignType !== 'all',
+    filterExpiry !== 'all',
+    selectedStores.size > 0
+  ].filter(Boolean).length;
 
   // Get available letters
   const availableLetters = useMemo(() => {
@@ -156,7 +234,7 @@ const CategoryPage = () => {
     return result;
   }, [searchTerm, selectedLetter, brands]);
 
-  // Popular brands in this category (sorted by deal count)
+  // Popular brands in this category
   const popularBrands = useMemo(() => {
     return [...allBrands]
       .filter(b => b.deal_count > 0)
@@ -164,15 +242,102 @@ const CategoryPage = () => {
       .slice(0, 8);
   }, [allBrands]);
 
-  // Top 3 campaigns for category (most recent or could be by views)
+  // Top 3 campaigns for category
   const topCampaigns = useMemo(() => {
     const allDeals = [
       ...allCoupons.map(c => ({ ...c, type: 'coupon' })),
-      ...allDiscounts.map(d => ({ ...d, type: 'discount' }))
+      ...allDiscounts.map(d => ({ ...d, type: 'discount' })),
+      ...allGiveaways.map(g => ({ ...g, type: 'giveaway' }))
     ];
-    // Sort by created_at desc or just take first 3
     return allDeals.slice(0, 3);
-  }, [allCoupons, allDiscounts]);
+  }, [allCoupons, allDiscounts, allGiveaways]);
+
+  // Helper functions for filtering
+  const getDiscountNumber = (discountText) => {
+    if (!discountText) return 0;
+    const match = discountText.match(/(\d+)/);
+    return match ? parseInt(match[1]) : 0;
+  };
+
+  const getDaysUntilExpiry = (expiryDate) => {
+    if (!expiryDate) return Infinity;
+    const now = new Date();
+    const expiry = new Date(expiryDate);
+    const diff = expiry - now;
+    return Math.ceil(diff / (1000 * 60 * 60 * 24));
+  };
+
+  // Get filtered and sorted deals
+  const filteredDeals = useMemo(() => {
+    let coupons = [...allCoupons];
+    let discounts = [...allDiscounts];
+    let giveaways = [...allGiveaways];
+
+    // Filter by selected stores
+    if (selectedStores.size > 0) {
+      const selectedBrandIdSet = new Set(
+        brands.filter(b => selectedStores.has(b.slug)).map(b => b.id)
+      );
+      coupons = coupons.filter(c => selectedBrandIdSet.has(c.brand_id));
+      discounts = discounts.filter(d => selectedBrandIdSet.has(d.brand_id));
+      giveaways = giveaways.filter(g => selectedBrandIdSet.has(g.brand_id));
+    }
+
+    // Filter by discount rate
+    if (filterDiscountRate !== 'all') {
+      const minRate = parseInt(filterDiscountRate);
+      coupons = coupons.filter(c => getDiscountNumber(c.discount_text) >= minRate);
+      discounts = discounts.filter(d => getDiscountNumber(d.discount_text) >= minRate);
+    }
+
+    // Filter by expiry
+    if (filterExpiry !== 'all') {
+      const filterByExpiry = (items) => {
+        return items.filter(item => {
+          const days = getDaysUntilExpiry(item.expiry_date);
+          if (filterExpiry === 'today') return days <= 1;
+          if (filterExpiry === 'week') return days <= 7;
+          if (filterExpiry === 'month') return days <= 30;
+          return true;
+        });
+      };
+      coupons = filterByExpiry(coupons);
+      discounts = filterByExpiry(discounts);
+      giveaways = filterByExpiry(giveaways);
+    }
+
+    // Filter by campaign type
+    if (filterCampaignType !== 'all') {
+      if (filterCampaignType === 'coupon') {
+        discounts = [];
+        giveaways = [];
+      } else if (filterCampaignType === 'discount') {
+        coupons = [];
+        giveaways = [];
+      } else if (filterCampaignType === 'giveaway') {
+        coupons = [];
+        discounts = [];
+      }
+    }
+
+    // Combine all deals for sorting
+    let allDeals = [
+      ...coupons.map(c => ({ ...c, dealType: 'coupon' })),
+      ...discounts.map(d => ({ ...d, dealType: 'discount' })),
+      ...giveaways.map(g => ({ ...g, dealType: 'giveaway' }))
+    ];
+
+    // Sort
+    if (filterSort === 'newest') {
+      allDeals.sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
+    } else if (filterSort === 'highest') {
+      allDeals.sort((a, b) => getDiscountNumber(b.discount_text || b.prize_text) - getDiscountNumber(a.discount_text || a.prize_text));
+    } else if (filterSort === 'ending') {
+      allDeals.sort((a, b) => getDaysUntilExpiry(a.expiry_date) - getDaysUntilExpiry(b.expiry_date));
+    }
+
+    return allDeals;
+  }, [allCoupons, allDiscounts, allGiveaways, selectedStores, brands, filterDiscountRate, filterExpiry, filterCampaignType, filterSort]);
 
   // Toggle store selection
   const toggleStore = (brandSlug) => {
@@ -189,8 +354,7 @@ const CategoryPage = () => {
   const clearSelection = () => {
     setSelectedStores(new Set());
     setShowDeals(false);
-    setFilterHighDiscount(false);
-    setFilterExpiringSoon(false);
+    resetFilters();
   };
 
   // Get selected brand IDs
@@ -199,53 +363,6 @@ const CategoryPage = () => {
       .filter(b => selectedStores.has(b.slug))
       .map(b => b.id);
   }, [selectedStores, brands]);
-
-  // Helper to check if deal is expiring soon (within 3 days)
-  const isExpiringSoon = (expiryDate) => {
-    if (!expiryDate) return false;
-    const now = new Date();
-    const expiry = new Date(expiryDate);
-    const diff = expiry - now;
-    return diff > 0 && diff <= 3 * 24 * 60 * 60 * 1000;
-  };
-
-  // Helper to check if high discount (contains %20 or higher)
-  const isHighDiscount = (discountText) => {
-    if (!discountText) return false;
-    const match = discountText.match(/(\d+)/);
-    if (match) {
-      const num = parseInt(match[1]);
-      return num >= 20;
-    }
-    return false;
-  };
-
-  // Get filtered deals
-  const filteredDeals = useMemo(() => {
-    let coupons = allCoupons;
-    let discounts = allDiscounts;
-
-    // Filter by selected stores
-    if (selectedStores.size > 0) {
-      const selectedBrandIdSet = new Set(selectedBrandIds);
-      coupons = coupons.filter(c => selectedBrandIdSet.has(c.brand_id));
-      discounts = discounts.filter(d => selectedBrandIdSet.has(d.brand_id));
-    }
-
-    // Filter by high discount
-    if (filterHighDiscount) {
-      coupons = coupons.filter(c => isHighDiscount(c.discount_text));
-      discounts = discounts.filter(d => isHighDiscount(d.discount_text));
-    }
-
-    // Filter by expiring soon
-    if (filterExpiringSoon) {
-      coupons = coupons.filter(c => isExpiringSoon(c.expiry_date));
-      discounts = discounts.filter(d => isExpiringSoon(d.expiry_date));
-    }
-    
-    return { coupons, discounts };
-  }, [selectedStores, selectedBrandIds, allCoupons, allDiscounts, filterHighDiscount, filterExpiringSoon]);
 
   // Brand map
   const brandMap = useMemo(() => {
@@ -264,11 +381,21 @@ const CategoryPage = () => {
       .replace(/[şŞ]/g, 's').replace(/[öÖ]/g, 'o').replace(/[çÇ]/g, 'c')
       .replace(/[^a-z0-9\s-]/g, '').replace(/[\s_]+/g, '-').replace(/-+/g, '-')
       .substring(0, 50) || 'deal';
-    return `/magaza/${brand.slug}/${type === 'coupon' ? 'kupon' : 'indirim'}/${slug}-${deal.id}`;
+    const typeSlug = type === 'coupon' ? 'kupon' : type === 'giveaway' ? 'cekilis' : 'indirim';
+    return `/magaza/${brand.slug}/${typeSlug}/${slug}-${deal.id}`;
   };
 
-  // Check if any filter is active
-  const hasActiveFilters = selectedStores.size > 0 || filterHighDiscount || filterExpiringSoon;
+  // Truncate text to max 40 characters
+  const truncateText = (text, maxLength = 40) => {
+    if (!text) return '';
+    return text.length > maxLength ? text.substring(0, maxLength) + '...' : text;
+  };
+
+  // Apply filters and show deals
+  const applyFilters = () => {
+    setShowDeals(true);
+    setShowFilterModal(false);
+  };
 
   if (loading) {
     return (
@@ -295,7 +422,7 @@ const CategoryPage = () => {
     );
   }
 
-  const totalDeals = allCoupons.length + allDiscounts.length;
+  const totalDeals = allCoupons.length + allDiscounts.length + allGiveaways.length;
 
   return (
     <>
@@ -308,26 +435,28 @@ const CategoryPage = () => {
               {brands.length} mağaza, {totalDeals} aktif indirim
             </p>
             
-            {/* Top Campaigns Tags */}
+            {/* Top Campaigns - Vertical list with truncated names */}
             {topCampaigns.length > 0 && (
-              <div className="mt-4 flex flex-wrap gap-2">
-                <span className="text-sm text-muted-foreground">Öne Çıkanlar:</span>
-                {topCampaigns.map((deal) => (
-                  <Link
-                    key={deal.id}
-                    to={getDealUrl(deal, deal.type)}
-                    className="inline-flex items-center gap-1 px-3 py-1 bg-primary/10 hover:bg-primary/20 text-primary rounded-full text-sm transition-colors"
-                  >
-                    <TrendingUp className="w-3 h-3" />
-                    <span className="truncate max-w-[150px]">{deal.title}</span>
-                  </Link>
-                ))}
+              <div className="mt-4">
+                <span className="text-sm text-muted-foreground mb-2 block">Öne Çıkanlar:</span>
+                <div className="flex flex-col gap-2">
+                  {topCampaigns.map((deal) => (
+                    <Link
+                      key={deal.id}
+                      to={getDealUrl(deal, deal.type)}
+                      className="inline-flex items-center gap-2 px-3 py-2 bg-primary/10 hover:bg-primary/20 text-primary rounded-lg text-sm transition-colors w-fit"
+                    >
+                      <TrendingUp className="w-4 h-4 flex-shrink-0" />
+                      <span>{truncateText(deal.title, 40)}</span>
+                    </Link>
+                  ))}
+                </div>
               </div>
             )}
           </div>
         </div>
 
-        {/* Popular Brands Bar - Direct links, NOT filter mode */}
+        {/* Popular Brands Bar */}
         {popularBrands.length > 0 && !showDeals && (
           <div className="bg-muted/30 border-b border-border">
             <div className="container mx-auto px-4 py-3">
@@ -370,186 +499,94 @@ const CategoryPage = () => {
               />
             </div>
 
-            {/* Filtrele butonu */}
+            {/* Filter Button */}
             <button
-              onClick={() => setShowFilters(!showFilters)}
+              onClick={() => setShowFilterModal(true)}
               className={`flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-medium transition-all ${
-                showFilters || hasActiveFilters
+                hasActiveFilters
                   ? 'bg-primary text-white'
-                  : 'bg-muted hover:bg-muted/80'
+                  : 'bg-card border border-border hover:border-primary/50'
               }`}
             >
-              <Filter className="w-5 h-5" />
+              <SlidersHorizontal className="w-5 h-5" />
               <span>Filtrele</span>
-              {hasActiveFilters && (
-                <span className="bg-white/20 text-white text-xs px-1.5 py-0.5 rounded-full">
-                  {(selectedStores.size > 0 ? 1 : 0) + (filterHighDiscount ? 1 : 0) + (filterExpiringSoon ? 1 : 0)}
+              {activeFilterCount > 0 && (
+                <span className="bg-white/20 text-white text-xs px-2 py-0.5 rounded-full">
+                  {activeFilterCount}
                 </span>
               )}
-              <ChevronDown className={`w-4 h-4 transition-transform ${showFilters ? 'rotate-180' : ''}`} />
             </button>
           </div>
 
-          {/* Expanded Filter Area */}
-          <AnimatePresence>
-            {showFilters && (
-              <motion.div
-                initial={{ height: 0, opacity: 0 }}
-                animate={{ height: 'auto', opacity: 1 }}
-                exit={{ height: 0, opacity: 0 }}
-                className="overflow-hidden mb-4"
-              >
-                <div className="p-4 bg-card border border-border rounded-xl space-y-4">
-                  {/* Filter Options */}
-                  <div className="flex flex-wrap gap-3">
-                    {/* Multiple Store Selection */}
-                    <button
-                      onClick={() => {
-                        if (selectedStores.size > 0) {
-                          setSelectedStores(new Set());
-                        }
-                      }}
-                      className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
-                        selectedStores.size > 0
-                          ? 'bg-primary text-white'
-                          : 'bg-muted hover:bg-muted/80'
-                      }`}
-                    >
-                      <Check className="w-4 h-4" />
-                      <span>Çoklu Seçim</span>
-                      {selectedStores.size > 0 && (
-                        <span className="bg-white/20 text-xs px-1.5 py-0.5 rounded-full">
-                          {selectedStores.size}
-                        </span>
-                      )}
-                    </button>
-
-                    {/* High Discount Filter */}
-                    <button
-                      onClick={() => setFilterHighDiscount(!filterHighDiscount)}
-                      className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
-                        filterHighDiscount
-                          ? 'bg-primary text-white'
-                          : 'bg-muted hover:bg-muted/80'
-                      }`}
-                    >
-                      <Percent className="w-4 h-4" />
-                      <span>Yüksek İndirim (%20+)</span>
-                    </button>
-
-                    {/* Expiring Soon Filter */}
-                    <button
-                      onClick={() => setFilterExpiringSoon(!filterExpiringSoon)}
-                      className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
-                        filterExpiringSoon
-                          ? 'bg-orange-500 text-white'
-                          : 'bg-muted hover:bg-muted/80'
-                      }`}
-                    >
-                      <Clock className="w-4 h-4" />
-                      <span>Süresi Bitmek Üzere</span>
-                    </button>
-                  </div>
-
-                  {/* Alphabet Filter */}
-                  {!searchTerm && (
-                    <div>
-                      <p className="text-sm text-muted-foreground mb-2">Harfe Göre:</p>
-                      <AlphabetNav
-                        letters={availableLetters}
-                        selectedLetter={selectedLetter}
-                        onSelect={(letter) => setSelectedLetter(letter)}
-                      />
-                    </div>
-                  )}
-
-                  {/* Clear Filters */}
-                  {hasActiveFilters && (
-                    <button
-                      onClick={clearSelection}
-                      className="text-sm text-muted-foreground hover:text-foreground flex items-center gap-1"
-                    >
-                      <X className="w-4 h-4" />
-                      Filtreleri Temizle
-                    </button>
-                  )}
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-
-          {/* Selected Stores Pills */}
-          {selectedStores.size > 0 && !showDeals && (
-            <div className="flex flex-wrap gap-2 mb-6">
-              <span className="text-sm text-muted-foreground py-1">Seçili:</span>
-              {Array.from(selectedStores).map(slug => {
-                const brand = brands.find(b => b.slug === slug);
-                return brand ? (
-                  <button
-                    key={slug}
-                    onClick={() => toggleStore(slug)}
-                    className="flex items-center gap-1.5 px-3 py-1.5 bg-primary/10 text-primary rounded-full text-sm hover:bg-primary/20 transition-colors"
-                  >
-                    {brand.name}
-                    <X className="w-3.5 h-3.5" />
-                  </button>
-                ) : null;
-              })}
+          {/* Alphabet Nav */}
+          {!searchTerm && !showDeals && (
+            <div className="mb-4">
+              <AlphabetNav
+                letters={availableLetters}
+                selectedLetter={selectedLetter}
+                onSelect={setSelectedLetter}
+              />
             </div>
           )}
 
-          {/* Deals View - Show when filters are active */}
-          {(showDeals || (hasActiveFilters && (filterHighDiscount || filterExpiringSoon))) && (filteredDeals.coupons.length > 0 || filteredDeals.discounts.length > 0) ? (
-            <div>
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-heading font-bold">
-                  Filtrelenmiş İndirimler ({filteredDeals.coupons.length + filteredDeals.discounts.length})
-                </h2>
-                <button
-                  onClick={clearSelection}
-                  className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  ← Filtreleri Temizle
-                </button>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {filteredDeals.coupons.map(coupon => (
-                  <CouponCard 
-                    key={coupon.id} 
-                    coupon={coupon} 
-                    brand={brandMap[coupon.brand_id]} 
-                  />
-                ))}
-                {filteredDeals.discounts.map(discount => (
-                  <DiscountCard 
-                    key={discount.id} 
-                    discount={discount} 
-                    brand={brandMap[discount.brand_id]} 
-                  />
-                ))}
-              </div>
+          {/* Active Filter Pills */}
+          {hasActiveFilters && (
+            <div className="flex flex-wrap gap-2 mb-4">
+              {filterCampaignType !== 'all' && (
+                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-primary/10 text-primary rounded-full text-sm">
+                  {FILTER_CAMPAIGN_TYPES.find(t => t.id === filterCampaignType)?.name}
+                  <button onClick={() => setFilterCampaignType('all')}><X className="w-3.5 h-3.5" /></button>
+                </span>
+              )}
+              {filterDiscountRate !== 'all' && (
+                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-primary/10 text-primary rounded-full text-sm">
+                  {FILTER_DISCOUNT_RATES.find(r => r.id === filterDiscountRate)?.name}
+                  <button onClick={() => setFilterDiscountRate('all')}><X className="w-3.5 h-3.5" /></button>
+                </span>
+              )}
+              {filterExpiry !== 'all' && (
+                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-primary/10 text-primary rounded-full text-sm">
+                  {FILTER_EXPIRY.find(e => e.id === filterExpiry)?.name}
+                  <button onClick={() => setFilterExpiry('all')}><X className="w-3.5 h-3.5" /></button>
+                </span>
+              )}
+              {selectedStores.size > 0 && (
+                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-primary/10 text-primary rounded-full text-sm">
+                  {selectedStores.size} mağaza
+                  <button onClick={() => setSelectedStores(new Set())}><X className="w-3.5 h-3.5" /></button>
+                </span>
+              )}
+              <button
+                onClick={clearSelection}
+                className="text-sm text-muted-foreground hover:text-foreground"
+              >
+                Tümünü Temizle
+              </button>
             </div>
-          ) : showDeals && selectedStores.size > 0 ? (
+          )}
+
+          {/* Deals View */}
+          {showDeals || hasActiveFilters ? (
             <div>
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-xl font-heading font-bold">
-                  Seçili Mağazaların İndirimleri ({filteredDeals.coupons.length + filteredDeals.discounts.length})
+                  {hasActiveFilters ? 'Filtrelenmiş' : 'Tüm'} İndirimler ({filteredDeals.length})
                 </h2>
-                <button
-                  onClick={() => setShowDeals(false)}
-                  className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  ← Mağazalara dön
-                </button>
+                {hasActiveFilters && (
+                  <button
+                    onClick={clearSelection}
+                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    ← Filtreleri Temizle
+                  </button>
+                )}
               </div>
 
-              {/* Empty state */}
-              {filteredDeals.coupons.length === 0 && filteredDeals.discounts.length === 0 ? (
+              {filteredDeals.length === 0 ? (
                 <div className="text-center py-16 glass-effect rounded-2xl">
                   <Tag className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
                   <h3 className="text-lg font-medium mb-2">Sonuç Bulunamadı</h3>
-                  <p className="text-muted-foreground mb-4">Seçili mağazalarda aktif indirim bulunamadı.</p>
+                  <p className="text-muted-foreground mb-4">Filtrelere uygun indirim bulunamadı.</p>
                   <button
                     onClick={clearSelection}
                     className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors"
@@ -559,20 +596,15 @@ const CategoryPage = () => {
                 </div>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {filteredDeals.coupons.map(coupon => (
-                    <CouponCard 
-                      key={coupon.id} 
-                      coupon={coupon} 
-                      brand={brandMap[coupon.brand_id]} 
-                    />
-                  ))}
-                  {filteredDeals.discounts.map(discount => (
-                    <DiscountCard 
-                      key={discount.id} 
-                      discount={discount} 
-                      brand={brandMap[discount.brand_id]} 
-                    />
-                  ))}
+                  {filteredDeals.map(deal => {
+                    if (deal.dealType === 'coupon') {
+                      return <CouponCard key={deal.id} coupon={deal} brand={brandMap[deal.brand_id]} />;
+                    } else if (deal.dealType === 'giveaway') {
+                      return <GiveawayCard key={deal.id} giveaway={deal} brand={brandMap[deal.brand_id]} />;
+                    } else {
+                      return <DiscountCard key={deal.id} discount={deal} brand={brandMap[deal.brand_id]} />;
+                    }
+                  })}
                 </div>
               )}
             </div>
@@ -594,63 +626,23 @@ const CategoryPage = () => {
                   )}
                   
                   <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
-                    {filteredBrands.map((brand) => {
-                      const isSelected = selectedStores.has(brand.slug);
-                      
-                      // If filter mode is active, show checkboxes
-                      if (showFilters) {
-                        return (
-                          <button
-                            key={brand.id}
-                            onClick={() => toggleStore(brand.slug)}
-                            className={`group p-3 rounded-xl text-center transition-all relative ${
-                              isSelected 
-                                ? 'bg-primary/10 border-2 border-primary' 
-                                : 'glass-effect hover:border-primary/30'
-                            }`}
-                          >
-                            {/* Checkbox */}
-                            <div className={`absolute top-2 right-2 w-5 h-5 rounded flex items-center justify-center transition-all ${
-                              isSelected 
-                                ? 'bg-primary' 
-                                : 'border-2 border-muted-foreground/30'
-                            }`}>
-                              {isSelected && <Check className="w-3 h-3 text-white" />}
-                            </div>
-
-                            <div className="flex justify-center mb-2">
-                              <BrandLogo logoUrl={brand.logo_url} brandName={brand.name} size="md" />
-                            </div>
-
-                            <h3 className="font-medium text-sm truncate mb-1">{brand.name}</h3>
-                            {brand.deal_count > 0 ? (
-                              <p className="text-xs text-primary">{brand.deal_count} indirim</p>
-                            ) : (
-                              <p className="text-xs text-muted-foreground">-</p>
-                            )}
-                          </button>
-                        );
-                      }
-                      
-                      // Default: direct link to store page
-                      return (
-                        <Link
-                          key={brand.id}
-                          to={`/magaza/${brand.slug}`}
-                          className="group p-3 rounded-xl text-center transition-all glass-effect hover:border-primary/30"
-                        >
-                          <div className="flex justify-center mb-2">
-                            <BrandLogo logoUrl={brand.logo_url} brandName={brand.name} size="md" />
-                          </div>
-                          <h3 className="font-medium text-sm truncate mb-1">{brand.name}</h3>
-                          {brand.deal_count > 0 ? (
-                            <p className="text-xs text-primary">{brand.deal_count} indirim</p>
-                          ) : (
-                            <p className="text-xs text-muted-foreground">-</p>
-                          )}
-                        </Link>
-                      );
-                    })}
+                    {filteredBrands.map((brand) => (
+                      <Link
+                        key={brand.id}
+                        to={`/magaza/${brand.slug}`}
+                        className="group p-3 rounded-xl text-center transition-all glass-effect hover:border-primary/30"
+                      >
+                        <div className="flex justify-center mb-2">
+                          <BrandLogo logoUrl={brand.logo_url} brandName={brand.name} size="md" />
+                        </div>
+                        <h3 className="font-medium text-sm truncate mb-1">{brand.name}</h3>
+                        {brand.deal_count > 0 ? (
+                          <p className="text-xs text-primary">{brand.deal_count} indirim</p>
+                        ) : (
+                          <p className="text-xs text-muted-foreground">-</p>
+                        )}
+                      </Link>
+                    ))}
                   </div>
                 </>
               )}
@@ -658,6 +650,167 @@ const CategoryPage = () => {
           )}
         </div>
       </div>
+
+      {/* Filter Modal */}
+      <AnimatePresence>
+        {showFilterModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/50"
+            onClick={() => setShowFilterModal(false)}
+          >
+            <motion.div
+              initial={{ y: '100%', opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: '100%', opacity: 0 }}
+              transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+              className="w-full sm:max-w-lg bg-card rounded-t-2xl sm:rounded-2xl max-h-[85vh] overflow-hidden"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Modal Header */}
+              <div className="sticky top-0 bg-card border-b border-border px-4 py-4 flex items-center justify-between">
+                <h2 className="text-lg font-bold">Filtrele</h2>
+                <button
+                  onClick={() => setShowFilterModal(false)}
+                  className="p-2 hover:bg-muted rounded-lg transition-colors"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              {/* Modal Content */}
+              <div className="overflow-y-auto max-h-[calc(85vh-140px)] p-4 space-y-6">
+                {/* Kampanya Tipi */}
+                <div>
+                  <h3 className="text-sm font-semibold text-muted-foreground mb-3">Kampanya Tipi</h3>
+                  <div className="flex flex-wrap gap-2">
+                    {FILTER_CAMPAIGN_TYPES.map((type) => (
+                      <button
+                        key={type.id}
+                        onClick={() => setFilterCampaignType(type.id)}
+                        className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                          filterCampaignType === type.id
+                            ? 'bg-primary text-white'
+                            : 'bg-muted hover:bg-muted/80'
+                        }`}
+                      >
+                        {type.name}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* İndirim Oranı */}
+                <div>
+                  <h3 className="text-sm font-semibold text-muted-foreground mb-3">İndirim Oranı</h3>
+                  <div className="flex flex-wrap gap-2">
+                    {FILTER_DISCOUNT_RATES.map((rate) => (
+                      <button
+                        key={rate.id}
+                        onClick={() => setFilterDiscountRate(rate.id)}
+                        className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                          filterDiscountRate === rate.id
+                            ? 'bg-primary text-white'
+                            : 'bg-muted hover:bg-muted/80'
+                        }`}
+                      >
+                        {rate.name}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Bitiş Süresi */}
+                <div>
+                  <h3 className="text-sm font-semibold text-muted-foreground mb-3">Bitiş Süresi</h3>
+                  <div className="flex flex-wrap gap-2">
+                    {FILTER_EXPIRY.map((expiry) => (
+                      <button
+                        key={expiry.id}
+                        onClick={() => setFilterExpiry(expiry.id)}
+                        className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                          filterExpiry === expiry.id
+                            ? 'bg-primary text-white'
+                            : 'bg-muted hover:bg-muted/80'
+                        }`}
+                      >
+                        {expiry.name}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Sıralama */}
+                <div>
+                  <h3 className="text-sm font-semibold text-muted-foreground mb-3">Sıralama</h3>
+                  <div className="flex flex-wrap gap-2">
+                    {FILTER_SORT.map((sort) => (
+                      <button
+                        key={sort.id}
+                        onClick={() => setFilterSort(sort.id)}
+                        className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                          filterSort === sort.id
+                            ? 'bg-primary text-white'
+                            : 'bg-muted hover:bg-muted/80'
+                        }`}
+                      >
+                        {sort.name}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Mağaza Seçimi */}
+                <div>
+                  <h3 className="text-sm font-semibold text-muted-foreground mb-3">
+                    Mağaza Seç ({selectedStores.size} seçili)
+                  </h3>
+                  <div className="grid grid-cols-2 gap-2 max-h-48 overflow-y-auto">
+                    {brands.slice(0, 20).map((brand) => {
+                      const isSelected = selectedStores.has(brand.slug);
+                      return (
+                        <button
+                          key={brand.id}
+                          onClick={() => toggleStore(brand.slug)}
+                          className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-all ${
+                            isSelected
+                              ? 'bg-primary/10 border border-primary text-primary'
+                              : 'bg-muted hover:bg-muted/80'
+                          }`}
+                        >
+                          {isSelected && <Check className="w-4 h-4 flex-shrink-0" />}
+                          <span className="truncate">{brand.name}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+
+              {/* Modal Footer */}
+              <div className="sticky bottom-0 bg-card border-t border-border px-4 py-4 flex gap-3">
+                <button
+                  onClick={() => {
+                    resetFilters();
+                    setShowFilterModal(false);
+                  }}
+                  className="flex-1 px-4 py-3 rounded-xl font-medium bg-muted hover:bg-muted/80 transition-colors"
+                >
+                  Temizle
+                </button>
+                <button
+                  onClick={applyFilters}
+                  className="flex-1 px-4 py-3 rounded-xl font-medium bg-primary text-white hover:bg-primary/90 transition-colors"
+                >
+                  Uygula ({filteredDeals.length} sonuç)
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Sticky Action Bar */}
       {!showDeals && selectedStores.size > 0 && (
