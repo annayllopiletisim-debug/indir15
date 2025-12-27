@@ -5,8 +5,9 @@ import axios from 'axios';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
 import CouponCard from '../components/CouponCard';
 import DiscountCard from '../components/DiscountCard';
+import GiveawayCard from '../components/GiveawayCard';
 import BrandLogo from '../components/BrandLogo';
-import { Smartphone, Download } from 'lucide-react';
+import { Smartphone, Download, Gift } from 'lucide-react';
 import { trackClick } from '../utils/helpers';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
@@ -16,6 +17,7 @@ const BrandPage = () => {
   const [brand, setBrand] = useState(null);
   const [coupons, setCoupons] = useState([]);
   const [discounts, setDiscounts] = useState([]);
+  const [giveaways, setGiveaways] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('all');
 
@@ -26,13 +28,15 @@ const BrandPage = () => {
         const brandData = brandRes.data;
         setBrand(brandData);
 
-        const [couponsRes, discountsRes] = await Promise.all([
+        const [couponsRes, discountsRes, giveawaysRes] = await Promise.all([
           axios.get(`${API}/coupons?brand_id=${brandData.id}`),
           axios.get(`${API}/discounts?brand_id=${brandData.id}`),
+          axios.get(`${API}/giveaways?brand_id=${brandData.id}`),
         ]);
 
         setCoupons(couponsRes.data);
         setDiscounts(discountsRes.data);
+        setGiveaways(giveawaysRes.data);
       } catch (error) {
         console.error('Failed to fetch brand data:', error);
       } finally {
