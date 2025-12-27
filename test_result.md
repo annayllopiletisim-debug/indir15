@@ -1,4 +1,16 @@
 backend:
+  - task: "Image URL Field Addition to Models"
+    implemented: true
+    working: true
+    file: "backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "✅ Image URL field addition fully functional across all models. Comprehensive testing completed: 1) GET /api/coupons - image_url field present in all responses, 2) POST /api/coupons - successfully creates coupons with image_url, 3) PUT /api/coupons/{id} - successfully updates coupon image_url, 4) GET /api/discounts - image_url field present in all responses, 5) POST /api/discounts - successfully creates discounts with image_url, 6) GET /api/giveaways - image_url field present in all responses, 7) POST /api/giveaways - successfully creates giveaways with image_url. All CRUD operations working correctly with proper field persistence. No breaking changes to existing functionality detected."
+
   - task: "Coupon Detail API Endpoint"
     implemented: true
     working: true
