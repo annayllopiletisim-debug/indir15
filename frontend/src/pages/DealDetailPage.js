@@ -46,8 +46,27 @@ const DealDetailPage = () => {
   const [copied, setCopied] = useState(false);
   const [showCode, setShowCode] = useState(false);
 
-  // Extract ID from slug (format: title-slug-uuid)
-  const dealId = dealSlug ? dealSlug.split('-').pop() : null;
+  // Extract ID from slug (format: title-slug-uuid where uuid is like xxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx)
+  // UUID has 5 parts separated by hyphens
+  const extractIdFromSlug = (slug) => {
+    if (!slug) return null;
+    const parts = slug.split('-');
+    // UUID is 36 chars: 8-4-4-4-12
+    // Take last 5 parts and join them
+    if (parts.length >= 5) {
+      const uuidParts = parts.slice(-5);
+      const potentialUuid = uuidParts.join('-');
+      // Validate UUID format (8-4-4-4-12)
+      if (/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(potentialUuid)) {
+        return potentialUuid;
+      }
+    }
+    // Fallback: try to find UUID pattern anywhere in slug
+    const uuidMatch = slug.match(/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/i);
+    return uuidMatch ? uuidMatch[0] : null;
+  };
+  
+  const dealId = extractIdFromSlug(dealSlug);
   
   // Determine type from URL path
   const currentPath = window.location.pathname;
