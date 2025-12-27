@@ -65,11 +65,19 @@ const BaseCard = ({
   const timeLeft = getTimeRemaining(expiryDate);
   const isExpired = timeLeft?.expired || !isActive;
 
-  // Get time color - dark mode: always orange, light mode: color-coded
+  // Get time color - dark mode: always orange, light mode: color-coded based on days
   const getTimeColor = () => {
+    // Dark mode: always orange
     if (isDark) return '#fb923c'; // orange-400
-    if (!timeLeft) return '#22c55e'; // green-500
-    return timeLeft.color;
+    
+    // Light mode: color coded
+    if (!timeLeft) return '#22c55e'; // green for "Süresiz"
+    if (timeLeft.expired) return '#ef4444'; // red for expired
+    
+    const days = timeLeft.days;
+    if (days < 3) return '#ef4444'; // red - less than 3 days
+    if (days <= 7) return '#f59e0b'; // orange - 3-7 days
+    return '#22c55e'; // green - more than 7 days
   };
 
   // Get proper logo URL
