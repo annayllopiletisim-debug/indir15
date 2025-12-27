@@ -601,10 +601,14 @@ async def get_coupon_detail(coupon_id: str):
     if not brand:
         raise HTTPException(status_code=404, detail="Marka bulunamadı")
     
-    # Check if expired
+    # Check if expired (handle timezone-naive dates)
     is_expired = False
     if coupon.get('expiry_date'):
-        is_expired = coupon['expiry_date'] < now
+        expiry = coupon['expiry_date']
+        # Make timezone-aware if needed
+        if expiry.tzinfo is None:
+            expiry = expiry.replace(tzinfo=timezone.utc)
+        is_expired = expiry < now
     
     # Generate slug for URL
     coupon_slug = generate_slug(coupon['title'])
