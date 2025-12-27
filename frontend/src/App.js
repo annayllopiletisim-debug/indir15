@@ -113,6 +113,14 @@ function App() {
               </PublicLayout>
             }
           />
+          <Route
+            path="/arama"
+            element={
+              <PublicLayout>
+                <SearchResultsPage />
+              </PublicLayout>
+            }
+          />
 
           {/* ═══════════════════════════════════════════════════════════
               DEAL DETAIL PAGES (Kupon/İndirim/Çekiliş Detay)
