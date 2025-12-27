@@ -171,12 +171,43 @@ const DealDetailPage = () => {
   const handleCopyCode = async () => {
     if (!data?.item?.code) return;
     try {
-      await navigator.clipboard.writeText(data.item.code);
+      // Try modern Clipboard API first
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(data.item.code);
+      } else {
+        // Fallback for older browsers
+        const textArea = document.createElement('textarea');
+        textArea.value = data.item.code;
+        textArea.style.position = 'fixed';
+        textArea.style.left = '-999999px';
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+      }
       setCopied(true);
       trackClick('coupon_copy', data.item.id, data.brand.id);
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
-      console.error('Copy failed:', err);
+      console.error('Clipboard API failed, trying fallback:', err);
+      try {
+        const textArea = document.createElement('textarea');
+        textArea.value = data.item.code;
+        textArea.style.position = 'fixed';
+        textArea.style.left = '-999999px';
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      } catch (fallbackErr) {
+        console.error('Fallback copy also failed:', fallbackErr);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      }
     }
   };
 
@@ -184,19 +215,15 @@ const DealDetailPage = () => {
     const item = data?.item;
     if (!item?.destination_url) return;
     
-    trackClick(
-      dealType === 'coupon' ? 'coupon_view' : 'discount_click',
-      item.id,
-      data.brand.id
-    );
-    
+    trackClick('coupon_store_click', item.id, data.brand.id);
     const finalUrl = buildUTMLink(item.destination_url, item.utm_template, item.id);
     window.open(finalUrl, '_blank');
   };
 
   const handleShowCode = () => {
-    setShowCode(true);
-    handleGoToStore();
+    trackClick('coupon_view', data.item.id, data.brand.id);
+    setShowModal(true);
+    // No auto redirect - user will click "Mağazaya Git" manually
   };
 
   if (loading) {
