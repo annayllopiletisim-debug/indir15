@@ -237,6 +237,11 @@ const AdminCouponsPage = () => {
                   <label className="block text-sm font-medium mb-1">Hedef URL</label>
                   <Input value={formData.destination_url} onChange={(e) => setFormData({...formData, destination_url: e.target.value})} placeholder="https://..." />
                 </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1">Kampanya Görseli (URL)</label>
+                  <Input value={formData.image_url} onChange={(e) => setFormData({...formData, image_url: e.target.value})} placeholder="https://example.com/image.jpg" />
+                  <p className="text-xs text-muted-foreground mt-1">Kartlarda görünecek kampanya görseli URL'i</p>
+                </div>
                 <div className="flex items-center gap-2">
                   <input type="checkbox" id="is_active" checked={formData.is_active} onChange={(e) => setFormData({...formData, is_active: e.target.checked})} />
                   <label htmlFor="is_active" className="text-sm">Aktif</label>
