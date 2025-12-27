@@ -204,9 +204,22 @@ const AdminCouponsPage = () => {
                   <Input value={formData.title} onChange={(e) => setFormData({...formData, title: e.target.value})} required />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-1">Açıklama</label>
+                  <label className="block text-sm font-medium mb-1">Açıklama (Kısa)</label>
                   <textarea value={formData.description} onChange={(e) => setFormData({...formData, description: e.target.value})}
-                    className="w-full p-2 bg-void-subtle rounded-lg border border-white/10 min-h-[80px]" />
+                    className="w-full p-2 bg-void-subtle rounded-lg border border-white/10 min-h-[80px]" 
+                    placeholder="Kartlarda görünecek kısa açıklama" />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1">Uzun Açıklama (Detay Sayfası)</label>
+                  <textarea value={formData.long_description} onChange={(e) => setFormData({...formData, long_description: e.target.value})}
+                    className="w-full p-2 bg-void-subtle rounded-lg border border-white/10 min-h-[120px]" 
+                    placeholder="Detay sayfasında görünecek uzun açıklama (opsiyonel)" />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1">Kullanım Koşulları</label>
+                  <textarea value={formData.terms_conditions} onChange={(e) => setFormData({...formData, terms_conditions: e.target.value})}
+                    className="w-full p-2 bg-void-subtle rounded-lg border border-white/10 min-h-[100px]" 
+                    placeholder="Kuponun geçerlilik koşulları (opsiyonel)" />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
