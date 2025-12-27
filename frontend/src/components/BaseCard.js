@@ -59,6 +59,7 @@ const BaseCard = ({
   brandName,
   brandSlug,
   brandLogoUrl,
+  detailUrl,
   children,
   actions,
   testId,
@@ -92,9 +93,9 @@ const BaseCard = ({
         className={`${isExpired ? 'opacity-60' : ''} ${className}`}
         data-testid={testId}
       >
-        <div className="bg-white rounded-xl p-3 shadow-sm hover:shadow-md transition-shadow duration-200 h-full flex gap-3">
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm hover:shadow-md transition-shadow duration-200 h-full flex gap-3">
           {/* Image */}
-          <div className="flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden bg-gradient-to-br from-violet-100 to-violet-200 flex items-center justify-center">
+          <div className="flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden bg-gradient-to-br from-violet-100 to-violet-200 dark:from-violet-900/30 dark:to-violet-800/30 flex items-center justify-center">
             {imageUrl ? (
               <img src={imageUrl} alt={title} className="w-full h-full object-cover" loading="lazy" />
             ) : (
@@ -105,16 +106,28 @@ const BaseCard = ({
           {/* Content */}
           <div className="flex-1 flex flex-col min-w-0">
             {discountText && (
-              <span className="inline-flex self-start px-2 py-0.5 bg-violet-100 text-violet-700 text-xs font-bold rounded-full mb-1">
+              <span className="inline-flex self-start px-2 py-0.5 bg-violet-100 dark:bg-violet-900/50 text-violet-700 dark:text-violet-300 text-xs font-bold rounded-full mb-1">
                 {discountText}
               </span>
             )}
-            <h3 className="text-sm font-semibold text-gray-900 line-clamp-2">{title}</h3>
+            <h3 className="text-sm font-semibold text-gray-900 dark:text-white line-clamp-2">{title}</h3>
           </div>
         </div>
       </motion.div>
     );
   }
+
+  // Card content wrapper - clickable for detail page
+  const CardContent = ({ children }) => {
+    if (detailUrl) {
+      return (
+        <Link to={detailUrl} className="block">
+          {children}
+        </Link>
+      );
+    }
+    return <>{children}</>;
+  };
 
   // Full card - New Design
   return (
@@ -126,66 +139,65 @@ const BaseCard = ({
       className={`relative ${isExpired ? 'opacity-60' : ''} ${className}`}
       data-testid={testId}
     >
-      <div className="bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all duration-200 overflow-hidden">
-        {/* Main Content Area */}
-        <div className="p-0">
-          <div className="flex gap-4 items-start">
-            {/* Left: Large Square Image - flush to left edge */}
-            <div className="flex-shrink-0">
-              <div className="w-28 h-28 sm:w-36 sm:h-36 rounded-r-xl overflow-hidden bg-gradient-to-br from-violet-100 to-violet-200 flex items-center justify-center">
-                {imageUrl ? (
-                  <img 
-                    src={imageUrl} 
-                    alt={title} 
-                    className="w-full h-full object-cover" 
-                    loading="lazy"
-                  />
-                ) : (
-                  <ImageIcon className="w-8 h-8 text-violet-400 opacity-50" />
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm hover:shadow-lg transition-all duration-200 overflow-hidden">
+        {/* Main Content Area - Clickable */}
+        <CardContent>
+          <div className="p-0 cursor-pointer">
+            <div className="flex gap-4 items-start">
+              {/* Left: Large Square Image - flush to left edge */}
+              <div className="flex-shrink-0">
+                <div className="w-28 h-28 sm:w-36 sm:h-36 rounded-r-xl overflow-hidden bg-gradient-to-br from-violet-100 to-violet-200 dark:from-violet-900/30 dark:to-violet-800/30 flex items-center justify-center">
+                  {imageUrl ? (
+                    <img 
+                      src={imageUrl} 
+                      alt={title} 
+                      className="w-full h-full object-cover" 
+                      loading="lazy"
+                    />
+                  ) : (
+                    <ImageIcon className="w-8 h-8 text-violet-400 dark:text-violet-500 opacity-50" />
+                  )}
+                </div>
+              </div>
+
+              {/* Right: Content - aligned with image top */}
+              <div className="flex-1 min-w-0 flex flex-col pt-0 pb-4 pr-4">
+                {/* Brand Logo + Name */}
+                {brandName && (
+                  <div className="inline-flex items-center gap-2.5 mb-2 self-start">
+                    {brandLogoUrl && (
+                      <div className="w-10 h-10 sm:w-12 sm:h-12 bg-white dark:bg-gray-700 rounded-xl shadow-sm border border-gray-100 dark:border-gray-600 flex items-center justify-center p-1.5 flex-shrink-0">
+                        <img 
+                          src={getLogoUrl(brandLogoUrl)} 
+                          alt={brandName} 
+                          className="max-w-full max-h-full object-contain"
+                        />
+                      </div>
+                    )}
+                    <span className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">{brandName}</span>
+                  </div>
                 )}
+
+                {/* Discount Badge - Soft purple style */}
+                {discountText && (
+                  <span className="inline-flex self-start px-3 py-1 bg-violet-100 dark:bg-violet-900/50 text-violet-700 dark:text-violet-300 text-sm font-bold rounded-full mb-2">
+                    {discountText}
+                  </span>
+                )}
+
+                {/* Campaign Title */}
+                <h3 className="text-base font-semibold text-gray-800 dark:text-gray-100 line-clamp-2 leading-snug">
+                  {title}
+                </h3>
+                
+                {children}
               </div>
             </div>
-
-            {/* Right: Content - aligned with image top */}
-            <div className="flex-1 min-w-0 flex flex-col pt-0 pb-4 pr-4">
-              {/* Brand Logo + Name */}
-              {brandName && (
-                <Link 
-                  to={brandSlug ? `/magaza/${brandSlug}` : '#'}
-                  className="inline-flex items-center gap-2.5 mb-2 hover:opacity-80 transition-opacity self-start"
-                >
-                  {brandLogoUrl && (
-                    <div className="w-10 h-10 sm:w-12 sm:h-12 bg-white rounded-xl shadow-sm border border-gray-100 flex items-center justify-center p-1.5 flex-shrink-0">
-                      <img 
-                        src={getLogoUrl(brandLogoUrl)} 
-                        alt={brandName} 
-                        className="max-w-full max-h-full object-contain"
-                      />
-                    </div>
-                  )}
-                  <span className="text-xl sm:text-2xl font-bold text-gray-900">{brandName}</span>
-                </Link>
-              )}
-
-              {/* Discount Badge - Soft purple style */}
-              {discountText && (
-                <span className="inline-flex self-start px-3 py-1 bg-violet-100 text-violet-700 text-sm font-bold rounded-full mb-2">
-                  {discountText}
-                </span>
-              )}
-
-              {/* Campaign Title */}
-              <h3 className="text-base font-semibold text-gray-800 line-clamp-2 leading-snug">
-                {title}
-              </h3>
-              
-              {children}
-            </div>
           </div>
-        </div>
+        </CardContent>
 
         {/* Divider */}
-        <div className="border-t border-gray-100" />
+        <div className="border-t border-gray-100 dark:border-gray-700" />
 
         {/* Bottom Row: Time (left) + CTA Button (right) */}
         <div className="px-4 py-3 flex items-center justify-between">
