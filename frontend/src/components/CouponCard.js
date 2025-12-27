@@ -78,8 +78,8 @@ const CouponCard = ({ coupon, brand, compact = false }) => {
       </button>
     </div>
   ) : (
-    <div className="flex items-center gap-2">
-      {/* Devamını Gör butonu - solda */}
+    <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+      {/* Devamını Gör butonu */}
       <Link
         to={detailUrl}
         className="flex items-center justify-center gap-1.5 px-4 py-2.5 border border-primary/50 text-primary hover:bg-primary/10 rounded-lg text-sm font-medium transition-all"
@@ -87,7 +87,7 @@ const CouponCard = ({ coupon, brand, compact = false }) => {
         <Info className="w-4 h-4" />
         Devamını Gör
       </Link>
-      {/* Kodu Göster butonu - sağda, küçültülmüş */}
+      {/* Kodu Göster butonu */}
       <button
         onClick={handleGetCode}
         disabled={isExpired || !coupon.is_active}
