@@ -58,6 +58,15 @@ const CategoryPage = () => {
   // Description expand state (mobile)
   const [showFullDescription, setShowFullDescription] = useState(false);
   
+  // Filter modal state
+  const [showFilterModal, setShowFilterModal] = useState(false);
+  
+  // Filter values
+  const [filterDiscountRate, setFilterDiscountRate] = useState('all');
+  const [filterCampaignType, setFilterCampaignType] = useState('all');
+  const [filterExpiry, setFilterExpiry] = useState('all');
+  const [filterSort, setFilterSort] = useState('newest');
+  
   // Site settings for sticky bar
   const [siteSettings, setSiteSettings] = useState({ sticky_cta_enabled: true, sticky_cta_variant: "A" });
 
