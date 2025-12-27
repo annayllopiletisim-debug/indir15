@@ -550,6 +550,231 @@ async def get_coupons(brand_id: Optional[str] = None):
             coupon['expiry_date'] = datetime.fromisoformat(coupon['expiry_date'])
     return coupons
 
+
+# ================== COUPON/DISCOUNT DETAIL ENDPOINTS ==================
+
+def generate_slug(title: str) -> str:
+    """Generate URL-friendly slug from title"""
+    import re
+    # Turkish character replacements
+    tr_map = {'ı': 'i', 'ğ': 'g', 'ü': 'u', 'ş': 's', 'ö': 'o', 'ç': 'c',
+              'İ': 'i', 'Ğ': 'g', 'Ü': 'u', 'Ş': 's', 'Ö': 'o', 'Ç': 'c'}
+    slug = title.lower()
+    for tr, en in tr_map.items():
+        slug = slug.replace(tr, en)
+    slug = re.sub(r'[^a-z0-9\s-]', '', slug)
+    slug = re.sub(r'[\s_]+', '-', slug)
+    slug = re.sub(r'-+', '-', slug).strip('-')
+    return slug[:50]  # Limit length
+
+
+@api_router.get("/coupon/{coupon_id}/detail")
+async def get_coupon_detail(coupon_id: str):
+    """
+    Get single coupon with full details for detail page
+    Includes: brand info, SEO meta, related deals, expired status
+    """
+    base_url = os.environ.get('SITE_URL', 'https://indirimkestet.com')
+    now = datetime.now(timezone.utc)
+    
+    # Get coupon
+    coupon = await db.coupons.find_one({'id': coupon_id}, {'_id': 0})
+    if not coupon:
+        raise HTTPException(status_code=404, detail="Kupon bulunamadı")
+    
+    # Parse dates
+    if isinstance(coupon.get('created_at'), str):
+        coupon['created_at'] = datetime.fromisoformat(coupon['created_at'])
+    if isinstance(coupon.get('expiry_date'), str):
+        coupon['expiry_date'] = datetime.fromisoformat(coupon['expiry_date'])
+    
+    # Get brand info
+    brand = await db.brands.find_one({'id': coupon['brand_id']}, {'_id': 0})
+    if not brand:
+        raise HTTPException(status_code=404, detail="Marka bulunamadı")
+    
+    # Check if expired
+    is_expired = False
+    if coupon.get('expiry_date'):
+        is_expired = coupon['expiry_date'] < now
+    
+    # Generate slug for URL
+    coupon_slug = generate_slug(coupon['title'])
+    canonical_url = f"/magaza/{brand['slug']}/kupon/{coupon_slug}-{coupon_id}"
+    
+    # SEO Meta
+    seo_meta = {
+        'title': f"{coupon['title']} - {brand['name']} Kupon Kodu | İndirim Keşfet",
+        'description': coupon.get('description', f"{brand['name']} mağazasında {coupon['discount_text']} indirim fırsatı. Kupon kodunu kullanarak hemen tasarruf edin!"),
+        'canonical': f"{base_url}{canonical_url}",
+        'robots': 'noindex,follow' if is_expired else 'index,follow',
+        'og_type': 'product',
+        'og_title': f"{coupon['discount_text']} - {brand['name']}",
+        'og_description': coupon['title'],
+    }
+    
+    # Structured Data (Schema.org)
+    structured_data = {
+        "@context": "https://schema.org",
+        "@type": "Offer",
+        "name": coupon['title'],
+        "description": coupon.get('description', coupon['title']),
+        "url": f"{base_url}{canonical_url}",
+        "priceCurrency": "TRY",
+        "availability": "https://schema.org/InStock" if not is_expired else "https://schema.org/Discontinued",
+        "seller": {
+            "@type": "Organization",
+            "name": brand['name'],
+            "url": f"{base_url}/magaza/{brand['slug']}"
+        },
+        "category": "Coupon"
+    }
+    if coupon.get('expiry_date'):
+        structured_data['validThrough'] = coupon['expiry_date'].isoformat()
+    if coupon.get('discount_text'):
+        structured_data['discount'] = coupon['discount_text']
+    
+    # Get related deals from same brand (excluding current)
+    related_coupons = await db.coupons.find({
+        'brand_id': brand['id'],
+        'id': {'$ne': coupon_id},
+        'is_active': True
+    }, {'_id': 0}).limit(5).to_list(5)
+    
+    related_discounts = await db.discounts.find({
+        'brand_id': brand['id']
+    }, {'_id': 0}).limit(5).to_list(5)
+    
+    # Mark types
+    for c in related_coupons:
+        c['item_type'] = 'coupon'
+    for d in related_discounts:
+        d['item_type'] = 'discount'
+    
+    related_deals = (related_coupons + related_discounts)[:8]
+    
+    return {
+        'item_type': 'coupon',
+        'item': coupon,
+        'brand': {
+            'id': brand['id'],
+            'name': brand['name'],
+            'slug': brand['slug'],
+            'logo_url': brand.get('logo_url'),
+            'description': brand.get('description')
+        },
+        'is_expired': is_expired,
+        'canonical_url': canonical_url,
+        'seo_meta': seo_meta,
+        'structured_data': structured_data,
+        'related_deals': related_deals,
+        'total_brand_deals': len(related_coupons) + len(related_discounts) + 1
+    }
+
+
+@api_router.get("/discount/{discount_id}/detail")
+async def get_discount_detail(discount_id: str):
+    """
+    Get single discount with full details for detail page
+    Includes: brand info, SEO meta, related deals, expired status
+    """
+    base_url = os.environ.get('SITE_URL', 'https://indirimkestet.com')
+    now = datetime.now(timezone.utc)
+    
+    # Get discount
+    discount = await db.discounts.find_one({'id': discount_id}, {'_id': 0})
+    if not discount:
+        raise HTTPException(status_code=404, detail="İndirim bulunamadı")
+    
+    # Parse dates
+    if isinstance(discount.get('created_at'), str):
+        discount['created_at'] = datetime.fromisoformat(discount['created_at'])
+    if isinstance(discount.get('expiry_date'), str):
+        discount['expiry_date'] = datetime.fromisoformat(discount['expiry_date'])
+    
+    # Get brand info
+    brand = await db.brands.find_one({'id': discount['brand_id']}, {'_id': 0})
+    if not brand:
+        raise HTTPException(status_code=404, detail="Marka bulunamadı")
+    
+    # Check if expired
+    is_expired = False
+    if discount.get('expiry_date'):
+        is_expired = discount['expiry_date'] < now
+    
+    # Generate slug for URL
+    discount_slug = generate_slug(discount['title'])
+    canonical_url = f"/magaza/{brand['slug']}/indirim/{discount_slug}-{discount_id}"
+    
+    # SEO Meta
+    seo_meta = {
+        'title': f"{discount['title']} - {brand['name']} İndirim | İndirim Keşfet",
+        'description': discount.get('description', f"{brand['name']} mağazasında {discount['discount_text']} indirim fırsatı. Hemen alışverişe başlayın!"),
+        'canonical': f"{base_url}{canonical_url}",
+        'robots': 'noindex,follow' if is_expired else 'index,follow',
+        'og_type': 'product',
+        'og_title': f"{discount['discount_text']} - {brand['name']}",
+        'og_description': discount['title'],
+    }
+    
+    # Structured Data (Schema.org)
+    structured_data = {
+        "@context": "https://schema.org",
+        "@type": "Offer",
+        "name": discount['title'],
+        "description": discount.get('description', discount['title']),
+        "url": f"{base_url}{canonical_url}",
+        "priceCurrency": "TRY",
+        "availability": "https://schema.org/InStock" if not is_expired else "https://schema.org/Discontinued",
+        "seller": {
+            "@type": "Organization",
+            "name": brand['name'],
+            "url": f"{base_url}/magaza/{brand['slug']}"
+        },
+        "category": "Discount"
+    }
+    if discount.get('expiry_date'):
+        structured_data['validThrough'] = discount['expiry_date'].isoformat()
+    if discount.get('discount_text'):
+        structured_data['discount'] = discount['discount_text']
+    
+    # Get related deals from same brand (excluding current)
+    related_coupons = await db.coupons.find({
+        'brand_id': brand['id'],
+        'is_active': True
+    }, {'_id': 0}).limit(5).to_list(5)
+    
+    related_discounts = await db.discounts.find({
+        'brand_id': brand['id'],
+        'id': {'$ne': discount_id}
+    }, {'_id': 0}).limit(5).to_list(5)
+    
+    # Mark types
+    for c in related_coupons:
+        c['item_type'] = 'coupon'
+    for d in related_discounts:
+        d['item_type'] = 'discount'
+    
+    related_deals = (related_coupons + related_discounts)[:8]
+    
+    return {
+        'item_type': 'discount',
+        'item': discount,
+        'brand': {
+            'id': brand['id'],
+            'name': brand['name'],
+            'slug': brand['slug'],
+            'logo_url': brand.get('logo_url'),
+            'description': brand.get('description')
+        },
+        'is_expired': is_expired,
+        'canonical_url': canonical_url,
+        'seo_meta': seo_meta,
+        'structured_data': structured_data,
+        'related_deals': related_deals,
+        'total_brand_deals': len(related_coupons) + len(related_discounts) + 1
+    }
+
 @api_router.post("/coupons", response_model=Coupon)
 async def create_coupon(coupon: CouponCreate, user: AdminUser = Depends(get_current_user)):
     new_coupon = Coupon(**coupon.model_dump())
