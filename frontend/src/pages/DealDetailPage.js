@@ -12,9 +12,10 @@ import {
   ExternalLink,
   ChevronRight,
   Store,
-  Gift
+  Gift,
+  X
 } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import BrandLogo from '../components/BrandLogo';
 import { trackClick, buildUTMLink } from '../utils/helpers';
 
