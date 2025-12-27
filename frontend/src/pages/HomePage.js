@@ -219,9 +219,9 @@ const HomePage = () => {
                     <BrandLogo logoUrl={brand.logo_url} brandName={brand.name} size="sm" />
                     <span className="text-sm font-medium whitespace-nowrap">{brand.name}</span>
                     
-                    {/* #3 - İndirim sayısı badge */}
+                    {/* #3 - İndirim sayısı badge - düzeltilmiş pozisyon */}
                     {dealCount > 0 && (
-                      <span className="absolute -top-1 -right-1 min-w-[20px] h-5 px-1.5 flex items-center justify-center bg-primary text-white text-xs font-bold rounded-full">
+                      <span className="absolute -top-2 -right-2 min-w-[22px] h-[22px] px-1.5 flex items-center justify-center bg-primary text-white text-xs font-bold rounded-full border-2 border-background">
                         {dealCount}
                       </span>
                     )}

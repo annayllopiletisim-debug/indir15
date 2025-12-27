@@ -379,11 +379,14 @@ const StoresPage = () => {
                               : 'glass-effect hover:border-primary/30'
                           }`}
                         >
-                          {isSelected && (
-                            <div className="absolute top-2 right-2 w-5 h-5 rounded bg-primary flex items-center justify-center">
-                              <Check className="w-3 h-3 text-white" />
-                            </div>
-                          )}
+                          {/* Checkbox her zaman görünür - seçilmemişse border, seçilmişse tick */}
+                          <div className={`absolute top-2 right-2 w-5 h-5 rounded flex items-center justify-center transition-all ${
+                            isSelected 
+                              ? 'bg-primary' 
+                              : 'border-2 border-muted-foreground/30'
+                          }`}>
+                            {isSelected && <Check className="w-3 h-3 text-white" />}
+                          </div>
 
                           <div className="flex justify-center mb-2">
                             <BrandLogo logoUrl={brand.logo_url} brandName={brand.name} size="md" />
