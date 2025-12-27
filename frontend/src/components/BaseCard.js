@@ -13,7 +13,7 @@ const isExpiringSoon = (expiryDate) => {
   return diff > 0 && diff <= 24 * 60 * 60 * 1000;
 };
 
-// Helper to get time remaining with color coding
+// Helper to get time remaining (color will be determined in component based on theme)
 const getTimeRemaining = (expiryDate) => {
   if (!expiryDate) return null;
   const now = new Date();
@@ -21,20 +21,12 @@ const getTimeRemaining = (expiryDate) => {
   const diff = expiry - now;
 
   if (diff <= 0) {
-    return { expired: true, text: 'Süresi Doldu', days: 0, color: '#ef4444' };
+    return { expired: true, text: 'Süresi Doldu', days: 0 };
   }
 
   const days = Math.floor(diff / (1000 * 60 * 60 * 24));
   const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
   const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-
-  // Color coding based on days remaining
-  let color = '#22c55e'; // green - more than 7 days
-  if (days < 3) {
-    color = '#ef4444'; // red - less than 3 days
-  } else if (days <= 7) {
-    color = '#f59e0b'; // orange - 3-7 days
-  }
 
   let text;
   if (days > 0) {
@@ -45,7 +37,7 @@ const getTimeRemaining = (expiryDate) => {
     text = `${minutes}dk`;
   }
 
-  return { expired: false, text, days, color };
+  return { expired: false, text, days };
 };
 
 const BaseCard = ({
