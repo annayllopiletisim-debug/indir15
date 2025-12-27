@@ -492,9 +492,6 @@ const CategoryPage = () => {
           </div>
         </div>
 
-        {/* Spacer when header is fixed on mobile */}
-        {hideHeader && <div className="h-32 md:h-0" />}
-
         {/* Popular Brands Bar - Sticky on mobile when scrolling */}
         {popularBrands.length > 0 && !showDeals && (
           <div className="bg-muted/50 dark:bg-muted/30 border-b border-border sticky top-0 z-30 md:relative md:z-auto backdrop-blur-sm">
