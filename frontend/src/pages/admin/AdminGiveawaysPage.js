@@ -80,7 +80,8 @@ const AdminGiveawaysPage = () => {
       expiry_date: giveaway.expiry_date ? giveaway.expiry_date.split('T')[0] : '',
       is_active: giveaway.is_active,
       utm_template: giveaway.utm_template || '',
-      destination_url: giveaway.destination_url
+      destination_url: giveaway.destination_url,
+      image_url: giveaway.image_url || ''
     });
     setEditingId(giveaway.id);
     setShowForm(true);
