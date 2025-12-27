@@ -132,6 +132,8 @@ class Coupon(BaseModel):
     brand_id: str
     title: str
     description: Optional[str] = None
+    long_description: Optional[str] = None  # Uzun açıklama
+    terms_conditions: Optional[str] = None  # Kullanım koşulları
     code: str
     discount_text: str
     expiry_date: Optional[datetime] = None
@@ -144,6 +146,8 @@ class CouponCreate(BaseModel):
     brand_id: str
     title: str
     description: Optional[str] = None
+    long_description: Optional[str] = None  # Uzun açıklama
+    terms_conditions: Optional[str] = None  # Kullanım koşulları
     code: str
     discount_text: str
     expiry_date: Optional[datetime] = None
@@ -157,6 +161,8 @@ class Discount(BaseModel):
     brand_id: str
     title: str
     description: str
+    long_description: Optional[str] = None  # Uzun açıklama
+    terms_conditions: Optional[str] = None  # Kullanım koşulları
     discount_text: str
     expiry_date: Optional[datetime] = None
     utm_template: Optional[str] = None
@@ -167,6 +173,8 @@ class DiscountCreate(BaseModel):
     brand_id: str
     title: str
     description: str
+    long_description: Optional[str] = None  # Uzun açıklama
+    terms_conditions: Optional[str] = None  # Kullanım koşulları
     discount_text: str
     expiry_date: Optional[datetime] = None
     utm_template: Optional[str] = None
