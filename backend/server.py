@@ -180,6 +180,39 @@ class DiscountCreate(BaseModel):
     utm_template: Optional[str] = None
     destination_url: str
 
+
+# ================== GIVEAWAY (ÇEKİLİŞ) MODELS ==================
+
+class Giveaway(BaseModel):
+    """Çekiliş modeli"""
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    brand_id: str
+    title: str
+    description: Optional[str] = None
+    long_description: Optional[str] = None
+    terms_conditions: Optional[str] = None
+    prize_text: str  # Ödül metni (örn: "iPhone 15 Pro")
+    expiry_date: Optional[datetime] = None
+    is_active: bool = True
+    utm_template: Optional[str] = None
+    destination_url: str
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+
+class GiveawayCreate(BaseModel):
+    brand_id: str
+    title: str
+    description: Optional[str] = None
+    long_description: Optional[str] = None
+    terms_conditions: Optional[str] = None
+    prize_text: str
+    expiry_date: Optional[datetime] = None
+    is_active: bool = True
+    utm_template: Optional[str] = None
+    destination_url: str
+
+
 class HeroSlide(BaseModel):
     model_config = ConfigDict(extra="ignore")
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
