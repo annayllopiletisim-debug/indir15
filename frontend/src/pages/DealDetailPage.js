@@ -11,7 +11,8 @@ import {
   Scissors,
   ExternalLink,
   ChevronRight,
-  Store
+  Store,
+  Gift
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import BrandLogo from '../components/BrandLogo';
