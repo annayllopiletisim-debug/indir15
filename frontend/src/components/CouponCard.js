@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Copy, Check, X, ChevronRight } from 'lucide-react';
+import { Copy, Check, X, ChevronRight, ExternalLink } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { BaseCard } from './BaseCard';
 import { trackClick, buildUTMLink } from '../utils/helpers';
@@ -33,16 +33,12 @@ const CouponCard = ({ coupon, brand, compact = false }) => {
   const couponSlug = generateSlug(coupon.title);
   const detailUrl = `/magaza/${brandSlug}/kupon/${couponSlug}-${coupon.id}`;
 
-  const handleGetCode = async () => {
+  const handleGetCode = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
     trackClick('coupon_view', coupon.id, coupon.brand_id, brand?.category_id);
     setShowModal(true);
-    
-    if (coupon.destination_url) {
-      setTimeout(() => {
-        const finalUrl = buildUTMLink(coupon.destination_url, coupon.utm_template, coupon.id);
-        window.open(finalUrl, '_blank');
-      }, 500);
-    }
+    // No auto-redirect - user will click "Mağazaya Git" manually
   };
 
   const handleCopyCode = async () => {
@@ -53,6 +49,14 @@ const CouponCard = ({ coupon, brand, compact = false }) => {
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
       console.error('Failed to copy:', err);
+    }
+  };
+
+  const handleGoToStore = () => {
+    trackClick('coupon_store_click', coupon.id, coupon.brand_id, brand?.category_id);
+    if (coupon.destination_url) {
+      const finalUrl = buildUTMLink(coupon.destination_url, coupon.utm_template, coupon.id);
+      window.open(finalUrl, '_blank');
     }
   };
 
@@ -84,6 +88,7 @@ const CouponCard = ({ coupon, brand, compact = false }) => {
         brandName={brandName}
         brandSlug={brandSlug}
         brandLogoUrl={brandLogoUrl}
+        detailUrl={detailUrl}
         actions={actions}
         testId={`coupon-card-${coupon.id}`}
         compact={compact}
@@ -103,13 +108,13 @@ const CouponCard = ({ coupon, brand, compact = false }) => {
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
-              className="relative max-w-md w-full bg-white rounded-2xl p-6 shadow-2xl"
+              className="relative max-w-md w-full bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-2xl"
               onClick={(e) => e.stopPropagation()}
               data-testid="coupon-modal"
             >
               <button
                 onClick={() => setShowModal(false)}
-                className="absolute top-4 right-4 p-2 rounded-lg hover:bg-gray-100 transition-colors text-gray-500"
+                className="absolute top-4 right-4 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors text-gray-500 dark:text-gray-400"
                 data-testid="modal-close-btn"
               >
                 <X className="w-5 h-5" />
@@ -120,17 +125,19 @@ const CouponCard = ({ coupon, brand, compact = false }) => {
                   <Check className="w-8 h-8 text-white" />
                 </div>
                 
-                <h3 className="text-xl font-bold text-gray-900 mb-2">Mağazaya Yönlendirildiniz!</h3>
-                <p className="text-gray-500 mb-6">İşte kupon kodunuz:</p>
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Kupon Kodunuz Hazır!</h3>
+                <p className="text-gray-500 dark:text-gray-400 mb-6">Kodu kopyalayın ve mağazada kullanın</p>
 
-                <div className="mb-6">
-                  <div className="font-mono text-2xl font-bold text-gray-900 mb-4 px-6 py-4 rounded-xl bg-gray-50 border-2 border-violet-200">
+                <div className="mb-4">
+                  {/* Coupon Code Display */}
+                  <div className="font-mono text-2xl font-bold text-gray-900 dark:text-white mb-4 px-6 py-4 rounded-xl bg-gray-50 dark:bg-gray-700 border-2 border-violet-200 dark:border-violet-700">
                     {coupon.code}
                   </div>
                   
+                  {/* Copy Button */}
                   <button
                     onClick={handleCopyCode}
-                    className="w-full px-6 py-3 bg-gradient-to-r from-violet-500 to-purple-600 text-white rounded-xl font-semibold hover:from-violet-600 hover:to-purple-700 transition-all flex items-center justify-center gap-2 shadow-md"
+                    className="w-full px-6 py-3 bg-gradient-to-r from-violet-500 to-purple-600 text-white rounded-xl font-semibold hover:from-violet-600 hover:to-purple-700 transition-all flex items-center justify-center gap-2 shadow-md mb-3"
                     data-testid="modal-copy-btn"
                   >
                     {copied ? (
@@ -139,9 +146,21 @@ const CouponCard = ({ coupon, brand, compact = false }) => {
                       <><Copy className="w-5 h-5" /><span>Kodu Kopyala</span></>
                     )}
                   </button>
+
+                  {/* Go to Store Button */}
+                  {coupon.destination_url && (
+                    <button
+                      onClick={handleGoToStore}
+                      className="w-full px-6 py-3 bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-xl font-semibold hover:bg-gray-200 dark:hover:bg-gray-600 transition-all flex items-center justify-center gap-2"
+                      data-testid="modal-store-btn"
+                    >
+                      <ExternalLink className="w-5 h-5" />
+                      <span>{brandName}'a Git</span>
+                    </button>
+                  )}
                 </div>
 
-                <p className="text-sm text-gray-500">
+                <p className="text-sm text-gray-500 dark:text-gray-400">
                   {coupon.discount_text} indiriminizden yararlanmak için kodu sepette uygulayın.
                 </p>
               </div>
