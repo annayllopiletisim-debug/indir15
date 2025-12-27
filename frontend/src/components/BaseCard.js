@@ -116,7 +116,7 @@ const BaseCard = ({
           {/* Content */}
           <div className="flex-1 flex flex-col min-w-0">
             {discountText && (
-              <span className="inline-flex self-start px-2 py-0.5 bg-green-100 sm:bg-violet-100 dark:bg-green-900/50 text-green-700 sm:text-violet-700 dark:text-green-400 text-xs font-bold rounded-full mb-1">
+              <span className="inline-flex self-start px-2 py-0.5 bg-green-100 dark:bg-green-900/50 text-green-700 dark:text-green-400 text-xs font-bold rounded-full mb-1">
                 {discountText}
               </span>
             )}
