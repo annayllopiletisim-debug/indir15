@@ -1,6 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
-import { Gift, Info, ArrowRight } from 'lucide-react';
+import { Gift, ChevronRight } from 'lucide-react';
 import { BaseCard } from './BaseCard';
 import { trackClick, buildUTMLink } from '../utils/helpers';
 
@@ -39,44 +38,17 @@ const GiveawayCard = ({ giveaway, brand, compact = false }) => {
   const giveawaySlug = generateSlug(giveaway.title);
   const detailUrl = `/magaza/${brandSlug}/cekilis/${giveawaySlug}-${giveaway.id}`;
 
-  const actions = compact ? (
-    <div className="flex items-center gap-2">
-      <Link
-        to={detailUrl}
-        className="flex-1 px-3 py-2 border border-emerald-500/50 text-emerald-400 hover:bg-emerald-500/10 rounded-lg text-sm font-medium transition-all text-center"
-      >
-        Detay
-      </Link>
-      <button
-        onClick={handleClick}
-        disabled={isExpired}
-        className="flex-1 px-3 py-2 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-lg text-sm font-medium transition-all disabled:opacity-50 flex items-center justify-center gap-1"
-      >
-        <Gift className="w-3 h-3" />
-        Katıl
-      </button>
-    </div>
-  ) : (
-    <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
-      {/* Devamını Gör butonu */}
-      <Link
-        to={detailUrl}
-        className="flex items-center justify-center gap-1.5 px-4 py-2.5 border border-emerald-500/50 text-emerald-400 hover:bg-emerald-500/10 rounded-lg text-sm font-medium transition-all"
-      >
-        <Info className="w-4 h-4" />
-        Devamını Gör
-      </Link>
-      {/* Çekilişe Katıl butonu */}
-      <button
-        onClick={handleClick}
-        disabled={isExpired}
-        className="flex-1 px-4 py-2.5 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-lg font-medium hover:shadow-lg hover:shadow-emerald-500/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-        data-testid="giveaway-join-btn"
-      >
-        <Gift className="w-4 h-4" />
-        Çekilişe Katıl
-      </button>
-    </div>
+  const actions = (
+    <button
+      onClick={handleClick}
+      disabled={isExpired}
+      className="inline-flex items-center gap-1.5 px-5 py-2.5 bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-semibold rounded-xl hover:from-emerald-600 hover:to-teal-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-sm hover:shadow-md"
+      data-testid="giveaway-join-btn"
+    >
+      <Gift className="w-4 h-4" />
+      Çekilişe Katıl
+      <ChevronRight className="w-4 h-4" />
+    </button>
   );
 
   return (
@@ -86,6 +58,8 @@ const GiveawayCard = ({ giveaway, brand, compact = false }) => {
       description={giveaway.description}
       discountText={giveaway.prize_text}
       expiryDate={giveaway.expiry_date}
+      imageUrl={giveaway.image_url}
+      destinationUrl={giveaway.destination_url}
       brandName={brandName}
       brandSlug={brandSlug}
       brandLogoUrl={brandLogoUrl}
