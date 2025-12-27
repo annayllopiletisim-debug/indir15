@@ -25,6 +25,7 @@ import AdminKeywordsPage from './pages/admin/AdminKeywordsPage';
 import AdminHeroSlidesPage from './pages/admin/AdminHeroSlidesPage';
 import AdminCategoriesPage from './pages/admin/AdminCategoriesPage';
 import AdminSettingsPage from './pages/admin/AdminSettingsPage';
+import AdminImportPage from './pages/admin/AdminImportPage';
 import AdminLayout from './components/AdminLayout';
 import { isAuthenticated } from './utils/auth';
 import '@/App.css';
