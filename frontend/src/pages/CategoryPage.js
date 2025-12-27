@@ -86,10 +86,10 @@ const CategoryPage = () => {
         return;
       }
       
-      // Hide header when scrolling down past 100px, show when scrolling up
-      if (currentScrollY > lastScrollY.current && currentScrollY > 100) {
+      // Hide header when scrolling down past 50px, show when scrolling up
+      if (currentScrollY > lastScrollY.current + 5 && currentScrollY > 50) {
         setHideHeader(true);
-      } else if (currentScrollY < lastScrollY.current) {
+      } else if (currentScrollY < lastScrollY.current - 5) {
         setHideHeader(false);
       }
       
