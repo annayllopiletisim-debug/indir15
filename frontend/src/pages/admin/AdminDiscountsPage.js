@@ -98,7 +98,8 @@ const AdminDiscountsPage = () => {
     setFormData({
       brand_id: '', title: '', description: '', long_description: '', terms_conditions: '',
       discount_text: '', expiry_date: '',
-      utm_template: 'utm_source=İndirim Keşfet&utm_medium=discount', destination_url: ''
+      utm_template: 'utm_source=İndirim Keşfet&utm_medium=discount', destination_url: '',
+      image_url: ''
     });
     setEditingId(null);
     setShowForm(false);
