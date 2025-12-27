@@ -421,6 +421,29 @@ const CategoryPage = () => {
                   <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
                     {filteredBrands.map((brand) => {
                       const isSelected = selectedStores.has(brand.slug);
+                      
+                      // Filtrele aktif değilse, mağaza sayfasına git
+                      if (!showFilters) {
+                        return (
+                          <Link
+                            key={brand.id}
+                            to={`/magaza/${brand.slug}`}
+                            className="group p-3 rounded-xl text-center transition-all glass-effect hover:border-primary/30"
+                          >
+                            <div className="flex justify-center mb-2">
+                              <BrandLogo logoUrl={brand.logo_url} brandName={brand.name} size="md" />
+                            </div>
+                            <h3 className="font-medium text-sm truncate mb-1">{brand.name}</h3>
+                            {brand.deal_count > 0 ? (
+                              <p className="text-xs text-primary">{brand.deal_count} indirim</p>
+                            ) : (
+                              <p className="text-xs text-muted-foreground">-</p>
+                            )}
+                          </Link>
+                        );
+                      }
+                      
+                      // Filtrele aktifse, checkbox seçimi
                       return (
                         <button
                           key={brand.id}
