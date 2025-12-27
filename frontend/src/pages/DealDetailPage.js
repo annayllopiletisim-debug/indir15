@@ -38,7 +38,7 @@ const getTimeRemaining = (expiryDate) => {
 };
 
 const DealDetailPage = () => {
-  const { type, brandSlug, dealSlug } = useParams();
+  const { brandSlug, dealSlug } = useParams();
   const navigate = useNavigate();
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -48,7 +48,10 @@ const DealDetailPage = () => {
 
   // Extract ID from slug (format: title-slug-uuid)
   const dealId = dealSlug ? dealSlug.split('-').pop() : null;
-  const dealType = type === 'kupon' ? 'coupon' : 'discount';
+  
+  // Determine type from URL path
+  const currentPath = window.location.pathname;
+  const dealType = currentPath.includes('/kupon/') ? 'coupon' : 'discount';
 
   useEffect(() => {
     const fetchData = async () => {
