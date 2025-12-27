@@ -201,17 +201,18 @@ const BaseCard = ({
 
         {/* Bottom Row: Time (left) + CTA Button (right) */}
         <div className="px-4 py-3 flex items-center justify-between">
-          {/* Time Remaining - Now on the left */}
+          {/* Time Remaining - Light: color-coded, Dark: orange */}
           {timeLeft ? (
             <span 
-              className="inline-flex items-center gap-1.5 text-sm font-semibold"
-              style={{ color: timeLeft.color }}
+              className="inline-flex items-center gap-1.5 text-sm font-semibold dark:text-orange-400"
+              style={{ color: undefined }}
             >
-              <Clock className="w-4 h-4" />
-              {timeLeft.text}
+              <Clock className="w-4 h-4" style={{ color: 'inherit' }} />
+              <span className="hidden dark:inline">{timeLeft.text}</span>
+              <span className="dark:hidden" style={{ color: timeLeft.color }}>{timeLeft.text}</span>
             </span>
           ) : (
-            <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-green-500">
+            <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-green-500 dark:text-orange-400">
               <Clock className="w-4 h-4" />
               Süresiz
             </span>
