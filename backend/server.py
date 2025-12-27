@@ -824,6 +824,123 @@ async def get_discount_detail(discount_id: str):
         'total_brand_deals': len(related_coupons) + len(related_discounts) + 1
     }
 
+
+@api_router.get("/giveaway/{giveaway_id}/detail")
+async def get_giveaway_detail(giveaway_id: str):
+    """
+    Get single giveaway with full details for detail page
+    Includes: brand info, SEO meta, related deals, expired status
+    """
+    base_url = os.environ.get('SITE_URL', 'https://indirimkestet.com')
+    now = datetime.now(timezone.utc)
+    
+    # Get giveaway
+    giveaway = await db.giveaways.find_one({'id': giveaway_id}, {'_id': 0})
+    if not giveaway:
+        raise HTTPException(status_code=404, detail="Çekiliş bulunamadı")
+    
+    # Parse dates
+    if isinstance(giveaway.get('created_at'), str):
+        giveaway['created_at'] = datetime.fromisoformat(giveaway['created_at'])
+    if isinstance(giveaway.get('expiry_date'), str):
+        giveaway['expiry_date'] = datetime.fromisoformat(giveaway['expiry_date'])
+    
+    # Get brand info
+    brand = await db.brands.find_one({'id': giveaway['brand_id']}, {'_id': 0})
+    if not brand:
+        raise HTTPException(status_code=404, detail="Marka bulunamadı")
+    
+    # Check if expired (handle timezone-naive dates)
+    is_expired = False
+    if giveaway.get('expiry_date'):
+        expiry = giveaway['expiry_date']
+        if expiry.tzinfo is None:
+            expiry = expiry.replace(tzinfo=timezone.utc)
+        is_expired = expiry < now
+    
+    # Generate slug for URL
+    giveaway_slug = generate_slug(giveaway['title'])
+    canonical_url = f"/magaza/{brand['slug']}/cekilis/{giveaway_slug}-{giveaway_id}"
+    
+    # SEO Meta
+    seo_meta = {
+        'title': f"{giveaway['title']} - {brand['name']} Çekiliş | İndirim Keşfet",
+        'description': giveaway.get('description', f"{brand['name']} mağazasında {giveaway.get('prize_text', 'harika ödüller')} çekilişi! Hemen katılın!"),
+        'canonical': f"{base_url}{canonical_url}",
+        'robots': 'noindex,follow' if is_expired else 'index,follow',
+        'og_type': 'product',
+        'og_title': f"{giveaway.get('prize_text', 'Çekiliş')} - {brand['name']}",
+        'og_description': giveaway['title'],
+    }
+    
+    # Structured Data (Schema.org)
+    structured_data = {
+        "@context": "https://schema.org",
+        "@type": "Event",
+        "name": giveaway['title'],
+        "description": giveaway.get('description', giveaway['title']),
+        "url": f"{base_url}{canonical_url}",
+        "eventStatus": "https://schema.org/EventScheduled" if not is_expired else "https://schema.org/EventCancelled",
+        "organizer": {
+            "@type": "Organization",
+            "name": brand['name'],
+            "url": f"{base_url}/magaza/{brand['slug']}"
+        },
+        "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "TRY",
+            "availability": "https://schema.org/InStock" if not is_expired else "https://schema.org/SoldOut"
+        }
+    }
+    if giveaway.get('expiry_date'):
+        structured_data['endDate'] = giveaway['expiry_date'].isoformat()
+    
+    # Get related deals from same brand
+    related_coupons = await db.coupons.find({
+        'brand_id': brand['id'],
+        'is_active': True
+    }, {'_id': 0}).limit(3).to_list(3)
+    
+    related_discounts = await db.discounts.find({
+        'brand_id': brand['id']
+    }, {'_id': 0}).limit(3).to_list(3)
+    
+    related_giveaways = await db.giveaways.find({
+        'brand_id': brand['id'],
+        'id': {'$ne': giveaway_id},
+        'is_active': True
+    }, {'_id': 0}).limit(2).to_list(2)
+    
+    # Mark types
+    for c in related_coupons:
+        c['item_type'] = 'coupon'
+    for d in related_discounts:
+        d['item_type'] = 'discount'
+    for g in related_giveaways:
+        g['item_type'] = 'giveaway'
+    
+    related_deals = (related_coupons + related_discounts + related_giveaways)[:8]
+    
+    return {
+        'item_type': 'giveaway',
+        'item': giveaway,
+        'brand': {
+            'id': brand['id'],
+            'name': brand['name'],
+            'slug': brand['slug'],
+            'logo_url': brand.get('logo_url'),
+            'description': brand.get('description')
+        },
+        'is_expired': is_expired,
+        'canonical_url': canonical_url,
+        'seo_meta': seo_meta,
+        'structured_data': structured_data,
+        'related_deals': related_deals,
+        'total_brand_deals': len(related_coupons) + len(related_discounts) + len(related_giveaways) + 1
+    }
+
+
 @api_router.post("/coupons", response_model=Coupon)
 async def create_coupon(coupon: CouponCreate, user: AdminUser = Depends(get_current_user)):
     new_coupon = Coupon(**coupon.model_dump())
