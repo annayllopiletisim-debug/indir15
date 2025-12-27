@@ -211,6 +211,11 @@ const AdminDiscountsPage = () => {
                   <label className="block text-sm font-medium mb-1">Hedef URL</label>
                   <Input value={formData.destination_url} onChange={(e) => setFormData({...formData, destination_url: e.target.value})} placeholder="https://..." />
                 </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1">Kampanya Görseli (URL)</label>
+                  <Input value={formData.image_url} onChange={(e) => setFormData({...formData, image_url: e.target.value})} placeholder="https://example.com/image.jpg" />
+                  <p className="text-xs text-muted-foreground mt-1">Kartlarda görünecek kampanya görseli URL'i</p>
+                </div>
                 <div className="flex gap-2 pt-4">
                   <Button type="submit">{editingId ? 'Güncelle' : 'Ekle'}</Button>
                   <Button type="button" variant="outline" onClick={resetForm}>İptal</Button>
