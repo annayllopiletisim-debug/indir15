@@ -35,16 +35,7 @@ export const buildUTMLink = (baseUrl, utmTemplate, itemId) => {
   
   const params = new URLSearchParams();
   
-  // Always add default UTM parameters
-  params.append('utm_source', 'indirimkesfet');
-  params.append('utm_medium', 'discount');
-  
-  // Add item_id as utm_content for tracking
-  if (itemId) {
-    params.append('utm_content', itemId);
-  }
-  
-  // If there's a custom template, add those params too (they can override defaults)
+  // If there's a custom template, add those params first
   if (utmTemplate) {
     const utmParts = utmTemplate.split('&');
     utmParts.forEach(part => {
@@ -53,6 +44,15 @@ export const buildUTMLink = (baseUrl, utmTemplate, itemId) => {
         params.set(key, value.replace('{item_id}', itemId || ''));
       }
     });
+  }
+  
+  // Override with our default UTM parameters (always use ours)
+  params.set('utm_source', 'indirimkesfet');
+  params.set('utm_medium', 'discount');
+  
+  // Add item_id as utm_content for tracking (if not already set by template)
+  if (itemId && !params.has('utm_content')) {
+    params.set('utm_content', itemId);
   }
   
   const separator = baseUrl.includes('?') ? '&' : '?';
