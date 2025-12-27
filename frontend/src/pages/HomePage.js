@@ -206,22 +206,22 @@ const HomePage = () => {
               </Link>
             </div>
 
-            <div className="flex gap-3 overflow-x-auto pb-2 -mx-4 px-4 scrollbar-hide">
+            <div className="flex gap-3 overflow-x-auto pb-2 pt-3 -mx-4 px-4 scrollbar-hide">
               {brands.slice(0, 10).map((brand) => {
                 const dealCount = brandDealCounts[brand.id] || 0;
                 return (
                   <Link
                     key={brand.id}
                     to={`/magaza/${brand.slug}`}
-                    className="flex-shrink-0 flex items-center gap-3 px-4 py-2.5 bg-card border border-border rounded-xl hover:border-primary/30 transition-colors relative"
+                    className="flex-shrink-0 flex items-center gap-3 px-4 py-2.5 bg-card border border-border rounded-xl hover:border-primary/30 transition-colors relative overflow-visible"
                   >
                     {/* #7 - Büyütülmüş logo */}
                     <BrandLogo logoUrl={brand.logo_url} brandName={brand.name} size="sm" />
                     <span className="text-sm font-medium whitespace-nowrap">{brand.name}</span>
                     
-                    {/* #3 - İndirim sayısı badge - düzeltilmiş pozisyon */}
+                    {/* #3 - İndirim sayısı badge - kartın sağ üst köşesi içinde */}
                     {dealCount > 0 && (
-                      <span className="absolute -top-2 -right-2 min-w-[22px] h-[22px] px-1.5 flex items-center justify-center bg-primary text-white text-xs font-bold rounded-full border-2 border-background">
+                      <span className="absolute -top-2.5 -right-2.5 min-w-[22px] h-[22px] px-1.5 flex items-center justify-center bg-primary text-white text-xs font-bold rounded-full border-2 border-background shadow-sm z-10">
                         {dealCount}
                       </span>
                     )}
