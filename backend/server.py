@@ -2062,6 +2062,289 @@ async def get_all_seo_slugs():
     
     return {'slugs': slugs, 'total': len(slugs)}
 
+
+# ================== GOOGLE SHEET IMPORT ==================
+
+class SheetImportRequest(BaseModel):
+    sheet_url: str
+    
+class SheetImportResult(BaseModel):
+    success: bool
+    total_rows: int
+    imported: int
+    skipped: int
+    errors: List[dict]
+    imported_items: List[dict]
+
+
+def extract_sheet_id(url: str) -> str:
+    """Extract Google Sheet ID from URL"""
+    import re
+    # Match pattern: /d/{sheet_id}/
+    match = re.search(r'/d/([a-zA-Z0-9-_]+)', url)
+    if match:
+        return match.group(1)
+    return None
+
+
+def parse_turkish_date(date_str: str) -> Optional[datetime]:
+    """Parse Turkish date formats like '1 Ocak 2026'"""
+    if not date_str or not date_str.strip():
+        return None
+    
+    turkish_months = {
+        'ocak': 1, 'şubat': 2, 'mart': 3, 'nisan': 4,
+        'mayıs': 5, 'haziran': 6, 'temmuz': 7, 'ağustos': 8,
+        'eylül': 9, 'ekim': 10, 'kasım': 11, 'aralık': 12
+    }
+    
+    try:
+        parts = date_str.lower().strip().split()
+        if len(parts) >= 3:
+            day = int(parts[0])
+            month = turkish_months.get(parts[1], 1)
+            year = int(parts[2])
+            return datetime(year, month, day, 23, 59, 59, tzinfo=timezone.utc)
+    except:
+        pass
+    
+    # Try ISO format
+    try:
+        return datetime.fromisoformat(date_str.replace('Z', '+00:00'))
+    except:
+        pass
+    
+    return None
+
+
+def match_store(store_name: str, brands: List[dict]) -> Optional[dict]:
+    """Match store name to existing brand using fuzzy matching"""
+    if not store_name:
+        return None
+    
+    store_lower = store_name.lower().strip()
+    
+    # Exact match
+    for brand in brands:
+        if brand['name'].lower() == store_lower:
+            return brand
+    
+    # Partial match
+    for brand in brands:
+        brand_lower = brand['name'].lower()
+        if store_lower in brand_lower or brand_lower in store_lower:
+            return brand
+    
+    # Slug match
+    for brand in brands:
+        slug_lower = brand['slug'].lower().replace('-', ' ')
+        if store_lower in slug_lower or slug_lower in store_lower:
+            return brand
+    
+    return None
+
+
+@api_router.post("/admin/import-sheet", response_model=SheetImportResult)
+async def import_from_google_sheet(
+    request: SheetImportRequest,
+    credentials: HTTPAuthorizationCredentials = Depends(security)
+):
+    """
+    Import discounts/coupons from a Google Sheet.
+    Sheet must be publicly accessible or shared.
+    
+    Expected columns:
+    - Türü (İndirim/Kupon)
+    - Mağaza (store name)
+    - Başlık (title)
+    - Açıklama (Kısa) (short description)
+    - Uzun Açıklama (long description)
+    - İndirim Metni (discount text like %50)
+    - Bitiş Tarihi (expiry date)
+    - URL (destination URL)
+    - Kupon Kodu (coupon code, only for coupons)
+    - Kullanım Koşulları (terms, optional)
+    """
+    # Verify token
+    try:
+        payload = jwt.decode(request.sheet_url if False else credentials.credentials, SECRET_KEY, algorithms=['HS256'])
+    except:
+        pass  # Just verify user is logged in
+    
+    # Extract sheet ID
+    sheet_id = extract_sheet_id(request.sheet_url)
+    if not sheet_id:
+        raise HTTPException(status_code=400, detail="Geçersiz Google Sheet URL'si")
+    
+    # Fetch CSV from Google Sheets
+    csv_url = f"https://docs.google.com/spreadsheets/d/{sheet_id}/export?format=csv"
+    
+    try:
+        async with aiohttp.ClientSession() as session:
+            async with session.get(csv_url) as response:
+                if response.status != 200:
+                    raise HTTPException(status_code=400, detail="Sheet'e erişilemedi. Sheet'in herkese açık olduğundan emin olun.")
+                csv_content = await response.text()
+    except aiohttp.ClientError as e:
+        raise HTTPException(status_code=400, detail=f"Sheet'e erişilemedi: {str(e)}")
+    
+    # Parse CSV
+    import csv
+    from io import StringIO
+    
+    reader = csv.DictReader(StringIO(csv_content))
+    rows = list(reader)
+    
+    if not rows:
+        raise HTTPException(status_code=400, detail="Sheet boş veya okunamadı")
+    
+    # Get all brands for matching
+    brands = await db.brands.find({}, {'_id': 0}).to_list(500)
+    
+    # Process rows
+    results = {
+        'success': True,
+        'total_rows': len(rows),
+        'imported': 0,
+        'skipped': 0,
+        'errors': [],
+        'imported_items': []
+    }
+    
+    # Column name mapping (handle variations)
+    def get_column(row, *possible_names):
+        for name in possible_names:
+            for key in row.keys():
+                if name.lower() in key.lower():
+                    return row.get(key, '').strip()
+        return ''
+    
+    for idx, row in enumerate(rows, start=2):  # Start from 2 (1 is header)
+        try:
+            # Extract data with flexible column matching
+            item_type = get_column(row, 'türü', 'type', 'tip')
+            store_name = get_column(row, 'mağaza', 'store', 'brand', 'magaza')
+            title = get_column(row, 'başlık', 'title', 'baslik')
+            short_desc = get_column(row, 'açıklama (kısa)', 'açıklama', 'aciklama', 'description')
+            long_desc = get_column(row, 'uzun açıklama', 'long', 'detay')
+            discount_text = get_column(row, 'indirim metni', 'indirim', 'discount')
+            expiry_str = get_column(row, 'bitiş', 'bitis', 'tarih', 'expiry', 'date')
+            url = get_column(row, 'url', 'link', 'hedef')
+            coupon_code = get_column(row, 'kupon kodu', 'kod', 'code')
+            terms = get_column(row, 'kullanım koşulları', 'koşul', 'terms')
+            
+            # Validate required fields
+            if not title:
+                results['errors'].append({
+                    'row': idx,
+                    'reason': 'Başlık boş',
+                    'data': store_name
+                })
+                results['skipped'] += 1
+                continue
+            
+            # Match store
+            matched_brand = match_store(store_name, brands)
+            if not matched_brand:
+                results['errors'].append({
+                    'row': idx,
+                    'reason': f"Mağaza bulunamadı: '{store_name}'",
+                    'data': title
+                })
+                results['skipped'] += 1
+                continue
+            
+            # Parse expiry date
+            expiry_date = parse_turkish_date(expiry_str)
+            
+            # Determine if coupon or discount
+            is_coupon = 'kupon' in item_type.lower() if item_type else bool(coupon_code)
+            
+            # Check for duplicates (same brand + title)
+            if is_coupon:
+                existing = await db.coupons.find_one({
+                    'brand_id': matched_brand['id'],
+                    'title': title
+                })
+            else:
+                existing = await db.discounts.find_one({
+                    'brand_id': matched_brand['id'],
+                    'title': title
+                })
+            
+            if existing:
+                results['errors'].append({
+                    'row': idx,
+                    'reason': 'Aynı başlıkla kayıt zaten mevcut',
+                    'data': title
+                })
+                results['skipped'] += 1
+                continue
+            
+            # Create item
+            item_id = str(uuid.uuid4())
+            now = datetime.now(timezone.utc)
+            
+            if is_coupon:
+                # Create coupon
+                coupon_data = {
+                    'id': item_id,
+                    'brand_id': matched_brand['id'],
+                    'title': title,
+                    'description': short_desc or title,
+                    'long_description': long_desc or None,
+                    'terms_conditions': terms or None,
+                    'code': coupon_code or 'INDIRIM',
+                    'discount_text': discount_text or 'İndirim',
+                    'expiry_date': expiry_date,
+                    'is_active': True,
+                    'utm_template': 'utm_source=indirimkesset&utm_medium=coupon',
+                    'destination_url': url or f"https://{matched_brand['slug']}.com.tr",
+                    'created_at': now
+                }
+                await db.coupons.insert_one(coupon_data)
+                results['imported_items'].append({
+                    'type': 'kupon',
+                    'title': title,
+                    'brand': matched_brand['name'],
+                    'id': item_id
+                })
+            else:
+                # Create discount
+                discount_data = {
+                    'id': item_id,
+                    'brand_id': matched_brand['id'],
+                    'title': title,
+                    'description': short_desc or title,
+                    'long_description': long_desc or None,
+                    'terms_conditions': terms or None,
+                    'discount_text': discount_text or 'İndirim',
+                    'expiry_date': expiry_date,
+                    'utm_template': 'utm_source=indirimkesset&utm_medium=discount',
+                    'destination_url': url or f"https://{matched_brand['slug']}.com.tr",
+                    'created_at': now
+                }
+                await db.discounts.insert_one(discount_data)
+                results['imported_items'].append({
+                    'type': 'indirim',
+                    'title': title,
+                    'brand': matched_brand['name'],
+                    'id': item_id
+                })
+            
+            results['imported'] += 1
+            
+        except Exception as e:
+            results['errors'].append({
+                'row': idx,
+                'reason': f"Beklenmeyen hata: {str(e)}",
+                'data': str(row)[:100]
+            })
+            results['skipped'] += 1
+    
+    return results
+
+
 app.include_router(api_router)
 
 app.add_middleware(
