@@ -46,7 +46,7 @@ const DealDetailPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [copied, setCopied] = useState(false);
-  const [showCode, setShowCode] = useState(false);
+  const [showModal, setShowModal] = useState(false);
 
   // Extract ID from slug (format: title-slug-uuid where uuid is like xxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx)
   // UUID has 5 parts separated by hyphens
