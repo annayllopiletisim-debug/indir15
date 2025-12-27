@@ -171,10 +171,10 @@ const BaseCard = ({
             {/* Right: Content */}
             <div className="flex-1 min-w-0 flex flex-col">
               {/* Top Row: Discount Badge + Time */}
-              <div className="flex items-center justify-between gap-2 mb-2">
+              <div className="flex items-start justify-between gap-2 mb-2 flex-wrap sm:flex-nowrap">
                 {/* Discount Badge */}
                 {discountText && (
-                  <span className="inline-flex px-3 py-1.5 bg-gradient-to-r from-violet-500 to-purple-600 text-white text-sm font-bold rounded-[20px] uppercase tracking-wide">
+                  <span className="inline-flex px-3 py-1 bg-gradient-to-r from-violet-500 to-purple-600 text-white text-xs sm:text-sm font-bold rounded-[20px] uppercase tracking-wide whitespace-nowrap">
                     {discountText}
                   </span>
                 )}
@@ -182,14 +182,14 @@ const BaseCard = ({
                 {/* Time Remaining */}
                 {timeLeft ? (
                   <span 
-                    className="flex-shrink-0 inline-flex items-center gap-1 text-sm font-semibold"
+                    className="flex-shrink-0 inline-flex items-center gap-1 text-sm font-semibold whitespace-nowrap"
                     style={{ color: timeLeft.color }}
                   >
                     <Clock className="w-4 h-4" />
                     {timeLeft.text}
                   </span>
                 ) : (
-                  <span className="flex-shrink-0 inline-flex items-center gap-1 text-sm font-semibold text-green-500">
+                  <span className="flex-shrink-0 inline-flex items-center gap-1 text-sm font-semibold text-green-500 whitespace-nowrap">
                     <Clock className="w-4 h-4" />
                     Süresiz
                   </span>
