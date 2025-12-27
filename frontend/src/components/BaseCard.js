@@ -128,8 +128,8 @@ const BaseCard = ({
     >
       <div className="glass-effect rounded-2xl p-4 hover:border-primary/30 transition-all duration-300 h-full">
         <div className="flex gap-4">
-          {/* Left: Image Area */}
-          <div className="flex-shrink-0 w-28 sm:w-32">
+          {/* Left: Image Area - LARGER */}
+          <div className="flex-shrink-0 w-36 sm:w-44">
             <div className="aspect-square rounded-xl overflow-hidden bg-gradient-to-br from-muted to-muted/50 relative">
               {imageUrl ? (
                 <img 
@@ -140,7 +140,7 @@ const BaseCard = ({
                 />
               ) : (
                 <div className={`w-full h-full bg-gradient-to-br ${colors.bg} flex items-center justify-center`}>
-                  <ImageIcon className={`w-10 h-10 ${colors.icon} opacity-40`} />
+                  <ImageIcon className={`w-12 h-12 ${colors.icon} opacity-40`} />
                 </div>
               )}
               
@@ -160,16 +160,16 @@ const BaseCard = ({
           {/* Right: Content */}
           <div className="flex-1 flex flex-col min-w-0">
             {/* Top: Brand + Time */}
-            <div className="flex items-center justify-between gap-2 mb-2">
-              {/* Brand */}
+            <div className="flex items-center justify-between gap-2 mb-3">
+              {/* Brand - BIGGER */}
               {brandName && (
                 <Link 
                   to={brandSlug ? `/magaza/${brandSlug}` : '#'}
-                  className="inline-flex items-center gap-1.5 hover:opacity-80 transition-opacity max-w-[140px]"
+                  className="inline-flex items-center gap-2 hover:opacity-80 transition-opacity max-w-[200px]"
                   title={brandName}
                 >
-                  <BrandLogo logoUrl={brandLogoUrl} brandName={brandName} size="sm" />
-                  <span className="text-sm font-medium truncate">{brandName}</span>
+                  <BrandLogo logoUrl={brandLogoUrl} brandName={brandName} size="md" />
+                  <span className="text-lg font-bold truncate">{brandName}</span>
                 </Link>
               )}
               
