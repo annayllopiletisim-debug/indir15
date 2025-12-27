@@ -907,6 +907,57 @@ async def delete_discount(discount_id: str, user: AdminUser = Depends(get_curren
         raise HTTPException(status_code=404, detail="Discount not found")
     return {"message": "Discount deleted"}
 
+
+# ═══════════════════════════════════════════════════════════════
+# GIVEAWAY (ÇEKİLİŞ) CRUD ENDPOINTS
+# ═══════════════════════════════════════════════════════════════
+
+@api_router.get("/giveaways", response_model=List[Giveaway])
+async def get_giveaways(brand_id: Optional[str] = None):
+    query = {'brand_id': brand_id} if brand_id else {}
+    giveaways = await db.giveaways.find(query, {'_id': 0}).to_list(1000)
+    for g in giveaways:
+        if isinstance(g.get('created_at'), str):
+            g['created_at'] = datetime.fromisoformat(g['created_at'])
+        if isinstance(g.get('expiry_date'), str):
+            g['expiry_date'] = datetime.fromisoformat(g['expiry_date'])
+    return giveaways
+
+
+@api_router.post("/giveaways", response_model=Giveaway)
+async def create_giveaway(giveaway: GiveawayCreate, user: AdminUser = Depends(get_current_user)):
+    giveaway_dict = giveaway.model_dump()
+    giveaway_dict['id'] = str(uuid.uuid4())
+    giveaway_dict['created_at'] = datetime.now(timezone.utc)
+    await db.giveaways.insert_one(giveaway_dict)
+    return giveaway_dict
+
+
+@api_router.put("/giveaways/{giveaway_id}", response_model=Giveaway)
+async def update_giveaway(giveaway_id: str, giveaway: GiveawayCreate, user: AdminUser = Depends(get_current_user)):
+    existing = await db.giveaways.find_one({'id': giveaway_id})
+    if not existing:
+        raise HTTPException(status_code=404, detail="Giveaway not found")
+    
+    giveaway_dict = giveaway.model_dump()
+    giveaway_dict['id'] = giveaway_id
+    giveaway_dict['created_at'] = existing.get('created_at', datetime.now(timezone.utc))
+    
+    await db.giveaways.update_one(
+        {'id': giveaway_id},
+        {'$set': giveaway_dict}
+    )
+    return giveaway_dict
+
+
+@api_router.delete("/giveaways/{giveaway_id}")
+async def delete_giveaway(giveaway_id: str, user: AdminUser = Depends(get_current_user)):
+    result = await db.giveaways.delete_one({'id': giveaway_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Giveaway not found")
+    return {"message": "Giveaway deleted"}
+
+
 # ═══════════════════════════════════════════════════════════════
 # DEALS COUNT ENDPOINT (for Sticky CTA)
 # ═══════════════════════════════════════════════════════════════
@@ -914,7 +965,7 @@ async def delete_discount(discount_id: str, user: AdminUser = Depends(get_curren
 @api_router.get("/deals/count")
 async def get_deals_count(brand_ids: Optional[str] = None, category_id: Optional[str] = None):
     """
-    Get total count of active deals (coupons + discounts) for given filters.
+    Get total count of active deals (coupons + discounts + giveaways) for given filters.
     brand_ids: comma-separated brand IDs (e.g., "id1,id2,id3")
     category_id: filter by category (will get all brands in that category)
     Returns: { count: number }
@@ -932,7 +983,8 @@ async def get_deals_count(brand_ids: Optional[str] = None, category_id: Optional
         # No filters, return total active deals
         coupon_count = await db.coupons.count_documents({'is_active': {'$ne': False}})
         discount_count = await db.discounts.count_documents({})
-        return {"count": coupon_count + discount_count}
+        giveaway_count = await db.giveaways.count_documents({'is_active': {'$ne': False}})
+        return {"count": coupon_count + discount_count + giveaway_count}
     
     # Count coupons for selected brands
     coupon_count = await db.coupons.count_documents({
@@ -945,7 +997,13 @@ async def get_deals_count(brand_ids: Optional[str] = None, category_id: Optional
         'brand_id': {'$in': brand_id_list}
     })
     
-    return {"count": coupon_count + discount_count}
+    # Count giveaways for selected brands
+    giveaway_count = await db.giveaways.count_documents({
+        'brand_id': {'$in': brand_id_list},
+        'is_active': {'$ne': False}
+    })
+    
+    return {"count": coupon_count + discount_count + giveaway_count}
 
 # ═══════════════════════════════════════════════════════════════
 # SITE SETTINGS (for Admin toggles like Sticky CTA)
