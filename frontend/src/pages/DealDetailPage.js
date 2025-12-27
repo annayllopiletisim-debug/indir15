@@ -489,6 +489,77 @@ const DealDetailPage = () => {
           )}
         </div>
       </div>
+
+      {/* Coupon Code Modal */}
+      <AnimatePresence>
+        {showModal && data && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60"
+            onClick={() => setShowModal(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="relative max-w-md w-full bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-2xl"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button
+                onClick={() => setShowModal(false)}
+                className="absolute top-4 right-4 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors text-gray-500 dark:text-gray-400"
+              >
+                <X className="w-5 h-5" />
+              </button>
+
+              <div className="text-center">
+                <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-primary to-pink-500 flex items-center justify-center">
+                  <Check className="w-8 h-8 text-white" />
+                </div>
+                
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Kupon Kodunuz Hazır!</h3>
+                <p className="text-gray-500 dark:text-gray-400 mb-6">Kodu kopyalayın ve mağazada kullanın</p>
+
+                <div className="mb-4">
+                  {/* Coupon Code Display */}
+                  <div className="font-mono text-2xl font-bold text-gray-900 dark:text-white mb-4 px-6 py-4 rounded-xl bg-gray-50 dark:bg-gray-700 border-2 border-primary/30">
+                    {data.item.code}
+                  </div>
+                  
+                  {/* Copy Button */}
+                  <button
+                    onClick={handleCopyCode}
+                    className="w-full px-6 py-3 bg-gradient-to-r from-primary to-pink-500 text-white rounded-xl font-semibold hover:shadow-lg transition-all flex items-center justify-center gap-2 mb-3"
+                  >
+                    {copied ? (
+                      <><Check className="w-5 h-5" /><span>Kopyalandı!</span></>
+                    ) : (
+                      <><Copy className="w-5 h-5" /><span>Kodu Kopyala</span></>
+                    )}
+                  </button>
+
+                  {/* Go to Store Button */}
+                  {data.item.destination_url && (
+                    <button
+                      onClick={handleGoToStore}
+                      className="w-full px-6 py-3 bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-xl font-semibold hover:bg-gray-200 dark:hover:bg-gray-600 transition-all flex items-center justify-center gap-2"
+                    >
+                      <ExternalLink className="w-5 h-5" />
+                      <span>{data.brand.name}'a Git</span>
+                    </button>
+                  )}
+                </div>
+
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                  {data.item.discount_text} indiriminizden yararlanmak için kodu sepette uygulayın.
+                </p>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
