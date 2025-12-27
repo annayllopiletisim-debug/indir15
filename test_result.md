@@ -120,22 +120,18 @@ frontend:
 metadata:
   created_by: "testing_agent"
   version: "1.0"
-  test_sequence: 1
-  run_ui: false
+  test_sequence: 2
+  run_ui: true
 
 test_plan:
   current_focus:
-    - "Coupon Detail API Endpoint"
-    - "Discount Detail API Endpoint"
-    - "404 Error Handling for Invalid IDs"
-    - "SEO Meta Tags Generation"
-    - "Structured Data Schema.org"
+    - "Mobile Scroll Behavior on Category Page"
+    - "Header Hide/Show on Scroll"
+    - "Popular Stores Bar Sticky Behavior"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
 
 agent_communication:
-  - agent: "testing"
-    message: "✅ ALL BACKEND TESTS PASSED (100% success rate). Deal Detail Pages feature is fully functional on the backend. All API endpoints working correctly with proper response structures, SEO meta tags, structured data, and error handling. Ready for frontend integration testing."
-  - agent: "testing"
-    message: "✅ ALL FRONTEND TESTS PASSED (100% success rate). Deal Detail Pages feature is fully functional on the frontend. Comprehensive UI testing completed successfully: Coupon Detail Page displays H1 title, brand logo, time remaining badge, breadcrumb navigation, 'Kampanya Detayı' section, CTA button with scissors icon and peek effect, related deals section, and 'Tümünü Gör' link. Discount Detail Page displays H1 title and CTA button with arrow icon. Brand page cards have proper 'Devamını Gör', 'Kodu Göster', and 'Mağazaya Git' buttons. Navigation flow works correctly. Mobile responsive design excellent. All requirements from review request verified and working."
+  - agent: "main"
+    message: "Fixed mobile scroll behavior on category page. The main header now hides when scrolling down (using translateY(-100%)) and the Popular Stores bar becomes sticky at top-0. When scrolling up, the header returns and Popular Stores moves to top-16. Implementation uses requestAnimationFrame for smooth performance. Test on /kategori/moda with mobile viewport (375x800)."
