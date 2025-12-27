@@ -228,6 +228,7 @@ const DealDetailPage = () => {
   const { item, brand, is_expired, related_deals, total_brand_deals } = data;
   const timeLeft = getTimeRemaining(item.expiry_date);
   const isCoupon = dealType === 'coupon';
+  const isGiveaway = dealType === 'giveaway';
 
   return (
     <div className="min-h-screen pb-12">
