@@ -128,11 +128,11 @@ const BaseCard = ({
     >
       <div className="bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all duration-200 overflow-hidden">
         {/* Main Content Area */}
-        <div className="p-4">
+        <div className="p-0">
           <div className="flex gap-4">
-            {/* Left: Square Image */}
+            {/* Left: Large Square Image - flush to left edge */}
             <div className="flex-shrink-0">
-              <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-xl overflow-hidden bg-gradient-to-br from-violet-100 to-violet-200 flex items-center justify-center">
+              <div className="w-28 h-28 sm:w-36 sm:h-36 rounded-r-xl overflow-hidden bg-gradient-to-br from-violet-100 to-violet-200 flex items-center justify-center">
                 {imageUrl ? (
                   <img 
                     src={imageUrl} 
