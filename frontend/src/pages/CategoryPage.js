@@ -432,21 +432,8 @@ const CategoryPage = () => {
   return (
     <>
       <div className="min-h-screen pb-20" data-testid="category-page">
-        {/* Header - Slides up on mobile when scrolling down */}
-        <div 
-          className={`bg-card border-b border-border transition-transform duration-300 md:transform-none ${
-            hideHeader 
-              ? '-translate-y-full md:translate-y-0' 
-              : 'translate-y-0'
-          }`}
-          style={{ 
-            position: hideHeader ? 'fixed' : 'relative',
-            top: 0,
-            left: 0,
-            right: 0,
-            zIndex: hideHeader ? 30 : 'auto'
-          }}
-        >
+        {/* Header */}
+        <div className="bg-card border-b border-border">
           <div className="container mx-auto px-4 py-6 md:py-8">
             {/* Desktop: Two columns / Mobile: Single column */}
             <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4 md:gap-8">
