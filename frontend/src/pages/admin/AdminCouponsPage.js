@@ -16,7 +16,8 @@ const AdminCouponsPage = () => {
   const [brandFilter, setBrandFilter] = useState('all');
   const [selectedIds, setSelectedIds] = useState([]);
   const [formData, setFormData] = useState({
-    brand_id: '', title: '', description: '', code: '', discount_text: '', expiry_date: '',
+    brand_id: '', title: '', description: '', long_description: '', terms_conditions: '',
+    code: '', discount_text: '', expiry_date: '',
     is_active: true, utm_template: 'utm_source=İndirim Keşfet&utm_medium=coupon', destination_url: ''
   });
 
