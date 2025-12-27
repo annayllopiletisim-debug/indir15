@@ -19,7 +19,9 @@ const generateSlug = (title) => {
 };
 
 const GiveawayCard = ({ giveaway, brand, compact = false }) => {
-  const handleClick = () => {
+  const handleClick = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
     trackClick('giveaway_click', giveaway.id, giveaway.brand_id, brand?.category_id);
     if (giveaway.destination_url) {
       const finalUrl = buildUTMLink(giveaway.destination_url, giveaway.utm_template, giveaway.id);
@@ -63,6 +65,7 @@ const GiveawayCard = ({ giveaway, brand, compact = false }) => {
       brandName={brandName}
       brandSlug={brandSlug}
       brandLogoUrl={brandLogoUrl}
+      detailUrl={detailUrl}
       actions={actions}
       compact={compact}
     />
