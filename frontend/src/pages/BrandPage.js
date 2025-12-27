@@ -125,6 +125,9 @@ const BrandPage = () => {
               <TabsTrigger value="discounts" data-testid="tab-discounts" className="text-sm font-semibold">
                 İndirimler <span className="ml-1.5 px-2 py-0.5 rounded-full bg-neon-blue/20 text-xs font-bold">{discounts.length}</span>
               </TabsTrigger>
+              <TabsTrigger value="giveaways" data-testid="tab-giveaways" className="text-sm font-semibold">
+                Çekilişler <span className="ml-1.5 px-2 py-0.5 rounded-full bg-emerald-500/20 text-xs font-bold">{giveaways.length}</span>
+              </TabsTrigger>
               {brand.app_install_enabled && (
                 <TabsTrigger value="app" data-testid="tab-app" className="text-sm font-semibold">
                   App
