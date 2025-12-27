@@ -178,9 +178,9 @@ const BaseCard = ({
                   </div>
                 )}
 
-                {/* Discount Badge - Soft purple style */}
+                {/* Discount Badge - Light: violet, Dark: green */}
                 {discountText && (
-                  <span className="inline-flex self-start px-3 py-1 bg-violet-100 dark:bg-violet-900/50 text-violet-700 dark:text-violet-300 text-sm font-bold rounded-full mb-2">
+                  <span className="inline-flex self-start px-3 py-1 bg-violet-100 dark:bg-green-900/50 text-violet-700 dark:text-green-400 text-sm font-bold rounded-full mb-2">
                     {discountText}
                   </span>
                 )}
