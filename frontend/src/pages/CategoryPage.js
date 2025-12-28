@@ -308,8 +308,7 @@ const CategoryPage = () => {
     setDisplayCount(prev => prev + 10);
   };
 
-  // Sub categories for this category
-  const subCategories = SUB_CATEGORIES[slug] || [];
+  // Note: Sub-categories removed from UI
 
   // Category description
   const categoryDescription = category?.description || 
