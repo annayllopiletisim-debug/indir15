@@ -67,6 +67,23 @@ const CategoryPageLayout = ({ children }) => {
   );
 };
 
+// Layout for brand/store detail page - no header/search on mobile (has bottom nav)
+const BrandPageLayout = ({ children }) => {
+  return (
+    <div className="min-h-screen flex flex-col">
+      {/* Header only on desktop */}
+      <div className="hidden lg:block">
+        <Header />
+        <CategoryNav />
+      </div>
+      <main className="flex-1">{children}</main>
+      <div className="hidden lg:block">
+        <Footer />
+      </div>
+    </div>
+  );
+};
+
 function App() {
   return (
     <ThemeProvider>
