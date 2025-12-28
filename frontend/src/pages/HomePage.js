@@ -6,6 +6,8 @@ import CouponCard from '../components/CouponCard';
 import DiscountCard from '../components/DiscountCard';
 import BrandLogo from '../components/BrandLogo';
 import Newsletter from '../components/Newsletter';
+import MobileSearchBar from '../components/MobileSearchBar';
+import CategorySlider from '../components/CategorySlider';
 import { trackClick, buildUTMLink } from '../utils/helpers';
 import { 
   ChevronRight, 
@@ -13,7 +15,8 @@ import {
   TrendingUp,
   Search,
   Copy,
-  Check
+  Check,
+  Star
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
@@ -83,7 +86,7 @@ const HomePage = () => {
   const [allBrands, setAllBrands] = useState([]); // All brands with deal counts
   const [categories, setCategories] = useState([]);
   const [expiringSoon, setExpiringSoon] = useState({ coupons: [], discounts: [], total: 0 });
-  const [popularToday, setPopularToday] = useState({ coupons: [], discounts: [], total: 0 });
+  const [featuredDeals, setFeaturedDeals] = useState({ coupons: [], discounts: [], total: 0 });
   const [loading, setLoading] = useState(true);
   
   // Modal state
@@ -93,19 +96,19 @@ const HomePage = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [brandsRes, allBrandsRes, categoriesRes, expiringSoonRes, popularRes] = await Promise.all([
+        const [brandsRes, allBrandsRes, categoriesRes, expiringSoonRes, featuredRes] = await Promise.all([
           axios.get(`${API}/homepage-brands`),
           axios.get(`${API}/brands/list-with-deal-counts`),
           axios.get(`${API}/categories/with-stats`),
           axios.get(`${API}/expiring-soon`),
-          axios.get(`${API}/popular-today`),
+          axios.get(`${API}/featured-deals`),
         ]);
         
         setBrands(brandsRes.data);
         setAllBrands(allBrandsRes.data);
         setCategories(categoriesRes.data);
         setExpiringSoon(expiringSoonRes.data);
-        setPopularToday(popularRes.data);
+        setFeaturedDeals(featuredRes.data);
       } catch (error) {
         console.error('Failed to fetch data:', error);
       } finally {
@@ -136,24 +139,17 @@ const HomePage = () => {
     return acc;
   }, {});
 
-  // Combine expiring soon items
+  // Combine expiring soon items - show only 1 on mobile homepage
   const expiringItems = [
     ...expiringSoon.coupons.map(c => ({ ...c, type: 'coupon' })),
     ...expiringSoon.discounts.map(d => ({ ...d, type: 'discount' }))
-  ].slice(0, 8);
+  ].slice(0, 1);
 
-  // Combine popular items
-  const popularItems = [
-    ...popularToday.coupons.map(c => ({ ...c, type: 'coupon' })),
-    ...popularToday.discounts.map(d => ({ ...d, type: 'discount' }))
-  ].slice(0, 6);
-
-  // Sort categories - those with deals first
-  const sortedCategories = [...categories].sort((a, b) => {
-    if (a.total_deals > 0 && b.total_deals === 0) return -1;
-    if (a.total_deals === 0 && b.total_deals > 0) return 1;
-    return b.total_deals - a.total_deals;
-  });
+  // Combine featured items - max 5
+  const featuredItems = [
+    ...featuredDeals.coupons.map(c => ({ ...c, type: 'coupon' })),
+    ...featuredDeals.discounts.map(d => ({ ...d, type: 'discount' }))
+  ].slice(0, 5);
 
   // Handle card click
   const handleDealClick = (item, brand) => {
@@ -195,7 +191,17 @@ const HomePage = () => {
       <div className="min-h-screen" data-testid="home-page">
 
         {/* ═══════════════════════════════════════════════════════════════
-            1️⃣ POPÜLER MAĞAZALAR (Büyütülmüş logolar + indirim sayısı badge) - #3, #7
+            MOBILE SEARCH BAR - Header altında, sadece mobilde
+        ═══════════════════════════════════════════════════════════════ */}
+        <MobileSearchBar />
+
+        {/* ═══════════════════════════════════════════════════════════════
+            CATEGORY SLIDER - Sadece mobilde, ikonlu
+        ═══════════════════════════════════════════════════════════════ */}
+        <CategorySlider />
+
+        {/* ═══════════════════════════════════════════════════════════════
+            1️⃣ POPÜLER MAĞAZALAR (Büyütülmüş logolar + indirim sayısı badge)
         ═══════════════════════════════════════════════════════════════ */}
         {brands.length > 0 && (
           <section className="container mx-auto px-4 py-4">
@@ -215,11 +221,10 @@ const HomePage = () => {
                     to={`/magaza/${brand.slug}`}
                     className="flex-shrink-0 flex items-center gap-3 px-4 py-2.5 bg-card border border-border rounded-xl hover:border-primary/30 transition-colors relative overflow-visible"
                   >
-                    {/* #7 - Büyütülmüş logo */}
                     <BrandLogo logoUrl={brand.logo_url} brandName={brand.name} size="sm" />
                     <span className="text-sm font-medium whitespace-nowrap">{brand.name}</span>
                     
-                    {/* #3 - İndirim sayısı badge - kartın sağ üst köşesi içinde */}
+                    {/* İndirim sayısı badge */}
                     {dealCount > 0 && (
                       <span className="absolute -top-2.5 -right-2.5 min-w-[22px] h-[22px] px-1.5 flex items-center justify-center bg-primary text-white text-xs font-bold rounded-full border-2 border-background shadow-sm z-10">
                         {dealCount}
@@ -233,23 +238,26 @@ const HomePage = () => {
         )}
 
         {/* ═══════════════════════════════════════════════════════════════
-            2️⃣ SON 24 SAAT - KOMPAKT KARTLAR
+            2️⃣ SON SAATLER - 1 KART + TÜMÜNÜ GÖR BUTONU
         ═══════════════════════════════════════════════════════════════ */}
         {expiringItems.length > 0 && (
           <section className="container mx-auto px-4 py-5">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
-                <Clock className="w-4 h-4 text-time-urgent" />
-                <h2 className="text-base font-heading font-semibold">
-                  Son 24 Saatte Bitecek
-                </h2>
+                <Clock className="w-5 h-5 text-orange-500" />
+                <h2 className="text-base font-heading font-bold">Son Saatler</h2>
               </div>
-              <Link to="/son-24-saat" className="text-sm text-muted-foreground hover:text-primary">
-                Tümünü gör →
+              <Link 
+                to="/son-24-saat" 
+                className="text-sm text-primary hover:text-primary/80 font-medium flex items-center gap-1"
+              >
+                Tümünü Gör
+                <ChevronRight className="w-4 h-4" />
               </Link>
             </div>
 
-            <div className="flex gap-3 overflow-x-auto pb-2 -mx-4 px-4 scrollbar-hide">
+            {/* Tek kart göster */}
+            <div className="grid grid-cols-1">
               {expiringItems.map((item) => {
                 const brand = brandMap[item.brand_id] || { 
                   name: item.brand_name, 
@@ -257,14 +265,10 @@ const HomePage = () => {
                   logo_url: item.brand_logo_url
                 };
                 
-                return (
-                  <DealCardCompact
-                    key={`${item.type}-${item.id}`}
-                    item={item}
-                    brand={brand}
-                    type={item.type}
-                    onClick={() => handleDealClick(item, brand)}
-                  />
+                return item.type === 'coupon' ? (
+                  <CouponCard key={`expiring-coupon-${item.id}`} coupon={item} brand={brand} />
+                ) : (
+                  <DiscountCard key={`expiring-discount-${item.id}`} discount={item} brand={brand} />
                 );
               })}
             </div>
@@ -272,17 +276,17 @@ const HomePage = () => {
         )}
 
         {/* ═══════════════════════════════════════════════════════════════
-            4️⃣ BUGÜN POPÜLER
+            3️⃣ ÖNE ÇIKANLAR - Max 5 kart
         ═══════════════════════════════════════════════════════════════ */}
-        {popularItems.length > 0 && (
+        {featuredItems.length > 0 && (
           <section className="container mx-auto px-4 py-6">
             <div className="flex items-center gap-2 mb-4">
-              <TrendingUp className="w-4 h-4 text-primary" />
-              <h2 className="text-lg font-heading font-bold">Bugün Popüler</h2>
+              <Star className="w-5 h-5 text-yellow-500 fill-yellow-500" />
+              <h2 className="text-lg font-heading font-bold">Öne Çıkanlar</h2>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {popularItems.map((item) => {
+              {featuredItems.map((item) => {
                 const brand = brandMap[item.brand_id] || { 
                   name: item.brand_name, 
                   slug: item.brand_slug,
@@ -290,9 +294,9 @@ const HomePage = () => {
                 };
                 
                 return item.type === 'coupon' ? (
-                  <CouponCard key={`popular-coupon-${item.id}`} coupon={item} brand={brand} />
+                  <CouponCard key={`featured-coupon-${item.id}`} coupon={item} brand={brand} />
                 ) : (
-                  <DiscountCard key={`popular-discount-${item.id}`} discount={item} brand={brand} />
+                  <DiscountCard key={`featured-discount-${item.id}`} discount={item} brand={brand} />
                 );
               })}
             </div>
@@ -300,7 +304,7 @@ const HomePage = () => {
         )}
 
         {/* ═══════════════════════════════════════════════════════════════
-            5️⃣ POPÜLER ARAMALAR (SEO)
+            4️⃣ POPÜLER ARAMALAR (SEO)
         ═══════════════════════════════════════════════════════════════ */}
         <section className="container mx-auto px-4 py-6 border-t border-border">
           <div className="flex items-center gap-2 mb-3">
@@ -322,7 +326,7 @@ const HomePage = () => {
         </section>
 
         {/* ═══════════════════════════════════════════════════════════════
-            6️⃣ NEWSLETTER
+            5️⃣ NEWSLETTER
         ═══════════════════════════════════════════════════════════════ */}
         <Newsletter />
 
