@@ -212,9 +212,43 @@ const AdminDiscountsPage = () => {
                   <Input value={formData.destination_url} onChange={(e) => setFormData({...formData, destination_url: e.target.value})} placeholder="https://..." />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-1">Kampanya Görseli (URL)</label>
-                  <Input value={formData.image_url} onChange={(e) => setFormData({...formData, image_url: e.target.value})} placeholder="https://example.com/image.jpg" />
-                  <p className="text-xs text-gray-400 mt-1">Kartlarda görünecek kampanya görseli URL'i</p>
+                  <label className="block text-sm font-medium mb-1">Kampanya Görseli</label>
+                  <Input 
+                    value={formData.image_url} 
+                    onChange={(e) => setFormData({...formData, image_url: e.target.value})} 
+                    placeholder="https://example.com/image.jpg" 
+                    className="mb-2"
+                  />
+                  <div className="text-xs text-gray-400 mb-2">veya</div>
+                  <label className="flex items-center justify-center w-full p-3 border-2 border-dashed border-white/20 rounded-lg cursor-pointer hover:border-primary/50 transition-colors">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={async (e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          const formDataUpload = new FormData();
+                          formDataUpload.append('file', file);
+                          try {
+                            const res = await api.post('/upload', formDataUpload, {
+                              headers: { 'Content-Type': 'multipart/form-data' }
+                            });
+                            setFormData({...formData, image_url: res.data.url});
+                          } catch (error) {
+                            alert('Dosya yükleme başarısız');
+                          }
+                        }
+                      }}
+                    />
+                    <span className="text-sm text-gray-400">📷 Bilgisayardan Görsel Seç</span>
+                  </label>
+                  {formData.image_url && (
+                    <div className="mt-2 flex items-center gap-2">
+                      <img src={formData.image_url} alt="Preview" className="w-16 h-16 rounded-lg object-cover" />
+                      <span className="text-xs text-gray-400 truncate flex-1">{formData.image_url}</span>
+                    </div>
+                  )}
                 </div>
                 <div className="flex items-center gap-2">
                   <input type="checkbox" id="is_featured" checked={formData.is_featured} onChange={(e) => setFormData({...formData, is_featured: e.target.checked})} />
