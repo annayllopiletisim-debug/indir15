@@ -413,20 +413,40 @@ const CategoryPage = () => {
         </section>
 
         {/* ═══════════════════════════════════════════════════════════════
-            3. QUICK STATS
+            3. QUICK STATS - Clickable to switch view
         ═══════════════════════════════════════════════════════════════ */}
         <section className="py-3 border-b border-border overflow-hidden">
           <div className="flex gap-2 overflow-x-auto px-4 scrollbar-hide">
-            <span className="flex-shrink-0 px-4 py-2 bg-card border border-border rounded-full text-sm font-medium">
-              <span className="text-primary font-bold">{stats.total}</span> Kampanya
-            </span>
-            <span className="flex-shrink-0 px-4 py-2 bg-card border border-border rounded-full text-sm font-medium">
-              <span className="text-primary font-bold">{stats.brandsCount}</span> Marka
-            </span>
+            <button 
+              onClick={() => setViewMode('campaigns')}
+              className={`flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-all ${
+                viewMode === 'campaigns' 
+                  ? 'bg-primary text-white' 
+                  : 'bg-card border border-border hover:border-primary/50'
+              }`}
+            >
+              <span className="font-bold">{stats.total}</span> Kampanya
+            </button>
+            <button 
+              onClick={() => setViewMode('brands')}
+              className={`flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-all ${
+                viewMode === 'brands' 
+                  ? 'bg-primary text-white' 
+                  : 'bg-card border border-border hover:border-primary/50'
+              }`}
+            >
+              <span className="font-bold">{stats.brandsCount}</span> Marka
+            </button>
             {stats.endingToday > 0 && (
-              <span className="flex-shrink-0 px-4 py-2 bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800 rounded-full text-sm font-medium text-orange-600 dark:text-orange-400">
+              <button 
+                onClick={() => {
+                  setViewMode('campaigns');
+                  setFilterExpiry('today');
+                }}
+                className="flex-shrink-0 px-4 py-2 bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800 rounded-full text-sm font-medium text-orange-600 dark:text-orange-400 hover:bg-orange-100 dark:hover:bg-orange-900/40 transition-colors"
+              >
                 <span className="font-bold">{stats.endingToday}</span> Bugün Biten
-              </span>
+              </button>
             )}
             {stats.maxDiscount > 0 && (
               <span className="flex-shrink-0 px-4 py-2 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-full text-sm font-medium text-green-600 dark:text-green-400">
@@ -435,39 +455,6 @@ const CategoryPage = () => {
             )}
           </div>
         </section>
-
-        {/* ═══════════════════════════════════════════════════════════════
-            4. SUB-CATEGORIES
-        ═══════════════════════════════════════════════════════════════ */}
-        {subCategories.length > 0 && (
-          <section className="py-3 border-b border-border overflow-hidden">
-            <div className="flex gap-2 overflow-x-auto px-4 scrollbar-hide">
-              <button
-                onClick={() => setSelectedSubCategory('all')}
-                className={`flex-shrink-0 px-5 py-2 rounded-full text-sm font-medium transition-colors ${
-                  selectedSubCategory === 'all' 
-                    ? 'bg-primary text-white' 
-                    : 'bg-muted hover:bg-muted/80'
-                }`}
-              >
-                Tümü
-              </button>
-              {subCategories.map((sub) => (
-                <button
-                  key={sub}
-                  onClick={() => setSelectedSubCategory(sub)}
-                  className={`flex-shrink-0 px-5 py-2 rounded-full text-sm font-medium transition-colors ${
-                    selectedSubCategory === sub 
-                      ? 'bg-primary text-white' 
-                      : 'bg-muted hover:bg-muted/80'
-                  }`}
-                >
-                  {sub}
-                </button>
-              ))}
-            </div>
-          </section>
-        )}
 
         {/* ═══════════════════════════════════════════════════════════════
             5. FILTER & SORT BAR
