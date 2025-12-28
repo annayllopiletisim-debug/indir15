@@ -138,6 +138,7 @@ class Coupon(BaseModel):
     discount_text: str
     expiry_date: Optional[datetime] = None
     is_active: bool = True
+    is_featured: bool = False  # Öne çıkan kampanya
     utm_template: Optional[str] = None
     destination_url: str
     image_url: Optional[str] = None  # Kampanya görseli
@@ -153,6 +154,7 @@ class CouponCreate(BaseModel):
     discount_text: str
     expiry_date: Optional[datetime] = None
     is_active: bool = True
+    is_featured: bool = False  # Öne çıkan kampanya
     utm_template: Optional[str] = None
     destination_url: str
     image_url: Optional[str] = None  # Kampanya görseli
@@ -167,6 +169,7 @@ class Discount(BaseModel):
     terms_conditions: Optional[str] = None  # Kullanım koşulları
     discount_text: str
     expiry_date: Optional[datetime] = None
+    is_featured: bool = False  # Öne çıkan kampanya
     utm_template: Optional[str] = None
     destination_url: str
     image_url: Optional[str] = None  # Kampanya görseli
