@@ -319,14 +319,19 @@ const Footer = () => {
       <div className="border-t border-white/10">
         <div className="container mx-auto px-4 py-6">
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-            <p className="text-gray-600 text-sm text-center lg:text-left">
-              © 2025 İndirim Keşfet. Tüm hakları saklıdır.
-            </p>
+            <div className="text-center lg:text-left">
+              <p className="text-gray-600 text-sm">
+                © 2025 İndirim Keşfet. Tüm hakları saklıdır.
+              </p>
+              <p className="text-gray-700 text-xs mt-1">
+                Son güncelleme: {new Date().toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' })}
+              </p>
+            </div>
             <div className="flex flex-wrap justify-center lg:justify-end gap-4 lg:gap-6 text-sm">
-              <Link to="/gizlilik" className="text-gray-500 hover:text-gray-300 transition-colors">Gizlilik Politikası</Link>
-              <Link to="/kullanim-sartlari" className="text-gray-500 hover:text-gray-300 transition-colors">Kullanım Şartları</Link>
-              <Link to="/cerez-politikasi" className="text-gray-500 hover:text-gray-300 transition-colors">Çerez Politikası</Link>
-              <Link to="/kvkk" className="text-gray-500 hover:text-gray-300 transition-colors">KVKK</Link>
+              <Link to="/gizlilik" rel="nofollow" className="text-gray-500 hover:text-gray-300 transition-colors">Gizlilik Politikası</Link>
+              <Link to="/kullanim-sartlari" rel="nofollow" className="text-gray-500 hover:text-gray-300 transition-colors">Kullanım Şartları</Link>
+              <Link to="/cerez-politikasi" rel="nofollow" className="text-gray-500 hover:text-gray-300 transition-colors">Çerez Politikası</Link>
+              <Link to="/kvkk" rel="nofollow" className="text-gray-500 hover:text-gray-300 transition-colors">KVKK</Link>
               <Link to="/site-haritasi" className="text-gray-500 hover:text-gray-300 transition-colors">Site Haritası</Link>
             </div>
           </div>
