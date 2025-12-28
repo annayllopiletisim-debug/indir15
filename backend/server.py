@@ -2508,11 +2508,30 @@ async def import_from_google_sheet(
         'imported_items': []
     }
     
-    # Column name mapping (handle variations)
+    # Turkish character normalization for matching
+    def normalize_turkish(text):
+        if not text:
+            return ''
+        tr_map = {
+            'İ': 'i', 'I': 'i', 'ı': 'i',
+            'Ğ': 'g', 'ğ': 'g',
+            'Ü': 'u', 'ü': 'u',
+            'Ş': 's', 'ş': 's',
+            'Ö': 'o', 'ö': 'o',
+            'Ç': 'c', 'ç': 'c'
+        }
+        result = text.lower()
+        for tr_char, en_char in tr_map.items():
+            result = result.replace(tr_char.lower(), en_char)
+        return result
+    
+    # Column name mapping (handle variations with Turkish normalization)
     def get_column(row, *possible_names):
         for name in possible_names:
+            normalized_name = normalize_turkish(name)
             for key in row.keys():
-                if name.lower() in key.lower():
+                normalized_key = normalize_turkish(key)
+                if normalized_name in normalized_key:
                     return row.get(key, '').strip()
         return ''
     
