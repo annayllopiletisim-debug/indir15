@@ -533,32 +533,11 @@ const CategoryPage = () => {
             )}
           </section>
         )}
-                onClick={clearAllFilters}
-                className="px-4 py-2 bg-primary text-white rounded-lg text-sm font-medium"
-              >
-                Filtreleri Temizle
-              </button>
-            </div>
-          ) : (
-            <div className="space-y-4">
-              {displayedDeals.map((deal) => {
-                const brand = brandMap[deal.brand_id];
-                if (deal.dealType === 'coupon') {
-                  return <CouponCard key={`coupon-${deal.id}`} coupon={deal} brand={brand} />;
-                } else if (deal.dealType === 'giveaway') {
-                  return <GiveawayCard key={`giveaway-${deal.id}`} giveaway={deal} brand={brand} />;
-                } else {
-                  return <DiscountCard key={`discount-${deal.id}`} discount={deal} brand={brand} />;
-                }
-              })}
-            </div>
-          )}
-        </section>
 
         {/* ═══════════════════════════════════════════════════════════════
-            8. LOAD MORE BUTTON
+            7. LOAD MORE BUTTON (only for campaigns view)
         ═══════════════════════════════════════════════════════════════ */}
-        {hasMore && (
+        {viewMode === 'campaigns' && hasMore && (
           <section className="px-4 pb-6">
             <button
               onClick={loadMore}
@@ -570,7 +549,7 @@ const CategoryPage = () => {
         )}
 
         {/* ═══════════════════════════════════════════════════════════════
-            9. SEO CONTENT SECTION
+            8. SEO CONTENT SECTION
         ═══════════════════════════════════════════════════════════════ */}
         <section className="px-4 py-6 bg-card/50 border-t border-border">
           <div className={`${!expandSEO ? 'max-h-40 overflow-hidden relative' : ''}`}>
