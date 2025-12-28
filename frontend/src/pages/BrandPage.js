@@ -21,7 +21,11 @@ import {
   ShoppingBag,
   HelpCircle,
   Gift,
-  Ticket
+  Ticket,
+  ArrowDownAZ,
+  Sparkles,
+  TrendingUp,
+  Star
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { trackClick } from '../utils/helpers';
@@ -34,6 +38,14 @@ const FILTER_OPTIONS = [
   { id: 'coupons', label: 'Kuponlar' },
   { id: 'discounts', label: 'İndirimler' },
   { id: 'giveaways', label: 'Çekilişler' },
+];
+
+// Sort options
+const SORT_OPTIONS = [
+  { id: 'newest', label: 'Yeni Eklenen', icon: Sparkles },
+  { id: 'popular', label: 'Popüler', icon: TrendingUp },
+  { id: 'highest', label: 'En Yüksek İndirim', icon: Star },
+  { id: 'ending', label: 'Son Bitenler', icon: Clock },
 ];
 
 // FAQ data (dynamic based on brand)
