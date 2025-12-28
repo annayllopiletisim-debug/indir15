@@ -561,6 +561,14 @@ async def get_brand_by_slug(slug: str):
         raise HTTPException(status_code=404, detail="Brand not found")
     if isinstance(brand.get('created_at'), str):
         brand['created_at'] = datetime.fromisoformat(brand['created_at'])
+    
+    # Add category info
+    if brand.get('category_id'):
+        category = await db.categories.find_one({'id': brand['category_id']}, {'_id': 0})
+        if category:
+            brand['category_name'] = category.get('name')
+            brand['category_slug'] = category.get('slug')
+    
     return Brand(**brand)
 
 @api_router.post("/brands", response_model=Brand)
