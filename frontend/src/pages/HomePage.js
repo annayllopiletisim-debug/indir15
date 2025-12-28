@@ -93,19 +93,55 @@ const HomePage = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [brandsRes, allBrandsRes, categoriesRes, expiringSoonRes, featuredRes] = await Promise.all([
+        const [brandsRes, allBrandsRes, categoriesRes, expiringSoonRes, featuredRes, couponsRes, discountsRes] = await Promise.all([
           axios.get(`${API}/homepage-brands`),
           axios.get(`${API}/brands/list-with-deal-counts`),
           axios.get(`${API}/categories/with-stats`),
           axios.get(`${API}/expiring-soon`),
           axios.get(`${API}/featured-deals`),
+          axios.get(`${API}/coupons`),
+          axios.get(`${API}/discounts`),
         ]);
         
         setBrands(brandsRes.data);
         setAllBrands(allBrandsRes.data);
         setCategories(categoriesRes.data);
         setExpiringSoon(expiringSoonRes.data);
-        setFeaturedDeals(featuredRes.data);
+        
+        // Combine featured with recent deals to reach 12 items
+        const featuredCoupons = featuredRes.data.coupons || [];
+        const featuredDiscounts = featuredRes.data.discounts || [];
+        const featuredIds = new Set([
+          ...featuredCoupons.map(c => c.id),
+          ...featuredDiscounts.map(d => d.id)
+        ]);
+        
+        // Get recent coupons/discounts not in featured
+        const recentCoupons = (couponsRes.data || [])
+          .filter(c => !featuredIds.has(c.id) && c.is_active !== false)
+          .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+        const recentDiscounts = (discountsRes.data || [])
+          .filter(d => !featuredIds.has(d.id))
+          .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+        
+        // Calculate how many more we need
+        const totalFeatured = featuredCoupons.length + featuredDiscounts.length;
+        const needed = Math.max(0, 12 - totalFeatured);
+        
+        // Mix recent items
+        const additionalItems = [...recentCoupons.slice(0, needed), ...recentDiscounts.slice(0, needed)]
+          .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+          .slice(0, needed);
+        
+        // Separate additional into coupons and discounts
+        const additionalCoupons = additionalItems.filter(i => i.code !== undefined);
+        const additionalDiscounts = additionalItems.filter(i => i.code === undefined);
+        
+        setFeaturedDeals({
+          coupons: [...featuredCoupons, ...additionalCoupons],
+          discounts: [...featuredDiscounts, ...additionalDiscounts],
+          total: totalFeatured + additionalItems.length
+        });
       } catch (error) {
         console.error('Failed to fetch data:', error);
       } finally {
