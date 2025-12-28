@@ -381,17 +381,6 @@ const BrandPage = () => {
 
         <div className="container mx-auto px-4 py-6">
           {/* ═══════════════════════════════════════════════════════════════
-              4. MAIN CTA - Küçültülmüş "Siteye Git" butonu
-          ═══════════════════════════════════════════════════════════════ */}
-          <button
-            onClick={handleGoToStore}
-            className="w-full mb-6 py-3 bg-muted hover:bg-muted/80 text-foreground rounded-xl font-medium text-sm flex items-center justify-center gap-2 border border-border transition-all"
-          >
-            <ExternalLink className="w-5 h-5" />
-            {brand.name}'a Git
-          </button>
-
-          {/* ═══════════════════════════════════════════════════════════════
               5. KAMPANYALAR - Sıralama + Filtre pills + Kupon kartları
           ═══════════════════════════════════════════════════════════════ */}
           <section className="mb-8">
