@@ -85,11 +85,6 @@ const BrandPageLayout = ({ children }) => {
     </div>
   );
 };
-        <Footer />
-      </div>
-    </div>
-  );
-};
 
 function App() {
   return (
