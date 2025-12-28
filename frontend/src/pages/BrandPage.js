@@ -174,11 +174,24 @@ const BrandPage = () => {
     }
   };
 
-  // Handle go to store
+  // Handle go to store with UTM
   const handleGoToStore = () => {
     if (brand) {
       trackClick('store_visit', brand.id, brand.id);
-      const url = brand.website_url || `https://${brand.slug}.com.tr`;
+      let url = brand.website_url || `https://${brand.slug}.com.tr`;
+      
+      // Add UTM parameters
+      const utmParams = new URLSearchParams({
+        utm_source: 'indirim-kesfet',
+        utm_medium: 'referral',
+        utm_campaign: 'store-visit',
+        utm_content: brand.slug
+      });
+      
+      // Append UTM to URL
+      const separator = url.includes('?') ? '&' : '?';
+      url = `${url}${separator}${utmParams.toString()}`;
+      
       window.open(url, '_blank');
     }
   };
