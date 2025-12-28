@@ -221,7 +221,12 @@ frontend:
         comment: "✅ Deal card images have proper padding and rounded corners. Verified: images have 6px padding, 12px border-radius (rounded-xl class), and proper spacing from card edges. All tested images show correct styling."
 
 test_plan:
-  current_focus: []
+  current_focus:
+    - "Mobile Homepage Redesign"
+    - "Search Bar below header"
+    - "Category Slider with icons"
+    - "Featured Deals section"
+    - "is_featured field in admin"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
