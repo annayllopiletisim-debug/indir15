@@ -229,8 +229,25 @@ const CategoriesPage = () => {
             </Link>
           )}
 
+          {/* Sort Button - Prominent Action Button */}
+          <button
+            onClick={() => setShowSortModal(true)}
+            className="w-full mb-6 p-4 bg-card border-2 border-primary/30 rounded-2xl hover:border-primary hover:bg-primary/5 transition-all flex items-center justify-between group"
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                <ArrowDownAZ className="w-5 h-5 text-primary" />
+              </div>
+              <div className="text-left">
+                <p className="text-sm text-muted-foreground">Sıralama</p>
+                <p className="font-semibold text-primary">{currentSortOption.label}</p>
+              </div>
+            </div>
+            <ChevronDown className="w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors" />
+          </button>
+
           {/* Categories Grid */}
-          {filteredCategories.length === 0 ? (
+          {sortedCategories.length === 0 ? (
             <div className="text-center py-16 bg-card rounded-2xl border border-border">
               <LayoutGrid className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
               <h3 className="text-lg font-medium mb-2">Kategori Bulunamadı</h3>
