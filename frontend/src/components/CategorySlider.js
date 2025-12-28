@@ -78,9 +78,9 @@ const CategorySlider = () => {
         style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         data-testid="category-slider"
       >
-        {/* Tümü butonu en başta */}
+        {/* Tümü butonu en başta - Tüm Kategoriler sayfasına yönlendir */}
         <Link
-          to="/"
+          to="/kategoriler"
           className={`flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all flex items-center gap-2 ${
             isAllActive
               ? 'bg-primary text-white'
