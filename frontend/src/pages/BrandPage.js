@@ -392,9 +392,22 @@ const BrandPage = () => {
           </button>
 
           {/* ═══════════════════════════════════════════════════════════════
-              6. KAMPANYALAR - Filtre pills + Kupon kartları listesi
+              5. KAMPANYALAR - Sıralama + Filtre pills + Kupon kartları
           ═══════════════════════════════════════════════════════════════ */}
           <section className="mb-8">
+            {/* Sort Button - Thin version */}
+            <button
+              onClick={() => setShowSortModal(true)}
+              className="w-full mb-4 py-2.5 px-4 bg-card border border-border rounded-xl hover:border-primary/30 transition-all flex items-center justify-between text-sm"
+            >
+              <div className="flex items-center gap-2">
+                <ArrowDownAZ className="w-4 h-4 text-primary" />
+                <span className="text-muted-foreground">Sıralama:</span>
+                <span className="font-medium text-primary">{currentSortOption.label}</span>
+              </div>
+              <ChevronDown className="w-4 h-4 text-muted-foreground" />
+            </button>
+
             {/* Filter Pills */}
             <div className="flex gap-2 overflow-x-auto pb-4 scrollbar-hide">
               {FILTER_OPTIONS.map((filter) => {
@@ -430,7 +443,7 @@ const BrandPage = () => {
               })}
             </div>
 
-            {/* Deals List */}
+            {/* Deals List - Grid on desktop */}
             {filteredDeals.length === 0 ? (
               <div className="text-center py-12 bg-card rounded-2xl border border-border">
                 <Ticket className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
@@ -438,7 +451,7 @@ const BrandPage = () => {
                 <p className="text-muted-foreground text-sm">Bu kategoride henüz kampanya yok.</p>
               </div>
             ) : (
-              <div className="space-y-4">
+              <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
                 {filteredDeals.map((deal) => {
                   if (deal.type === 'coupon') {
                     return <CouponCard key={`coupon-${deal.id}`} coupon={deal} brand={brand} />;
