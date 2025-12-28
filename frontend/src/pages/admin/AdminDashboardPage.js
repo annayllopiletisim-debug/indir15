@@ -67,45 +67,45 @@ const AdminDashboardPage = () => {
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-          <div className="glass-effect p-5 rounded-2xl">
+          <div className="bg-void-paper border border-white/5 p-5 rounded-2xl">
             <div className="flex items-center justify-between mb-3">
               <div className="w-10 h-10 rounded-xl bg-neon-purple/20 flex items-center justify-center">
                 <MousePointer className="w-5 h-5 text-neon-purple" />
               </div>
-              <Clock className="w-4 h-4 text-muted-foreground" />
+              <Clock className="w-4 h-4 text-gray-400" />
             </div>
-            <div className="text-2xl font-heading font-bold mb-1">{analytics?.total_clicks || 0}</div>
-            <div className="text-xs text-muted-foreground">Toplam Tıklama ({periodLabels[period]})</div>
+            <div className="text-2xl font-heading font-bold text-white mb-1">{analytics?.total_clicks || 0}</div>
+            <div className="text-xs text-gray-400">Toplam Tıklama ({periodLabels[period]})</div>
           </div>
 
-          <div className="glass-effect p-5 rounded-2xl">
+          <div className="bg-void-paper border border-white/5 p-5 rounded-2xl">
             <div className="flex items-center justify-between mb-3">
               <div className="w-10 h-10 rounded-xl bg-neon-blue/20 flex items-center justify-center">
                 <Store className="w-5 h-5 text-neon-blue" />
               </div>
             </div>
-            <div className="text-2xl font-heading font-bold mb-1">{analytics?.brand_clicks?.length || 0}</div>
-            <div className="text-xs text-muted-foreground">Aktif Mağaza</div>
+            <div className="text-2xl font-heading font-bold text-white mb-1">{analytics?.brand_clicks?.length || 0}</div>
+            <div className="text-xs text-gray-400">Aktif Mağaza</div>
           </div>
 
-          <div className="glass-effect p-5 rounded-2xl">
+          <div className="bg-void-paper border border-white/5 p-5 rounded-2xl">
             <div className="flex items-center justify-between mb-3">
               <div className="w-10 h-10 rounded-xl bg-neon-pink/20 flex items-center justify-center">
                 <TrendingUp className="w-5 h-5 text-neon-pink" />
               </div>
             </div>
-            <div className="text-2xl font-heading font-bold mb-1">{analytics?.popular_discounts?.length || 0}</div>
-            <div className="text-xs text-muted-foreground">Popüler İndirim</div>
+            <div className="text-2xl font-heading font-bold text-white mb-1">{analytics?.popular_discounts?.length || 0}</div>
+            <div className="text-xs text-gray-400">Popüler İndirim</div>
           </div>
 
-          <div className="glass-effect p-5 rounded-2xl">
+          <div className="bg-void-paper border border-white/5 p-5 rounded-2xl">
             <div className="flex items-center justify-between mb-3">
               <div className="w-10 h-10 rounded-xl bg-green-500/20 flex items-center justify-center">
                 <Tag className="w-5 h-5 text-green-500" />
               </div>
             </div>
-            <div className="text-2xl font-heading font-bold mb-1">{analytics?.category_performance?.length || 0}</div>
-            <div className="text-xs text-muted-foreground">Aktif Kategori</div>
+            <div className="text-2xl font-heading font-bold text-white mb-1">{analytics?.category_performance?.length || 0}</div>
+            <div className="text-xs text-gray-400">Aktif Kategori</div>
           </div>
         </div>
 
