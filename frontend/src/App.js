@@ -5,7 +5,7 @@ import { ThemeProvider } from './context/ThemeContext';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import CategoryNav from './components/CategoryNav';
-import CategorySlider from './components/CategorySlider';
+import MobileSearchBar from './components/MobileSearchBar';
 import SEOMetaTags from './components/SEOMetaTags';
 import HomePage from './pages/HomePage';
 import BrandPage from './pages/BrandPage';
@@ -32,7 +32,7 @@ import AdminLayout from './components/AdminLayout';
 import { isAuthenticated } from './utils/auth';
 import '@/App.css';
 
-// Force webpack rebuild - v5
+// Force webpack rebuild - v6
 
 const ProtectedRoute = ({ children }) => {
   return isAuthenticated() ? children : <Navigate to="/admin/login" />;
@@ -43,7 +43,7 @@ const PublicLayout = ({ children }) => {
     <div className="min-h-screen flex flex-col">
       <Header />
       <CategoryNav />
-      <CategorySlider />
+      <MobileSearchBar />
       <main className="flex-1">{children}</main>
       <Footer />
     </div>
