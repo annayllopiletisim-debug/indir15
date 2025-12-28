@@ -220,21 +220,21 @@ const AdminBrandsPage = () => {
               data-testid="brands-search-input"
             />
             <div className="absolute left-3 top-1/2 -translate-y-1/2">
-              <svg className="w-5 h-5 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
             </div>
             {searchQuery && (
               <button
                 onClick={() => setSearchQuery('')}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-foreground"
                 data-testid="clear-search-btn"
               >
                 <X className="w-5 h-5" />
               </button>
             )}
           </div>
-          <p className="text-sm text-muted-foreground mt-2">
+          <p className="text-sm text-gray-400 mt-2">
             {filteredBrands.length} sonuç bulundu
           </p>
         </div>
@@ -357,7 +357,7 @@ const AdminBrandsPage = () => {
                 )}
                 
                 {formData.logo_url && (
-                  <p className="text-xs text-muted-foreground mt-2">
+                  <p className="text-xs text-gray-400 mt-2">
                     {formData.logo_url.startsWith('/uploads/') ? '✓ Sunucuda kayıtlı' : '⚠ Harici URL'}
                   </p>
                 )}
@@ -422,8 +422,8 @@ const AdminBrandsPage = () => {
                   </label>
                   {formData.show_on_homepage && (
                     <div className="flex items-center gap-2">
-                      <GripVertical className="w-4 h-4 text-muted-foreground" />
-                      <label className="text-sm text-muted-foreground">Sıra:</label>
+                      <GripVertical className="w-4 h-4 text-gray-400" />
+                      <label className="text-sm text-gray-400">Sıra:</label>
                       <input
                         type="number"
                         value={formData.homepage_order}
@@ -431,7 +431,7 @@ const AdminBrandsPage = () => {
                         className="w-20 px-2 py-1 bg-void-subtle rounded-lg focus:outline-none focus:ring-2 focus:ring-neon-purple text-center"
                         min="0"
                       />
-                      <span className="text-xs text-muted-foreground">(Düşük = önce)</span>
+                      <span className="text-xs text-gray-400">(Düşük = önce)</span>
                     </div>
                   )}
                 </div>
@@ -482,7 +482,7 @@ const AdminBrandsPage = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {filteredBrands.length === 0 ? (
             <div className="col-span-full text-center py-16">
-              <p className="text-muted-foreground mb-4">Sonuç bulunamadı</p>
+              <p className="text-gray-400 mb-4">Sonuç bulunamadı</p>
               <button
                 onClick={() => setSearchQuery('')}
                 className="px-4 py-2 bg-void-subtle rounded-lg hover:bg-white/10"
@@ -498,7 +498,7 @@ const AdminBrandsPage = () => {
                   <BrandLogo logoUrl={brand.logo_url} brandName={brand.name} size="md" />
                   <div>
                     <h3 className="font-bold">{brand.name}</h3>
-                    <p className="text-xs text-muted-foreground">/{brand.slug}</p>
+                    <p className="text-xs text-gray-400">/{brand.slug}</p>
                   </div>
                 </div>
                 <div className="flex space-x-2">
@@ -519,9 +519,9 @@ const AdminBrandsPage = () => {
                 </div>
               </div>
               {brand.description && (
-                <p className="text-sm text-muted-foreground mb-2">{brand.description}</p>
+                <p className="text-sm text-gray-400 mb-2">{brand.description}</p>
               )}
-              <div className="flex items-center justify-between text-xs text-muted-foreground">
+              <div className="flex items-center justify-between text-xs text-gray-400">
                 <span>Kategori: {categories.find(c => c.id === brand.category_id)?.name}</span>
                 <div className="flex items-center gap-2">
                   {brand.show_on_homepage && (

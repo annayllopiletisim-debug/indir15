@@ -222,7 +222,7 @@ const AdminKeywordsPage = () => {
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-heading font-bold">Anahtar Kelime Eşleştirme</h1>
-          <p className="text-sm text-muted-foreground">Arama kelimelerini mağazalarla eşleştirin</p>
+          <p className="text-sm text-gray-400">Arama kelimelerini mağazalarla eşleştirin</p>
         </div>
         <div className="flex gap-2">
           <input
@@ -247,7 +247,7 @@ const AdminKeywordsPage = () => {
       {/* Search */}
       <div className="mb-6">
         <div className="relative max-w-md">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
           <Input
             placeholder="Anahtar kelime ara..."
             value={searchQuery}
@@ -268,7 +268,7 @@ const AdminKeywordsPage = () => {
               </button>
             </div>
             
-            <p className="text-sm text-muted-foreground mb-4">
+            <p className="text-sm text-gray-400 mb-4">
               Format: <code className="bg-void-subtle px-2 py-1 rounded">anahtar_kelime,mağaza1,mağaza2,mağaza3</code>
             </p>
             
@@ -304,7 +304,7 @@ const AdminKeywordsPage = () => {
                   placeholder="örn: ayakkabı, eşarp, telefon"
                   required
                 />
-                <p className="text-xs text-muted-foreground mt-1">Küçük harfle yazın, otomatik dönüştürülecek</p>
+                <p className="text-xs text-gray-400 mt-1">Küçük harfle yazın, otomatik dönüştürülecek</p>
               </div>
 
               <div>
@@ -313,7 +313,7 @@ const AdminKeywordsPage = () => {
                 {/* Selected brands with drag-drop */}
                 {formData.brand_ids.length > 0 && (
                   <div className="mb-3 space-y-2">
-                    <p className="text-xs text-muted-foreground">Seçili mağazalar (sürükleyerek sıralayın):</p>
+                    <p className="text-xs text-gray-400">Seçili mağazalar (sürükleyerek sıralayın):</p>
                     {formData.brand_ids.map((brandId, index) => (
                       <div
                         key={brandId}
@@ -325,7 +325,7 @@ const AdminKeywordsPage = () => {
                           draggedBrand === index ? 'opacity-50' : ''
                         }`}
                       >
-                        <GripVertical className="w-4 h-4 text-muted-foreground" />
+                        <GripVertical className="w-4 h-4 text-gray-400" />
                         <span className="w-6 h-6 rounded bg-neon-purple/20 flex items-center justify-center text-xs font-bold">
                           {index + 1}
                         </span>
@@ -367,7 +367,7 @@ const AdminKeywordsPage = () => {
                   onChange={(e) => setFormData({ ...formData, priority: parseInt(e.target.value) || 0 })}
                   placeholder="0"
                 />
-                <p className="text-xs text-muted-foreground mt-1">Yüksek değer = Yüksek öncelik</p>
+                <p className="text-xs text-gray-400 mt-1">Yüksek değer = Yüksek öncelik</p>
               </div>
 
               <div className="flex items-center gap-2">
@@ -423,13 +423,13 @@ const AdminKeywordsPage = () => {
                       </span>
                     ))}
                     {mapping.brand_ids?.length > 3 && (
-                      <span className="px-2 py-0.5 bg-void-subtle rounded text-xs text-muted-foreground">
+                      <span className="px-2 py-0.5 bg-void-subtle rounded text-xs text-gray-400">
                         +{mapping.brand_ids.length - 3} daha
                       </span>
                     )}
                   </div>
                 </td>
-                <td className="px-4 py-3 text-muted-foreground">{mapping.priority}</td>
+                <td className="px-4 py-3 text-gray-400">{mapping.priority}</td>
                 <td className="px-4 py-3">
                   <span className={`px-2 py-1 rounded-full text-xs ${mapping.is_active ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'}`}>
                     {mapping.is_active ? 'Aktif' : 'Pasif'}
@@ -451,7 +451,7 @@ const AdminKeywordsPage = () => {
         </table>
         
         {filteredMappings.length === 0 && (
-          <div className="p-8 text-center text-muted-foreground">
+          <div className="p-8 text-center text-gray-400">
             Henüz anahtar kelime eşleştirmesi bulunmuyor.
           </div>
         )}

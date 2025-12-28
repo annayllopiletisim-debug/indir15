@@ -126,7 +126,7 @@ const AdminDiscountsPage = () => {
         <div className="flex items-center justify-between mb-6">
           <div>
             <h1 className="text-2xl font-heading font-bold">İndirim Yönetimi</h1>
-            <p className="text-sm text-muted-foreground">Toplam {discounts.length} indirim</p>
+            <p className="text-sm text-gray-400">Toplam {discounts.length} indirim</p>
           </div>
           <Button onClick={() => { setShowForm(true); setEditingId(null); }}>
             <Plus className="w-4 h-4 mr-2" /> Yeni İndirim
@@ -136,7 +136,7 @@ const AdminDiscountsPage = () => {
         {/* Filters */}
         <div className="flex flex-wrap gap-4 mb-6">
           <div className="relative flex-1 min-w-[200px] max-w-md">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
             <Input placeholder="İndirim ara..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="pl-10" />
           </div>
           
@@ -214,7 +214,7 @@ const AdminDiscountsPage = () => {
                 <div>
                   <label className="block text-sm font-medium mb-1">Kampanya Görseli (URL)</label>
                   <Input value={formData.image_url} onChange={(e) => setFormData({...formData, image_url: e.target.value})} placeholder="https://example.com/image.jpg" />
-                  <p className="text-xs text-muted-foreground mt-1">Kartlarda görünecek kampanya görseli URL'i</p>
+                  <p className="text-xs text-gray-400 mt-1">Kartlarda görünecek kampanya görseli URL'i</p>
                 </div>
                 <div className="flex gap-2 pt-4">
                   <Button type="submit">{editingId ? 'Güncelle' : 'Ekle'}</Button>
@@ -257,8 +257,8 @@ const AdminDiscountsPage = () => {
                       {discount.discount_text && <span className="ml-2 text-xs text-neon-pink">{discount.discount_text}</span>}
                     </div>
                   </td>
-                  <td className="px-4 py-3 text-muted-foreground">{getBrandName(discount.brand_id)}</td>
-                  <td className="px-4 py-3 text-sm text-muted-foreground">
+                  <td className="px-4 py-3 text-gray-400">{getBrandName(discount.brand_id)}</td>
+                  <td className="px-4 py-3 text-sm text-gray-400">
                     {discount.expiry_date ? new Date(discount.expiry_date).toLocaleDateString('tr-TR') : '-'}
                   </td>
                   <td className="px-4 py-3">
@@ -276,7 +276,7 @@ const AdminDiscountsPage = () => {
               ))}
             </tbody>
           </table>
-          {filteredDiscounts.length === 0 && <div className="p-8 text-center text-muted-foreground">İndirim bulunamadı.</div>}
+          {filteredDiscounts.length === 0 && <div className="p-8 text-center text-gray-400">İndirim bulunamadı.</div>}
         </div>
       </div>
     </>

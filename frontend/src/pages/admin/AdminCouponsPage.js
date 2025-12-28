@@ -131,7 +131,7 @@ const AdminCouponsPage = () => {
         <div className="flex items-center justify-between mb-6">
           <div>
             <h1 className="text-2xl font-heading font-bold">Kupon Yönetimi</h1>
-            <p className="text-sm text-muted-foreground">Toplam {coupons.length} kupon</p>
+            <p className="text-sm text-gray-400">Toplam {coupons.length} kupon</p>
           </div>
           <Button onClick={() => { setShowForm(true); setEditingId(null); }} data-testid="add-coupon-btn">
             <Plus className="w-4 h-4 mr-2" /> Yeni Kupon
@@ -141,7 +141,7 @@ const AdminCouponsPage = () => {
         {/* Filters */}
         <div className="flex flex-wrap gap-4 mb-6">
           <div className="relative flex-1 min-w-[200px] max-w-md">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
             <Input
               placeholder="Kupon ara..."
               value={searchQuery}
@@ -240,7 +240,7 @@ const AdminCouponsPage = () => {
                 <div>
                   <label className="block text-sm font-medium mb-1">Kampanya Görseli (URL)</label>
                   <Input value={formData.image_url} onChange={(e) => setFormData({...formData, image_url: e.target.value})} placeholder="https://example.com/image.jpg" />
-                  <p className="text-xs text-muted-foreground mt-1">Kartlarda görünecek kampanya görseli URL'i</p>
+                  <p className="text-xs text-gray-400 mt-1">Kartlarda görünecek kampanya görseli URL'i</p>
                 </div>
                 <div className="flex items-center gap-2">
                   <input type="checkbox" id="is_active" checked={formData.is_active} onChange={(e) => setFormData({...formData, is_active: e.target.checked})} />
@@ -292,8 +292,8 @@ const AdminCouponsPage = () => {
                     </div>
                   </td>
                   <td className="px-4 py-3"><code className="px-2 py-1 bg-void-subtle rounded text-sm">{coupon.code}</code></td>
-                  <td className="px-4 py-3 text-muted-foreground">{getBrandName(coupon.brand_id)}</td>
-                  <td className="px-4 py-3 text-sm text-muted-foreground">
+                  <td className="px-4 py-3 text-gray-400">{getBrandName(coupon.brand_id)}</td>
+                  <td className="px-4 py-3 text-sm text-gray-400">
                     {coupon.expiry_date ? new Date(coupon.expiry_date).toLocaleDateString('tr-TR') : '-'}
                   </td>
                   <td className="px-4 py-3">
@@ -313,7 +313,7 @@ const AdminCouponsPage = () => {
               ))}
             </tbody>
           </table>
-          {filteredCoupons.length === 0 && <div className="p-8 text-center text-muted-foreground">Kupon bulunamadı.</div>}
+          {filteredCoupons.length === 0 && <div className="p-8 text-center text-gray-400">Kupon bulunamadı.</div>}
         </div>
       </div>
     </>

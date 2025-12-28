@@ -123,7 +123,7 @@ const AdminGiveawaysPage = () => {
         </div>
 
         <div className="relative mb-6">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
           <Input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -192,7 +192,7 @@ const AdminGiveawaysPage = () => {
                 <div>
                   <label className="block text-sm font-medium mb-1">Kampanya Görseli (URL)</label>
                   <Input value={formData.image_url} onChange={(e) => setFormData({...formData, image_url: e.target.value})} placeholder="https://example.com/image.jpg" />
-                  <p className="text-xs text-muted-foreground mt-1">Kartlarda görünecek kampanya görseli URL'i</p>
+                  <p className="text-xs text-gray-400 mt-1">Kartlarda görünecek kampanya görseli URL'i</p>
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-1">UTM Template</label>
@@ -224,7 +224,7 @@ const AdminGiveawaysPage = () => {
                 <tr key={giveaway.id} className="border-t border-white/5 hover:bg-white/5">
                   <td className="p-4">
                     <div className="font-medium">{giveaway.title}</div>
-                    <div className="text-sm text-muted-foreground truncate max-w-xs">{giveaway.description}</div>
+                    <div className="text-sm text-gray-400 truncate max-w-xs">{giveaway.description}</div>
                   </td>
                   <td className="p-4">{getBrandName(giveaway.brand_id)}</td>
                   <td className="p-4">
@@ -255,7 +255,7 @@ const AdminGiveawaysPage = () => {
             </tbody>
           </table>
           {filteredGiveaways.length === 0 && (
-            <div className="text-center py-12 text-muted-foreground">
+            <div className="text-center py-12 text-gray-400">
               <Gift className="w-12 h-12 mx-auto mb-4 opacity-50" />
               <p>Henüz çekiliş bulunmuyor</p>
             </div>

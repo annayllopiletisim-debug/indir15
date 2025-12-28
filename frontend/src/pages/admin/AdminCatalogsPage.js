@@ -185,7 +185,7 @@ const AdminCatalogsPage = () => {
       {/* Search */}
       <div className="mb-6">
         <div className="relative max-w-md">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
           <Input
             placeholder="Katalog ara..."
             value={searchQuery}
@@ -344,13 +344,13 @@ const AdminCatalogsPage = () => {
                 <td className="px-4 py-3">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded bg-void-subtle flex items-center justify-center">
-                      <FileText className="w-5 h-5 text-muted-foreground" />
+                      <FileText className="w-5 h-5 text-gray-400" />
                     </div>
                     <span className="font-medium">{catalog.title}</span>
                   </div>
                 </td>
-                <td className="px-4 py-3 text-muted-foreground">{getBrandName(catalog.brand_id)}</td>
-                <td className="px-4 py-3 text-sm text-muted-foreground">
+                <td className="px-4 py-3 text-gray-400">{getBrandName(catalog.brand_id)}</td>
+                <td className="px-4 py-3 text-sm text-gray-400">
                   {catalog.valid_from && new Date(catalog.valid_from).toLocaleDateString('tr-TR')}
                   {catalog.valid_from && catalog.valid_until && ' - '}
                   {catalog.valid_until && new Date(catalog.valid_until).toLocaleDateString('tr-TR')}
@@ -376,7 +376,7 @@ const AdminCatalogsPage = () => {
         </table>
         
         {filteredCatalogs.length === 0 && (
-          <div className="p-8 text-center text-muted-foreground">
+          <div className="p-8 text-center text-gray-400">
             Henüz katalog bulunmuyor.
           </div>
         )}

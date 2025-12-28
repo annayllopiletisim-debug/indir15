@@ -111,7 +111,7 @@ const AdminSettingsPage = () => {
           <div className="flex items-center justify-between py-4 border-b border-white/10">
             <div>
               <h3 className="font-medium mb-1">Sticky CTA Bar Aktif</h3>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-sm text-gray-400">
                 Mağazalar ve kategori sayfalarında altta sabit CTA barı göster/gizle
               </p>
             </div>
@@ -130,7 +130,7 @@ const AdminSettingsPage = () => {
           {/* A/B Variant Selection */}
           <div className="py-4">
             <h3 className="font-medium mb-3">CTA Metin Varyantı (A/B Test)</h3>
-            <p className="text-sm text-muted-foreground mb-4">
+            <p className="text-sm text-gray-400 mb-4">
               Hangi CTA metninin daha iyi dönüşüm sağladığını test edin
             </p>
             
@@ -203,7 +203,7 @@ const AdminSettingsPage = () => {
         {/* Info Box */}
         <div className="bg-blue-500/10 border border-blue-500/30 rounded-xl p-4">
           <h3 className="font-medium text-blue-400 mb-2">💡 İpucu</h3>
-          <ul className="text-sm text-muted-foreground space-y-1">
+          <ul className="text-sm text-gray-400 space-y-1">
             <li>• Sticky CTA bar, kullanıcı mağaza seçtiğinde altta görünür</li>
             <li>• CTA içinde canlı indirim sayısı gösterilir (API ile çekilir)</li>
             <li>• 0 sonuç varsa CTA disabled olur</li>

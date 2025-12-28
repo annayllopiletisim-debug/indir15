@@ -134,7 +134,7 @@ const AdminCategoriesPage = () => {
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-heading font-bold">Kategori Yönetimi</h1>
-          <p className="text-sm text-muted-foreground">Toplam {categories.length} kategori</p>
+          <p className="text-sm text-gray-400">Toplam {categories.length} kategori</p>
         </div>
         <Button onClick={() => { setShowForm(true); setEditingCategory(null); resetForm(); }}>
           <Plus className="w-4 h-4 mr-2" /> Yeni Kategori
@@ -144,7 +144,7 @@ const AdminCategoriesPage = () => {
       {/* Search */}
       <div className="mb-6">
         <div className="relative max-w-md">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
           <Input
             placeholder="Kategori ara..."
             value={searchQuery}
@@ -251,8 +251,8 @@ const AdminCategoriesPage = () => {
                     <span className="font-medium">{category.name}</span>
                   </div>
                 </td>
-                <td className="px-4 py-3 text-muted-foreground">/{category.slug}</td>
-                <td className="px-4 py-3 text-muted-foreground">{getParentName(category.parent_id)}</td>
+                <td className="px-4 py-3 text-gray-400">/{category.slug}</td>
+                <td className="px-4 py-3 text-gray-400">{getParentName(category.parent_id)}</td>
                 <td className="px-4 py-3">
                   {category.is_popular && (
                     <span className="px-2 py-1 rounded-full bg-neon-purple/20 text-neon-purple text-xs">Popüler</span>
@@ -274,7 +274,7 @@ const AdminCategoriesPage = () => {
         </table>
 
         {filteredCategories.length === 0 && (
-          <div className="p-8 text-center text-muted-foreground">
+          <div className="p-8 text-center text-gray-400">
             Henüz kategori bulunmuyor.
           </div>
         )}

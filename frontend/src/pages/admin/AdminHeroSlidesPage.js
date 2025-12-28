@@ -105,7 +105,7 @@ const AdminHeroSlidesPage = () => {
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-heading font-bold">Hero Slaytlar</h1>
-          <p className="text-sm text-muted-foreground">Ana sayfa slider yönetimi</p>
+          <p className="text-sm text-gray-400">Ana sayfa slider yönetimi</p>
         </div>
         <Button onClick={() => { setShowForm(true); setEditingSlide(null); resetForm(); }}>
           <Plus className="w-4 h-4 mr-2" /> Yeni Slayt
@@ -211,7 +211,7 @@ const AdminHeroSlidesPage = () => {
                 <img src={slide.image_url} alt={slide.title} className="w-full h-full object-cover" />
               ) : (
                 <div className="w-full h-full bg-void-subtle flex items-center justify-center">
-                  <Image className="w-12 h-12 text-muted-foreground" />
+                  <Image className="w-12 h-12 text-gray-400" />
                 </div>
               )}
               <div className="absolute top-2 left-2 px-2 py-1 bg-black/50 rounded text-xs">
@@ -230,7 +230,7 @@ const AdminHeroSlidesPage = () => {
             </div>
             <div className="p-4">
               <h3 className="font-bold mb-1">{slide.title}</h3>
-              {slide.subtitle && <p className="text-sm text-muted-foreground mb-2">{slide.subtitle}</p>}
+              {slide.subtitle && <p className="text-sm text-gray-400 mb-2">{slide.subtitle}</p>}
               <div className="flex gap-2">
                 <button onClick={() => handleEdit(slide)} className="p-2 hover:bg-white/10 rounded-lg">
                   <Pencil className="w-4 h-4" />
@@ -245,7 +245,7 @@ const AdminHeroSlidesPage = () => {
       </div>
 
       {slides.length === 0 && (
-        <div className="text-center py-16 text-muted-foreground">
+        <div className="text-center py-16 text-gray-400">
           Henüz slayt bulunmuyor.
         </div>
       )}

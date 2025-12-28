@@ -81,7 +81,7 @@ const AdminImportPage = () => {
             <FileSpreadsheet className="w-7 h-7" />
             Google Sheet'ten İçe Aktar
           </h1>
-          <p className="text-muted-foreground mt-1">
+          <p className="text-gray-400 mt-1">
             Google Sheet'teki verileri otomatik olarak indirim ve kuponlara dönüştürün
           </p>
         </div>
@@ -92,7 +92,7 @@ const AdminImportPage = () => {
             <Info className="w-5 h-5 text-blue-400" />
             Nasıl Kullanılır?
           </h2>
-          <ol className="list-decimal list-inside space-y-2 text-sm text-muted-foreground">
+          <ol className="list-decimal list-inside space-y-2 text-sm text-gray-400">
             <li>Google Sheet'inizi <strong>"Bağlantıya sahip herkes görüntüleyebilir"</strong> olarak paylaşın</li>
             <li>Sheet URL'sini aşağıya yapıştırın</li>
             <li>"İçe Aktar" butonuna tıklayın</li>
@@ -106,14 +106,14 @@ const AdminImportPage = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {expectedColumns.map((col) => (
               <div key={col.name} className="flex items-start gap-2 text-sm">
-                <span className={`font-medium ${col.required ? 'text-primary' : 'text-muted-foreground'}`}>
+                <span className={`font-medium ${col.required ? 'text-primary' : 'text-gray-400'}`}>
                   {col.name}{col.required && '*'}:
                 </span>
-                <span className="text-muted-foreground">{col.desc}</span>
+                <span className="text-gray-400">{col.desc}</span>
               </div>
             ))}
           </div>
-          <p className="text-xs text-muted-foreground mt-3">* Zorunlu alanlar</p>
+          <p className="text-xs text-gray-400 mt-3">* Zorunlu alanlar</p>
         </div>
 
         {/* Import Form */}
@@ -161,15 +161,15 @@ const AdminImportPage = () => {
             <div className="grid grid-cols-3 gap-4">
               <div className="bg-void-paper border border-white/5 rounded-xl p-4 text-center">
                 <div className="text-3xl font-bold text-blue-400">{result.total_rows}</div>
-                <div className="text-sm text-muted-foreground">Toplam Satır</div>
+                <div className="text-sm text-gray-400">Toplam Satır</div>
               </div>
               <div className="bg-void-paper border border-white/5 rounded-xl p-4 text-center">
                 <div className="text-3xl font-bold text-green-400">{result.imported}</div>
-                <div className="text-sm text-muted-foreground">Başarılı</div>
+                <div className="text-sm text-gray-400">Başarılı</div>
               </div>
               <div className="bg-void-paper border border-white/5 rounded-xl p-4 text-center">
                 <div className="text-3xl font-bold text-orange-400">{result.skipped}</div>
-                <div className="text-sm text-muted-foreground">Atlanan</div>
+                <div className="text-sm text-gray-400">Atlanan</div>
               </div>
             </div>
 
@@ -190,7 +190,7 @@ const AdminImportPage = () => {
                           {item.type}
                         </span>
                         <span className="font-medium">{item.title}</span>
-                        <span className="text-muted-foreground ml-2">({item.brand})</span>
+                        <span className="text-gray-400 ml-2">({item.brand})</span>
                       </div>
                       <a 
                         href={item.type === 'kupon' ? `/admin/coupons` : `/admin/discounts`}
@@ -220,7 +220,7 @@ const AdminImportPage = () => {
                         </span>
                       </div>
                       {err.data && (
-                        <div className="text-xs text-muted-foreground mt-1 truncate">
+                        <div className="text-xs text-gray-400 mt-1 truncate">
                           {err.data}
                         </div>
                       )}
@@ -238,7 +238,7 @@ const AdminImportPage = () => {
             href="https://docs.google.com/spreadsheets/d/1rt0KjEJPiw4fV8ldO9qy0MKCQdRTAoDMowCbN-7GWCg/edit"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-sm text-muted-foreground hover:text-primary inline-flex items-center gap-1"
+            className="text-sm text-gray-400 hover:text-primary inline-flex items-center gap-1"
           >
             <ExternalLink className="w-4 h-4" />
             Örnek Sheet'i Görüntüle
