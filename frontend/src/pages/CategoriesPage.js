@@ -130,13 +130,30 @@ const CategoriesPage = () => {
     fetchData();
   }, []);
 
-  // Filter categories by search term
-  const filteredCategories = useMemo(() => {
-    if (!searchTerm) return categories;
-    return categories.filter(cat =>
-      cat.name.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-  }, [categories, searchTerm]);
+  // Sorted categories
+  const sortedCategories = useMemo(() => {
+    let result = [...categories];
+    
+    switch (sortBy) {
+      case 'newest':
+        result.sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
+        break;
+      case 'popular':
+        result.sort((a, b) => (b.is_popular ? 1 : 0) - (a.is_popular ? 1 : 0) || (b.total_deals || 0) - (a.total_deals || 0));
+        break;
+      case 'highest':
+        result.sort((a, b) => (b.total_deals || 0) - (a.total_deals || 0));
+        break;
+      case 'ending':
+        // Sort by categories with most ending deals first
+        result.sort((a, b) => (b.total_deals || 0) - (a.total_deals || 0));
+        break;
+      default:
+        result.sort((a, b) => (b.total_deals || 0) - (a.total_deals || 0));
+    }
+    
+    return result;
+  }, [categories, sortBy]);
 
   // Calculate total deals
   const totalDeals = useMemo(() => {
