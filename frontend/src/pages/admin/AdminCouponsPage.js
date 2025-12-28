@@ -246,6 +246,10 @@ const AdminCouponsPage = () => {
                   <input type="checkbox" id="is_active" checked={formData.is_active} onChange={(e) => setFormData({...formData, is_active: e.target.checked})} />
                   <label htmlFor="is_active" className="text-sm">Aktif</label>
                 </div>
+                <div className="flex items-center gap-2">
+                  <input type="checkbox" id="is_featured" checked={formData.is_featured} onChange={(e) => setFormData({...formData, is_featured: e.target.checked})} />
+                  <label htmlFor="is_featured" className="text-sm">⭐ Öne Çıkan (Ana sayfada göster)</label>
+                </div>
                 <div className="flex gap-2 pt-4">
                   <Button type="submit">{editingId ? 'Güncelle' : 'Ekle'}</Button>
                   <Button type="button" variant="outline" onClick={resetForm}>İptal</Button>
