@@ -290,9 +290,12 @@ const AdminDiscountsPage = () => {
                     </button>
                   </td>
                   <td className="px-4 py-3">
-                    <div>
+                    <div className="flex items-center gap-2">
                       <span className="font-medium">{discount.title}</span>
-                      {discount.discount_text && <span className="ml-2 text-xs text-neon-pink">{discount.discount_text}</span>}
+                      {discount.discount_text && <span className="text-xs text-neon-pink">{discount.discount_text}</span>}
+                      {!discount.image_url && (
+                        <span className="text-xs px-2 py-0.5 bg-yellow-500/20 text-yellow-400 rounded-full">📷 Görsel Yok</span>
+                      )}
                     </div>
                   </td>
                   <td className="px-4 py-3 text-gray-400">{getBrandName(discount.brand_id)}</td>
