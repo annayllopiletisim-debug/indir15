@@ -363,10 +363,10 @@ const CategoryPage = () => {
       <div className="min-h-screen bg-background pb-20 lg:pb-0" data-testid="category-page">
         
         {/* ═══════════════════════════════════════════════════════════════
-            1. HEADER - Mobile Only
+            1. HEADER - Mobile Only (Simplified - no search/filter icons)
         ═══════════════════════════════════════════════════════════════ */}
         <header className="lg:hidden sticky top-0 z-50 bg-card border-b border-border">
-          <div className="flex items-center justify-between px-4 py-3">
+          <div className="flex items-center px-4 py-3">
             {/* Left: Back button */}
             <button 
               onClick={() => navigate(-1)}
@@ -375,59 +375,13 @@ const CategoryPage = () => {
               <ChevronLeft className="w-6 h-6" />
             </button>
 
-            {/* Center: Title */}
-            <div className="flex-1 text-center px-2">
+            {/* Center: Title - takes remaining space */}
+            <div className="flex-1 text-center pr-8">
               <h1 className="font-bold text-lg truncate">{category.name} Kuponları</h1>
               <p className="text-xs text-muted-foreground">{stats.total} aktif kampanya</p>
             </div>
-
-            {/* Right: Search + Filter */}
-            <div className="flex items-center gap-1">
-              <button 
-                onClick={() => setShowSearch(!showSearch)}
-                className="p-2 hover:bg-muted rounded-lg transition-colors"
-              >
-                <Search className="w-5 h-5" />
-              </button>
-              <button 
-                onClick={() => setShowFilterModal(true)}
-                className="p-2 hover:bg-muted rounded-lg transition-colors relative"
-              >
-                <SlidersHorizontal className="w-5 h-5" />
-                {activeFilterCount > 0 && (
-                  <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-primary text-white text-[10px] font-bold rounded-full flex items-center justify-center">
-                    {activeFilterCount}
-                  </span>
-                )}
-              </button>
-            </div>
           </div>
-
-          {/* Search Input - Expandable */}
-          <AnimatePresence>
-            {showSearch && (
-              <motion.div
-                initial={{ height: 0, opacity: 0 }}
-                animate={{ height: 'auto', opacity: 1 }}
-                exit={{ height: 0, opacity: 0 }}
-                className="overflow-hidden border-t border-border"
-              >
-                <div className="px-4 py-3">
-                  <div className="relative">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-                    <input
-                      type="text"
-                      placeholder="Kampanya ara..."
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                      autoFocus
-                      className="w-full pl-10 pr-10 py-3 bg-muted rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary"
-                    />
-                    {searchTerm && (
-                      <button 
-                        onClick={() => setSearchTerm('')}
-                        className="absolute right-3 top-1/2 -translate-y-1/2"
-                      >
+        </header>
                         <X className="w-5 h-5 text-muted-foreground" />
                       </button>
                     )}
