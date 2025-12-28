@@ -234,12 +234,12 @@ const BrandPage = () => {
         ═══════════════════════════════════════════════════════════════ */}
         <header className="lg:hidden sticky top-0 z-50 bg-card border-b border-border">
           <div className="flex items-center justify-between px-4 py-3">
-            <button 
-              onClick={() => navigate(-1)}
+            <Link 
+              to="/magazalar"
               className="p-2 -ml-2 hover:bg-muted rounded-lg transition-colors"
             >
               <ChevronLeft className="w-6 h-6" />
-            </button>
+            </Link>
             <span className="font-bold text-lg truncate px-4">{brand.name}</span>
             <button 
               onClick={handleShare}
