@@ -135,7 +135,7 @@ const CategoryPage = () => {
       setFilterDiscountRate('all');
       setFilterExpiry('all');
       setSortBy('newest');
-      setSelectedSubCategory('all');
+      setViewMode('campaigns');
       
       try {
         const categoriesRes = await axios.get(`${API}/categories`);
