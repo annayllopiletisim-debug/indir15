@@ -190,59 +190,59 @@ const AdminDashboardPage = () => {
         {/* Bottom Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Category Performance */}
-          <div className="glass-effect p-6 rounded-2xl">
+          <div className="bg-void-paper border border-white/5 p-6 rounded-2xl">
             <div className="flex items-center gap-2 mb-6">
               <Tag className="w-5 h-5 text-green-500" />
-              <h2 className="text-lg font-heading font-bold">Kategori Performansı</h2>
+              <h2 className="text-lg font-heading font-bold text-white">Kategori Performansı</h2>
             </div>
             <div className="space-y-3">
               {analytics?.category_performance?.slice(0, 8).map((item, index) => (
                 <div key={item.category_id} className="flex items-center justify-between p-3 bg-void-subtle rounded-xl">
                   <div className="flex items-center space-x-3">
-                    <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-green-500 to-emerald-500 flex items-center justify-center text-xs font-bold">
+                    <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-green-500 to-emerald-500 flex items-center justify-center text-xs font-bold text-white">
                       {index + 1}
                     </div>
-                    <span className="font-medium text-sm">{item.category_name}</span>
+                    <span className="font-medium text-sm text-white">{item.category_name}</span>
                   </div>
-                  <span className="text-muted-foreground text-sm">{item.count} tıklama</span>
+                  <span className="text-gray-400 text-sm">{item.count} tıklama</span>
                 </div>
-              )) || <p className="text-muted-foreground text-sm">Henüz veri yok</p>}
+              )) || <p className="text-gray-400 text-sm">Henüz veri yok</p>}
             </div>
           </div>
 
           {/* Popular Discounts */}
-          <div className="glass-effect p-6 rounded-2xl">
+          <div className="bg-void-paper border border-white/5 p-6 rounded-2xl">
             <div className="flex items-center gap-2 mb-6">
               <TrendingUp className="w-5 h-5 text-neon-pink" />
-              <h2 className="text-lg font-heading font-bold">Top 10 İndirim</h2>
+              <h2 className="text-lg font-heading font-bold text-white">Top 10 İndirim</h2>
             </div>
             <div className="space-y-3">
               {analytics?.popular_discounts?.slice(0, 10).map((item, index) => (
                 <div key={item.discount_id} className="flex items-center justify-between p-3 bg-void-subtle rounded-xl">
                   <div className="flex items-center space-x-3">
-                    <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-neon-pink to-pink-500 flex items-center justify-center text-xs font-bold">
+                    <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-neon-pink to-pink-500 flex items-center justify-center text-xs font-bold text-white">
                       {index + 1}
                     </div>
                     <div>
-                      <span className="font-medium text-sm block line-clamp-1">{item.title}</span>
-                      <span className="text-xs text-muted-foreground">{item.brand_name}</span>
+                      <span className="font-medium text-sm text-white block line-clamp-1">{item.title}</span>
+                      <span className="text-xs text-gray-400">{item.brand_name}</span>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="text-muted-foreground text-sm">{item.count}</span>
+                    <span className="text-gray-400 text-sm">{item.count}</span>
                     {item.brand_slug && (
                       <a
                         href={`/magaza/${item.brand_slug}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-xs px-2 py-1 rounded bg-void-dark hover:bg-neon-pink/20 transition-colors"
+                        className="text-xs px-2 py-1 rounded bg-void-dark hover:bg-neon-pink/20 transition-colors text-white"
                       >
                         →
                       </a>
                     )}
                   </div>
                 </div>
-              )) || <p className="text-muted-foreground text-sm">Henüz veri yok</p>}
+              )) || <p className="text-gray-400 text-sm">Henüz veri yok</p>}
             </div>
           </div>
         </div>
