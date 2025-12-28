@@ -168,22 +168,10 @@ const CategoriesPage = () => {
             </div>
 
             {/* SEO Description */}
-            <p className="text-sm text-muted-foreground leading-relaxed mb-4 max-w-3xl">
+            <p className="text-sm text-muted-foreground leading-relaxed max-w-3xl">
               İndirim Keşfet'te {categories.length} farklı kategoride en güncel kupon kodları ve indirim fırsatlarını keşfedin. 
               Spor, Moda, Elektronik, Gıda ve daha birçok kategoride {totalDeals}+ aktif kampanya sizi bekliyor.
             </p>
-
-            {/* Search */}
-            <div className="relative max-w-md">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-              <input
-                type="text"
-                placeholder="Kategori ara..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 bg-muted/50 border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary text-foreground"
-              />
-            </div>
           </div>
         </div>
 
