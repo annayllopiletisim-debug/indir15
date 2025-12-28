@@ -216,6 +216,10 @@ const AdminDiscountsPage = () => {
                   <Input value={formData.image_url} onChange={(e) => setFormData({...formData, image_url: e.target.value})} placeholder="https://example.com/image.jpg" />
                   <p className="text-xs text-gray-400 mt-1">Kartlarda görünecek kampanya görseli URL'i</p>
                 </div>
+                <div className="flex items-center gap-2">
+                  <input type="checkbox" id="is_featured" checked={formData.is_featured} onChange={(e) => setFormData({...formData, is_featured: e.target.checked})} />
+                  <label htmlFor="is_featured" className="text-sm">⭐ Öne Çıkan (Ana sayfada göster)</label>
+                </div>
                 <div className="flex gap-2 pt-4">
                   <Button type="submit">{editingId ? 'Güncelle' : 'Ekle'}</Button>
                   <Button type="button" variant="outline" onClick={resetForm}>İptal</Button>
