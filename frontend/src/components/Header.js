@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Search, Menu, X, FolderTree, Flame } from 'lucide-react';
+import { Search, Menu, X, FolderTree, Flame, Store, LayoutGrid, Mail } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import ThemeToggle from './ThemeToggle';
 
@@ -60,18 +60,38 @@ const Header = () => {
                 {showMenu ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
               </button>
               
-              <nav className="hidden lg:flex items-center space-x-6">
-                <Link to="/son-24-saat" className="text-sm hover:text-primary transition-colors flex items-center gap-1.5 text-orange-500" data-testid="header-expiring-link">
+              {/* Desktop Nav - With icons and borders like mobile */}
+              <nav className="hidden lg:flex items-center space-x-2">
+                <Link 
+                  to="/kategoriler" 
+                  className="px-3 py-2 rounded-lg border border-border hover:border-primary/50 hover:bg-muted/50 transition-all flex items-center gap-2 text-sm font-medium" 
+                  data-testid="header-categories-link"
+                >
+                  <LayoutGrid className="w-4 h-4 text-primary" />
+                  Kategoriler
+                </Link>
+                <Link 
+                  to="/magazalar" 
+                  className="px-3 py-2 rounded-lg border border-border hover:border-primary/50 hover:bg-muted/50 transition-all flex items-center gap-2 text-sm font-medium" 
+                  data-testid="header-stores-link"
+                >
+                  <Store className="w-4 h-4 text-primary" />
+                  Mağazalar
+                </Link>
+                <Link 
+                  to="/son-24-saat" 
+                  className="px-3 py-2 rounded-lg border border-orange-300 dark:border-orange-700 bg-orange-50 dark:bg-orange-900/20 hover:bg-orange-100 dark:hover:bg-orange-900/40 transition-all flex items-center gap-2 text-sm font-medium text-orange-600 dark:text-orange-400" 
+                  data-testid="header-expiring-link"
+                >
                   <Flame className="w-4 h-4" />
                   Son 24 Saat
                 </Link>
-                <Link to="/kategoriler" className="text-sm hover:text-primary transition-colors" data-testid="header-categories-link">
-                  Kategoriler
-                </Link>
-                <Link to="/magazalar" className="text-sm hover:text-primary transition-colors" data-testid="header-stores-link">
-                  Mağazalar
-                </Link>
-                <Link to="/iletisim" className="text-sm hover:text-primary transition-colors" data-testid="header-contact-link">
+                <Link 
+                  to="/iletisim" 
+                  className="px-3 py-2 rounded-lg border border-border hover:border-primary/50 hover:bg-muted/50 transition-all flex items-center gap-2 text-sm font-medium" 
+                  data-testid="header-contact-link"
+                >
+                  <Mail className="w-4 h-4 text-primary" />
                   İletişim
                 </Link>
               </nav>
