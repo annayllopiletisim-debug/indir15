@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import axios from 'axios';
-import { Search, TrendingUp, Tag, Package, Gift } from 'lucide-react';
+import { Search, TrendingUp, Tag, Package, Gift, Star } from 'lucide-react';
 import CouponCard from '../components/CouponCard';
 import DiscountCard from '../components/DiscountCard';
 import GiveawayCard from '../components/GiveawayCard';
@@ -14,6 +14,7 @@ const SearchResultsPage = () => {
   const [searchParams] = useSearchParams();
   const query = searchParams.get('q') || '';
   const [results, setResults] = useState(null);
+  const [popularDeals, setPopularDeals] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -26,8 +27,18 @@ const SearchResultsPage = () => {
 
       setLoading(true);
       try {
-        const response = await axios.get(`${API}/search?q=${encodeURIComponent(query)}`);
-        setResults(response.data);
+        const [searchRes, featuredRes] = await Promise.all([
+          axios.get(`${API}/search?q=${encodeURIComponent(query)}`),
+          axios.get(`${API}/featured-deals`)
+        ]);
+        setResults(searchRes.data);
+        
+        // Combine featured deals
+        const featured = [
+          ...(featuredRes.data.coupons || []).map(c => ({ ...c, type: 'coupon' })),
+          ...(featuredRes.data.discounts || []).map(d => ({ ...d, type: 'discount' }))
+        ].slice(0, 4);
+        setPopularDeals(featured);
       } catch (error) {
         console.error('Search failed:', error);
         setResults(null);
@@ -104,7 +115,7 @@ const SearchResultsPage = () => {
           )}
 
           {query && totalResults === 0 && (
-            <div className="text-center py-16 glass-effect rounded-2xl">
+            <div className="text-center py-12 glass-effect rounded-2xl mb-8">
               <Search className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
               <h2 className="text-lg font-medium mb-2">Sonuç bulunamadı</h2>
               <p className="text-muted-foreground mb-4">"{query}" için eşleşen sonuç yok</p>
@@ -115,6 +126,30 @@ const SearchResultsPage = () => {
                 Tüm Mağazalar
               </Link>
             </div>
+          )}
+
+          {/* Popular Deals Section - Show when no results */}
+          {query && totalResults === 0 && popularDeals.length > 0 && (
+            <section>
+              <div className="flex items-center gap-2 mb-4">
+                <Star className="w-5 h-5 text-yellow-500 fill-yellow-500" />
+                <h2 className="text-lg font-heading font-bold">Popüler İndirimler</h2>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {popularDeals.map((deal) => {
+                  const brand = { 
+                    name: deal.brand_name, 
+                    slug: deal.brand_slug,
+                    logo_url: deal.brand_logo_url
+                  };
+                  return deal.type === 'coupon' ? (
+                    <CouponCard key={`popular-coupon-${deal.id}`} coupon={deal} brand={brand} />
+                  ) : (
+                    <DiscountCard key={`popular-discount-${deal.id}`} discount={deal} brand={brand} />
+                  );
+                })}
+              </div>
+            </section>
           )}
 
           {results && totalResults > 0 && (
