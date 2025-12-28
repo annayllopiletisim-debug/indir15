@@ -8,6 +8,7 @@ import DiscountCard from '../components/DiscountCard';
 import GiveawayCard from '../components/GiveawayCard';
 import { 
   ChevronLeft, 
+  ChevronRight,
   Search, 
   SlidersHorizontal, 
   X, 
