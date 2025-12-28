@@ -17,7 +17,7 @@ const AdminGiveawaysPage = () => {
   const [formData, setFormData] = useState({
     brand_id: '', title: '', description: '', long_description: '', terms_conditions: '',
     prize_text: '', expiry_date: '',
-    is_active: true, utm_template: 'utm_source=İndirim Keşfet&utm_medium=giveaway', destination_url: '',
+    is_active: true, is_featured: false, utm_template: 'utm_source=İndirim Keşfet&utm_medium=giveaway', destination_url: '',
     image_url: ''
   });
 
