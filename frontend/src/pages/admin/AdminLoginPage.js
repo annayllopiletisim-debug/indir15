@@ -84,12 +84,13 @@ const AdminLoginPage = () => {
 
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium mb-2">Kullanıcı Adı</label>
+                <label className="block text-sm font-medium mb-2 text-white">Kullanıcı Adı</label>
                 <input
                   type="text"
                   value={formData.username}
                   onChange={(e) => setFormData({ ...formData, username: e.target.value })}
-                  className="w-full px-4 py-3 bg-void-subtle rounded-lg focus:outline-none focus:ring-2 focus:ring-neon-purple"
+                  className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-neon-purple focus:border-transparent"
+                  placeholder="Kullanıcı adınız"
                   required
                   data-testid="username-input"
                 />
@@ -97,12 +98,13 @@ const AdminLoginPage = () => {
 
               {!isLogin && (
                 <div>
-                  <label className="block text-sm font-medium mb-2">E-posta</label>
+                  <label className="block text-sm font-medium mb-2 text-white">E-posta</label>
                   <input
                     type="email"
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    className="w-full px-4 py-3 bg-void-subtle rounded-lg focus:outline-none focus:ring-2 focus:ring-neon-purple"
+                    className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-neon-purple focus:border-transparent"
+                    placeholder="E-posta adresiniz"
                     required
                     data-testid="email-input"
                   />
@@ -110,12 +112,13 @@ const AdminLoginPage = () => {
               )}
 
               <div>
-                <label className="block text-sm font-medium mb-2">Şifre</label>
+                <label className="block text-sm font-medium mb-2 text-white">Şifre</label>
                 <input
                   type="password"
                   value={formData.password}
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                  className="w-full px-4 py-3 bg-void-subtle rounded-lg focus:outline-none focus:ring-2 focus:ring-neon-purple"
+                  className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-neon-purple focus:border-transparent"
+                  placeholder="Şifreniz"
                   required
                   data-testid="password-input"
                 />
