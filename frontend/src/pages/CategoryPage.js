@@ -92,6 +92,11 @@ const CategoryPage = () => {
   const { slug } = useParams();
   const navigate = useNavigate();
   
+  // Scroll to top when slug changes
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [slug]);
+  
   // Data states
   const [category, setCategory] = useState(null);
   const [brands, setBrands] = useState([]);
