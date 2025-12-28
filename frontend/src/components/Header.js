@@ -6,36 +6,17 @@ import ThemeToggle from './ThemeToggle';
 
 const Header = () => {
   const [showMenu, setShowMenu] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [searchExpanded, setSearchExpanded] = useState(false);
-  const searchInputRef = useRef(null);
   const navigate = useNavigate();
-
-  const handleSearch = (e) => {
-    e.preventDefault();
-    if (searchQuery.trim()) {
-      navigate(`/arama?q=${encodeURIComponent(searchQuery.trim())}`);
-      setSearchQuery('');
-      setSearchExpanded(false);
-    }
-  };
-
-  // Focus input when expanded on mobile
-  useEffect(() => {
-    if (searchExpanded && searchInputRef.current) {
-      searchInputRef.current.focus();
-    }
-  }, [searchExpanded]);
 
   return (
     <>
       <header id="main-header" className="sticky top-0 z-50 w-full glass-effect border-b border-border transition-transform duration-300">
         <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between h-16 gap-2 sm:gap-4">
-            {/* Logo - Hide when search expanded on mobile */}
+          <div className="flex items-center justify-between h-14 lg:h-16 gap-2 sm:gap-4">
+            {/* Logo */}
             <Link 
               to="/" 
-              className={`flex-shrink-0 transition-all duration-200 ${searchExpanded ? 'hidden sm:block' : ''}`}
+              className="flex-shrink-0"
               data-testid="header-logo"
             >
               <span className="text-lg font-heading font-bold bg-gradient-to-r from-primary to-pink-500 bg-clip-text text-transparent">
@@ -43,56 +24,31 @@ const Header = () => {
               </span>
             </Link>
             
-            {/* Search Bar - Expands on mobile */}
+            {/* Desktop Search Bar - Hidden on mobile */}
             <form 
-              onSubmit={handleSearch} 
-              className={`transition-all duration-200 ${searchExpanded ? 'flex-1' : 'hidden sm:block sm:flex-1 sm:max-w-md'}`}
+              onSubmit={(e) => {
+                e.preventDefault();
+                const query = e.target.elements.search.value;
+                if (query.trim()) {
+                  navigate(`/arama?q=${encodeURIComponent(query.trim())}`);
+                  e.target.elements.search.value = '';
+                }
+              }} 
+              className="hidden lg:block flex-1 max-w-md"
             >
               <div className="relative w-full">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 <input
-                  ref={searchInputRef}
+                  name="search"
                   type="text"
-                  placeholder="Mağaza veya kupon ara..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  onBlur={() => {
-                    // Close after small delay to allow submit
-                    setTimeout(() => {
-                      if (!searchQuery) setSearchExpanded(false);
-                    }, 200);
-                  }}
-                  className="w-full pl-9 pr-10 py-2.5 bg-muted/50 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary"
+                  placeholder="Marka veya kupon ara..."
+                  className="w-full pl-9 pr-4 py-2.5 bg-muted/50 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary"
                   data-testid="header-search-input"
                 />
-                {/* Close button on mobile when expanded */}
-                {searchExpanded && (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setSearchExpanded(false);
-                      setSearchQuery('');
-                    }}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded-full hover:bg-muted sm:hidden"
-                  >
-                    <X className="w-4 h-4" />
-                  </button>
-                )}
               </div>
             </form>
-
-            {/* Mobile search button - shows when not expanded */}
-            {!searchExpanded && (
-              <button
-                onClick={() => setSearchExpanded(true)}
-                className="p-2 rounded-lg hover:bg-muted transition-colors sm:hidden"
-                aria-label="Ara"
-              >
-                <Search className="w-5 h-5" />
-              </button>
-            )}
             
-            <div className={`flex items-center space-x-2 ${searchExpanded ? 'hidden sm:flex' : ''}`}>
+            <div className="flex items-center space-x-2">
               <ThemeToggle />
               
               <button
