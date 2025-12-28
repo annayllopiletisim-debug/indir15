@@ -277,8 +277,16 @@ const BrandPage = () => {
         <section className="bg-card border-b border-border">
           <div className="container mx-auto px-4 py-6">
             <div className="flex items-center gap-4">
-              <div className="w-20 h-20 flex-shrink-0 rounded-2xl border border-border bg-white p-2 flex items-center justify-center overflow-hidden">
-                <BrandLogo logoUrl={brand.logo_url} brandName={brand.name} size="xl" />
+              <div className="w-16 h-16 flex-shrink-0 rounded-xl border border-border bg-white flex items-center justify-center overflow-hidden">
+                {brand.logo_url ? (
+                  <img 
+                    src={brand.logo_url.startsWith('/uploads/') ? `${process.env.REACT_APP_BACKEND_URL}/api${brand.logo_url}` : brand.logo_url} 
+                    alt={brand.name} 
+                    className="w-full h-full object-contain"
+                  />
+                ) : (
+                  <span className="text-2xl font-bold text-gray-400">{brand.name.charAt(0)}</span>
+                )}
               </div>
               <div className="flex-1 min-w-0">
                 <h1 className="text-2xl lg:text-3xl font-heading font-bold truncate">{brand.name}</h1>
@@ -303,40 +311,11 @@ const BrandPage = () => {
 
         <div className="container mx-auto px-4 py-6">
           {/* ═══════════════════════════════════════════════════════════════
-              4. QUICK STATS - 3 kart: Aktif kupon, Max indirim, Bugün biten
-          ═══════════════════════════════════════════════════════════════ */}
-          <section className="grid grid-cols-3 gap-3 mb-6">
-            <div className="bg-card border border-border rounded-xl p-3 text-center">
-              <div className="w-10 h-10 mx-auto mb-2 rounded-xl bg-primary/10 flex items-center justify-center">
-                <Tag className="w-5 h-5 text-primary" />
-              </div>
-              <p className="text-xl font-bold text-primary">{stats.totalDeals}</p>
-              <p className="text-xs text-muted-foreground">Aktif Kupon</p>
-            </div>
-            <div className="bg-card border border-border rounded-xl p-3 text-center">
-              <div className="w-10 h-10 mx-auto mb-2 rounded-xl bg-green-500/10 flex items-center justify-center">
-                <Percent className="w-5 h-5 text-green-500" />
-              </div>
-              <p className="text-xl font-bold text-green-500">
-                {stats.maxDiscount > 0 ? `%${stats.maxDiscount}` : '-'}
-              </p>
-              <p className="text-xs text-muted-foreground">Max İndirim</p>
-            </div>
-            <div className="bg-card border border-border rounded-xl p-3 text-center">
-              <div className="w-10 h-10 mx-auto mb-2 rounded-xl bg-orange-500/10 flex items-center justify-center">
-                <Clock className="w-5 h-5 text-orange-500" />
-              </div>
-              <p className="text-xl font-bold text-orange-500">{stats.endingToday}</p>
-              <p className="text-xs text-muted-foreground">Bugün Biten</p>
-            </div>
-          </section>
-
-          {/* ═══════════════════════════════════════════════════════════════
-              5. MAIN CTA - "Migros'a Git" butonu (tam genişlik)
+              4. MAIN CTA - Küçültülmüş "Siteye Git" butonu
           ═══════════════════════════════════════════════════════════════ */}
           <button
             onClick={handleGoToStore}
-            className="w-full mb-6 py-4 bg-gradient-to-r from-primary to-pink-500 text-white rounded-2xl font-bold text-lg flex items-center justify-center gap-2 hover:shadow-lg hover:shadow-primary/30 transition-all"
+            className="w-full mb-6 py-3 bg-muted hover:bg-muted/80 text-foreground rounded-xl font-medium text-sm flex items-center justify-center gap-2 border border-border transition-all"
           >
             <ExternalLink className="w-5 h-5" />
             {brand.name}'a Git
