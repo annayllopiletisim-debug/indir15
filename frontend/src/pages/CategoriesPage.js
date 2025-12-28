@@ -4,7 +4,6 @@ import { Helmet } from 'react-helmet-async';
 import axios from 'axios';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  Search,
   LayoutGrid,
   Dumbbell, 
   Landmark, 
@@ -23,10 +22,22 @@ import {
   Flame,
   ChevronRight,
   ChevronDown,
-  HelpCircle
+  HelpCircle,
+  ArrowDownAZ,
+  TrendingUp,
+  Star,
+  Clock
 } from 'lucide-react';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
+
+// Sort options
+const SORT_OPTIONS = [
+  { id: 'newest', label: 'Yeni Eklenen', icon: Sparkles },
+  { id: 'popular', label: 'Popüler', icon: TrendingUp },
+  { id: 'highest', label: 'En Çok Kampanya', icon: Star },
+  { id: 'ending', label: 'Son Bitenler', icon: Clock },
+];
 
 // Category icon mapping based on slug
 const getCategoryIcon = (slug) => {
