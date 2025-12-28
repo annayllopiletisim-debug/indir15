@@ -199,6 +199,10 @@ const AdminGiveawaysPage = () => {
                   <label className="block text-sm font-medium mb-1">UTM Template</label>
                   <Input value={formData.utm_template} onChange={(e) => setFormData({...formData, utm_template: e.target.value})} />
                 </div>
+                <div className="flex items-center gap-2">
+                  <input type="checkbox" id="is_featured_giveaway" checked={formData.is_featured} onChange={(e) => setFormData({...formData, is_featured: e.target.checked})} />
+                  <label htmlFor="is_featured_giveaway" className="text-sm">⭐ Öne Çıkan (Ana sayfada göster)</label>
+                </div>
                 <div className="flex gap-2 pt-4">
                   <Button type="submit" className="flex-1">{editingId ? 'Güncelle' : 'Oluştur'}</Button>
                   <Button type="button" variant="outline" onClick={resetForm}>İptal</Button>
