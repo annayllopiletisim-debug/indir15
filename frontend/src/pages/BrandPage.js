@@ -77,6 +77,12 @@ const BrandPage = () => {
     window.scrollTo(0, 0);
   }, [slug]);
 
+  // Also scroll to top when navigating to deal detail
+  useEffect(() => {
+    // This ensures the page scrolls to top on any navigation
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }, []);
+
   // Fetch data
   useEffect(() => {
     const fetchData = async () => {
