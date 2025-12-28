@@ -1441,6 +1441,73 @@ async def get_popular_today():
         'total': len(popular_coupons) + len(popular_discounts)
     }
 
+
+@api_router.get("/featured-deals")
+async def get_featured_deals():
+    """Get featured deals (is_featured=true). Falls back to popular if no featured items."""
+    
+    # Get featured coupons
+    featured_coupons = await db.coupons.find(
+        {'is_featured': True, 'is_active': True},
+        {'_id': 0}
+    ).limit(5).to_list(5)
+    
+    # Get featured discounts
+    featured_discounts = await db.discounts.find(
+        {'is_featured': True},
+        {'_id': 0}
+    ).limit(5).to_list(5)
+    
+    # Enrich with brand info
+    for coupon in featured_coupons:
+        brand = await db.brands.find_one({'id': coupon.get('brand_id')}, {'_id': 0})
+        if brand:
+            coupon['brand_name'] = brand['name']
+            coupon['brand_slug'] = brand['slug']
+            coupon['brand_logo_url'] = brand.get('logo_url')
+    
+    for discount in featured_discounts:
+        brand = await db.brands.find_one({'id': discount.get('brand_id')}, {'_id': 0})
+        if brand:
+            discount['brand_name'] = brand['name']
+            discount['brand_slug'] = brand['slug']
+            discount['brand_logo_url'] = brand.get('logo_url')
+    
+    # If no featured items, fall back to popular/recent
+    if not featured_coupons and not featured_discounts:
+        # Get recent active coupons
+        featured_coupons = await db.coupons.find(
+            {'is_active': True},
+            {'_id': 0}
+        ).sort('created_at', -1).limit(3).to_list(3)
+        
+        for coupon in featured_coupons:
+            brand = await db.brands.find_one({'id': coupon.get('brand_id')}, {'_id': 0})
+            if brand:
+                coupon['brand_name'] = brand['name']
+                coupon['brand_slug'] = brand['slug']
+                coupon['brand_logo_url'] = brand.get('logo_url')
+        
+        # Get recent discounts
+        featured_discounts = await db.discounts.find(
+            {},
+            {'_id': 0}
+        ).sort('created_at', -1).limit(2).to_list(2)
+        
+        for discount in featured_discounts:
+            brand = await db.brands.find_one({'id': discount.get('brand_id')}, {'_id': 0})
+            if brand:
+                discount['brand_name'] = brand['name']
+                discount['brand_slug'] = brand['slug']
+                discount['brand_logo_url'] = brand.get('logo_url')
+    
+    return {
+        'coupons': featured_coupons,
+        'discounts': featured_discounts,
+        'total': len(featured_coupons) + len(featured_discounts)
+    }
+
+
 @api_router.get("/homepage-brands")
 async def get_homepage_brands_with_deals():
     """Get homepage brands with active deal counts"""
