@@ -196,7 +196,7 @@ const BaseCard = ({
 
                 {/* Discount Badge - Always green for both mobile and desktop */}
                 {discountText && (
-                  <span className="inline-flex self-start px-3 py-1 bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-400 text-sm font-bold rounded-full mb-2">
+                  <span className="inline-flex self-start px-3 py-1 text-sm font-bold rounded-full mb-2" style={{ backgroundColor: '#D1FAE5', color: '#047857' }}>
                     {discountText}
                   </span>
                 )}
