@@ -60,7 +60,8 @@ const CategoryPageLayout = ({ children }) => {
         <CategoryNav />
       </div>
       <main className="flex-1">{children}</main>
-      <div className="hidden lg:block">
+      {/* Footer - always visible, but add padding for mobile bottom nav */}
+      <div className="pb-20 lg:pb-0">
         <Footer />
       </div>
     </div>
@@ -77,7 +78,13 @@ const BrandPageLayout = ({ children }) => {
         <CategoryNav />
       </div>
       <main className="flex-1">{children}</main>
-      <div className="hidden lg:block">
+      {/* Footer - always visible, but add padding for mobile bottom nav */}
+      <div className="pb-20 lg:pb-0">
+        <Footer />
+      </div>
+    </div>
+  );
+};
         <Footer />
       </div>
     </div>
