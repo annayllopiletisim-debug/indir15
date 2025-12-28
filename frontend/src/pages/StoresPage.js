@@ -1,13 +1,20 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { useNavigate, useSearchParams, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import axios from 'axios';
-import { Search, Tag, Store, ChevronDown, ChevronRight, Package, Star, HelpCircle, Flame, ShoppingBag } from 'lucide-react';
+import { Store, ChevronDown, ChevronRight, Package, Star, HelpCircle, Flame, ShoppingBag, ArrowDownAZ, Sparkles, Clock, TrendingUp } from 'lucide-react';
 import BrandLogo from '../components/BrandLogo';
-import AlphabetNav from '../components/AlphabetNav';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
+
+// Sort options
+const SORT_OPTIONS = [
+  { id: 'newest', label: 'Yeni Eklenen', icon: Sparkles },
+  { id: 'popular', label: 'Popüler', icon: TrendingUp },
+  { id: 'highest', label: 'En Çok İndirim', icon: Star },
+  { id: 'ending', label: 'Son Bitenler', icon: Clock },
+];
 
 // FAQ data for stores page
 const FAQ_DATA = [
@@ -30,15 +37,12 @@ const FAQ_DATA = [
 ];
 
 const StoresPage = () => {
-  const navigate = useNavigate();
-  const [searchParams, setSearchParams] = useSearchParams();
-  
   const [brands, setBrands] = useState([]);
   const [expiringSoon, setExpiringSoon] = useState({ total: 0 });
-  const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
-  const [selectedLetter, setSelectedLetter] = useState(null);
   const [expandedFAQ, setExpandedFAQ] = useState(null);
+  const [sortBy, setSortBy] = useState('popular');
+  const [showSortModal, setShowSortModal] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -52,19 +56,37 @@ const StoresPage = () => {
         
         // Calculate deal counts for each brand
         const brandDealCounts = {};
+        const brandEndingSoon = {};
+        
         couponsRes.data.forEach(c => {
           if (c.is_active !== false) {
             brandDealCounts[c.brand_id] = (brandDealCounts[c.brand_id] || 0) + 1;
+            // Check if ending today
+            if (c.expiry_date) {
+              const expiry = new Date(c.expiry_date);
+              const now = new Date();
+              if (expiry.toDateString() === now.toDateString()) {
+                brandEndingSoon[c.brand_id] = (brandEndingSoon[c.brand_id] || 0) + 1;
+              }
+            }
           }
         });
         discountsRes.data.forEach(d => {
           brandDealCounts[d.brand_id] = (brandDealCounts[d.brand_id] || 0) + 1;
+          if (d.expiry_date) {
+            const expiry = new Date(d.expiry_date);
+            const now = new Date();
+            if (expiry.toDateString() === now.toDateString()) {
+              brandEndingSoon[d.brand_id] = (brandEndingSoon[d.brand_id] || 0) + 1;
+            }
+          }
         });
 
         const brandsWithDeals = brandsRes.data.map(b => ({
           ...b,
-          deal_count: brandDealCounts[b.id] || 0
-        })).sort((a, b) => a.name.localeCompare(b.name, 'tr'));
+          deal_count: brandDealCounts[b.id] || 0,
+          ending_soon: brandEndingSoon[b.id] || 0
+        }));
 
         setBrands(brandsWithDeals);
         setExpiringSoon(expiringRes.data);
@@ -78,34 +100,29 @@ const StoresPage = () => {
     fetchData();
   }, []);
 
-  // Get available letters from brands
-  const availableLetters = useMemo(() => {
-    const letters = new Set();
-    brands.forEach(brand => {
-      const firstLetter = brand.name.charAt(0).toUpperCase();
-      letters.add(firstLetter);
-    });
-    return Array.from(letters).sort((a, b) => a.localeCompare(b, 'tr'));
-  }, [brands]);
-
-  // Filter brands by search term and selected letter
-  const filteredBrands = useMemo(() => {
-    let result = brands;
+  // Sorted and filtered brands
+  const sortedBrands = useMemo(() => {
+    let result = [...brands];
     
-    if (searchTerm) {
-      result = result.filter(brand =>
-        brand.name.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    }
-    
-    if (selectedLetter) {
-      result = result.filter(brand =>
-        brand.name.charAt(0).toUpperCase() === selectedLetter
-      );
+    switch (sortBy) {
+      case 'newest':
+        result.sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
+        break;
+      case 'popular':
+        result.sort((a, b) => b.deal_count - a.deal_count);
+        break;
+      case 'highest':
+        result.sort((a, b) => b.deal_count - a.deal_count);
+        break;
+      case 'ending':
+        result.sort((a, b) => b.ending_soon - a.ending_soon);
+        break;
+      default:
+        result.sort((a, b) => b.deal_count - a.deal_count);
     }
     
     return result;
-  }, [searchTerm, selectedLetter, brands]);
+  }, [brands, sortBy]);
 
   // Popular brands (ones with most deals)
   const popularBrands = useMemo(() => {
@@ -122,6 +139,9 @@ const StoresPage = () => {
 
   // Total expiring count
   const expiringCount = (expiringSoon.coupons?.length || 0) + (expiringSoon.discounts?.length || 0);
+
+  // Get current sort option
+  const currentSortOption = SORT_OPTIONS.find(opt => opt.id === sortBy) || SORT_OPTIONS[0];
 
   if (loading) {
     return (
@@ -186,6 +206,23 @@ const StoresPage = () => {
             </Link>
           )}
 
+          {/* Sort Button - Prominent Action Button */}
+          <button
+            onClick={() => setShowSortModal(true)}
+            className="w-full mb-6 p-4 bg-card border-2 border-primary/30 rounded-2xl hover:border-primary hover:bg-primary/5 transition-all flex items-center justify-between group"
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                <ArrowDownAZ className="w-5 h-5 text-primary" />
+              </div>
+              <div className="text-left">
+                <p className="text-sm text-muted-foreground">Sıralama</p>
+                <p className="font-semibold text-primary">{currentSortOption.label}</p>
+              </div>
+            </div>
+            <ChevronDown className="w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors" />
+          </button>
+
           {/* Popular Stores Section */}
           {popularBrands.length > 0 && (
             <div className="mb-8">
@@ -221,28 +258,17 @@ const StoresPage = () => {
             </div>
           )}
 
-          {/* Alphabet Navigation */}
-          {!searchTerm && availableLetters.length > 0 && (
-            <div className="mb-6">
-              <AlphabetNav
-                letters={availableLetters}
-                selectedLetter={selectedLetter}
-                onSelect={setSelectedLetter}
-              />
-            </div>
-          )}
-
           {/* All Stores Grid */}
           <div className="mb-8">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg lg:text-xl font-bold flex items-center gap-2">
                 <ShoppingBag className="w-5 h-5 text-primary" />
-                {selectedLetter ? `"${selectedLetter}" ile Başlayan Mağazalar` : 'Tüm Mağazalar'}
+                Tüm Mağazalar
               </h2>
-              <span className="text-sm text-muted-foreground">{filteredBrands.length} mağaza</span>
+              <span className="text-sm text-muted-foreground">{sortedBrands.length} mağaza</span>
             </div>
 
-            {filteredBrands.length === 0 ? (
+            {sortedBrands.length === 0 ? (
               <div className="text-center py-16 bg-card rounded-2xl border border-border">
                 <Package className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
                 <h3 className="text-lg font-medium mb-2">Mağaza Bulunamadı</h3>
@@ -250,12 +276,12 @@ const StoresPage = () => {
               </div>
             ) : (
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 lg:gap-4">
-                {filteredBrands.map((brand, index) => (
+                {sortedBrands.map((brand, index) => (
                   <motion.div
                     key={brand.id}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: index * 0.02 }}
+                    transition={{ delay: Math.min(index * 0.02, 0.5) }}
                   >
                     <Link
                       to={`/magaza/${brand.slug}`}
@@ -383,6 +409,58 @@ const StoresPage = () => {
           </div>
         </div>
       </div>
+
+      {/* Sort Modal */}
+      <AnimatePresence>
+        {showSortModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[60] bg-black/50"
+            onClick={() => setShowSortModal(false)}
+          >
+            <motion.div
+              initial={{ y: '100%' }}
+              animate={{ y: 0 }}
+              exit={{ y: '100%' }}
+              transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+              className="absolute bottom-0 left-0 right-0 bg-card rounded-t-2xl"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="p-4 border-b border-border">
+                <h2 className="font-bold text-lg">Sıralama</h2>
+              </div>
+              <div className="p-2 pb-8">
+                {SORT_OPTIONS.map((option) => {
+                  const IconComponent = option.icon;
+                  return (
+                    <button
+                      key={option.id}
+                      onClick={() => {
+                        setSortBy(option.id);
+                        setShowSortModal(false);
+                      }}
+                      className={`w-full px-4 py-4 text-left rounded-xl transition-colors flex items-center gap-3 ${
+                        sortBy === option.id 
+                          ? 'bg-primary/10 text-primary' 
+                          : 'hover:bg-muted'
+                      }`}
+                    >
+                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
+                        sortBy === option.id ? 'bg-primary text-white' : 'bg-muted'
+                      }`}>
+                        <IconComponent className="w-5 h-5" />
+                      </div>
+                      <span className="font-medium">{option.label}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 };
