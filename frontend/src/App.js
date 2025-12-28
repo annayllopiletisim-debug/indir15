@@ -102,9 +102,9 @@ function App() {
           <Route
             path="/magaza/:slug"
             element={
-              <PublicLayout>
+              <BrandPageLayout>
                 <BrandPage />
-              </PublicLayout>
+              </BrandPageLayout>
             }
           />
           <Route
