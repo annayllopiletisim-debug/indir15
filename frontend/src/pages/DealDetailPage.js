@@ -338,17 +338,9 @@ const DealDetailPage = () => {
               </div>
             )}
 
-            {/* Short Description (Kısa Açıklama) */}
-            {item.description && (
-              <p className="text-muted-foreground mb-4 leading-relaxed">
-                {item.description}
-              </p>
-            )}
-
-            {/* Long Description (Uzun Açıklama) - Sadece doluysa göster */}
+            {/* Kampanya Açıklaması (Uzun Açıklama - Sheet D sütunu) */}
             {item.long_description && (
               <div className="mb-6">
-                <h2 className="text-lg font-heading font-semibold mb-2">Kampanya Detayı</h2>
                 <div className="text-muted-foreground leading-relaxed whitespace-pre-wrap">
                   {item.long_description}
                 </div>
