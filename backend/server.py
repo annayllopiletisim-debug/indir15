@@ -2542,22 +2542,31 @@ async def import_from_google_sheet(
                 print(f"DEBUG: Row keys = {list(row.keys())}")
             
             # Extract data with flexible column matching
-            # A sütunu - Sadece tür belirler (İndirim, Kupon, Çekiliş)
-            item_type = get_column(row, 'türü', 'type', 'tip', 'tür')
-            store_name = get_column(row, 'mağaza', 'store', 'brand', 'magaza')
-            title = get_column(row, 'başlık', 'title', 'baslik')
-            short_desc = get_column(row, 'açıklama (kısa)', 'kısa açıklama', 'aciklama', 'description')
-            long_desc = get_column(row, 'uzun açıklama', 'long', 'detay', 'açıklama (uzun)')
-            # E sütunu - İndirim metni (yeşil badge için)
-            discount_text = get_column(row, 'indirim metni', 'indirim oranı', 'discount text', 'badge')
-            expiry_str = get_column(row, 'bitiş', 'bitis', 'tarih', 'expiry', 'date', 'son tarih')
-            url = get_column(row, 'url', 'link', 'hedef', 'hedef url')
+            # A sütunu - Türü (İndirim, Kupon, Çekiliş)
+            item_type = get_column(row, 'türü', 'turu', 'type', 'tip')
+            # B sütunu - Mağaza
+            store_name = get_column(row, 'mağaza', 'magaza', 'store', 'brand')
+            # C sütunu - Başlık
+            title = get_column(row, 'başlık', 'baslik', 'title')
+            # D sütunu - Uzun Açıklama (bu Sheet'te kısa açıklama yok)
+            long_desc = get_column(row, 'uzun açıklama', 'uzun aciklama', 'açıklama', 'aciklama', 'detay')
+            # E sütunu - İndirim Metni (yeşil badge için) - ÖNEMLİ!
+            discount_text = get_column(row, 'indirim metni', 'indirim orani', 'badge', 'oran')
+            # F sütunu - Bitiş Tarihi
+            expiry_str = get_column(row, 'bitiş tarihi', 'bitis tarihi', 'bitiş', 'bitis', 'tarih', 'son tarih')
+            # G sütunu - URL
+            url = get_column(row, 'url', 'link', 'hedef')
+            # H sütunu - Kupon Kodu
             coupon_code = get_column(row, 'kupon kodu', 'kod', 'code')
-            terms = get_column(row, 'kullanım koşulları', 'koşul', 'terms', 'koşullar')
+            # I sütunu - Kullanım Koşulları
+            terms = get_column(row, 'kullanım koşulları', 'kullanim kosullari', 'koşullar', 'terms')
+            
+            # Short description - use title if not provided
+            short_desc = long_desc[:100] if long_desc else title
             
             # Debug: Print extracted values for first row
             if idx == 2:
-                print(f"DEBUG: item_type='{item_type}', discount_text='{discount_text}', title='{title}'")
+                print(f"DEBUG: item_type='{item_type}', discount_text='{discount_text}', title='{title[:30]}...'")
             
             # Validate required fields
             if not title:
