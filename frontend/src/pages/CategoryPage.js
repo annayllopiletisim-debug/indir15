@@ -385,11 +385,16 @@ const CategoryPage = () => {
           </div>
         </header>
 
-        {/* Desktop Header */}
+        {/* Desktop Header - Sadece breadcrumb tarzı, title SEO bölümünde */}
         <div className="hidden lg:block bg-card border-b border-border">
-          <div className="container mx-auto px-4 py-8">
-            <h1 className="text-3xl font-bold mb-2">{category.name} Kuponları</h1>
-            <p className="text-muted-foreground">{stats.total} aktif kampanya, {stats.brandsCount} marka</p>
+          <div className="container mx-auto px-4 py-4">
+            <nav className="text-sm text-muted-foreground">
+              <Link to="/" className="hover:text-primary">Ana Sayfa</Link>
+              <span className="mx-2">/</span>
+              <Link to="/kategoriler" className="hover:text-primary">Kategoriler</Link>
+              <span className="mx-2">/</span>
+              <span className="text-foreground">{category.name}</span>
+            </nav>
           </div>
         </div>
 
