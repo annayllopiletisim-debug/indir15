@@ -106,9 +106,10 @@ const FAQ_DATA = [
 const CategoriesPage = () => {
   const [categories, setCategories] = useState([]);
   const [expiringSoon, setExpiringSoon] = useState({ total: 0 });
-  const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
   const [expandedFAQ, setExpandedFAQ] = useState(null);
+  const [sortBy, setSortBy] = useState('popular');
+  const [showSortModal, setShowSortModal] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
