@@ -1,74 +1,36 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import axios from 'axios';
 import BrandLogo from '../components/BrandLogo';
-import CouponCard from '../components/CouponCard';
-import DiscountCard from '../components/DiscountCard';
-import GiveawayCard from '../components/GiveawayCard';
 import { 
   ChevronLeft, 
   ChevronRight,
-  Search, 
-  SlidersHorizontal, 
-  X, 
   ChevronDown, 
   ChevronUp,
   ArrowDownAZ,
   Home,
   LayoutGrid,
   Store,
-  Tag,
   ShoppingBag,
   Sparkles,
-  Utensils,
-  Shirt,
-  Gift,
-  HelpCircle
+  HelpCircle,
+  Flame,
+  Star,
+  Clock,
+  TrendingUp,
+  Package
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
-// Filter constants
-const FILTER_DISCOUNT_RATES = [
-  { id: 'all', label: 'Tümü' },
-  { id: '10', label: '%10+ İndirim' },
-  { id: '20', label: '%20+ İndirim' },
-  { id: '30', label: '%30+ İndirim' },
-  { id: '50', label: '%50+ İndirim' }
-];
-
-const FILTER_EXPIRY = [
-  { id: 'all', label: 'Tümü' },
-  { id: 'today', label: 'Bugün' },
-  { id: 'week', label: 'Bu Hafta' },
-  { id: 'month', label: 'Bu Ay' }
-];
-
+// Sort options
 const SORT_OPTIONS = [
-  { id: 'newest', label: 'Yeni Eklenen' },
-  { id: 'popular', label: 'Popüler' },
-  { id: 'highest', label: 'En Yüksek İndirim' },
-  { id: 'ending', label: 'Son Bitenler' }
-];
-
-// Sub-categories mapping (static for now, can be dynamic from backend)
-const SUB_CATEGORIES = {
-  'market': ['Gıda', 'Temizlik', 'Kişisel Bakım', 'Ev'],
-  'moda': ['Kadın', 'Erkek', 'Çocuk', 'Ayakkabı'],
-  'elektronik': ['Telefon', 'Bilgisayar', 'TV', 'Aksesuar'],
-  'spor': ['Giyim', 'Ayakkabı', 'Ekipman', 'Outdoor'],
-};
-
-// Related categories with icons
-const RELATED_CATEGORIES = [
-  { slug: '/', label: 'Tüm Kuponlar', icon: '🛒' },
-  { slug: '/kategori/moda', label: 'Moda İndirimleri', icon: '👗' },
-  { slug: '/kategori/elektronik', label: 'Elektronik Fırsatları', icon: '📱' },
-  { slug: '/kategori/spor', label: 'Spor Kampanyaları', icon: '⚽' },
-  { slug: '/kategori/gida', label: 'Gıda Kuponları', icon: '🍔' },
-  { slug: '/kategori/banka', label: 'Banka Fırsatları', icon: '🏦' },
+  { id: 'popular', label: 'Popüler', icon: TrendingUp },
+  { id: 'newest', label: 'Yeni Eklenen', icon: Sparkles },
+  { id: 'highest', label: 'En Çok Kampanya', icon: Star },
+  { id: 'alphabetical', label: 'A-Z Sırala', icon: ArrowDownAZ },
 ];
 
 // FAQ data (dynamic based on category)
@@ -103,40 +65,22 @@ const CategoryPage = () => {
   // Data states
   const [category, setCategory] = useState(null);
   const [brands, setBrands] = useState([]);
-  const [allCoupons, setAllCoupons] = useState([]);
-  const [allDiscounts, setAllDiscounts] = useState([]);
-  const [allGiveaways, setAllGiveaways] = useState([]);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
+  const [expiringSoon, setExpiringSoon] = useState({ coupons: [], discounts: [] });
   
   // UI states
-  const [showSearch, setShowSearch] = useState(false);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [showFilterModal, setShowFilterModal] = useState(false);
-  const [showSortModal, setShowSortModal] = useState(false);
   const [expandDescription, setExpandDescription] = useState(false);
-  const [expandSEO, setExpandSEO] = useState(false);
   const [expandedFAQ, setExpandedFAQ] = useState(null);
-  const [displayCount, setDisplayCount] = useState(10);
-  const [viewMode, setViewMode] = useState('campaigns'); // 'campaigns' or 'brands'
-  
-  // Filter states
-  const [filterDiscountRate, setFilterDiscountRate] = useState('all');
-  const [filterExpiry, setFilterExpiry] = useState('all');
-  const [sortBy, setSortBy] = useState('newest');
-  const [activeFilters, setActiveFilters] = useState([]);
+  const [sortBy, setSortBy] = useState('popular');
+  const [showSortModal, setShowSortModal] = useState(false);
 
   // Fetch data
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       setNotFound(false);
-      setDisplayCount(10);
-      setActiveFilters([]);
-      setFilterDiscountRate('all');
-      setFilterExpiry('all');
-      setSortBy('newest');
-      setViewMode('campaigns');
+      setSortBy('popular');
       
       try {
         const categoriesRes = await axios.get(`${API}/categories`);
@@ -150,12 +94,12 @@ const CategoryPage = () => {
 
         setCategory(foundCategory);
 
-        const brandsRes = await axios.get(`${API}/brands?category_id=${foundCategory.id}`);
-        
-        const [couponsRes, discountsRes, giveawaysRes] = await Promise.all([
+        const [brandsRes, couponsRes, discountsRes, giveawaysRes, expiringRes] = await Promise.all([
+          axios.get(`${API}/brands?category_id=${foundCategory.id}`),
           axios.get(`${API}/coupons`),
           axios.get(`${API}/discounts`),
-          axios.get(`${API}/giveaways`).catch(() => ({ data: [] }))
+          axios.get(`${API}/giveaways`).catch(() => ({ data: [] })),
+          axios.get(`${API}/expiring-soon`)
         ]);
         
         const brandIds = brandsRes.data.map(b => b.id);
@@ -172,12 +116,15 @@ const CategoryPage = () => {
         const brandsWithDeals = brandsRes.data.map(b => ({
           ...b,
           deal_count: brandDealCounts[b.id] || 0
-        })).sort((a, b) => b.deal_count - a.deal_count);
+        }));
 
         setBrands(brandsWithDeals);
-        setAllCoupons(categoryCoupons);
-        setAllDiscounts(categoryDiscounts);
-        setAllGiveaways(categoryGiveaways);
+        
+        // Filter expiring soon for this category
+        const expiringCoupons = (expiringRes.data.coupons || []).filter(c => brandIds.includes(c.brand_id));
+        const expiringDiscounts = (expiringRes.data.discounts || []).filter(d => brandIds.includes(d.brand_id));
+        setExpiringSoon({ coupons: expiringCoupons, discounts: expiringDiscounts });
+        
       } catch (error) {
         console.error('Failed to fetch category data:', error);
         setNotFound(true);
@@ -191,141 +138,52 @@ const CategoryPage = () => {
 
   // Stats calculation
   const stats = useMemo(() => {
-    const total = allCoupons.length + allDiscounts.length + allGiveaways.length;
+    const total = brands.reduce((sum, b) => sum + (b.deal_count || 0), 0);
     const brandsCount = brands.filter(b => b.deal_count > 0).length;
-    
-    // Count deals ending today
-    const now = new Date();
-    const endingToday = [...allCoupons, ...allDiscounts, ...allGiveaways].filter(deal => {
-      if (!deal.expiry_date) return false;
-      const expiry = new Date(deal.expiry_date);
-      return expiry.toDateString() === now.toDateString();
-    }).length;
-
-    // Find max discount
-    let maxDiscount = 0;
-    [...allCoupons, ...allDiscounts].forEach(deal => {
-      const match = deal.discount_text?.match(/(\d+)/);
-      if (match) {
-        const num = parseInt(match[1]);
-        if (num > maxDiscount && num <= 100) maxDiscount = num;
-      }
-    });
-
-    return { total, brandsCount, endingToday, maxDiscount };
-  }, [allCoupons, allDiscounts, allGiveaways, brands]);
-
-  // Filtered and sorted deals
-  const filteredDeals = useMemo(() => {
-    let deals = [
-      ...allCoupons.map(c => ({ ...c, dealType: 'coupon' })),
-      ...allDiscounts.map(d => ({ ...d, dealType: 'discount' })),
-      ...allGiveaways.map(g => ({ ...g, dealType: 'giveaway' }))
-    ];
-
-    // Apply discount rate filter
-    if (filterDiscountRate !== 'all') {
-      const minRate = parseInt(filterDiscountRate);
-      deals = deals.filter(deal => {
-        const match = deal.discount_text?.match(/(\d+)/);
-        return match && parseInt(match[1]) >= minRate;
-      });
-    }
-
-    // Apply expiry filter
-    if (filterExpiry !== 'all') {
-      const now = new Date();
-      deals = deals.filter(deal => {
-        if (!deal.expiry_date) return filterExpiry === 'all';
-        const expiry = new Date(deal.expiry_date);
-        const diff = Math.ceil((expiry - now) / (1000 * 60 * 60 * 24));
-        if (filterExpiry === 'today') return diff <= 1;
-        if (filterExpiry === 'week') return diff <= 7;
-        if (filterExpiry === 'month') return diff <= 30;
-        return true;
-      });
-    }
-
-    // Apply search
-    if (searchTerm) {
-      const term = searchTerm.toLowerCase();
-      deals = deals.filter(deal => 
-        deal.title?.toLowerCase().includes(term) ||
-        deal.description?.toLowerCase().includes(term)
-      );
-    }
-
-    // Sort
-    if (sortBy === 'newest') {
-      deals.sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
-    } else if (sortBy === 'highest') {
-      deals.sort((a, b) => {
-        const aMatch = a.discount_text?.match(/(\d+)/);
-        const bMatch = b.discount_text?.match(/(\d+)/);
-        return (bMatch ? parseInt(bMatch[1]) : 0) - (aMatch ? parseInt(aMatch[1]) : 0);
-      });
-    } else if (sortBy === 'ending') {
-      deals.sort((a, b) => {
-        const aDate = a.expiry_date ? new Date(a.expiry_date) : new Date('9999-12-31');
-        const bDate = b.expiry_date ? new Date(b.expiry_date) : new Date('9999-12-31');
-        return aDate - bDate;
-      });
-    }
-
-    return deals;
-  }, [allCoupons, allDiscounts, allGiveaways, filterDiscountRate, filterExpiry, searchTerm, sortBy]);
-
-  // Brand map for card rendering
-  const brandMap = useMemo(() => {
-    return brands.reduce((acc, brand) => {
-      acc[brand.id] = brand;
-      return acc;
-    }, {});
+    return { total, brandsCount };
   }, [brands]);
 
-  // Active filter count
-  const activeFilterCount = useMemo(() => {
-    let count = 0;
-    if (filterDiscountRate !== 'all') count++;
-    if (filterExpiry !== 'all') count++;
-    return count;
-  }, [filterDiscountRate, filterExpiry]);
+  // Sorted brands
+  const sortedBrands = useMemo(() => {
+    let result = [...brands];
+    
+    switch (sortBy) {
+      case 'newest':
+        result.sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
+        break;
+      case 'popular':
+        result.sort((a, b) => b.deal_count - a.deal_count);
+        break;
+      case 'highest':
+        result.sort((a, b) => b.deal_count - a.deal_count);
+        break;
+      case 'alphabetical':
+        result.sort((a, b) => a.name.localeCompare(b.name, 'tr'));
+        break;
+      default:
+        result.sort((a, b) => b.deal_count - a.deal_count);
+    }
+    
+    return result;
+  }, [brands, sortBy]);
 
-  // Remove filter
-  const removeFilter = (type) => {
-    if (type === 'discount') setFilterDiscountRate('all');
-    if (type === 'expiry') setFilterExpiry('all');
-  };
+  // Popular brands (top 8 with most deals)
+  const popularBrands = useMemo(() => {
+    return [...brands]
+      .filter(b => b.deal_count > 0)
+      .sort((a, b) => b.deal_count - a.deal_count)
+      .slice(0, 8);
+  }, [brands]);
 
-  // Clear all filters
-  const clearAllFilters = () => {
-    setFilterDiscountRate('all');
-    setFilterExpiry('all');
-    setSortBy('newest');
-  };
+  // Total expiring count for this category
+  const expiringCount = (expiringSoon.coupons?.length || 0) + (expiringSoon.discounts?.length || 0);
 
-  // Load more
-  const loadMore = () => {
-    setDisplayCount(prev => prev + 10);
-  };
-
-  // Note: Sub-categories removed from UI
+  // Get current sort option
+  const currentSortOption = SORT_OPTIONS.find(opt => opt.id === sortBy) || SORT_OPTIONS[0];
 
   // Category description
   const categoryDescription = category?.description || 
-    `${category?.name} kategorisindeki en güncel indirimler, kupon kodları ve kampanyalar. ${stats.brandsCount} farklı mağazadan ${stats.total} aktif fırsat sizi bekliyor. Money... güncel market kuponları ve indirim fırsatları.`;
-
-  // SEO Content
-  const seoContent = {
-    title: `${category?.name} Hakkında`,
-    content: `${category?.name} kategorisinde ${stats.brandsCount} farklı mağazadan ${stats.total} aktif kampanya bulunmaktadır. En popüler markalar arasında ${brands.slice(0, 3).map(b => b.name).join(', ')} yer almaktadır. Kupon kodlarımız düzenli olarak güncellenmekte ve doğrulanmaktadır.`,
-    tips: [
-      'Kupon kodunu sepete eklemeyi unutmayın',
-      'Bitiş tarihlerini kontrol edin',
-      'Minimum sepet tutarını kontrol edin',
-      'Birden fazla kupon karşılaştırın'
-    ]
-  };
+    `${category?.name} kategorisindeki en güncel indirimler, kupon kodları ve kampanyalar. ${stats.brandsCount} farklı mağazadan ${stats.total} aktif fırsat sizi bekliyor.`;
 
   // FAQ data
   const faqData = category ? getFAQData(category.name) : [];
@@ -352,40 +210,33 @@ const CategoryPage = () => {
     );
   }
 
-  const displayedDeals = filteredDeals.slice(0, displayCount);
-  const hasMore = displayCount < filteredDeals.length;
-
   return (
     <>
       <Helmet>
         <title>{category.name} İndirimleri ve Kupon Kodları 2025 - İndirim Keşfet</title>
         <meta name="description" content={categoryDescription.substring(0, 160)} />
+        <meta name="keywords" content={`${category.name} kuponları, ${category.name} indirimleri, ${category.name} kampanyaları`} />
       </Helmet>
 
-      <div className="min-h-screen bg-background pb-20 lg:pb-0" data-testid="category-page">
+      <div className="min-h-screen bg-background pb-20 lg:pb-6" data-testid="category-page">
         
-        {/* ═══════════════════════════════════════════════════════════════
-            1. HEADER - Mobile Only (Simplified - no search/filter icons)
-        ═══════════════════════════════════════════════════════════════ */}
+        {/* Mobile Header */}
         <header className="lg:hidden sticky top-0 z-50 bg-card border-b border-border">
           <div className="flex items-center px-4 py-3">
-            {/* Left: Back button */}
             <button 
               onClick={() => navigate(-1)}
               className="p-2 -ml-2 hover:bg-muted rounded-lg transition-colors"
             >
               <ChevronLeft className="w-6 h-6" />
             </button>
-
-            {/* Center: Title - takes remaining space */}
             <div className="flex-1 text-center pr-8">
-              <h1 className="font-bold text-lg truncate">{category.name} Kuponları</h1>
-              <p className="text-xs text-muted-foreground">{stats.total} aktif kampanya</p>
+              <h1 className="font-bold text-lg truncate">{category.name}</h1>
+              <p className="text-xs text-muted-foreground">{stats.brandsCount} mağaza, {stats.total} kampanya</p>
             </div>
           </div>
         </header>
 
-        {/* Desktop Header - Sadece breadcrumb tarzı, title SEO bölümünde */}
+        {/* Desktop Header - Breadcrumb */}
         <div className="hidden lg:block bg-card border-b border-border">
           <div className="container mx-auto px-4 py-4">
             <nav className="text-sm text-muted-foreground">
@@ -398,257 +249,270 @@ const CategoryPage = () => {
           </div>
         </div>
 
-        {/* ═══════════════════════════════════════════════════════════════
-            2. SEO HERO SECTION
-        ═══════════════════════════════════════════════════════════════ */}
-        <section className="px-4 py-4 border-b border-border bg-card/50">
-          <h2 className="font-bold text-base mb-2">
-            {category.name} İndirimleri ve Kupon Kodları 2025
-          </h2>
-          <p className={`text-sm text-muted-foreground leading-relaxed ${!expandDescription ? 'line-clamp-2' : ''}`}>
-            {categoryDescription}
-          </p>
-          <button 
-            onClick={() => setExpandDescription(!expandDescription)}
-            className="text-primary text-sm font-medium mt-2 flex items-center gap-1"
-          >
-            {expandDescription ? 'Daha az göster' : 'Devamını oku'}
-            {expandDescription ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-          </button>
-        </section>
+        {/* SEO Header Section */}
+        <div className="bg-card border-b border-border">
+          <div className="container mx-auto px-4 py-6 lg:py-8">
+            <div className="flex items-center gap-4 mb-3">
+              <div className="w-12 h-12 lg:w-14 lg:h-14 rounded-2xl bg-gradient-to-br from-primary to-pink-500 flex items-center justify-center">
+                <LayoutGrid className="w-6 h-6 lg:w-7 lg:h-7 text-white" />
+              </div>
+              <div>
+                <h1 className="text-2xl lg:text-3xl font-heading font-bold">{category.name} Mağazaları</h1>
+                <p className="text-sm lg:text-base text-muted-foreground">
+                  {stats.brandsCount} mağaza, {stats.total} kampanya
+                </p>
+              </div>
+            </div>
 
-        {/* ═══════════════════════════════════════════════════════════════
-            3. QUICK STATS - Clickable to switch view (without maxDiscount)
-        ═══════════════════════════════════════════════════════════════ */}
-        <section className="py-3 border-b border-border overflow-hidden">
-          <div className="flex gap-2 overflow-x-auto px-4 scrollbar-hide">
-            <button 
-              onClick={() => setViewMode('campaigns')}
-              className={`flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-all ${
-                viewMode === 'campaigns' 
-                  ? 'bg-primary text-white' 
-                  : 'bg-card border border-border hover:border-primary/50'
-              }`}
-            >
-              <span className="font-bold">{stats.total}</span> Kampanya
-            </button>
-            <button 
-              onClick={() => setViewMode('brands')}
-              className={`flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-all ${
-                viewMode === 'brands' 
-                  ? 'bg-primary text-white' 
-                  : 'bg-card border border-border hover:border-primary/50'
-              }`}
-            >
-              <span className="font-bold">{stats.brandsCount}</span> Marka
-            </button>
-            {stats.endingToday > 0 && (
+            <p className={`text-sm text-muted-foreground leading-relaxed max-w-3xl ${!expandDescription ? 'line-clamp-2' : ''}`}>
+              {categoryDescription}
+            </p>
+            {categoryDescription.length > 150 && (
               <button 
-                onClick={() => {
-                  setViewMode('campaigns');
-                  setFilterExpiry('today');
-                }}
-                className="flex-shrink-0 px-4 py-2 bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800 rounded-full text-sm font-medium text-orange-600 dark:text-orange-400 hover:bg-orange-100 dark:hover:bg-orange-900/40 transition-colors"
+                onClick={() => setExpandDescription(!expandDescription)}
+                className="text-primary text-sm font-medium mt-2 flex items-center gap-1"
               >
-                <span className="font-bold">{stats.endingToday}</span> Bugün Biten
+                {expandDescription ? 'Daha az göster' : 'Devamını oku'}
+                {expandDescription ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
               </button>
             )}
           </div>
-        </section>
+        </div>
 
-        {/* ═══════════════════════════════════════════════════════════════
-            5. BRANDS VIEW (when viewMode === 'brands')
-        ═══════════════════════════════════════════════════════════════ */}
-        {viewMode === 'brands' && brands.length > 0 && (
-          <section className="px-4 py-4">
-            <div className="flex items-center justify-between mb-4">
-              <p className="text-sm text-muted-foreground">
-                <span className="font-semibold text-foreground">{brands.filter(b => b.deal_count > 0).length}</span> marka bulundu
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 gap-3">
-              {brands.filter(b => b.deal_count > 0).map((brand) => (
-                <Link
-                  key={brand.id}
-                  to={`/magaza/${brand.slug}`}
-                  className="flex items-center gap-4 p-4 bg-card border border-border rounded-xl hover:border-primary/30 transition-colors"
-                >
-                  <BrandLogo logoUrl={brand.logo_url} brandName={brand.name} size="md" />
-                  <div className="flex-1">
-                    <span className="text-base font-semibold block">{brand.name}</span>
-                    <span className="text-sm text-muted-foreground">{brand.deal_count} aktif kampanya</span>
+        <div className="container mx-auto px-4 py-6">
+          {/* Expiring Soon Card */}
+          {expiringCount > 0 && (
+            <Link
+              to="/son-24-saat"
+              className="block mb-6 p-4 lg:p-5 rounded-2xl bg-gradient-to-r from-orange-600 to-red-600 text-white hover:from-orange-500 hover:to-red-500 transition-all group"
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <div className="w-14 h-14 lg:w-16 lg:h-16 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center">
+                    <Flame className="w-8 h-8 lg:w-9 lg:h-9 text-yellow-300" />
                   </div>
-                  <ChevronRight className="w-5 h-5 text-muted-foreground" />
-                </Link>
-              ))}
-            </div>
-          </section>
-        )}
+                  <div>
+                    <h2 className="text-lg lg:text-xl font-bold mb-0.5">Bitmek Üzere</h2>
+                    <p className="text-white/80 text-sm lg:text-base">{expiringCount} kampanya bugün bitiyor</p>
+                  </div>
+                </div>
+                <ChevronRight className="w-6 h-6 text-white/70 group-hover:translate-x-1 transition-transform" />
+              </div>
+            </Link>
+          )}
 
-        {/* ═══════════════════════════════════════════════════════════════
-            6. CAMPAIGN LIST (when viewMode === 'campaigns')
-        ═══════════════════════════════════════════════════════════════ */}
-        {viewMode === 'campaigns' && (
-          <section className="px-4 py-4">
-            {/* Results count + Sort button on same row */}
+          {/* Sort Button - Prominent Action Button */}
+          <button
+            onClick={() => setShowSortModal(true)}
+            className="w-full mb-6 p-4 bg-card border-2 border-primary/30 rounded-2xl hover:border-primary hover:bg-primary/5 transition-all flex items-center justify-between group"
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                <ArrowDownAZ className="w-5 h-5 text-primary" />
+              </div>
+              <div className="text-left">
+                <p className="text-sm text-muted-foreground">Sıralama</p>
+                <p className="font-semibold text-primary">{currentSortOption.label}</p>
+              </div>
+            </div>
+            <ChevronDown className="w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors" />
+          </button>
+
+          {/* Popular Stores Section */}
+          {popularBrands.length > 0 && (
+            <div className="mb-8">
+              <div className="flex items-center gap-2 mb-4">
+                <Star className="w-5 h-5 text-yellow-500" />
+                <h2 className="text-lg lg:text-xl font-bold">Popüler {category.name} Mağazaları</h2>
+              </div>
+              <div className="grid grid-cols-4 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-3">
+                {popularBrands.map((brand, index) => (
+                  <motion.div
+                    key={brand.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.03 }}
+                  >
+                    <Link
+                      to={`/magaza/${brand.slug}`}
+                      className="group block p-3 lg:p-4 rounded-xl bg-card border border-border hover:border-primary/30 hover:shadow-lg transition-all text-center"
+                    >
+                      <div className="flex justify-center mb-2">
+                        <BrandLogo logoUrl={brand.logo_url} brandName={brand.name} size="md" />
+                      </div>
+                      <h3 className="font-medium text-xs lg:text-sm truncate mb-1 group-hover:text-primary transition-colors">
+                        {brand.name}
+                      </h3>
+                      <p className="text-[10px] lg:text-xs text-primary font-medium">
+                        {brand.deal_count} indirim
+                      </p>
+                    </Link>
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* All Stores Grid */}
+          <div className="mb-8">
             <div className="flex items-center justify-between mb-4">
-              <p className="text-sm text-muted-foreground">
-                <span className="font-semibold text-foreground">{filteredDeals.length}</span> sonuç bulundu
-              </p>
-              <button
-                onClick={() => setShowSortModal(true)}
-                className="flex items-center gap-1.5 px-3 py-1.5 bg-muted hover:bg-muted/80 rounded-lg text-sm font-medium transition-colors"
-              >
-                <ArrowDownAZ className="w-4 h-4" />
-                Sırala
-              </button>
+              <h2 className="text-lg lg:text-xl font-bold flex items-center gap-2">
+                <ShoppingBag className="w-5 h-5 text-primary" />
+                Tüm {category.name} Mağazaları
+              </h2>
+              <span className="text-sm text-muted-foreground">{sortedBrands.length} mağaza</span>
             </div>
 
-            {filteredDeals.length === 0 ? (
-              <div className="text-center py-12 bg-card rounded-xl border border-border">
-                <Tag className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
-                <h3 className="font-medium mb-2">Sonuç Bulunamadı</h3>
-                <p className="text-sm text-muted-foreground mb-4">Filtrelere uygun kampanya yok.</p>
-                <button
-                  onClick={clearAllFilters}
-                  className="px-4 py-2 bg-primary text-white rounded-lg text-sm font-medium"
-                >
-                  Filtreleri Temizle
-                </button>
+            {sortedBrands.length === 0 ? (
+              <div className="text-center py-16 bg-card rounded-2xl border border-border">
+                <Package className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
+                <h3 className="text-lg font-medium mb-2">Mağaza Bulunamadı</h3>
+                <p className="text-muted-foreground">Bu kategoride henüz mağaza yok.</p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                {displayedDeals.map((deal) => {
-                  const brand = brandMap[deal.brand_id];
-                  if (deal.dealType === 'coupon') {
-                    return <CouponCard key={`coupon-${deal.id}`} coupon={deal} brand={brand} />;
-                  } else if (deal.dealType === 'giveaway') {
-                    return <GiveawayCard key={`giveaway-${deal.id}`} giveaway={deal} brand={brand} />;
-                  } else {
-                    return <DiscountCard key={`discount-${deal.id}`} discount={deal} brand={brand} />;
-                  }
-                })}
-              </div>
-            )}
-          </section>
-        )}
-
-        {/* ═══════════════════════════════════════════════════════════════
-            7. LOAD MORE BUTTON (only for campaigns view)
-        ═══════════════════════════════════════════════════════════════ */}
-        {viewMode === 'campaigns' && hasMore && (
-          <section className="px-4 pb-6">
-            <button
-              onClick={loadMore}
-              className="w-full py-4 bg-card border border-border rounded-xl font-medium text-center hover:bg-muted transition-colors"
-            >
-              Daha Fazla Göster ({filteredDeals.length - displayCount})
-            </button>
-          </section>
-        )}
-
-        {/* ═══════════════════════════════════════════════════════════════
-            8. SEO CONTENT SECTION
-        ═══════════════════════════════════════════════════════════════ */}
-        <section className="px-4 py-6 bg-card/50 border-t border-border">
-          <div className={`${!expandSEO ? 'max-h-40 overflow-hidden relative' : ''}`}>
-            <h3 className="font-bold text-lg mb-3">{seoContent.title}</h3>
-            <p className="text-sm text-muted-foreground leading-relaxed mb-4">
-              {seoContent.content}
-            </p>
-            
-            <h4 className="font-semibold text-base mb-2">Nasıl Tasarruf Edebilirsiniz?</h4>
-            <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1 mb-4">
-              {seoContent.tips.map((tip, index) => (
-                <li key={index}>{tip}</li>
-              ))}
-            </ul>
-
-            {!expandSEO && (
-              <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-card/50 to-transparent" />
-            )}
-          </div>
-          
-          <button
-            onClick={() => setExpandSEO(!expandSEO)}
-            className="text-primary text-sm font-medium flex items-center gap-1 mt-2"
-          >
-            {expandSEO ? 'Daha az göster' : 'Daha fazla göster'}
-            {expandSEO ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-          </button>
-        </section>
-
-        {/* ═══════════════════════════════════════════════════════════════
-            10. FAQ SECTION
-        ═══════════════════════════════════════════════════════════════ */}
-        <section className="px-4 py-6 border-t border-border" itemScope itemType="https://schema.org/FAQPage">
-          <h3 className="font-bold text-lg mb-4 flex items-center gap-2">
-            <HelpCircle className="w-5 h-5 text-primary" />
-            Sıkça Sorulan Sorular
-          </h3>
-          
-          <div className="space-y-2">
-            {faqData.map((faq, index) => (
-              <div 
-                key={index} 
-                className="bg-card border border-border rounded-xl overflow-hidden"
-                itemScope 
-                itemProp="mainEntity" 
-                itemType="https://schema.org/Question"
-              >
-                <button
-                  onClick={() => setExpandedFAQ(expandedFAQ === index ? null : index)}
-                  className="w-full px-4 py-3 flex items-center justify-between text-left"
-                >
-                  <span className="font-medium text-sm pr-4" itemProp="name">{faq.question}</span>
-                  <ChevronDown className={`w-5 h-5 flex-shrink-0 text-muted-foreground transition-transform ${expandedFAQ === index ? 'rotate-180' : ''}`} />
-                </button>
-                
-                <AnimatePresence>
-                  {expandedFAQ === index && (
-                    <motion.div
-                      initial={{ height: 0 }}
-                      animate={{ height: 'auto' }}
-                      exit={{ height: 0 }}
-                      className="overflow-hidden"
-                      itemScope 
-                      itemProp="acceptedAnswer" 
-                      itemType="https://schema.org/Answer"
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 lg:gap-4">
+                {sortedBrands.map((brand, index) => (
+                  <motion.div
+                    key={brand.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: Math.min(index * 0.02, 0.5) }}
+                  >
+                    <Link
+                      to={`/magaza/${brand.slug}`}
+                      className="group block p-4 lg:p-5 rounded-xl bg-card border border-border hover:border-primary/30 hover:shadow-lg transition-all text-center"
+                      data-testid={`brand-card-${brand.slug}`}
                     >
-                      <p className="px-4 pb-4 text-sm text-muted-foreground" itemProp="text">
-                        {faq.answer}
-                      </p>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+                      <div className="flex justify-center mb-3">
+                        <BrandLogo logoUrl={brand.logo_url} brandName={brand.name} size="md" />
+                      </div>
+                      <h3 className="font-semibold text-sm lg:text-base truncate mb-1 group-hover:text-primary transition-colors">
+                        {brand.name}
+                      </h3>
+                      {brand.deal_count > 0 ? (
+                        <p className="text-xs lg:text-sm text-primary font-medium">
+                          {brand.deal_count} kampanya
+                        </p>
+                      ) : (
+                        <p className="text-xs lg:text-sm text-muted-foreground">
+                          Yakında
+                        </p>
+                      )}
+                    </Link>
+                  </motion.div>
+                ))}
               </div>
-            ))}
+            )}
           </div>
-        </section>
+        </div>
 
-        {/* ═══════════════════════════════════════════════════════════════
-            11. RELATED CATEGORIES
-        ═══════════════════════════════════════════════════════════════ */}
-        <section className="px-4 py-6 border-t border-border">
-          <h3 className="font-bold text-base mb-4">İlgili Kategoriler</h3>
-          <div className="grid grid-cols-2 gap-2">
-            {RELATED_CATEGORIES.filter(cat => cat.slug !== `/kategori/${slug}`).map((cat) => (
-              <Link
-                key={cat.slug}
-                to={cat.slug}
-                className="flex items-center gap-2 px-4 py-3 bg-card border border-border rounded-xl hover:border-primary/30 transition-colors"
-              >
-                <span className="text-lg">{cat.icon}</span>
-                <span className="text-sm font-medium">{cat.label}</span>
-              </Link>
-            ))}
+        {/* SEO Content Section */}
+        <div className="container mx-auto px-4 py-6 border-t border-border">
+          <div className="max-w-3xl">
+            <h2 className="text-lg lg:text-xl font-bold mb-3">{category.name} İndirimleri Hakkında</h2>
+            <p className="text-sm text-muted-foreground leading-relaxed mb-4">
+              İndirim Keşfet olarak, {category.name} kategorisinde {stats.brandsCount} farklı mağazanın en güncel ve doğrulanmış kupon kodlarını 
+              sizlerle paylaşıyoruz. Her gün güncellenen kampanyalarımız sayesinde alışverişlerinizde tasarruf edebilirsiniz.
+            </p>
+            {popularBrands.length > 0 && (
+              <p className="text-sm text-muted-foreground leading-relaxed mb-4">
+                En popüler {category.name} mağazaları arasında {popularBrands.slice(0, 4).map(b => b.name).join(', ')} bulunmaktadır. 
+                Bu mağazalarda %50'ye varan indirimler ve özel kupon kodları sunulmaktadır.
+              </p>
+            )}
+            
+            <h3 className="text-base font-semibold mb-2 mt-6">{category.name} Kuponlarını Nasıl Kullanırım?</h3>
+            <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1 mb-4">
+              <li>Alışveriş yapmak istediğiniz mağazayı seçin</li>
+              <li>Mevcut kampanyaları ve kupon kodlarını inceleyin</li>
+              <li>Beğendiğiniz kuponu kopyalayın</li>
+              <li>Mağazanın web sitesinde ödeme sırasında uygulayın</li>
+            </ul>
           </div>
-        </section>
+        </div>
 
-        {/* ═══════════════════════════════════════════════════════════════
-            12. BOTTOM NAVIGATION - Mobile Only
-        ═══════════════════════════════════════════════════════════════ */}
+        {/* FAQ Section */}
+        <div className="container mx-auto px-4 py-6 border-t border-border" itemScope itemType="https://schema.org/FAQPage">
+          <div className="max-w-3xl">
+            <h2 className="text-lg lg:text-xl font-bold mb-4 flex items-center gap-2">
+              <HelpCircle className="w-5 h-5 text-primary" />
+              Sıkça Sorulan Sorular
+            </h2>
+            
+            <div className="space-y-2">
+              {faqData.map((faq, index) => (
+                <div 
+                  key={index} 
+                  className="bg-card border border-border rounded-xl overflow-hidden"
+                  itemScope 
+                  itemProp="mainEntity" 
+                  itemType="https://schema.org/Question"
+                >
+                  <button
+                    onClick={() => setExpandedFAQ(expandedFAQ === index ? null : index)}
+                    className="w-full px-4 py-3 flex items-center justify-between text-left hover:bg-muted/50 transition-colors"
+                  >
+                    <span className="font-medium text-sm pr-4" itemProp="name">{faq.question}</span>
+                    <ChevronDown className={`w-5 h-5 flex-shrink-0 text-muted-foreground transition-transform ${expandedFAQ === index ? 'rotate-180' : ''}`} />
+                  </button>
+                  
+                  <AnimatePresence>
+                    {expandedFAQ === index && (
+                      <motion.div
+                        initial={{ height: 0 }}
+                        animate={{ height: 'auto' }}
+                        exit={{ height: 0 }}
+                        className="overflow-hidden"
+                        itemScope 
+                        itemProp="acceptedAnswer" 
+                        itemType="https://schema.org/Answer"
+                      >
+                        <p className="px-4 pb-4 text-sm text-muted-foreground" itemProp="text">
+                          {faq.answer}
+                        </p>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Quick Links Section */}
+        <div className="container mx-auto px-4 py-6 border-t border-border">
+          <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-4">
+            Hızlı Bağlantılar
+          </h3>
+          <div className="flex flex-wrap gap-2">
+            <Link
+              to="/kategoriler"
+              className="px-4 py-2 bg-muted/50 hover:bg-muted rounded-lg text-sm font-medium transition-colors"
+            >
+              Tüm Kategoriler
+            </Link>
+            <Link
+              to="/magazalar"
+              className="px-4 py-2 bg-muted/50 hover:bg-muted rounded-lg text-sm font-medium transition-colors"
+            >
+              Tüm Mağazalar
+            </Link>
+            <Link
+              to="/son-24-saat"
+              className="px-4 py-2 bg-muted/50 hover:bg-muted rounded-lg text-sm font-medium transition-colors"
+            >
+              Son 24 Saat
+            </Link>
+            <Link
+              to="/"
+              className="px-4 py-2 bg-muted/50 hover:bg-muted rounded-lg text-sm font-medium transition-colors"
+            >
+              Ana Sayfa
+            </Link>
+          </div>
+        </div>
+
+        {/* Bottom Navigation - Mobile Only */}
         <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-card border-t border-border safe-area-pb z-50">
           <div className="flex items-center justify-around py-2">
             <Link to="/" className="flex flex-col items-center py-2 px-4 text-muted-foreground hover:text-primary transition-colors">
@@ -663,112 +527,11 @@ const CategoryPage = () => {
               <Store className="w-5 h-5" />
               <span className="text-xs mt-1">Markalar</span>
             </Link>
-            <button 
-              onClick={() => setShowSearch(true)}
-              className="flex flex-col items-center py-2 px-4 text-muted-foreground hover:text-primary transition-colors"
-            >
-              <Search className="w-5 h-5" />
-              <span className="text-xs mt-1">Ara</span>
-            </button>
           </div>
         </nav>
-
       </div>
 
-      {/* ═══════════════════════════════════════════════════════════════
-          FILTER MODAL
-      ═══════════════════════════════════════════════════════════════ */}
-      <AnimatePresence>
-        {showFilterModal && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[60] bg-black/50"
-            onClick={() => setShowFilterModal(false)}
-          >
-            <motion.div
-              initial={{ y: '100%' }}
-              animate={{ y: 0 }}
-              exit={{ y: '100%' }}
-              transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-              className="absolute bottom-0 left-0 right-0 bg-card rounded-t-2xl max-h-[80vh] overflow-hidden"
-              onClick={(e) => e.stopPropagation()}
-            >
-              {/* Modal Header */}
-              <div className="sticky top-0 bg-card border-b border-border px-4 py-4 flex items-center justify-between">
-                <h2 className="font-bold text-lg">Filtrele</h2>
-                <button onClick={() => setShowFilterModal(false)} className="p-2 hover:bg-muted rounded-lg">
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
-
-              {/* Modal Content */}
-              <div className="overflow-y-auto max-h-[calc(80vh-140px)] p-4 space-y-6">
-                {/* İndirim Oranı */}
-                <div>
-                  <h3 className="text-sm font-semibold text-muted-foreground mb-3">İndirim Oranı</h3>
-                  <div className="flex flex-wrap gap-2">
-                    {FILTER_DISCOUNT_RATES.map((rate) => (
-                      <button
-                        key={rate.id}
-                        onClick={() => setFilterDiscountRate(rate.id)}
-                        className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                          filterDiscountRate === rate.id
-                            ? 'bg-primary text-white'
-                            : 'bg-muted hover:bg-muted/80'
-                        }`}
-                      >
-                        {rate.label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Bitiş Süresi */}
-                <div>
-                  <h3 className="text-sm font-semibold text-muted-foreground mb-3">Bitiş Süresi</h3>
-                  <div className="flex flex-wrap gap-2">
-                    {FILTER_EXPIRY.map((exp) => (
-                      <button
-                        key={exp.id}
-                        onClick={() => setFilterExpiry(exp.id)}
-                        className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                          filterExpiry === exp.id
-                            ? 'bg-primary text-white'
-                            : 'bg-muted hover:bg-muted/80'
-                        }`}
-                      >
-                        {exp.label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              {/* Modal Footer */}
-              <div className="sticky bottom-0 bg-card border-t border-border px-4 py-4 flex gap-3 safe-area-pb">
-                <button
-                  onClick={clearAllFilters}
-                  className="flex-1 px-4 py-3 rounded-xl font-medium bg-muted hover:bg-muted/80"
-                >
-                  Temizle
-                </button>
-                <button
-                  onClick={() => setShowFilterModal(false)}
-                  className="flex-1 px-4 py-3 rounded-xl font-medium bg-primary text-white"
-                >
-                  Uygula ({filteredDeals.length})
-                </button>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* ═══════════════════════════════════════════════════════════════
-          SORT MODAL
-      ═══════════════════════════════════════════════════════════════ */}
+      {/* Sort Modal */}
       <AnimatePresence>
         {showSortModal && (
           <motion.div
@@ -787,25 +550,33 @@ const CategoryPage = () => {
               onClick={(e) => e.stopPropagation()}
             >
               <div className="p-4 border-b border-border">
-                <h2 className="font-bold text-lg">Sırala</h2>
+                <h2 className="font-bold text-lg">Sıralama</h2>
               </div>
-              <div className="p-2 safe-area-pb">
-                {SORT_OPTIONS.map((option) => (
-                  <button
-                    key={option.id}
-                    onClick={() => {
-                      setSortBy(option.id);
-                      setShowSortModal(false);
-                    }}
-                    className={`w-full px-4 py-3 text-left rounded-lg transition-colors ${
-                      sortBy === option.id 
-                        ? 'bg-primary/10 text-primary font-medium' 
-                        : 'hover:bg-muted'
-                    }`}
-                  >
-                    {option.label}
-                  </button>
-                ))}
+              <div className="p-2 pb-8">
+                {SORT_OPTIONS.map((option) => {
+                  const IconComponent = option.icon;
+                  return (
+                    <button
+                      key={option.id}
+                      onClick={() => {
+                        setSortBy(option.id);
+                        setShowSortModal(false);
+                      }}
+                      className={`w-full px-4 py-4 text-left rounded-xl transition-colors flex items-center gap-3 ${
+                        sortBy === option.id 
+                          ? 'bg-primary/10 text-primary' 
+                          : 'hover:bg-muted'
+                      }`}
+                    >
+                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
+                        sortBy === option.id ? 'bg-primary text-white' : 'bg-muted'
+                      }`}>
+                        <IconComponent className="w-5 h-5" />
+                      </div>
+                      <span className="font-medium">{option.label}</span>
+                    </button>
+                  );
+                })}
               </div>
             </motion.div>
           </motion.div>
