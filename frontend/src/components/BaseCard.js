@@ -122,7 +122,7 @@ const BaseCard = ({
           {/* Content */}
           <div className="flex-1 flex flex-col min-w-0">
             {discountText && (
-              <span className="inline-flex self-start px-2 py-0.5 bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-400 text-xs font-bold rounded-full mb-1">
+              <span className="inline-flex self-start px-2 py-0.5 text-xs font-bold rounded-full mb-1" style={{ backgroundColor: '#D1FAE5', color: '#047857' }}>
                 {discountText}
               </span>
             )}
