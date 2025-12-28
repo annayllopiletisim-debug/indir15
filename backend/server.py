@@ -183,6 +183,7 @@ class DiscountCreate(BaseModel):
     terms_conditions: Optional[str] = None  # Kullanım koşulları
     discount_text: str
     expiry_date: Optional[datetime] = None
+    is_featured: bool = False  # Öne çıkan kampanya
     utm_template: Optional[str] = None
     destination_url: str
     image_url: Optional[str] = None  # Kampanya görseli
@@ -202,6 +203,7 @@ class Giveaway(BaseModel):
     prize_text: str  # Ödül metni (örn: "iPhone 15 Pro")
     expiry_date: Optional[datetime] = None
     is_active: bool = True
+    is_featured: bool = False  # Öne çıkan kampanya
     utm_template: Optional[str] = None
     destination_url: str
     image_url: Optional[str] = None  # Kampanya görseli
