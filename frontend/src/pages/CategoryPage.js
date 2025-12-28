@@ -418,7 +418,7 @@ const CategoryPage = () => {
         </section>
 
         {/* ═══════════════════════════════════════════════════════════════
-            3. QUICK STATS - Clickable to switch view
+            3. QUICK STATS - Clickable to switch view (without maxDiscount)
         ═══════════════════════════════════════════════════════════════ */}
         <section className="py-3 border-b border-border overflow-hidden">
           <div className="flex gap-2 overflow-x-auto px-4 scrollbar-hide">
@@ -452,11 +452,6 @@ const CategoryPage = () => {
               >
                 <span className="font-bold">{stats.endingToday}</span> Bugün Biten
               </button>
-            )}
-            {stats.maxDiscount > 0 && (
-              <span className="flex-shrink-0 px-4 py-2 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-full text-sm font-medium text-green-600 dark:text-green-400">
-                <span className="font-bold">%{stats.maxDiscount}</span>'e Varan
-              </span>
             )}
           </div>
         </section>
