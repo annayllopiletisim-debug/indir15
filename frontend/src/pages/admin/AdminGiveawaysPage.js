@@ -79,6 +79,7 @@ const AdminGiveawaysPage = () => {
       prize_text: giveaway.prize_text,
       expiry_date: giveaway.expiry_date ? giveaway.expiry_date.split('T')[0] : '',
       is_active: giveaway.is_active,
+      is_featured: giveaway.is_featured || false,
       utm_template: giveaway.utm_template || '',
       destination_url: giveaway.destination_url,
       image_url: giveaway.image_url || ''
