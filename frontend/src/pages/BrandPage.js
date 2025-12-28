@@ -83,6 +83,8 @@ const BrandPage = () => {
   // UI states
   const [activeFilter, setActiveFilter] = useState('all');
   const [expandedFAQ, setExpandedFAQ] = useState(null);
+  const [sortBy, setSortBy] = useState('newest');
+  const [showSortModal, setShowSortModal] = useState(false);
 
   // Scroll to top on mount
   useEffect(() => {
