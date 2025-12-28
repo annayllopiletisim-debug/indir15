@@ -240,7 +240,7 @@ const BrandPage = () => {
             >
               <ChevronLeft className="w-6 h-6" />
             </button>
-            <h1 className="font-bold text-lg truncate px-4">{brand.name}</h1>
+            <span className="font-bold text-lg truncate px-4">{brand.name}</span>
             <button 
               onClick={handleShare}
               className="p-2 -mr-2 hover:bg-muted rounded-lg transition-colors"
@@ -251,16 +251,22 @@ const BrandPage = () => {
         </header>
 
         {/* ═══════════════════════════════════════════════════════════════
-            2. BREADCRUMB - Desktop only
+            2. BREADCRUMB - Both Mobile and Desktop
         ═══════════════════════════════════════════════════════════════ */}
-        <div className="hidden lg:block bg-card border-b border-border">
-          <div className="container mx-auto px-4 py-4">
-            <nav className="text-sm text-muted-foreground flex items-center gap-2">
-              <Link to="/" className="hover:text-primary">Ana Sayfa</Link>
-              <ChevronRight className="w-4 h-4" />
-              <Link to="/magazalar" className="hover:text-primary">Markalar</Link>
-              <ChevronRight className="w-4 h-4" />
-              <span className="text-foreground">{brand.name}</span>
+        <div className="bg-card border-b border-border">
+          <div className="container mx-auto px-4 py-3">
+            <nav className="text-sm text-muted-foreground flex items-center gap-1.5 overflow-x-auto">
+              <Link to="/" className="hover:text-primary whitespace-nowrap">Ana Sayfa</Link>
+              <ChevronRight className="w-4 h-4 flex-shrink-0" />
+              {brand.category_name && (
+                <>
+                  <Link to="/kategoriler" className="hover:text-primary whitespace-nowrap">Kategoriler</Link>
+                  <ChevronRight className="w-4 h-4 flex-shrink-0" />
+                  <Link to={`/kategori/${brand.category_slug || ''}`} className="hover:text-primary whitespace-nowrap">{brand.category_name}</Link>
+                  <ChevronRight className="w-4 h-4 flex-shrink-0" />
+                </>
+              )}
+              <span className="text-foreground whitespace-nowrap">{brand.name}</span>
             </nav>
           </div>
         </div>
@@ -271,7 +277,7 @@ const BrandPage = () => {
         <section className="bg-card border-b border-border">
           <div className="container mx-auto px-4 py-6">
             <div className="flex items-center gap-4">
-              <div className="w-20 h-20 flex-shrink-0">
+              <div className="w-20 h-20 flex-shrink-0 rounded-2xl border border-border bg-white p-2 flex items-center justify-center overflow-hidden">
                 <BrandLogo logoUrl={brand.logo_url} brandName={brand.name} size="xl" />
               </div>
               <div className="flex-1 min-w-0">
