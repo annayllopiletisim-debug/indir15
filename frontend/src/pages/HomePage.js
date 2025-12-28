@@ -188,12 +188,7 @@ const HomePage = () => {
       <div className="min-h-screen" data-testid="home-page">
 
         {/* ═══════════════════════════════════════════════════════════════
-            MOBILE SEARCH BAR - Header altında, sadece mobilde
-        ═══════════════════════════════════════════════════════════════ */}
-        <MobileSearchBar />
-
-        {/* ═══════════════════════════════════════════════════════════════
-            CATEGORY SLIDER - Sadece mobilde, ikonlu
+            CATEGORY SLIDER - Sadece mobilde, ikonlu (Ana sayfada ekstra)
         ═══════════════════════════════════════════════════════════════ */}
         <CategorySlider />
 
