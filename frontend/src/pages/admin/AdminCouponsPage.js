@@ -100,7 +100,7 @@ const AdminCouponsPage = () => {
     setFormData({
       brand_id: '', title: '', description: '', long_description: '', terms_conditions: '',
       code: '', discount_text: '', expiry_date: '',
-      is_active: true, utm_template: 'utm_source=İndirim Keşfet&utm_medium=coupon', destination_url: '',
+      is_active: true, is_featured: false, utm_template: 'utm_source=İndirim Keşfet&utm_medium=coupon', destination_url: '',
       image_url: ''
     });
     setEditingId(null);
