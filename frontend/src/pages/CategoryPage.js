@@ -63,9 +63,11 @@ const SUB_CATEGORIES = {
 // Related categories with icons
 const RELATED_CATEGORIES = [
   { slug: '/', label: 'Tüm Kuponlar', icon: '🛒' },
-  { slug: '/kategori/moda', label: 'Giyim İndirimleri', icon: '👗' },
-  { slug: '/kategori/elektronik', label: 'Teknoloji Fırsatları', icon: '📱' },
-  { slug: '/kategori/market', label: 'Market Kuponları', icon: '🛍️' },
+  { slug: '/kategori/moda', label: 'Moda İndirimleri', icon: '👗' },
+  { slug: '/kategori/elektronik', label: 'Elektronik Fırsatları', icon: '📱' },
+  { slug: '/kategori/spor', label: 'Spor Kampanyaları', icon: '⚽' },
+  { slug: '/kategori/gida', label: 'Gıda Kuponları', icon: '🍔' },
+  { slug: '/kategori/banka', label: 'Banka Fırsatları', icon: '🏦' },
 ];
 
 // FAQ data (dynamic based on category)
