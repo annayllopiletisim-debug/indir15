@@ -457,57 +457,29 @@ const CategoryPage = () => {
         </section>
 
         {/* ═══════════════════════════════════════════════════════════════
-            5. FILTER & SORT BAR
+            5. BRANDS VIEW (when viewMode === 'brands')
         ═══════════════════════════════════════════════════════════════ */}
-        <section className="px-4 py-3 border-b border-border flex items-center justify-between gap-2">
-          {/* Active Filters */}
-          <div className="flex-1 flex gap-2 overflow-x-auto scrollbar-hide">
-            {filterDiscountRate !== 'all' && (
-              <span className="flex-shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 bg-primary/10 text-primary border border-primary/20 rounded-full text-xs font-medium">
-                {FILTER_DISCOUNT_RATES.find(r => r.id === filterDiscountRate)?.label}
-                <button onClick={() => removeFilter('discount')}><X className="w-3 h-3" /></button>
-              </span>
-            )}
-            {filterExpiry !== 'all' && (
-              <span className="flex-shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 bg-primary/10 text-primary border border-primary/20 rounded-full text-xs font-medium">
-                {FILTER_EXPIRY.find(e => e.id === filterExpiry)?.label}
-                <button onClick={() => removeFilter('expiry')}><X className="w-3 h-3" /></button>
-              </span>
-            )}
-          </div>
-
-          {/* Sort Button */}
-          <button
-            onClick={() => setShowSortModal(true)}
-            className="flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 bg-muted hover:bg-muted/80 rounded-lg text-sm font-medium transition-colors"
-          >
-            <ArrowDownAZ className="w-4 h-4" />
-            Sırala
-          </button>
-        </section>
-
-        {/* ═══════════════════════════════════════════════════════════════
-            6. BRANDS IN CATEGORY
-        ═══════════════════════════════════════════════════════════════ */}
-        {brands.length > 0 && (
-          <section className="py-4 border-b border-border">
-            <div className="px-4 mb-3">
-              <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-                Bu Kategorideki Markalar
-              </h3>
+        {viewMode === 'brands' && brands.length > 0 && (
+          <section className="px-4 py-4">
+            <div className="flex items-center justify-between mb-4">
+              <p className="text-sm text-muted-foreground">
+                <span className="font-semibold text-foreground">{brands.filter(b => b.deal_count > 0).length}</span> marka bulundu
+              </p>
             </div>
-            <div className="flex gap-3 overflow-x-auto px-4 pb-2 scrollbar-hide">
-              {brands.filter(b => b.deal_count > 0).slice(0, 15).map((brand) => (
+
+            <div className="grid grid-cols-1 gap-3">
+              {brands.filter(b => b.deal_count > 0).map((brand) => (
                 <Link
                   key={brand.id}
                   to={`/magaza/${brand.slug}`}
-                  className="flex-shrink-0 flex items-center gap-2.5 px-4 py-2.5 bg-card border border-border rounded-xl hover:border-primary/30 transition-colors"
+                  className="flex items-center gap-4 p-4 bg-card border border-border rounded-xl hover:border-primary/30 transition-colors"
                 >
-                  <BrandLogo logoUrl={brand.logo_url} brandName={brand.name} size="xs" />
-                  <div>
-                    <span className="text-sm font-medium block">{brand.name}</span>
-                    <span className="text-xs text-muted-foreground">{brand.deal_count} kampanya</span>
+                  <BrandLogo logoUrl={brand.logo_url} brandName={brand.name} size="md" />
+                  <div className="flex-1">
+                    <span className="text-base font-semibold block">{brand.name}</span>
+                    <span className="text-sm text-muted-foreground">{brand.deal_count} aktif kampanya</span>
                   </div>
+                  <ChevronRight className="w-5 h-5 text-muted-foreground" />
                 </Link>
               ))}
             </div>
@@ -515,19 +487,52 @@ const CategoryPage = () => {
         )}
 
         {/* ═══════════════════════════════════════════════════════════════
-            7. CAMPAIGN LIST
+            6. CAMPAIGN LIST (when viewMode === 'campaigns')
         ═══════════════════════════════════════════════════════════════ */}
-        <section className="px-4 py-4">
-          <p className="text-sm text-muted-foreground mb-4">
-            <span className="font-semibold text-foreground">{filteredDeals.length}</span> sonuç bulundu
-          </p>
-
-          {filteredDeals.length === 0 ? (
-            <div className="text-center py-12 bg-card rounded-xl border border-border">
-              <Tag className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
-              <h3 className="font-medium mb-2">Sonuç Bulunamadı</h3>
-              <p className="text-sm text-muted-foreground mb-4">Filtrelere uygun kampanya yok.</p>
+        {viewMode === 'campaigns' && (
+          <section className="px-4 py-4">
+            {/* Results count + Sort button on same row */}
+            <div className="flex items-center justify-between mb-4">
+              <p className="text-sm text-muted-foreground">
+                <span className="font-semibold text-foreground">{filteredDeals.length}</span> sonuç bulundu
+              </p>
               <button
+                onClick={() => setShowSortModal(true)}
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-muted hover:bg-muted/80 rounded-lg text-sm font-medium transition-colors"
+              >
+                <ArrowDownAZ className="w-4 h-4" />
+                Sırala
+              </button>
+            </div>
+
+            {filteredDeals.length === 0 ? (
+              <div className="text-center py-12 bg-card rounded-xl border border-border">
+                <Tag className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
+                <h3 className="font-medium mb-2">Sonuç Bulunamadı</h3>
+                <p className="text-sm text-muted-foreground mb-4">Filtrelere uygun kampanya yok.</p>
+                <button
+                  onClick={clearAllFilters}
+                  className="px-4 py-2 bg-primary text-white rounded-lg text-sm font-medium"
+                >
+                  Filtreleri Temizle
+                </button>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {displayedDeals.map((deal) => {
+                  const brand = brandMap[deal.brand_id];
+                  if (deal.dealType === 'coupon') {
+                    return <CouponCard key={`coupon-${deal.id}`} coupon={deal} brand={brand} />;
+                  } else if (deal.dealType === 'giveaway') {
+                    return <GiveawayCard key={`giveaway-${deal.id}`} giveaway={deal} brand={brand} />;
+                  } else {
+                    return <DiscountCard key={`discount-${deal.id}`} discount={deal} brand={brand} />;
+                  }
+                })}
+              </div>
+            )}
+          </section>
+        )}
                 onClick={clearAllFilters}
                 className="px-4 py-2 bg-primary text-white rounded-lg text-sm font-medium"
               >
