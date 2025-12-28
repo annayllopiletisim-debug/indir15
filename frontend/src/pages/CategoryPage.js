@@ -382,15 +382,6 @@ const CategoryPage = () => {
             </div>
           </div>
         </header>
-                        <X className="w-5 h-5 text-muted-foreground" />
-                      </button>
-                    )}
-                  </div>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </header>
 
         {/* Desktop Header */}
         <div className="hidden lg:block bg-card border-b border-border">
