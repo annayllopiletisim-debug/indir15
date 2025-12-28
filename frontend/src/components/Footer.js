@@ -106,16 +106,16 @@ const Footer = () => {
             </p>
             {/* Social Media - Desktop */}
             <div className="flex gap-3">
-              <a href="https://twitter.com/indirimkesfet" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-lg bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors">
+              <a href="https://twitter.com/indirimkesfet" target="_blank" rel="nofollow noopener noreferrer" className="w-10 h-10 rounded-lg bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors">
                 <Twitter className="w-5 h-5 text-gray-400" />
               </a>
-              <a href="https://instagram.com/indirimkesfet" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-lg bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors">
+              <a href="https://instagram.com/indirimkesfet" target="_blank" rel="nofollow noopener noreferrer" className="w-10 h-10 rounded-lg bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors">
                 <Instagram className="w-5 h-5 text-gray-400" />
               </a>
-              <a href="https://youtube.com/@indirimkesfet" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-lg bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors">
+              <a href="https://youtube.com/@indirimkesfet" target="_blank" rel="nofollow noopener noreferrer" className="w-10 h-10 rounded-lg bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors">
                 <Youtube className="w-5 h-5 text-gray-400" />
               </a>
-              <a href="https://facebook.com/indirimkesfet" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-lg bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors">
+              <a href="https://facebook.com/indirimkesfet" target="_blank" rel="nofollow noopener noreferrer" className="w-10 h-10 rounded-lg bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors">
                 <Facebook className="w-5 h-5 text-gray-400" />
               </a>
             </div>
