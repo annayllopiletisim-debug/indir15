@@ -182,11 +182,11 @@ const BaseCard = ({
                 {brandName && (
                   <div className="inline-flex items-center gap-2.5 mb-2 self-start">
                     {brandLogoUrl && (
-                      <div className="w-10 h-10 sm:w-12 sm:h-12 bg-white dark:bg-gray-700 rounded-xl shadow-sm border border-gray-100 dark:border-gray-600 flex items-center justify-center p-1.5 flex-shrink-0">
+                      <div className="w-10 h-10 sm:w-12 sm:h-12 bg-white rounded-lg border border-gray-200 flex items-center justify-center overflow-hidden flex-shrink-0">
                         <img 
                           src={getLogoUrl(brandLogoUrl)} 
                           alt={brandName} 
-                          className="max-w-full max-h-full object-contain"
+                          className="w-full h-full object-contain"
                         />
                       </div>
                     )}
