@@ -220,12 +220,21 @@ frontend:
         agent: "testing"
         comment: "✅ Deal card images have proper padding and rounded corners. Verified: images have 6px padding, 12px border-radius (rounded-xl class), and proper spacing from card edges. All tested images show correct styling."
 
+frontend:
+  - task: "Mobile Homepage Redesign"
+    implemented: true
+    working: true
+    file: "frontend/src/pages/HomePage.js, frontend/src/components/Header.js, frontend/src/components/MobileSearchBar.js, frontend/src/components/CategorySlider.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "✅ Mobile Homepage Redesign fully functional on mobile viewport (375x800). Verified: 1) Header design - Logo 'İndirim Keşfet', theme toggle (moon icon), menu button (hamburger), compact height (58px), NO search icon in header on mobile ✓, 2) Search bar position - Below header, full-width, placeholder 'Marka ve kampanya ara...', search functionality works (navigates to /arama?q=adidas) ✓, 3) Category slider with icons - 'Tümü' button FIRST with LayoutGrid icon, Spor(25) with Dumbbell icon, Moda(15) with Shirt icon, horizontally scrollable ✓, 4) Popular stores section - 'Popüler Mağazalar' visible, 9 store badges with deal counts (e.g., '5'), horizontally scrollable ✓, 5) Featured deals section - Star icon + 'Öne Çıkanlar' title, shows 5 deal cards (max limit respected) ✓, 6) Son Saatler section - Clock icon + 'Son Saatler' title, 'Tümünü Gör' button links to /son-24-saat ✓, 7) Layout flow correct: Header -> Search -> Categories -> Stores -> Son Saatler -> Öne Çıkanlar -> Newsletter ✓, 8) Deal cards use light theme (white background) ✓. All mobile redesign requirements successfully implemented and tested."
+
 test_plan:
   current_focus:
-    - "Mobile Homepage Redesign"
-    - "Search Bar below header"
-    - "Category Slider with icons"
-    - "Featured Deals section"
     - "is_featured field in admin"
   stuck_tasks: []
   test_all: false
@@ -234,3 +243,5 @@ test_plan:
 agent_communication:
   - agent: "main"
     message: "Implemented mobile homepage redesign: 1) Header simplified (logo, theme toggle, menu), 2) Search bar moved below header, always visible, 3) Category slider with icons (Dumbbell for Spor, Shirt for Moda, etc.), 4) Son Saatler section with 1 card + Tümünü Gör button, 5) Öne Çıkanlar section with is_featured campaigns (max 5), 6) Admin panels updated with is_featured checkbox. Test on mobile viewport (375x800)."
+  - agent: "testing"
+    message: "✅ Mobile Homepage Redesign testing completed successfully. All 7 test scenarios passed: Header design (logo, theme toggle, menu, no search icon), Search bar position (below header, correct placeholder, functional), Category slider with icons (Tümü first with grid icon, Spor/Moda with proper icons and counts), Popular stores (badges with deal counts, scrollable), Featured deals (star icon, max 5 cards), Son Saatler (clock icon, Tümünü Gör button), and correct layout flow. Mobile viewport (375x800) tested thoroughly. Ready for production."
