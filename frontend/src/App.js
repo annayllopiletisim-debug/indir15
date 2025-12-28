@@ -101,9 +101,9 @@ function App() {
           <Route
             path="/kategori/:slug"
             element={
-              <PublicLayout>
+              <CategoryPageLayout>
                 <CategoryPage />
-              </PublicLayout>
+              </CategoryPageLayout>
             }
           />
           <Route
