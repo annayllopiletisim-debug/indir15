@@ -2519,16 +2519,18 @@ async def import_from_google_sheet(
     for idx, row in enumerate(rows, start=2):  # Start from 2 (1 is header)
         try:
             # Extract data with flexible column matching
-            item_type = get_column(row, 'türü', 'type', 'tip')
+            # A sütunu - Sadece tür belirler (İndirim, Kupon, Çekiliş)
+            item_type = get_column(row, 'türü', 'type', 'tip', 'tür')
             store_name = get_column(row, 'mağaza', 'store', 'brand', 'magaza')
             title = get_column(row, 'başlık', 'title', 'baslik')
-            short_desc = get_column(row, 'açıklama (kısa)', 'açıklama', 'aciklama', 'description')
-            long_desc = get_column(row, 'uzun açıklama', 'long', 'detay')
-            discount_text = get_column(row, 'indirim metni', 'indirim', 'discount')
-            expiry_str = get_column(row, 'bitiş', 'bitis', 'tarih', 'expiry', 'date')
-            url = get_column(row, 'url', 'link', 'hedef')
+            short_desc = get_column(row, 'açıklama (kısa)', 'kısa açıklama', 'aciklama', 'description')
+            long_desc = get_column(row, 'uzun açıklama', 'long', 'detay', 'açıklama (uzun)')
+            # E sütunu - İndirim metni (yeşil badge için) - "indirim" kelimesi tek başına aranmayacak
+            discount_text = get_column(row, 'indirim metni', 'indirim oranı', 'discount text', 'badge')
+            expiry_str = get_column(row, 'bitiş', 'bitis', 'tarih', 'expiry', 'date', 'son tarih')
+            url = get_column(row, 'url', 'link', 'hedef', 'hedef url')
             coupon_code = get_column(row, 'kupon kodu', 'kod', 'code')
-            terms = get_column(row, 'kullanım koşulları', 'koşul', 'terms')
+            terms = get_column(row, 'kullanım koşulları', 'koşul', 'terms', 'koşullar')
             
             # Validate required fields
             if not title:
