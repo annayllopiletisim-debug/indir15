@@ -116,8 +116,8 @@ const CategoryPage = () => {
   const [expandDescription, setExpandDescription] = useState(false);
   const [expandSEO, setExpandSEO] = useState(false);
   const [expandedFAQ, setExpandedFAQ] = useState(null);
-  const [selectedSubCategory, setSelectedSubCategory] = useState('all');
   const [displayCount, setDisplayCount] = useState(10);
+  const [viewMode, setViewMode] = useState('campaigns'); // 'campaigns' or 'brands'
   
   // Filter states
   const [filterDiscountRate, setFilterDiscountRate] = useState('all');
