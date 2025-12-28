@@ -1,18 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import axios from 'axios';
-import DealCardCompact from '../components/DealCardCompact';
 import CouponCard from '../components/CouponCard';
 import DiscountCard from '../components/DiscountCard';
 import BrandLogo from '../components/BrandLogo';
 import Newsletter from '../components/Newsletter';
-import MobileSearchBar from '../components/MobileSearchBar';
 import CategorySlider from '../components/CategorySlider';
 import { trackClick, buildUTMLink } from '../utils/helpers';
 import { 
   ChevronRight, 
   Clock, 
-  TrendingUp,
   Search,
   Copy,
   Check,
