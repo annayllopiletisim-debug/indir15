@@ -103,6 +103,9 @@ class Brand(BaseModel):
     show_on_homepage: bool = False
     homepage_order: int = 0
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    # Category info (populated on read)
+    category_name: Optional[str] = None
+    category_slug: Optional[str] = None
 
 # Newsletter Subscriber Model
 class NewsletterSubscriber(BaseModel):
