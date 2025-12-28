@@ -142,11 +142,11 @@ const HomePage = () => {
     ...expiringSoon.discounts.map(d => ({ ...d, type: 'discount' }))
   ].slice(0, 1);
 
-  // Combine featured items - max 5
+  // Combine featured items - max 12 for desktop, 5 for mobile
   const featuredItems = [
     ...featuredDeals.coupons.map(c => ({ ...c, type: 'coupon' })),
     ...featuredDeals.discounts.map(d => ({ ...d, type: 'discount' }))
-  ].slice(0, 5);
+  ].slice(0, 12);
 
   // Handle card click
   const handleDealClick = (item, brand) => {
