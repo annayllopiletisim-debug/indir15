@@ -597,6 +597,58 @@ const BrandPage = () => {
           </div>
         </nav>
       </div>
+
+      {/* Sort Modal */}
+      <AnimatePresence>
+        {showSortModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[60] bg-black/50"
+            onClick={() => setShowSortModal(false)}
+          >
+            <motion.div
+              initial={{ y: '100%' }}
+              animate={{ y: 0 }}
+              exit={{ y: '100%' }}
+              transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+              className="absolute bottom-0 left-0 right-0 bg-card rounded-t-2xl"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="p-4 border-b border-border">
+                <h2 className="font-bold text-lg">Sıralama</h2>
+              </div>
+              <div className="p-2 pb-8">
+                {SORT_OPTIONS.map((option) => {
+                  const IconComponent = option.icon;
+                  return (
+                    <button
+                      key={option.id}
+                      onClick={() => {
+                        setSortBy(option.id);
+                        setShowSortModal(false);
+                      }}
+                      className={`w-full px-4 py-3 text-left rounded-xl transition-colors flex items-center gap-3 ${
+                        sortBy === option.id 
+                          ? 'bg-primary/10 text-primary' 
+                          : 'hover:bg-muted'
+                      }`}
+                    >
+                      <div className={`w-9 h-9 rounded-lg flex items-center justify-center ${
+                        sortBy === option.id ? 'bg-primary text-white' : 'bg-muted'
+                      }`}>
+                        <IconComponent className="w-4 h-4" />
+                      </div>
+                      <span className="font-medium text-sm">{option.label}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 };
