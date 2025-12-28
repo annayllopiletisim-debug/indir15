@@ -48,6 +48,11 @@ const DealDetailPage = () => {
   const [copied, setCopied] = useState(false);
   const [showModal, setShowModal] = useState(false);
 
+  // Scroll to top on mount
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }, [brandSlug, dealSlug]);
+
   // Extract ID from slug (format: title-slug-uuid where uuid is like xxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx)
   // UUID has 5 parts separated by hyphens
   const extractIdFromSlug = (slug) => {
