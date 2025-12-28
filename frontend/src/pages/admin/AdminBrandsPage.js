@@ -240,7 +240,7 @@ const AdminBrandsPage = () => {
         </div>
 
         {showForm && (
-          <div className="glass-effect p-6 rounded-2xl mb-8">
+          <div className="bg-void-paper border border-white/5 p-6 rounded-2xl mb-8">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-xl font-bold">
                 {editingId ? 'Mağaza Düzenle' : 'Yeni Mağaza'}
@@ -492,7 +492,7 @@ const AdminBrandsPage = () => {
             </div>
           ) : (
             filteredBrands.map(brand => (
-            <div key={brand.id} className="glass-effect p-6 rounded-2xl">
+            <div key={brand.id} className="bg-void-paper border border-white/5 p-6 rounded-2xl">
               <div className="flex items-start justify-between mb-4">
                 <div className="flex items-center space-x-3">
                   <BrandLogo logoUrl={brand.logo_url} brandName={brand.name} size="md" />

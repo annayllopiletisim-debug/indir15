@@ -205,7 +205,7 @@ const AdminHeroSlidesPage = () => {
       {/* Slides Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {slides.map((slide, index) => (
-          <div key={slide.id} className={`glass-effect rounded-2xl overflow-hidden ${!slide.is_active ? 'opacity-60 border border-red-500/30' : ''}`}>
+          <div key={slide.id} className={`bg-void-paper border border-white/5 rounded-2xl overflow-hidden ${!slide.is_active ? 'opacity-60 border border-red-500/30' : ''}`}>
             <div className="relative h-40">
               {slide.image_url ? (
                 <img src={slide.image_url} alt={slide.title} className="w-full h-full object-cover" />

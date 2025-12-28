@@ -87,7 +87,7 @@ const AdminImportPage = () => {
         </div>
 
         {/* Instructions */}
-        <div className="glass-effect rounded-xl p-6 mb-6">
+        <div className="bg-void-paper border border-white/5 rounded-xl p-6 mb-6">
           <h2 className="font-semibold mb-3 flex items-center gap-2">
             <Info className="w-5 h-5 text-blue-400" />
             Nasıl Kullanılır?
@@ -101,7 +101,7 @@ const AdminImportPage = () => {
         </div>
 
         {/* Expected Columns */}
-        <div className="glass-effect rounded-xl p-6 mb-6">
+        <div className="bg-void-paper border border-white/5 rounded-xl p-6 mb-6">
           <h2 className="font-semibold mb-3">Beklenen Sütunlar</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {expectedColumns.map((col) => (
@@ -117,7 +117,7 @@ const AdminImportPage = () => {
         </div>
 
         {/* Import Form */}
-        <form onSubmit={handleImport} className="glass-effect rounded-xl p-6 mb-6">
+        <form onSubmit={handleImport} className="bg-void-paper border border-white/5 rounded-xl p-6 mb-6">
           <label className="block text-sm font-medium mb-2">Google Sheet URL</label>
           <div className="flex gap-3">
             <Input
@@ -159,15 +159,15 @@ const AdminImportPage = () => {
           <div className="space-y-6">
             {/* Summary */}
             <div className="grid grid-cols-3 gap-4">
-              <div className="glass-effect rounded-xl p-4 text-center">
+              <div className="bg-void-paper border border-white/5 rounded-xl p-4 text-center">
                 <div className="text-3xl font-bold text-blue-400">{result.total_rows}</div>
                 <div className="text-sm text-muted-foreground">Toplam Satır</div>
               </div>
-              <div className="glass-effect rounded-xl p-4 text-center">
+              <div className="bg-void-paper border border-white/5 rounded-xl p-4 text-center">
                 <div className="text-3xl font-bold text-green-400">{result.imported}</div>
                 <div className="text-sm text-muted-foreground">Başarılı</div>
               </div>
-              <div className="glass-effect rounded-xl p-4 text-center">
+              <div className="bg-void-paper border border-white/5 rounded-xl p-4 text-center">
                 <div className="text-3xl font-bold text-orange-400">{result.skipped}</div>
                 <div className="text-sm text-muted-foreground">Atlanan</div>
               </div>
@@ -175,7 +175,7 @@ const AdminImportPage = () => {
 
             {/* Imported Items */}
             {result.imported_items?.length > 0 && (
-              <div className="glass-effect rounded-xl p-6">
+              <div className="bg-void-paper border border-white/5 rounded-xl p-6">
                 <h3 className="font-semibold mb-4 flex items-center gap-2 text-green-400">
                   <CheckCircle className="w-5 h-5" />
                   Başarıyla Eklenen ({result.imported_items.length})
@@ -206,7 +206,7 @@ const AdminImportPage = () => {
 
             {/* Errors */}
             {result.errors?.length > 0 && (
-              <div className="glass-effect rounded-xl p-6">
+              <div className="bg-void-paper border border-white/5 rounded-xl p-6">
                 <h3 className="font-semibold mb-4 flex items-center gap-2 text-orange-400">
                   <AlertTriangle className="w-5 h-5" />
                   Atlanan Satırlar ({result.errors.length})

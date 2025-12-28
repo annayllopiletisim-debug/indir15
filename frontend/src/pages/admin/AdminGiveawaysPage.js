@@ -207,7 +207,7 @@ const AdminGiveawaysPage = () => {
           </div>
         )}
 
-        <div className="glass-effect rounded-xl overflow-hidden">
+        <div className="bg-void-paper border border-white/5 rounded-xl overflow-hidden">
           <table className="w-full">
             <thead className="bg-white/5">
               <tr>

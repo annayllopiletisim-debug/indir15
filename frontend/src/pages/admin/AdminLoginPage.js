@@ -56,7 +56,7 @@ const AdminLoginPage = () => {
             <h1 className="text-3xl font-heading font-bold text-gradient">Admin Panel</h1>
           </div>
 
-          <div className="glass-effect p-8 rounded-3xl">
+          <div className="bg-void-paper border border-white/5 p-8 rounded-3xl">
             <div className="flex space-x-2 mb-6">
               <button
                 onClick={() => setIsLogin(true)}

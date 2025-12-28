@@ -102,7 +102,7 @@ const AdminSettingsPage = () => {
         </div>
 
         {/* Sticky CTA Bar Settings */}
-        <div className="glass-effect rounded-2xl p-6 mb-6">
+        <div className="bg-void-paper border border-white/5 rounded-2xl p-6 mb-6">
           <h2 className="text-xl font-heading font-bold mb-6 flex items-center gap-2">
             📌 Sticky CTA Bar Ayarları
           </h2>
