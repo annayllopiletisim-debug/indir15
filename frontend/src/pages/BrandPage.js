@@ -158,23 +158,60 @@ const BrandPage = () => {
     return { totalDeals, maxDiscount, endingToday };
   }, [coupons, discounts, giveaways]);
 
-  // Filtered deals
+  // Filtered and sorted deals
   const filteredDeals = useMemo(() => {
+    let result;
     switch (activeFilter) {
       case 'coupons':
-        return coupons.map(c => ({ ...c, type: 'coupon' }));
+        result = coupons.map(c => ({ ...c, type: 'coupon' }));
+        break;
       case 'discounts':
-        return discounts.map(d => ({ ...d, type: 'discount' }));
+        result = discounts.map(d => ({ ...d, type: 'discount' }));
+        break;
       case 'giveaways':
-        return giveaways.map(g => ({ ...g, type: 'giveaway' }));
+        result = giveaways.map(g => ({ ...g, type: 'giveaway' }));
+        break;
       default:
-        return [
+        result = [
           ...coupons.map(c => ({ ...c, type: 'coupon' })),
           ...discounts.map(d => ({ ...d, type: 'discount' })),
           ...giveaways.map(g => ({ ...g, type: 'giveaway' }))
-        ].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+        ];
     }
-  }, [coupons, discounts, giveaways, activeFilter]);
+    
+    // Apply sorting
+    switch (sortBy) {
+      case 'newest':
+        result.sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
+        break;
+      case 'popular':
+        result.sort((a, b) => (b.click_count || 0) - (a.click_count || 0));
+        break;
+      case 'highest':
+        result.sort((a, b) => {
+          const getDiscount = (d) => {
+            const match = d.discount_text?.match(/(\d+)/);
+            return match ? parseInt(match[1]) : 0;
+          };
+          return getDiscount(b) - getDiscount(a);
+        });
+        break;
+      case 'ending':
+        result.sort((a, b) => {
+          const dateA = a.expiry_date ? new Date(a.expiry_date) : new Date('2099-12-31');
+          const dateB = b.expiry_date ? new Date(b.expiry_date) : new Date('2099-12-31');
+          return dateA - dateB;
+        });
+        break;
+      default:
+        break;
+    }
+    
+    return result;
+  }, [coupons, discounts, giveaways, activeFilter, sortBy]);
+
+  // Get current sort option
+  const currentSortOption = SORT_OPTIONS.find(opt => opt.id === sortBy) || SORT_OPTIONS[0];
 
   // Handle share
   const handleShare = async () => {
