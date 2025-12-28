@@ -182,12 +182,46 @@ const AdminCategoriesPage = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium mb-1">İkon URL</label>
+                <label className="block text-sm font-medium mb-1">İkon URL veya Görsel Yükle</label>
                 <Input
                   value={formData.icon_url}
                   onChange={(e) => setFormData({ ...formData, icon_url: e.target.value })}
                   placeholder="https://..."
+                  className="mb-2"
                 />
+                <div className="text-xs text-gray-400 mb-2">veya</div>
+                <label className="flex items-center justify-center w-full p-3 border-2 border-dashed border-white/20 rounded-lg cursor-pointer hover:border-primary/50 transition-colors">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={async (e) => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        const formDataUpload = new FormData();
+                        formDataUpload.append('file', file);
+                        try {
+                          const res = await axios.post(`${API}/upload`, formDataUpload, {
+                            headers: { 
+                              Authorization: `Bearer ${getAuthToken()}`,
+                              'Content-Type': 'multipart/form-data'
+                            }
+                          });
+                          setFormData({ ...formData, icon_url: res.data.url });
+                        } catch (error) {
+                          alert('Dosya yükleme başarısız');
+                        }
+                      }
+                    }}
+                  />
+                  <span className="text-sm text-gray-400">Bilgisayardan Görsel Seç</span>
+                </label>
+                {formData.icon_url && (
+                  <div className="mt-2 flex items-center gap-2">
+                    <img src={formData.icon_url} alt="Preview" className="w-10 h-10 rounded-lg object-cover" />
+                    <span className="text-xs text-gray-400 truncate flex-1">{formData.icon_url}</span>
+                  </div>
+                )}
               </div>
 
               <div>
