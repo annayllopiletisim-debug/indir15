@@ -163,6 +163,9 @@ const CategoriesPage = () => {
   // Total expiring count
   const expiringCount = (expiringSoon.coupons?.length || 0) + (expiringSoon.discounts?.length || 0);
 
+  // Get current sort option
+  const currentSortOption = SORT_OPTIONS.find(opt => opt.id === sortBy) || SORT_OPTIONS[0];
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
