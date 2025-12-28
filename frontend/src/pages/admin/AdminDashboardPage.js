@@ -112,64 +112,64 @@ const AdminDashboardPage = () => {
         {/* Main Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
           {/* Top 10 Brands */}
-          <div className="glass-effect p-6 rounded-2xl">
+          <div className="bg-void-paper border border-white/5 p-6 rounded-2xl">
             <div className="flex items-center gap-2 mb-6">
               <Store className="w-5 h-5 text-neon-purple" />
-              <h2 className="text-lg font-heading font-bold">Top 10 Mağaza</h2>
+              <h2 className="text-lg font-heading font-bold text-white">Top 10 Mağaza</h2>
             </div>
             <div className="space-y-3">
               {analytics?.brand_clicks?.slice(0, 10).map((item, index) => (
                 <div key={item.brand_id} className="flex items-center justify-between p-3 bg-void-subtle rounded-xl">
                   <div className="flex items-center space-x-3">
-                    <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-neon-purple to-neon-pink flex items-center justify-center text-xs font-bold">
+                    <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-neon-purple to-neon-pink flex items-center justify-center text-xs font-bold text-white">
                       {index + 1}
                     </div>
-                    <span className="font-medium text-sm">{item.brand_name}</span>
+                    <span className="font-medium text-sm text-white">{item.brand_name}</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="text-muted-foreground text-sm">{item.count}</span>
+                    <span className="text-gray-400 text-sm">{item.count}</span>
                     {item.brand_slug && (
                       <a
                         href={`/magaza/${item.brand_slug}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-xs px-2 py-1 rounded bg-void-dark hover:bg-neon-purple/20 transition-colors"
+                        className="text-xs px-2 py-1 rounded bg-void-dark hover:bg-neon-purple/20 transition-colors text-white"
                       >
                         →
                       </a>
                     )}
                   </div>
                 </div>
-              )) || <p className="text-muted-foreground text-sm">Henüz veri yok</p>}
+              )) || <p className="text-gray-400 text-sm">Henüz veri yok</p>}
             </div>
           </div>
 
           {/* Coupon Conversions */}
-          <div className="glass-effect p-6 rounded-2xl">
+          <div className="bg-void-paper border border-white/5 p-6 rounded-2xl">
             <div className="flex items-center gap-2 mb-6">
               <BarChart3 className="w-5 h-5 text-neon-blue" />
-              <h2 className="text-lg font-heading font-bold">Kupon Dönüşümleri</h2>
+              <h2 className="text-lg font-heading font-bold text-white">Kupon Dönüşümleri</h2>
             </div>
             <div className="space-y-3">
               {analytics?.coupon_conversions?.slice(0, 10).map((item, index) => (
                 <div key={item.coupon_id} className="p-3 bg-void-subtle rounded-xl">
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center space-x-3">
-                      <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-neon-blue to-neon-cyan flex items-center justify-center text-xs font-bold">
+                      <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-neon-blue to-neon-cyan flex items-center justify-center text-xs font-bold text-white">
                         {index + 1}
                       </div>
                       <div>
-                        <span className="font-medium text-sm block line-clamp-1">{item.title}</span>
-                        <span className="text-xs text-muted-foreground">{item.brand_name}</span>
+                        <span className="font-medium text-sm text-white block line-clamp-1">{item.title}</span>
+                        <span className="text-xs text-gray-400">{item.brand_name}</span>
                       </div>
                     </div>
                   </div>
                   <div className="flex items-center gap-4 mt-2">
-                    <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                    <div className="flex items-center gap-1 text-xs text-gray-400">
                       <Eye className="w-3 h-3" />
                       <span>{item.views} görüntüleme</span>
                     </div>
-                    <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                    <div className="flex items-center gap-1 text-xs text-gray-400">
                       <Copy className="w-3 h-3" />
                       <span>{item.copies} kopyalama</span>
                     </div>
@@ -182,7 +182,7 @@ const AdminDashboardPage = () => {
                     </div>
                   </div>
                 </div>
-              )) || <p className="text-muted-foreground text-sm">Henüz veri yok</p>}
+              )) || <p className="text-gray-400 text-sm">Henüz veri yok</p>}
             </div>
           </div>
         </div>
