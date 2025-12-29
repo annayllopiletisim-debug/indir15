@@ -107,7 +107,7 @@ const BlogDetailPage = () => {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-2xl font-bold mb-2">Yazı Bulunamadı</h1>
-          <Link to="/blog" className="text-primary hover:underline">Blog'a Dön</Link>
+          <Link to="/blog" className="text-primary hover:underline">Blog&apos;a Dön</Link>
         </div>
       </div>
     );
