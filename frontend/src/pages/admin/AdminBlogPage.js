@@ -372,6 +372,9 @@ const AdminBlogPage = () => {
                       required
                     >
                       <option value="">Kategori Seçin</option>
+                      {categories.length === 0 && (
+                        <option value="" disabled>Yükleniyor...</option>
+                      )}
                       {categories.map((cat) => (
                         <option key={cat.id} value={cat.id}>{cat.icon} {cat.name}</option>
                       ))}
