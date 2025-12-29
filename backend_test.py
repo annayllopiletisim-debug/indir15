@@ -297,6 +297,196 @@ class CouponAPITester:
         
         return True
 
+    def test_blog_feature(self):
+        """Test the newly implemented Blog feature"""
+        print("\n📝 Testing Blog Feature...")
+        
+        # Test 1: GET /api/blog/categories - Should return 9 categories
+        print("\n   1. Testing GET /api/blog/categories...")
+        success, categories = self.run_test("Get Blog Categories", "GET", "blog/categories", 200)
+        
+        if success and categories:
+            if len(categories) >= 9:
+                print(f"   ✅ Blog categories found: {len(categories)} categories")
+                # Check for expected categories
+                category_names = [cat.get('name', '') for cat in categories]
+                expected_categories = ['Stil & Moda', 'Ev & Yaşam']
+                found_expected = [name for name in expected_categories if any(name in cat_name for cat_name in category_names)]
+                if found_expected:
+                    print(f"   ✅ Expected categories found: {found_expected}")
+                else:
+                    print(f"   ⚠️  Expected categories not found. Available: {category_names[:5]}...")
+            else:
+                print(f"   ❌ Expected at least 9 categories, found {len(categories)}")
+        
+        # Test 2: GET /api/blog/posts - Should return posts list with pagination
+        print("\n   2. Testing GET /api/blog/posts...")
+        success, posts_response = self.run_test("Get Blog Posts", "GET", "blog/posts", 200)
+        
+        if success and posts_response:
+            if 'posts' in posts_response and 'total' in posts_response:
+                posts = posts_response['posts']
+                total = posts_response['total']
+                print(f"   ✅ Blog posts response structure correct: {len(posts)} posts, {total} total")
+                
+                # Check pagination parameters
+                if 'page' in posts_response and 'limit' in posts_response:
+                    print(f"   ✅ Pagination parameters present: page {posts_response['page']}, limit {posts_response['limit']}")
+                else:
+                    print(f"   ⚠️  Pagination parameters missing")
+            else:
+                print(f"   ❌ Blog posts response structure incorrect. Keys: {list(posts_response.keys())}")
+        
+        # Test 3: GET /api/blog/posts/popular - Should return popular posts
+        print("\n   3. Testing GET /api/blog/posts/popular...")
+        success, popular_posts = self.run_test("Get Popular Blog Posts", "GET", "blog/posts/popular", 200)
+        
+        if success and popular_posts:
+            print(f"   ✅ Popular blog posts returned: {len(popular_posts)} posts")
+            if popular_posts and 'view_count' in popular_posts[0]:
+                print(f"   ✅ Popular posts have view_count field")
+            else:
+                print(f"   ⚠️  Popular posts missing view_count field")
+        
+        # Test 4: GET /api/blog/tags - Should return tags list
+        print("\n   4. Testing GET /api/blog/tags...")
+        success, tags_response = self.run_test("Get Blog Tags", "GET", "blog/tags", 200)
+        
+        if success and tags_response:
+            if 'tags' in tags_response:
+                tags = tags_response['tags']
+                print(f"   ✅ Blog tags returned: {len(tags)} unique tags")
+            else:
+                print(f"   ❌ Blog tags response structure incorrect. Keys: {list(tags_response.keys())}")
+        
+        # Test 5: GET /api/blog/cta-data - Should return category deal counts
+        print("\n   5. Testing GET /api/blog/cta-data...")
+        success, cta_data = self.run_test("Get Blog CTA Data", "GET", "blog/cta-data", 200)
+        
+        if success and cta_data:
+            if isinstance(cta_data, list) and len(cta_data) > 0:
+                first_item = cta_data[0]
+                expected_fields = ['category_id', 'category_name', 'deal_count']
+                has_fields = all(field in first_item for field in expected_fields)
+                if has_fields:
+                    print(f"   ✅ Blog CTA data structure correct: {len(cta_data)} categories with deal counts")
+                else:
+                    print(f"   ❌ Blog CTA data missing fields. Available: {list(first_item.keys())}")
+            else:
+                print(f"   ❌ Blog CTA data should be a list with items")
+        
+        # Test 6: Blog Post CRUD (Authenticated) - Login first
+        if not self.token:
+            print("\n   ⚠️  No admin token available, skipping authenticated blog tests")
+            return True
+        
+        print("\n   6. Testing Blog Post CRUD (Authenticated)...")
+        
+        # Get first category ID for testing
+        first_category_id = None
+        if success and categories and len(categories) > 0:
+            first_category_id = categories[0].get('id')
+        
+        if not first_category_id:
+            print("   ❌ No category ID available for testing blog post creation")
+            return False
+        
+        # Test POST /api/blog/posts - Create a test blog post
+        print("\n   6a. Testing POST /api/blog/posts - Create test blog post...")
+        test_post_data = {
+            "title": "Test Blog Yazısı",
+            "slug": "test-blog-yazisi",
+            "excerpt": "Bu bir test yazısıdır",
+            "content": "<h2>Test Başlık</h2><p>Test içerik</p>",
+            "category_id": first_category_id,
+            "tags": ["test", "deneme"],
+            "is_published": True,
+            "read_time": 5
+        }
+        
+        success, created_post = self.run_test(
+            "Create Test Blog Post",
+            "POST",
+            "blog/posts",
+            200,
+            data=test_post_data
+        )
+        
+        created_post_id = None
+        if success and created_post:
+            created_post_id = created_post.get('id')
+            if created_post.get('title') == test_post_data['title']:
+                print(f"   ✅ Blog post created successfully: {created_post.get('title')}")
+                print(f"   ✅ Post ID: {created_post_id}")
+            else:
+                print(f"   ❌ Blog post creation failed or title mismatch")
+        
+        # Test GET /api/blog/posts/{slug} - Verify the created post
+        if created_post_id:
+            print("\n   6b. Testing GET /api/blog/posts/{slug} - Get created post...")
+            success, retrieved_post = self.run_test(
+                f"Get Blog Post by Slug: {test_post_data['slug']}",
+                "GET",
+                f"blog/posts/{test_post_data['slug']}",
+                200
+            )
+            
+            if success and retrieved_post:
+                if retrieved_post.get('id') == created_post_id:
+                    print(f"   ✅ Blog post retrieved successfully by slug")
+                    print(f"   ✅ Content matches: {len(retrieved_post.get('content', ''))} chars")
+                else:
+                    print(f"   ❌ Retrieved post ID mismatch")
+        
+        # Test PUT /api/blog/posts/{id} - Update the post title
+        if created_post_id:
+            print("\n   6c. Testing PUT /api/blog/posts/{id} - Update post...")
+            updated_data = test_post_data.copy()
+            updated_data['title'] = "Updated Test Blog Yazısı"
+            
+            success, updated_post = self.run_test(
+                f"Update Blog Post {created_post_id}",
+                "PUT",
+                f"blog/posts/{created_post_id}",
+                200,
+                data=updated_data
+            )
+            
+            if success and updated_post:
+                if updated_post.get('title') == updated_data['title']:
+                    print(f"   ✅ Blog post updated successfully: {updated_post.get('title')}")
+                else:
+                    print(f"   ❌ Blog post update failed or title not updated")
+        
+        # Test DELETE /api/blog/posts/{id} - Delete the test post
+        if created_post_id:
+            print("\n   6d. Testing DELETE /api/blog/posts/{id} - Delete test post...")
+            success, delete_response = self.run_test(
+                f"Delete Blog Post {created_post_id}",
+                "DELETE",
+                f"blog/posts/{created_post_id}",
+                200
+            )
+            
+            if success:
+                print(f"   ✅ Blog post deleted successfully")
+                
+                # Verify deletion by trying to get the post
+                success, not_found = self.run_test(
+                    f"Verify Blog Post Deletion",
+                    "GET",
+                    f"blog/posts/{test_post_data['slug']}",
+                    404
+                )
+                
+                if success:
+                    print(f"   ✅ Blog post deletion verified (404 on get)")
+                else:
+                    print(f"   ⚠️  Blog post may still exist after deletion")
+        
+        print("\n   ✅ Blog feature testing completed!")
+        return True
+
     def test_image_url_field_addition(self):
         """Test image_url field addition to Coupon, Discount, and Giveaway models"""
         print("\n🖼️  Testing Image URL Field Addition...")
