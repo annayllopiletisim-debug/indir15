@@ -193,6 +193,28 @@ function App() {
           />
 
           {/* ═══════════════════════════════════════════════════════════
+              BLOG ROUTES
+              /blog - Blog ana sayfası
+              /blog/:slug - Blog yazı detayı
+          ═══════════════════════════════════════════════════════════ */}
+          <Route
+            path="/blog"
+            element={
+              <PublicLayout>
+                <BlogPage />
+              </PublicLayout>
+            }
+          />
+          <Route
+            path="/blog/:slug"
+            element={
+              <PublicLayout>
+                <BlogDetailPage />
+              </PublicLayout>
+            }
+          />
+
+          {/* ═══════════════════════════════════════════════════════════
               PROGRAMMATIC SEO ROUTES
               Tek template ile 1000+ sayfa
               Pattern: /nike-indirimleri, /spor-indirimleri etc.
