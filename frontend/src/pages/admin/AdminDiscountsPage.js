@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import api from '../../utils/api';
-import { Plus, Edit, Trash2, X, Search, CheckSquare, Square, Trash } from 'lucide-react';
+import { Plus, Edit, Trash2, X, Search, CheckSquare, Square, Trash, Sparkles, Loader2 } from 'lucide-react';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
 
@@ -15,6 +15,7 @@ const AdminDiscountsPage = () => {
   const [statusFilter, setStatusFilter] = useState('all');
   const [brandFilter, setBrandFilter] = useState('all');
   const [selectedIds, setSelectedIds] = useState([]);
+  const [generatingAI, setGeneratingAI] = useState(false);
   const [formData, setFormData] = useState({
     brand_id: '', title: '', description: '', long_description: '', terms_conditions: '',
     discount_text: '', expiry_date: '',
