@@ -3204,6 +3204,29 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+# Seed blog categories on startup
+@app.on_event("startup")
+async def seed_blog_categories():
+    """Seed initial blog categories if none exist"""
+    existing = await db.blog_categories.count_documents({})
+    if existing == 0:
+        blog_categories = [
+            {"id": str(uuid.uuid4()), "name": "Stil & Moda", "slug": "stil-moda", "icon": "👗", "order": 1},
+            {"id": str(uuid.uuid4()), "name": "Ev & Yaşam", "slug": "ev-yasam", "icon": "🏠", "order": 2},
+            {"id": str(uuid.uuid4()), "name": "Yemek & Mutfak", "slug": "yemek-mutfak", "icon": "🍳", "order": 3},
+            {"id": str(uuid.uuid4()), "name": "Teknoloji", "slug": "teknoloji", "icon": "💻", "order": 4},
+            {"id": str(uuid.uuid4()), "name": "Güzellik & Bakım", "slug": "guzellik-bakim", "icon": "💄", "order": 5},
+            {"id": str(uuid.uuid4()), "name": "Özel Günler", "slug": "ozel-gunler", "icon": "🎁", "order": 6},
+            {"id": str(uuid.uuid4()), "name": "Anne & Bebek", "slug": "anne-bebek", "icon": "👶", "order": 7},
+            {"id": str(uuid.uuid4()), "name": "Seyahat", "slug": "seyahat", "icon": "✈️", "order": 8},
+            {"id": str(uuid.uuid4()), "name": "Tasarruf & Kupon", "slug": "tasarruf-kupon", "icon": "💰", "order": 9},
+        ]
+        for cat in blog_categories:
+            cat['is_active'] = True
+            cat['created_at'] = datetime.now(timezone.utc)
+        await db.blog_categories.insert_many(blog_categories)
+        logger.info("Blog categories seeded successfully")
+
 @app.on_event("shutdown")
 async def shutdown_db_client():
     client.close()
