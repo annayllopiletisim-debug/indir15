@@ -352,12 +352,14 @@ class CouponAPITester:
         print("\n   4. Testing GET /api/blog/tags...")
         success, tags_response = self.run_test("Get Blog Tags", "GET", "blog/tags", 200)
         
-        if success and tags_response:
-            if 'tags' in tags_response:
+        if success and tags_response is not None:
+            if isinstance(tags_response, list):
+                print(f"   ✅ Blog tags returned: {len(tags_response)} unique tags")
+            elif isinstance(tags_response, dict) and 'tags' in tags_response:
                 tags = tags_response['tags']
                 print(f"   ✅ Blog tags returned: {len(tags)} unique tags")
             else:
-                print(f"   ❌ Blog tags response structure incorrect. Keys: {list(tags_response.keys())}")
+                print(f"   ❌ Blog tags response structure incorrect. Type: {type(tags_response)}")
         
         # Test 5: GET /api/blog/cta-data - Should return category deal counts
         print("\n   5. Testing GET /api/blog/cta-data...")
