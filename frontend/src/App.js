@@ -244,6 +244,7 @@ function App() {
             <Route path="coupons" element={<AdminCouponsPage />} />
             <Route path="discounts" element={<AdminDiscountsPage />} />
             <Route path="giveaways" element={<AdminGiveawaysPage />} />
+            <Route path="blog" element={<AdminBlogPage />} />
             <Route path="import" element={<AdminImportPage />} />
             <Route path="keywords" element={<AdminKeywordsPage />} />
             <Route path="hero-slides" element={<AdminHeroSlidesPage />} />
