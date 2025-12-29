@@ -2710,6 +2710,70 @@ async def import_from_google_sheet(
     return results
 
 
+# ============ AI Description Generation ============
+
+class GenerateDescriptionRequest(BaseModel):
+    brand_name: str
+    title: str
+    discount_text: Optional[str] = None
+    expiry_date: Optional[str] = None
+
+@api_router.post("/generate-description")
+async def generate_description(request: GenerateDescriptionRequest, credentials: HTTPAuthorizationCredentials = Depends(security)):
+    """Generate AI description for a discount using only known data"""
+    try:
+        from emergentintegrations.llm.chat import LlmChat, UserMessage
+        
+        api_key = os.environ.get('EMERGENT_LLM_KEY')
+        if not api_key:
+            raise HTTPException(status_code=500, detail="AI service not configured")
+        
+        # Build the prompt with only known data
+        data_parts = []
+        data_parts.append(f"Marka: {request.brand_name}")
+        data_parts.append(f"Kampanya Başlığı: {request.title}")
+        if request.discount_text:
+            data_parts.append(f"İndirim: {request.discount_text}")
+        if request.expiry_date:
+            data_parts.append(f"Bitiş Tarihi: {request.expiry_date}")
+        
+        system_message = """Sen bir e-ticaret kampanya açıklaması yazarısın. 
+        
+KURALLAR:
+- Sadece verilen bilgileri kullan
+- ASLA varsayımda bulunma
+- "tüm ürünlerde geçerlidir", "online ve mağazalarda", "kargo bedava" gibi ifadeler KULLANMA
+- Bilmediğin detayları ekleme
+- Son cümlede "Detaylı bilgi ve koşullar için [MARKA]'ı ziyaret edin" yaz
+- Maksimum 2-3 cümle yaz
+- Türkçe yaz"""
+
+        user_prompt = f"""Aşağıdaki bilgilerle kısa bir kampanya açıklaması yaz:
+
+{chr(10).join(data_parts)}
+
+Sadece bu bilgileri kullanarak 2-3 cümlelik açıklama yaz. Varsayım yapma."""
+
+        # Initialize chat with GPT-4o-mini (cheaper and fast)
+        chat = LlmChat(
+            api_key=api_key,
+            session_id=f"desc-gen-{uuid.uuid4()}",
+            system_message=system_message
+        ).with_model("openai", "gpt-4o-mini")
+        
+        # Generate description
+        user_message = UserMessage(text=user_prompt)
+        response = await chat.send_message(user_message)
+        
+        return {"description": response.strip()}
+        
+    except ImportError:
+        raise HTTPException(status_code=500, detail="AI library not installed")
+    except Exception as e:
+        logging.error(f"AI generation error: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Açıklama oluşturulamadı: {str(e)}")
+
+
 app.include_router(api_router)
 
 app.add_middleware(
