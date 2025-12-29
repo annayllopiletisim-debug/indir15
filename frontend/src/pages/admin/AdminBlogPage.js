@@ -494,17 +494,21 @@ const AdminBlogPage = () => {
                   <label className="block text-sm font-medium mb-1">İlgili Ürün Kategorileri (CTA için)</label>
                   <p className="text-xs text-gray-500 mb-2">Blog yazısının sonunda gösterilecek kategori kuponları</p>
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-40 overflow-y-auto p-2 bg-void-subtle rounded-lg border border-white/10">
-                    {productCategories.map((cat) => (
-                      <label key={cat.id} className="flex items-center gap-2 cursor-pointer hover:bg-white/5 p-1 rounded">
-                        <input
-                          type="checkbox"
-                          checked={formData.related_category_ids.includes(cat.id)}
-                          onChange={() => toggleRelatedCategory(cat.id)}
-                          className="rounded border-white/20"
-                        />
-                        <span className="text-sm">{cat.name}</span>
-                      </label>
-                    ))}
+                    {productCategories.length === 0 ? (
+                      <p className="text-sm text-gray-500 col-span-full py-2">Henüz ürün kategorisi bulunmuyor</p>
+                    ) : (
+                      productCategories.map((cat) => (
+                        <label key={cat.id} className="flex items-center gap-2 cursor-pointer hover:bg-white/5 p-1 rounded">
+                          <input
+                            type="checkbox"
+                            checked={formData.related_category_ids.includes(cat.id)}
+                            onChange={() => toggleRelatedCategory(cat.id)}
+                            className="rounded border-white/20"
+                          />
+                          <span className="text-sm">{cat.name}</span>
+                        </label>
+                      ))
+                    )}
                   </div>
                 </div>
 
