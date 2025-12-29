@@ -2837,7 +2837,7 @@ async def get_blog_posts(
     category_slug: Optional[str] = None,
     tag: Optional[str] = None,
     featured: Optional[bool] = None,
-    published: Optional[bool] = True,
+    published: Optional[bool] = None,
     page: int = 1,
     limit: int = 12
 ):
@@ -2855,6 +2855,7 @@ async def get_blog_posts(
     if featured is not None:
         query['is_featured'] = featured
     
+    # Only filter by published status if explicitly provided
     if published is not None:
         query['is_published'] = published
     
