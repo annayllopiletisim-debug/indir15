@@ -303,6 +303,70 @@ class KeywordMappingCreate(BaseModel):
     priority: int = 0
     is_active: bool = True
 
+
+# ================== BLOG MODELS ==================
+
+class BlogCategory(BaseModel):
+    """Blog kategorisi modeli"""
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    name: str
+    slug: str
+    description: Optional[str] = None
+    icon: Optional[str] = None  # Emoji icon
+    order: int = 0
+    is_active: bool = True
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class BlogCategoryCreate(BaseModel):
+    name: str
+    slug: str
+    description: Optional[str] = None
+    icon: Optional[str] = None
+    order: int = 0
+    is_active: bool = True
+
+class BlogPost(BaseModel):
+    """Blog yazısı modeli"""
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    title: str
+    slug: str
+    excerpt: str  # Kısa özet (SEO için)
+    content: str  # HTML içerik
+    category_id: str
+    image_url: Optional[str] = None  # Kapak görseli
+    tags: List[str] = []
+    related_category_ids: List[str] = []  # İlgili ürün kategorileri (CTA için)
+    is_featured: bool = False
+    is_published: bool = False
+    view_count: int = 0
+    read_time: int = 5  # Dakika
+    meta_title: Optional[str] = None
+    meta_description: Optional[str] = None
+    published_at: Optional[datetime] = None
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    # Populated fields
+    category_name: Optional[str] = None
+    category_slug: Optional[str] = None
+
+class BlogPostCreate(BaseModel):
+    title: str
+    slug: str
+    excerpt: str
+    content: str
+    category_id: str
+    image_url: Optional[str] = None
+    tags: List[str] = []
+    related_category_ids: List[str] = []
+    is_featured: bool = False
+    is_published: bool = False
+    read_time: int = 5
+    meta_title: Optional[str] = None
+    meta_description: Optional[str] = None
+
+
 class AnalyticsDashboard(BaseModel):
     total_clicks: int
     brand_clicks: List[dict]
