@@ -314,11 +314,11 @@ const Footer = () => {
       </div>
 
       {/* ══════════════════════════════════════════════════════════════════
-          5. LEGAL LINKS + COPYRIGHT
+          5. LEGAL LINKS + COPYRIGHT + DISCLAIMER
       ══════════════════════════════════════════════════════════════════ */}
       <div className="border-t border-white/10">
         <div className="container mx-auto px-4 py-6">
-          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-4">
             <div className="text-center lg:text-left">
               <p className="text-gray-600 text-sm">
                 © 2025 İndirim Keşfet. Tüm hakları saklıdır.
@@ -334,6 +334,12 @@ const Footer = () => {
               <Link to="/kvkk" rel="nofollow" className="text-gray-500 hover:text-gray-300 transition-colors">KVKK</Link>
               <Link to="/site-haritasi" className="text-gray-500 hover:text-gray-300 transition-colors">Site Haritası</Link>
             </div>
+          </div>
+          {/* Disclaimer */}
+          <div className="pt-4 border-t border-white/5 text-center">
+            <p className="text-gray-600 text-xs leading-relaxed">
+              ℹ️ Kampanya bilgileri yalnızca bilgilendirme amaçlıdır. Fiyat, stok ve koşullar değişiklik gösterebilir. Güncel bilgi için ilgili mağazayı ziyaret ediniz.
+            </p>
           </div>
         </div>
       </div>
