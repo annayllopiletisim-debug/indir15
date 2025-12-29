@@ -1,29 +1,116 @@
-# Blog Feature Test Plan
+backend:
+  - task: "Blog Categories API"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "✅ GET /api/blog/categories working correctly. Returns 9 categories including expected 'Stil & Moda' and 'Ev & Yaşam' categories."
 
-## Test Scenarios
+  - task: "Blog Posts API"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "✅ GET /api/blog/posts working correctly with pagination. Returns proper structure with posts, total, page, limit, and total_pages fields."
 
-### Backend API Tests
-1. GET /api/blog/categories - Blog kategorilerini getir
-2. GET /api/blog/posts - Blog yazılarını getir (pagination ile)
-3. POST /api/blog/posts - Yeni blog yazısı oluştur (auth gerekli)
-4. PUT /api/blog/posts/:id - Blog yazısı güncelle (auth gerekli)
-5. DELETE /api/blog/posts/:id - Blog yazısı sil (auth gerekli)
-6. GET /api/blog/posts/:slug - Tekil blog yazısı getir
-7. GET /api/blog/posts/popular - Popüler yazıları getir
-8. GET /api/blog/tags - Etiketleri getir
-9. GET /api/blog/cta-data - CTA için kategori kupon sayılarını getir
+  - task: "Blog Posts Popular API"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "✅ GET /api/blog/posts/popular working correctly. Returns list of popular posts ordered by view_count."
 
-### Frontend Tests
-1. /blog - Blog ana sayfası yükleniyor mu?
-2. Kategori filtreleme çalışıyor mu?
-3. Admin /admin/blog sayfası yükleniyor mu?
-4. Yeni yazı formu açılıyor mu?
-5. Blog kategorileri dropdown'da görünüyor mu?
+  - task: "Blog Tags API"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "✅ GET /api/blog/tags working correctly. Returns array of unique tags from published blog posts."
 
-### Admin Credentials
-- Username: admin
-- Password: admin123
+  - task: "Blog CTA Data API"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "✅ GET /api/blog/cta-data working correctly. Returns 5 categories with deal counts for CTA boxes."
 
-## Testing Protocol
-- Test all API endpoints via curl
-- Test frontend pages via screenshot
+  - task: "Blog Post CRUD (Authenticated)"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "✅ Blog Post CRUD operations working correctly. Successfully tested POST /api/blog/posts (create), GET /api/blog/posts/{slug} (read), PUT /api/blog/posts/{id} (update), and DELETE /api/blog/posts/{id} (delete). All operations require authentication and work as expected."
+
+frontend:
+  - task: "Blog Page"
+    implemented: false
+    working: "NA"
+    file: "Not tested"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: false
+    status_history:
+      - working: "NA"
+        agent: "testing"
+        comment: "Frontend testing not performed as per system limitations. Main agent should verify /blog page loads with category tabs, 'Son Yazılar' section, and sidebar widgets."
+
+  - task: "Admin Blog Page"
+    implemented: false
+    working: "NA"
+    file: "Not tested"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: false
+    status_history:
+      - working: "NA"
+        agent: "testing"
+        comment: "Frontend testing not performed as per system limitations. Main agent should verify /admin/blog page loads with 'Blog Yönetimi' heading and 'Yeni Yazı' form functionality."
+
+metadata:
+  created_by: "testing_agent"
+  version: "1.0"
+  test_sequence: 1
+  run_ui: false
+
+test_plan:
+  current_focus:
+    - "Blog Categories API"
+    - "Blog Posts API"
+    - "Blog Post CRUD (Authenticated)"
+  stuck_tasks: []
+  test_all: false
+  test_priority: "high_first"
+
+agent_communication:
+  - agent: "testing"
+    message: "Blog feature backend testing completed successfully. All 6 backend API endpoints are working correctly: blog categories, blog posts with pagination, popular posts, tags, CTA data, and full CRUD operations with authentication. Frontend testing was not performed due to system limitations - main agent should verify frontend functionality."
