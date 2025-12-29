@@ -699,6 +699,9 @@ def main():
     # Test image_url field addition (NEW TEST)
     tester.test_image_url_field_addition()
     
+    # Test Blog feature (NEW TEST)
+    tester.test_blog_feature()
+    
     # Test admin endpoints if authenticated
     if tester.token:
         tester.test_admin_endpoints()
