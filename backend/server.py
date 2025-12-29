@@ -2774,6 +2774,356 @@ async def import_from_google_sheet(
     return results
 
 
+# ═══════════════════════════════════════════════════════════════
+# BLOG CATEGORY ENDPOINTS
+# ═══════════════════════════════════════════════════════════════
+
+@api_router.get("/blog/categories", response_model=List[BlogCategory])
+async def get_blog_categories():
+    """Get all blog categories"""
+    categories = await db.blog_categories.find({}, {'_id': 0}).sort('order', 1).to_list(100)
+    for cat in categories:
+        if isinstance(cat.get('created_at'), str):
+            cat['created_at'] = datetime.fromisoformat(cat['created_at'])
+    return categories
+
+@api_router.get("/blog/categories/{category_slug}", response_model=BlogCategory)
+async def get_blog_category(category_slug: str):
+    """Get a blog category by slug"""
+    category = await db.blog_categories.find_one({'slug': category_slug}, {'_id': 0})
+    if not category:
+        raise HTTPException(status_code=404, detail="Blog category not found")
+    if isinstance(category.get('created_at'), str):
+        category['created_at'] = datetime.fromisoformat(category['created_at'])
+    return BlogCategory(**category)
+
+@api_router.post("/blog/categories", response_model=BlogCategory)
+async def create_blog_category(category: BlogCategoryCreate, user: AdminUser = Depends(get_current_user)):
+    """Create a new blog category"""
+    cat_dict = category.model_dump()
+    cat_dict['id'] = str(uuid.uuid4())
+    cat_dict['created_at'] = datetime.now(timezone.utc)
+    await db.blog_categories.insert_one(cat_dict)
+    return cat_dict
+
+@api_router.put("/blog/categories/{category_id}", response_model=BlogCategory)
+async def update_blog_category(category_id: str, category: BlogCategoryCreate, user: AdminUser = Depends(get_current_user)):
+    """Update a blog category"""
+    update_dict = category.model_dump()
+    result = await db.blog_categories.update_one(
+        {'id': category_id},
+        {'$set': update_dict}
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Blog category not found")
+    updated = await db.blog_categories.find_one({'id': category_id}, {'_id': 0})
+    return BlogCategory(**updated)
+
+@api_router.delete("/blog/categories/{category_id}")
+async def delete_blog_category(category_id: str, user: AdminUser = Depends(get_current_user)):
+    """Delete a blog category"""
+    result = await db.blog_categories.delete_one({'id': category_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Blog category not found")
+    return {"message": "Blog category deleted"}
+
+
+# ═══════════════════════════════════════════════════════════════
+# BLOG POST ENDPOINTS
+# ═══════════════════════════════════════════════════════════════
+
+@api_router.get("/blog/posts")
+async def get_blog_posts(
+    category_slug: Optional[str] = None,
+    tag: Optional[str] = None,
+    featured: Optional[bool] = None,
+    published: Optional[bool] = True,
+    page: int = 1,
+    limit: int = 12
+):
+    """Get all blog posts with pagination"""
+    query = {}
+    
+    if category_slug:
+        category = await db.blog_categories.find_one({'slug': category_slug}, {'_id': 0})
+        if category:
+            query['category_id'] = category['id']
+    
+    if tag:
+        query['tags'] = tag
+    
+    if featured is not None:
+        query['is_featured'] = featured
+    
+    if published is not None:
+        query['is_published'] = published
+    
+    # Get total count
+    total = await db.blog_posts.count_documents(query)
+    
+    # Get posts with pagination
+    skip = (page - 1) * limit
+    posts = await db.blog_posts.find(query, {'_id': 0}).sort([
+        ('is_featured', -1),
+        ('published_at', -1),
+        ('created_at', -1)
+    ]).skip(skip).limit(limit).to_list(limit)
+    
+    # Populate category info
+    categories = {c['id']: c for c in await db.blog_categories.find({}, {'_id': 0}).to_list(100)}
+    
+    for post in posts:
+        if isinstance(post.get('created_at'), str):
+            post['created_at'] = datetime.fromisoformat(post['created_at'])
+        if isinstance(post.get('updated_at'), str):
+            post['updated_at'] = datetime.fromisoformat(post['updated_at'])
+        if isinstance(post.get('published_at'), str):
+            post['published_at'] = datetime.fromisoformat(post['published_at'])
+        
+        cat = categories.get(post.get('category_id'))
+        if cat:
+            post['category_name'] = cat['name']
+            post['category_slug'] = cat['slug']
+    
+    return {
+        "posts": posts,
+        "total": total,
+        "page": page,
+        "limit": limit,
+        "total_pages": (total + limit - 1) // limit
+    }
+
+@api_router.get("/blog/posts/featured")
+async def get_featured_blog_posts(limit: int = 5):
+    """Get featured blog posts"""
+    posts = await db.blog_posts.find(
+        {'is_published': True, 'is_featured': True}, 
+        {'_id': 0}
+    ).sort('published_at', -1).limit(limit).to_list(limit)
+    
+    categories = {c['id']: c for c in await db.blog_categories.find({}, {'_id': 0}).to_list(100)}
+    
+    for post in posts:
+        if isinstance(post.get('created_at'), str):
+            post['created_at'] = datetime.fromisoformat(post['created_at'])
+        if isinstance(post.get('published_at'), str):
+            post['published_at'] = datetime.fromisoformat(post['published_at'])
+        cat = categories.get(post.get('category_id'))
+        if cat:
+            post['category_name'] = cat['name']
+            post['category_slug'] = cat['slug']
+    
+    return posts
+
+@api_router.get("/blog/posts/popular")
+async def get_popular_blog_posts(limit: int = 5):
+    """Get most viewed blog posts"""
+    posts = await db.blog_posts.find(
+        {'is_published': True}, 
+        {'_id': 0}
+    ).sort('view_count', -1).limit(limit).to_list(limit)
+    
+    categories = {c['id']: c for c in await db.blog_categories.find({}, {'_id': 0}).to_list(100)}
+    
+    for post in posts:
+        if isinstance(post.get('created_at'), str):
+            post['created_at'] = datetime.fromisoformat(post['created_at'])
+        cat = categories.get(post.get('category_id'))
+        if cat:
+            post['category_name'] = cat['name']
+            post['category_slug'] = cat['slug']
+    
+    return posts
+
+@api_router.get("/blog/tags")
+async def get_blog_tags():
+    """Get all unique tags from published posts"""
+    posts = await db.blog_posts.find({'is_published': True}, {'tags': 1, '_id': 0}).to_list(1000)
+    all_tags = []
+    for post in posts:
+        all_tags.extend(post.get('tags', []))
+    
+    # Count tag occurrences
+    tag_counts = {}
+    for tag in all_tags:
+        tag_counts[tag] = tag_counts.get(tag, 0) + 1
+    
+    # Return sorted by count
+    sorted_tags = sorted(tag_counts.items(), key=lambda x: x[1], reverse=True)
+    return [{"name": tag, "count": count} for tag, count in sorted_tags[:30]]
+
+@api_router.get("/blog/posts/{post_slug}", response_model=BlogPost)
+async def get_blog_post(post_slug: str, increment_view: bool = True):
+    """Get a single blog post by slug"""
+    post = await db.blog_posts.find_one({'slug': post_slug}, {'_id': 0})
+    if not post:
+        raise HTTPException(status_code=404, detail="Blog post not found")
+    
+    # Increment view count
+    if increment_view and post.get('is_published'):
+        await db.blog_posts.update_one(
+            {'slug': post_slug},
+            {'$inc': {'view_count': 1}}
+        )
+        post['view_count'] = post.get('view_count', 0) + 1
+    
+    # Parse dates
+    if isinstance(post.get('created_at'), str):
+        post['created_at'] = datetime.fromisoformat(post['created_at'])
+    if isinstance(post.get('updated_at'), str):
+        post['updated_at'] = datetime.fromisoformat(post['updated_at'])
+    if isinstance(post.get('published_at'), str):
+        post['published_at'] = datetime.fromisoformat(post['published_at'])
+    
+    # Get category info
+    category = await db.blog_categories.find_one({'id': post.get('category_id')}, {'_id': 0})
+    if category:
+        post['category_name'] = category['name']
+        post['category_slug'] = category['slug']
+    
+    return BlogPost(**post)
+
+@api_router.get("/blog/posts/{post_slug}/related")
+async def get_related_blog_posts(post_slug: str, limit: int = 3):
+    """Get related blog posts based on category and tags"""
+    post = await db.blog_posts.find_one({'slug': post_slug}, {'_id': 0})
+    if not post:
+        raise HTTPException(status_code=404, detail="Blog post not found")
+    
+    # Find posts in same category or with same tags
+    query = {
+        'is_published': True,
+        'slug': {'$ne': post_slug},
+        '$or': [
+            {'category_id': post.get('category_id')},
+            {'tags': {'$in': post.get('tags', [])}}
+        ]
+    }
+    
+    related = await db.blog_posts.find(query, {'_id': 0}).sort('published_at', -1).limit(limit).to_list(limit)
+    
+    categories = {c['id']: c for c in await db.blog_categories.find({}, {'_id': 0}).to_list(100)}
+    
+    for p in related:
+        if isinstance(p.get('created_at'), str):
+            p['created_at'] = datetime.fromisoformat(p['created_at'])
+        if isinstance(p.get('published_at'), str):
+            p['published_at'] = datetime.fromisoformat(p['published_at'])
+        cat = categories.get(p.get('category_id'))
+        if cat:
+            p['category_name'] = cat['name']
+            p['category_slug'] = cat['slug']
+    
+    return related
+
+@api_router.post("/blog/posts", response_model=BlogPost)
+async def create_blog_post(post: BlogPostCreate, user: AdminUser = Depends(get_current_user)):
+    """Create a new blog post"""
+    post_dict = post.model_dump()
+    post_dict['id'] = str(uuid.uuid4())
+    now = datetime.now(timezone.utc)
+    post_dict['created_at'] = now
+    post_dict['updated_at'] = now
+    post_dict['view_count'] = 0
+    
+    if post_dict.get('is_published'):
+        post_dict['published_at'] = now
+    
+    await db.blog_posts.insert_one(post_dict)
+    
+    # Get category info
+    category = await db.blog_categories.find_one({'id': post_dict.get('category_id')}, {'_id': 0})
+    if category:
+        post_dict['category_name'] = category['name']
+        post_dict['category_slug'] = category['slug']
+    
+    return post_dict
+
+@api_router.put("/blog/posts/{post_id}", response_model=BlogPost)
+async def update_blog_post(post_id: str, post: BlogPostCreate, user: AdminUser = Depends(get_current_user)):
+    """Update a blog post"""
+    existing = await db.blog_posts.find_one({'id': post_id}, {'_id': 0})
+    if not existing:
+        raise HTTPException(status_code=404, detail="Blog post not found")
+    
+    update_dict = post.model_dump()
+    update_dict['updated_at'] = datetime.now(timezone.utc)
+    
+    # Set published_at if publishing for first time
+    if update_dict.get('is_published') and not existing.get('published_at'):
+        update_dict['published_at'] = datetime.now(timezone.utc)
+    
+    result = await db.blog_posts.update_one(
+        {'id': post_id},
+        {'$set': update_dict}
+    )
+    
+    updated = await db.blog_posts.find_one({'id': post_id}, {'_id': 0})
+    
+    # Parse dates
+    if isinstance(updated.get('created_at'), str):
+        updated['created_at'] = datetime.fromisoformat(updated['created_at'])
+    if isinstance(updated.get('updated_at'), str):
+        updated['updated_at'] = datetime.fromisoformat(updated['updated_at'])
+    if isinstance(updated.get('published_at'), str):
+        updated['published_at'] = datetime.fromisoformat(updated['published_at'])
+    
+    # Get category info
+    category = await db.blog_categories.find_one({'id': updated.get('category_id')}, {'_id': 0})
+    if category:
+        updated['category_name'] = category['name']
+        updated['category_slug'] = category['slug']
+    
+    return BlogPost(**updated)
+
+@api_router.delete("/blog/posts/{post_id}")
+async def delete_blog_post(post_id: str, user: AdminUser = Depends(get_current_user)):
+    """Delete a blog post"""
+    result = await db.blog_posts.delete_one({'id': post_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Blog post not found")
+    return {"message": "Blog post deleted"}
+
+
+# ═══════════════════════════════════════════════════════════════
+# BLOG CTA DATA - Get category counts for CTA boxes
+# ═══════════════════════════════════════════════════════════════
+
+@api_router.get("/blog/cta-data")
+async def get_blog_cta_data(category_ids: Optional[str] = None):
+    """Get deal counts for categories (for blog CTA boxes)"""
+    query = {}
+    if category_ids:
+        ids = category_ids.split(',')
+        query['id'] = {'$in': ids}
+    
+    categories = await db.categories.find(query, {'_id': 0}).to_list(100)
+    
+    result = []
+    for cat in categories:
+        # Count active deals in this category
+        brands_in_cat = await db.brands.find({'category_id': cat['id']}, {'id': 1, '_id': 0}).to_list(1000)
+        brand_ids = [b['id'] for b in brands_in_cat]
+        
+        coupon_count = await db.coupons.count_documents({
+            'brand_id': {'$in': brand_ids},
+            'is_active': True
+        })
+        discount_count = await db.discounts.count_documents({
+            'brand_id': {'$in': brand_ids}
+        })
+        
+        result.append({
+            'id': cat['id'],
+            'name': cat['name'],
+            'slug': cat['slug'],
+            'icon_url': cat.get('icon_url'),
+            'deal_count': coupon_count + discount_count
+        })
+    
+    return result
+
+
 # ============ AI Description Generation ============
 
 class GenerateDescriptionRequest(BaseModel):
