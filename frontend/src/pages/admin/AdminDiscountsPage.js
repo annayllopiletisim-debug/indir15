@@ -215,7 +215,27 @@ const AdminDiscountsPage = () => {
                     placeholder="Kartlarda görünecek kısa açıklama" />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-1">Uzun Açıklama (Detay Sayfası)</label>
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="block text-sm font-medium">Uzun Açıklama (Detay Sayfası)</label>
+                    <button
+                      type="button"
+                      onClick={generateAIDescription}
+                      disabled={generatingAI || !formData.brand_id || !formData.title}
+                      className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                    >
+                      {generatingAI ? (
+                        <>
+                          <Loader2 className="w-3 h-3 animate-spin" />
+                          Oluşturuluyor...
+                        </>
+                      ) : (
+                        <>
+                          <Sparkles className="w-3 h-3" />
+                          ✨ AI ile Oluştur
+                        </>
+                      )}
+                    </button>
+                  </div>
                   <textarea value={formData.long_description} onChange={(e) => setFormData({...formData, long_description: e.target.value})}
                     className="w-full p-2 bg-void-subtle rounded-lg border border-white/10 min-h-[120px]" 
                     placeholder="Detay sayfasında görünecek uzun açıklama (opsiyonel)" />
