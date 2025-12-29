@@ -17,6 +17,8 @@ import ContactPage from './pages/ContactPage';
 import SearchResultsPage from './pages/SearchResultsPage';
 import ProgrammaticSeoPage from './pages/ProgrammaticSeoPage';
 import DealDetailPage from './pages/DealDetailPage';
+import BlogPage from './pages/BlogPage';
+import BlogDetailPage from './pages/BlogDetailPage';
 import AdminLoginPage from './pages/admin/AdminLoginPage';
 import AdminDashboardPage from './pages/admin/AdminDashboardPage';
 import AdminBrandsPage from './pages/admin/AdminBrandsPage';
@@ -28,11 +30,12 @@ import AdminCategoriesPage from './pages/admin/AdminCategoriesPage';
 import AdminSettingsPage from './pages/admin/AdminSettingsPage';
 import AdminImportPage from './pages/admin/AdminImportPage';
 import AdminGiveawaysPage from './pages/admin/AdminGiveawaysPage';
+import AdminBlogPage from './pages/admin/AdminBlogPage';
 import AdminLayout from './components/AdminLayout';
 import { isAuthenticated } from './utils/auth';
 import '@/App.css';
 
-// Force webpack rebuild - v6
+// Force webpack rebuild - v7
 
 const ProtectedRoute = ({ children }) => {
   return isAuthenticated() ? children : <Navigate to="/admin/login" />;
