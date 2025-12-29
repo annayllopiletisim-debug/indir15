@@ -366,7 +366,7 @@ class CouponAPITester:
         if success and cta_data:
             if isinstance(cta_data, list) and len(cta_data) > 0:
                 first_item = cta_data[0]
-                expected_fields = ['category_id', 'category_name', 'deal_count']
+                expected_fields = ['id', 'name', 'deal_count']
                 has_fields = all(field in first_item for field in expected_fields)
                 if has_fields:
                     print(f"   ✅ Blog CTA data structure correct: {len(cta_data)} categories with deal counts")
