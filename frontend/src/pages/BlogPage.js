@@ -41,6 +41,7 @@ const BlogPage = () => {
       const postsParams = new URLSearchParams();
       postsParams.append('page', currentPage);
       postsParams.append('limit', 9);
+      postsParams.append('published', 'true');
       if (currentCategory !== 'all') {
         postsParams.append('category_slug', currentCategory);
       }
