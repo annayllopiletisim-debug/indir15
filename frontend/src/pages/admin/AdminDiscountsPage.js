@@ -109,6 +109,34 @@ const AdminDiscountsPage = () => {
   const getBrandName = (brandId) => brands.find(b => b.id === brandId)?.name || 'Bilinmiyor';
   const isExpired = (date) => date && new Date(date) < new Date();
 
+  // AI Description Generator
+  const generateAIDescription = async () => {
+    if (!formData.brand_id || !formData.title) {
+      alert('Lütfen önce marka ve başlık alanlarını doldurun');
+      return;
+    }
+
+    setGeneratingAI(true);
+    try {
+      const brandName = getBrandName(formData.brand_id);
+      const response = await api.post('/generate-description', {
+        brand_name: brandName,
+        title: formData.title,
+        discount_text: formData.discount_text || null,
+        expiry_date: formData.expiry_date ? new Date(formData.expiry_date).toLocaleDateString('tr-TR') : null
+      });
+
+      if (response.data.description) {
+        setFormData(prev => ({ ...prev, long_description: response.data.description }));
+      }
+    } catch (error) {
+      console.error('AI generation failed:', error);
+      alert('Açıklama oluşturulamadı. Lütfen tekrar deneyin.');
+    } finally {
+      setGeneratingAI(false);
+    }
+  };
+
   const filteredDiscounts = discounts.filter(d => {
     const matchesSearch = d.title.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesStatus = statusFilter === 'all' || 
