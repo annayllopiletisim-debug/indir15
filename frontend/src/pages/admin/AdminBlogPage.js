@@ -38,7 +38,7 @@ const AdminBlogPage = () => {
   const fetchData = async () => {
     try {
       const [postsRes, categoriesRes, productCategoriesRes] = await Promise.all([
-        api.get('/blog/posts?published='),
+        api.get('/blog/posts'),
         api.get('/blog/categories'),
         api.get('/categories')
       ]);
