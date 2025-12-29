@@ -1,14 +1,14 @@
 import React from 'react';
 import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
-import { LayoutDashboard, Tag, Package, Percent, Image, FolderTree, LogOut, Search, Settings, FileSpreadsheet, Gift } from 'lucide-react';
+import { LayoutDashboard, Tag, Package, Percent, Image, FolderTree, LogOut, Search, Settings, FileSpreadsheet, Gift, FileText } from 'lucide-react';
 import { removeAuthToken, removeAuthUser } from '../utils/auth';
 
 const AdminLayout = () => {
   const navigate = useNavigate();
   const location = useLocation();
   
-  // Debug: v2
-  console.log('AdminLayout loaded - version 2');
+  // Debug: v3
+  console.log('AdminLayout loaded - version 3');
 
   // Force dark theme for admin panel
   React.useEffect(() => {
@@ -31,6 +31,7 @@ const AdminLayout = () => {
     { path: '/admin/coupons', label: 'Kuponlar', icon: Tag },
     { path: '/admin/discounts', label: 'İndirimler', icon: Percent },
     { path: '/admin/giveaways', label: 'Çekilişler', icon: Gift },
+    { path: '/admin/blog', label: 'Blog', icon: FileText },
     { path: '/admin/import', label: 'Sheet İçe Aktar', icon: FileSpreadsheet },
     { path: '/admin/keywords', label: 'Anahtar Kelimeler', icon: Search },
     { path: '/admin/hero-slides', label: 'Hero Slaytlar', icon: Image },
