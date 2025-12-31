@@ -94,6 +94,7 @@ class Brand(BaseModel):
     slug: str
     category_id: str
     logo_url: Optional[str] = None
+    default_deal_image: Optional[str] = None  # İndirim kartları için varsayılan görsel
     description: Optional[str] = None
     meta_title: Optional[str] = None
     meta_description: Optional[str] = None
