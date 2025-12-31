@@ -36,6 +36,7 @@ const DiscountCard = ({ discount, brand, compact = false }) => {
   const brandName = brand?.name || discount.brand_name;
   const brandSlug = brand?.slug || discount.brand_slug;
   const brandLogoUrl = brand?.logo_url || discount.brand_logo_url;
+  const brandDefaultDealImage = brand?.default_deal_image || discount.brand_default_deal_image;
 
   // Generate detail page URL
   const discountSlug = generateSlug(discount.title);
@@ -66,6 +67,7 @@ const DiscountCard = ({ discount, brand, compact = false }) => {
       brandName={brandName}
       brandSlug={brandSlug}
       brandLogoUrl={brandLogoUrl}
+      brandDefaultDealImage={brandDefaultDealImage}
       detailUrl={detailUrl}
       actions={actions}
       testId={`discount-card-${discount.id}`}
