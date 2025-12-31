@@ -123,6 +123,7 @@ const CouponCard = ({ coupon, brand, compact = false }) => {
         brandName={brandName}
         brandSlug={brandSlug}
         brandLogoUrl={brandLogoUrl}
+        brandDefaultDealImage={brandDefaultDealImage}
         detailUrl={detailUrl}
         actions={actions}
         testId={`coupon-card-${coupon.id}`}
