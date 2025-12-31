@@ -1469,6 +1469,7 @@ async def get_popular_today():
                 coupon['brand_name'] = brand['name']
                 coupon['brand_slug'] = brand['slug']
                 coupon['brand_logo_url'] = brand.get('logo_url')
+                coupon['brand_default_deal_image'] = brand.get('default_deal_image')
             coupon['click_count'] = item['clicks']
             if isinstance(coupon.get('expiry_date'), str):
                 coupon['expiry_date'] = datetime.fromisoformat(coupon['expiry_date'])
@@ -1483,6 +1484,7 @@ async def get_popular_today():
                 discount['brand_name'] = brand['name']
                 discount['brand_slug'] = brand['slug']
                 discount['brand_logo_url'] = brand.get('logo_url')
+                discount['brand_default_deal_image'] = brand.get('default_deal_image')
             discount['click_count'] = item['clicks']
             if isinstance(discount.get('expiry_date'), str):
                 discount['expiry_date'] = datetime.fromisoformat(discount['expiry_date'])
@@ -1498,6 +1500,7 @@ async def get_popular_today():
                 coupon['brand_name'] = brand['name']
                 coupon['brand_slug'] = brand['slug']
                 coupon['brand_logo_url'] = brand.get('logo_url')
+                coupon['brand_default_deal_image'] = brand.get('default_deal_image')
             if isinstance(coupon.get('expiry_date'), str):
                 coupon['expiry_date'] = datetime.fromisoformat(coupon['expiry_date'])
             popular_coupons.append(coupon)
@@ -1510,6 +1513,7 @@ async def get_popular_today():
                 discount['brand_name'] = brand['name']
                 discount['brand_slug'] = brand['slug']
                 discount['brand_logo_url'] = brand.get('logo_url')
+                discount['brand_default_deal_image'] = brand.get('default_deal_image')
             if isinstance(discount.get('expiry_date'), str):
                 discount['expiry_date'] = datetime.fromisoformat(discount['expiry_date'])
             popular_discounts.append(discount)
