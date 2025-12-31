@@ -58,6 +58,7 @@ const BaseCard = ({
   brandName,
   brandSlug,
   brandLogoUrl,
+  brandDefaultDealImage,
   detailUrl,
   children,
   actions,
@@ -70,6 +71,9 @@ const BaseCard = ({
   const isDark = theme === 'dark';
   const timeLeft = getTimeRemaining(expiryDate);
   const isExpired = timeLeft?.expired || !isActive;
+
+  // Determine which image to show: deal image > brand default deal image > null
+  const displayImage = imageUrl || brandDefaultDealImage;
 
   // Get time color - dark mode: always orange, light mode: color-coded based on days
   const getTimeColor = () => {
