@@ -405,6 +405,96 @@ const AdminBrandsPage = () => {
                 )}
               </div>
 
+              {/* Default Deal Image */}
+              <div>
+                <label className="block text-sm font-medium mb-2">
+                  Varsayılan İndirim Görseli
+                  <span className="text-xs text-gray-400 ml-2">(İndirime görsel eklenmezse bu gösterilir)</span>
+                </label>
+                
+                <div className="flex gap-2 mb-3">
+                  <button
+                    type="button"
+                    onClick={() => setDealImageInputMode('upload')}
+                    className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm transition-colors ${
+                      dealImageInputMode === 'upload' 
+                        ? 'bg-neon-purple text-white' 
+                        : 'bg-void-subtle text-gray-400 hover:text-white'
+                    }`}
+                  >
+                    <Upload className="w-4 h-4" />
+                    Yükle
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setDealImageInputMode('url')}
+                    className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm transition-colors ${
+                      dealImageInputMode === 'url' 
+                        ? 'bg-neon-purple text-white' 
+                        : 'bg-void-subtle text-gray-400 hover:text-white'
+                    }`}
+                  >
+                    <LinkIcon className="w-4 h-4" />
+                    URL
+                  </button>
+                </div>
+
+                {dealImageInputMode === 'upload' ? (
+                  <div className="flex items-center gap-3">
+                    <label className="flex-1 cursor-pointer">
+                      <input
+                        type="file"
+                        accept="image/jpeg,image/png,image/webp"
+                        onChange={handleDealImageUpload}
+                        className="hidden"
+                      />
+                      <div className="px-4 py-3 bg-void-subtle rounded-lg border-2 border-dashed border-white/20 hover:border-neon-blue/50 text-center transition-colors">
+                        {uploadingDealImage ? 'Yükleniyor...' : 'Görsel yükleyin'}
+                      </div>
+                    </label>
+                    {formData.default_deal_image && (
+                      <img 
+                        src={formData.default_deal_image} 
+                        alt="İndirim görseli" 
+                        className="w-20 h-20 object-cover rounded-lg"
+                      />
+                    )}
+                  </div>
+                ) : (
+                  <div className="flex gap-2">
+                    <input
+                      type="url"
+                      value={formData.default_deal_image || ''}
+                      onChange={(e) => setFormData({...formData, default_deal_image: e.target.value})}
+                      className="flex-1 px-4 py-2 bg-void-subtle rounded-lg focus:outline-none focus:ring-2 focus:ring-neon-blue"
+                      placeholder="https://..."
+                    />
+                    {formData.default_deal_image && (
+                      <img 
+                        src={formData.default_deal_image} 
+                        alt="İndirim görseli" 
+                        className="w-10 h-10 object-cover rounded-lg"
+                      />
+                    )}
+                  </div>
+                )}
+                
+                {formData.default_deal_image && (
+                  <div className="flex items-center justify-between mt-2">
+                    <p className="text-xs text-gray-400">
+                      {formData.default_deal_image.startsWith('/uploads/') ? '✓ Sunucuda kayıtlı' : '⚠ Harici URL'}
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => setFormData({...formData, default_deal_image: ''})}
+                      className="text-xs text-red-400 hover:text-red-300"
+                    >
+                      Kaldır
+                    </button>
+                  </div>
+                )}
+              </div>
+
               <div>
                 <label className="block text-sm font-medium mb-2">Açıklama</label>
                 <textarea
