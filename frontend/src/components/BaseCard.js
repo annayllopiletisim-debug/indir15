@@ -116,8 +116,8 @@ const BaseCard = ({
         <div className="bg-white dark:bg-gray-800 rounded-xl p-3 shadow-sm hover:shadow-md transition-shadow duration-200 h-full flex gap-3">
           {/* Image */}
           <div className="flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden bg-gradient-to-br from-violet-100 to-violet-200 dark:from-violet-900/30 dark:to-violet-800/30 flex items-center justify-center">
-            {imageUrl ? (
-              <img src={imageUrl} alt={title} className="w-full h-full object-cover" loading="lazy" />
+            {displayImage ? (
+              <img src={getLogoUrl(displayImage)} alt={title} className="w-full h-full object-cover" loading="lazy" />
             ) : (
               <ImageIcon className="w-6 h-6 text-violet-400 opacity-50" />
             )}
