@@ -1548,6 +1548,7 @@ async def get_featured_deals():
             coupon['brand_name'] = brand['name']
             coupon['brand_slug'] = brand['slug']
             coupon['brand_logo_url'] = brand.get('logo_url')
+            coupon['brand_default_deal_image'] = brand.get('default_deal_image')
     
     for discount in featured_discounts:
         brand = await db.brands.find_one({'id': discount.get('brand_id')}, {'_id': 0})
@@ -1555,6 +1556,7 @@ async def get_featured_deals():
             discount['brand_name'] = brand['name']
             discount['brand_slug'] = brand['slug']
             discount['brand_logo_url'] = brand.get('logo_url')
+            discount['brand_default_deal_image'] = brand.get('default_deal_image')
     
     # If no featured items, fall back to popular/recent
     if not featured_coupons and not featured_discounts:
@@ -1570,6 +1572,7 @@ async def get_featured_deals():
                 coupon['brand_name'] = brand['name']
                 coupon['brand_slug'] = brand['slug']
                 coupon['brand_logo_url'] = brand.get('logo_url')
+                coupon['brand_default_deal_image'] = brand.get('default_deal_image')
         
         # Get recent discounts
         featured_discounts = await db.discounts.find(
@@ -1583,6 +1586,7 @@ async def get_featured_deals():
                 discount['brand_name'] = brand['name']
                 discount['brand_slug'] = brand['slug']
                 discount['brand_logo_url'] = brand.get('logo_url')
+                discount['brand_default_deal_image'] = brand.get('default_deal_image')
     
     return {
         'coupons': featured_coupons,
