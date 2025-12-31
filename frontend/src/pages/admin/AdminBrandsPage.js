@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import api from '../../utils/api';
-import { Plus, Edit, Trash2, X, Upload, Link as LinkIcon, Home, GripVertical } from 'lucide-react';
+import { Plus, Edit, Trash2, X, Upload, Link as LinkIcon, Home, GripVertical, Image } from 'lucide-react';
 import BrandLogo from '../../components/BrandLogo';
 import { getAuthToken } from '../../utils/auth';
 import axios from 'axios';
@@ -16,12 +16,15 @@ const AdminBrandsPage = () => {
   const [editingId, setEditingId] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [uploading, setUploading] = useState(false);
+  const [uploadingDealImage, setUploadingDealImage] = useState(false);
   const [logoInputMode, setLogoInputMode] = useState('upload'); // 'upload' or 'url'
+  const [dealImageInputMode, setDealImageInputMode] = useState('upload');
   const [formData, setFormData] = useState({
     name: '',
     slug: '',
     category_id: '',
     logo_url: '',
+    default_deal_image: '',
     description: '',
     meta_title: '',
     meta_description: '',
