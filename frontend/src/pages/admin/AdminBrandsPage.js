@@ -208,6 +208,7 @@ const AdminBrandsPage = () => {
       slug: '',
       category_id: '',
       logo_url: '',
+      default_deal_image: '',
       description: '',
       meta_title: '',
       meta_description: '',
@@ -219,6 +220,7 @@ const AdminBrandsPage = () => {
     });
     setEditingId(null);
     setShowForm(false);
+    setDealImageInputMode('upload');
   };
 
   if (loading) {
