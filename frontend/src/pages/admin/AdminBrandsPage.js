@@ -132,6 +132,41 @@ const AdminBrandsPage = () => {
     }
   };
 
+  const handleDealImageUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    if (file.size > 2 * 1024 * 1024) {
+      alert('Görsel dosyası en fazla 2MB olabilir');
+      return;
+    }
+
+    setUploadingDealImage(true);
+    const formDataUpload = new FormData();
+    formDataUpload.append('file', file);
+
+    try {
+      const res = await axios.post(`${API}/upload/logo`, formDataUpload, {
+        headers: {
+          Authorization: `Bearer ${getAuthToken()}`,
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+      
+      if (res.data && res.data.url) {
+        setFormData(prev => ({ ...prev, default_deal_image: res.data.url }));
+        alert('✓ İndirim görseli başarıyla yüklendi!');
+      } else {
+        throw new Error('Görsel URL alınamadı');
+      }
+    } catch (error) {
+      console.error('Deal image upload error:', error);
+      alert('Hata: ' + (error.response?.data?.detail || 'Görsel yüklenemedi'));
+    } finally {
+      setUploadingDealImage(false);
+    }
+  };
+
   const handleImportFromUrl = async () => {
     const url = formData.logo_url;
     if (!url || url.startsWith('/uploads/')) return;
