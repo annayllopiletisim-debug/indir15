@@ -63,6 +63,7 @@ const AdminBrandsPage = () => {
         slug: formData.slug,
         category_id: formData.category_id,
         logo_url: formData.logo_url || null,
+        default_deal_image: formData.default_deal_image || null,
         description: formData.description || null,
         meta_title: formData.meta_title || null,
         meta_description: formData.meta_description || null,
@@ -92,6 +93,7 @@ const AdminBrandsPage = () => {
     setFormData(brand);
     setEditingId(brand.id);
     setLogoInputMode(brand.logo_url?.startsWith('/uploads/') ? 'upload' : 'url');
+    setDealImageInputMode(brand.default_deal_image?.startsWith('/uploads/') ? 'upload' : 'url');
     setShowForm(true);
   };
 
