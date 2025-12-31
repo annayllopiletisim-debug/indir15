@@ -35,6 +35,7 @@ const GiveawayCard = ({ giveaway, brand, compact = false }) => {
   const brandName = brand?.name || giveaway.brand_name;
   const brandSlug = brand?.slug || giveaway.brand_slug;
   const brandLogoUrl = brand?.logo_url || giveaway.brand_logo_url;
+  const brandDefaultDealImage = brand?.default_deal_image || giveaway.brand_default_deal_image;
 
   // Generate detail page URL
   const giveawaySlug = generateSlug(giveaway.title);
@@ -65,6 +66,7 @@ const GiveawayCard = ({ giveaway, brand, compact = false }) => {
       brandName={brandName}
       brandSlug={brandSlug}
       brandLogoUrl={brandLogoUrl}
+      brandDefaultDealImage={brandDefaultDealImage}
       detailUrl={detailUrl}
       actions={actions}
       compact={compact}
