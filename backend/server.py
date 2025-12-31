@@ -121,6 +121,7 @@ class BrandCreate(BaseModel):
     slug: str
     category_id: str
     logo_url: Optional[str] = None
+    default_deal_image: Optional[str] = None
     description: Optional[str] = None
     meta_title: Optional[str] = None
     meta_description: Optional[str] = None
