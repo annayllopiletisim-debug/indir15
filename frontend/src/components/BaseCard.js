@@ -167,9 +167,9 @@ const BaseCard = ({
               {/* Left: Large Square Image - with padding */}
               <div className="flex-shrink-0">
                 <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-xl overflow-hidden bg-gradient-to-br from-violet-100 to-violet-200 dark:from-violet-900/30 dark:to-violet-800/30 flex items-center justify-center">
-                  {imageUrl ? (
+                  {displayImage ? (
                     <img 
-                      src={imageUrl} 
+                      src={getLogoUrl(displayImage)} 
                       alt={title} 
                       className="w-full h-full object-cover" 
                       loading="lazy"
