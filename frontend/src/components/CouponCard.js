@@ -28,6 +28,7 @@ const CouponCard = ({ coupon, brand, compact = false }) => {
   const brandName = brand?.name || coupon.brand_name;
   const brandSlug = brand?.slug || coupon.brand_slug;
   const brandLogoUrl = brand?.logo_url || coupon.brand_logo_url;
+  const brandDefaultDealImage = brand?.default_deal_image || coupon.brand_default_deal_image;
 
   // Generate detail page URL
   const couponSlug = generateSlug(coupon.title);
