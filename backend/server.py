@@ -1082,11 +1082,24 @@ async def delete_coupon(coupon_id: str, user: AdminUser = Depends(get_current_us
 async def get_discounts(brand_id: Optional[str] = None):
     query = {'brand_id': brand_id} if brand_id else {}
     discounts = await db.discounts.find(query, {'_id': 0}).to_list(1000)
+    
+    # Pre-fetch all brands for efficiency
+    brand_ids = list(set(d.get('brand_id') for d in discounts if d.get('brand_id')))
+    brands_data = await db.brands.find({'id': {'$in': brand_ids}}, {'_id': 0}).to_list(1000)
+    brands_map = {b['id']: b for b in brands_data}
+    
     for discount in discounts:
         if isinstance(discount.get('created_at'), str):
             discount['created_at'] = datetime.fromisoformat(discount['created_at'])
         if isinstance(discount.get('expiry_date'), str):
             discount['expiry_date'] = datetime.fromisoformat(discount['expiry_date'])
+        # Add brand info
+        brand = brands_map.get(discount.get('brand_id'))
+        if brand:
+            discount['brand_name'] = brand.get('name')
+            discount['brand_slug'] = brand.get('slug')
+            discount['brand_logo_url'] = brand.get('logo_url')
+            discount['brand_default_deal_image'] = brand.get('default_deal_image')
     return discounts
 
 @api_router.post("/discounts", response_model=Discount)
