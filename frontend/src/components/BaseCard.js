@@ -230,20 +230,27 @@ const BaseCard = ({
         {/* Divider */}
         <div className="border-t border-border" />
 
-        {/* Bottom Row: Time (left, only if < 3 days) + CTA Button (right) */}
+        {/* Bottom Row: Expiry Date (left) + CTA Button (right) */}
         <div className="px-4 py-3 flex items-center justify-between">
-          {/* Time Remaining - only show if less than 3 days */}
-          {timeLeft ? (
-            <span 
-              className="inline-flex items-center gap-1.5 text-sm font-semibold"
-              style={{ color: getTimeColor() }}
-            >
-              <Clock className="w-4 h-4" />
-              {timeLeft.text}
-            </span>
-          ) : (
-            <span></span>
-          )}
+          {/* Expiry Date - show formatted date or urgent countdown */}
+          <div className="flex-shrink-0">
+            {timeLeft ? (
+              // Urgent countdown (less than 3 days)
+              <span 
+                className="inline-flex items-center gap-1.5 text-sm font-semibold"
+                style={{ color: getTimeColor() }}
+              >
+                <Clock className="w-4 h-4" />
+                {timeLeft.text}
+              </span>
+            ) : expiryDate ? (
+              // Normal date display
+              <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground">
+                <Calendar className="w-3.5 h-3.5" />
+                {formatExpiryDate(expiryDate)}
+              </span>
+            ) : null}
+          </div>
 
           {/* Actions / CTA Button */}
           {actions}
