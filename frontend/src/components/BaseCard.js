@@ -46,6 +46,17 @@ const getTimeRemaining = (expiryDate) => {
   return { expired: false, text, days };
 };
 
+// Format expiry date for display
+const formatExpiryDate = (expiryDate) => {
+  if (!expiryDate) return null;
+  const date = new Date(expiryDate);
+  return date.toLocaleDateString('tr-TR', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric'
+  });
+};
+
 const BaseCard = ({
   type = 'coupon',
   title,
