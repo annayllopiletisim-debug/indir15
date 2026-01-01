@@ -13,7 +13,9 @@ import {
   ChevronRight,
   Store,
   Gift,
-  X
+  X,
+  Share2,
+  Link2
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import BrandLogo from '../components/BrandLogo';
