@@ -244,10 +244,10 @@ const BaseCard = ({
                 {timeLeft.text}
               </span>
             ) : expiryDate ? (
-              // Normal date display
+              // Normal date display with label
               <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground">
                 <Calendar className="w-3.5 h-3.5" />
-                {formatExpiryDate(expiryDate)}
+                <span>Bitiş Tarihi: {formatExpiryDate(expiryDate)}</span>
               </span>
             ) : null}
           </div>
