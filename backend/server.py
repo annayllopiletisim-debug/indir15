@@ -672,11 +672,24 @@ async def delete_brand(brand_id: str, user: AdminUser = Depends(get_current_user
 async def get_coupons(brand_id: Optional[str] = None):
     query = {'brand_id': brand_id} if brand_id else {}
     coupons = await db.coupons.find(query, {'_id': 0}).to_list(1000)
+    
+    # Pre-fetch all brands for efficiency
+    brand_ids = list(set(c.get('brand_id') for c in coupons if c.get('brand_id')))
+    brands_data = await db.brands.find({'id': {'$in': brand_ids}}, {'_id': 0}).to_list(1000)
+    brands_map = {b['id']: b for b in brands_data}
+    
     for coupon in coupons:
         if isinstance(coupon.get('created_at'), str):
             coupon['created_at'] = datetime.fromisoformat(coupon['created_at'])
         if isinstance(coupon.get('expiry_date'), str):
             coupon['expiry_date'] = datetime.fromisoformat(coupon['expiry_date'])
+        # Add brand info
+        brand = brands_map.get(coupon.get('brand_id'))
+        if brand:
+            coupon['brand_name'] = brand.get('name')
+            coupon['brand_slug'] = brand.get('slug')
+            coupon['brand_logo_url'] = brand.get('logo_url')
+            coupon['brand_default_deal_image'] = brand.get('default_deal_image')
     return coupons
 
 
