@@ -48,6 +48,7 @@ const DealDetailPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [copied, setCopied] = useState(false);
+  const [linkCopied, setLinkCopied] = useState(false);
   const [showModal, setShowModal] = useState(false);
 
   // Scroll to top on mount
