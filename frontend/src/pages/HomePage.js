@@ -290,7 +290,8 @@ const HomePage = () => {
                 const brand = brandMap[item.brand_id] || { 
                   name: item.brand_name, 
                   slug: item.brand_slug,
-                  logo_url: item.brand_logo_url
+                  logo_url: item.brand_logo_url,
+                  default_deal_image: item.brand_default_deal_image
                 };
                 
                 return item.type === 'coupon' ? (
