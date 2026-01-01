@@ -223,6 +223,11 @@ class Giveaway(BaseModel):
     destination_url: str
     image_url: Optional[str] = None  # Kampanya görseli
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    # Brand info (populated on read)
+    brand_name: Optional[str] = None
+    brand_slug: Optional[str] = None
+    brand_logo_url: Optional[str] = None
+    brand_default_deal_image: Optional[str] = None
 
 
 class GiveawayCreate(BaseModel):
