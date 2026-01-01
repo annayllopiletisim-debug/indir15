@@ -52,7 +52,7 @@ const formatExpiryDate = (expiryDate) => {
   const date = new Date(expiryDate);
   return date.toLocaleDateString('tr-TR', {
     day: 'numeric',
-    month: 'short',
+    month: 'long',
     year: 'numeric'
   });
 };
