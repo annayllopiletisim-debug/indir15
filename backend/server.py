@@ -730,12 +730,19 @@ async def get_coupon_detail(coupon_id: str):
     """
     Get single coupon with full details for detail page
     Includes: brand info, SEO meta, related deals, expired status
+    Supports both full UUID and short ID (first 8 chars)
     """
     base_url = os.environ.get('SITE_URL', 'https://indirimkestet.com')
     now = datetime.now(timezone.utc)
     
-    # Get coupon
+    # Get coupon - support both full UUID and short ID
     coupon = await db.coupons.find_one({'id': coupon_id}, {'_id': 0})
+    if not coupon:
+        # Try finding by short ID (first 8 characters match)
+        coupon = await db.coupons.find_one(
+            {'id': {'$regex': f'^{coupon_id}'}}, 
+            {'_id': 0}
+        )
     if not coupon:
         raise HTTPException(status_code=404, detail="Kupon bulunamadı")
     
@@ -759,9 +766,10 @@ async def get_coupon_detail(coupon_id: str):
             expiry = expiry.replace(tzinfo=timezone.utc)
         is_expired = expiry < now
     
-    # Generate slug for URL
+    # Generate slug for URL - use short ID for SEO-friendly URLs
     coupon_slug = generate_slug(coupon['title'])
-    canonical_url = f"/magaza/{brand['slug']}/kupon/{coupon_slug}-{coupon_id}"
+    short_id = coupon['id'].split('-')[0]
+    canonical_url = f"/magaza/{brand['slug']}/kupon/{coupon_slug}-{short_id}"
     
     # SEO Meta
     seo_meta = {
