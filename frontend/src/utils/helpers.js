@@ -24,7 +24,12 @@ export const trackClick = async (type, itemId, brandId, categoryId = null) => {
 export const generateSlug = (title) => {
   if (!title) return '';
   return title
+    // First convert Turkish uppercase letters before toLowerCase()
+    .replace(/İ/g, 'i').replace(/I/g, 'i')
+    .replace(/Ğ/g, 'g').replace(/Ü/g, 'u').replace(/Ş/g, 's')
+    .replace(/Ö/g, 'o').replace(/Ç/g, 'c')
     .toLowerCase()
+    // Then convert Turkish lowercase letters
     .replace(/ğ/g, 'g').replace(/ü/g, 'u').replace(/ş/g, 's')
     .replace(/ı/g, 'i').replace(/ö/g, 'o').replace(/ç/g, 'c')
     .replace(/[^a-z0-9]+/g, '-')
