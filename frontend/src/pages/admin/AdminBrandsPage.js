@@ -175,7 +175,7 @@ const AdminBrandsPage = () => {
 
   const handleImportFromUrl = async () => {
     const url = formData.logo_url;
-    if (!url || url.startsWith('/uploads/')) return;
+    if (!url || isLocalUpload(url)) return;
 
     setUploading(true);
     try {
