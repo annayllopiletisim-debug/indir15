@@ -1,352 +1,179 @@
 <analysis>**original_problem_statement:**
-The user's initial goal was to build a highly optimized, SEO-driven Turkish deals platform named İndirim Keşfet. The platform supports Discounts, Coupons, and Giveaways, with programmatic SEO pages and an admin panel featuring Google Sheet import. The project has since evolved into a highly iterative UI/UX-focused development process, with the user providing rapid, detailed feedback and requesting significant redesigns of major pages.
+The user's initial goal was to build a highly optimized, SEO-driven Turkish deals platform named İndirim Keşfet. The platform supports Discounts, Coupons, and Giveaways, with programmatic SEO pages and an admin panel featuring Google Sheet import. The project has since evolved into a highly iterative UI/UX-focused development process, with the user providing rapid, detailed feedback and requesting significant redesigns of major pages. Key features include AI-powered content generation, a full blog module, and fallback images for deals.
 
 **PRODUCT REQUIREMENTS (latest consolidated version):**
 - **Core Functionality:** A full-stack application (React, FastAPI, MongoDB) serving as a deals platform.
-- **Admin Panel:** Full CRUD for all content types, Google Sheet import, and the ability to mark deals as featured. Recently added features include image upload for all deal types and an AI-powered button to generate deal descriptions.
-- **UI/UX - Mobile First & Iterative:** The user is heavily focused on UI/UX, providing frequent, detailed feedback. Recent work involved a complete overhaul of the Footer, Brand/Category/Store pages, desktop navigation, and various other UI refinements across the entire application.
-- **AI-Powered Content:** The user has requested and the agent has implemented a feature to generate unique, SEO-friendly descriptions for deals that lack one, using AI.
-- **SEO Enhancements:** The user is focused on SEO, requesting features like a detailed footer with specific link structures (), a legal disclaimer, and a last updated date.
+- **Admin Panel:** Full CRUD for all content types (Deals, Coupons, Giveaways, Brands, Blog Posts), Google Sheet import, and image uploads.
+- **UI/UX - Mobile First & Iterative:** The user is heavily focused on UI/UX, providing frequent, detailed feedback. Recent work involved multiple card layout adjustments, adding share buttons, and refining mobile views.
+- **SEO Enhancements:** The user is focused on SEO, requesting features like a detailed footer, and most recently, a cleaner URL structure that removes long UUIDs.
+- **Blog Module:** A complete blog with categories, posts, admin management, and on-page SEO fields. The implementation should also include in-article CTA boxes linking to product categories.
+- **Fallback Image Logic:** If a specific deal does not have a cover image, the system should use a default image specified at the brand level.
 
 **User's preferred language**: Turkish
 
 **what currently exists?**
-A functional full-stack application. The agent has just completed a massive batch of user-requested UI/UX changes and new features. This includes:
-- **AI Content Generation:** A new feature in the admin panel allows the user to generate deal descriptions using GPT-4o-mini.
-- **Footer Overhaul:** A complete, multi-section footer was designed and implemented from scratch based on user-provided screenshots, including SEO enhancements like a legal disclaimer and  attributes.
-- **Google Sheet Import Fixes:** The backend logic for importing from Google Sheets was corrected multiple times to accurately map the user's columns to the database fields, particularly for the İndirim Metni field.
-- **Page Redesigns:** The  (Mağaza Detay) was completely redesigned to a new mobile-first layout and then further refined. The  was also redesigned to show a list of brands first, mirroring the structure of the .
-- **UI Consistency:** Sorting functionality was added to , , and . Desktop navigation was updated to be icon-based.
-- **Admin Panel Improvements:** The login page contrast was fixed, and image upload functionality was added to the Discounts form.
+A functional full-stack application with a React frontend, FastAPI backend, and MongoDB database. The agent has recently completed several significant tasks:
+- **Fixed Critical Bugs:** Resolved an issue with the AI content generation feature caused by a  file formatting error and added an API interceptor to handle expired sessions gracefully.
+- **Implemented Blog Module:** Created a complete blog system including backend models/APIs () and frontend pages for listing (), detail view (), and a full admin management interface (). Also fixed follow-up bugs related to category loading in the admin panel.
+- **Implemented Brand Image Fallback:** Added a  field to brands. This involved updating the backend model and API, adding a new upload field to the admin brands page, and modifying all card components (, etc.) to use this image as a fallback.
+- **Iterative UI/UX Improvements:**
+  - Added expiry dates to deal cards with specific formatting and layout as requested by the user.
+  - Added WhatsApp and Copy Link sharing buttons to deal detail pages and fixed mobile layout issues.
+  - Adjusted card title styling multiple times to ensure all cards on a page have a uniform height.
+- **SEO URL Structure Refactoring:** Began implementing a change to shorten deal URLs by replacing the full UUID with a short, 8-character version for better SEO and readability. The code has been written but not tested.
 
 **Last working item**:
-- **Last item agent was working on:** The agent implemented two key features in the last set of interactions:
-    1.  A legal disclaimer was added to the footer of all pages.
-    2.  An AI-powered content generation feature was added to the Admin Panel. A ✨ Açıklama Oluştur button next to the Long Description field on the discount creation/edit form calls a new backend endpoint () which uses GPT-4o-mini to create a description based on the deal's title, brand, discount, and expiry date.
-- **Status:** USER VERIFICATION PENDING
-- **Agent Testing Done:** Y (The footer disclaimer was verified via screenshot. The admin panel AI button was not tested as it requires manual interaction.)
-- **Which testing method agent to use?** Manual testing by user. The next agent should ask the user to test the Açıklama Oluştur button in the admin panel's discount form () to confirm it generates and populates the text area correctly.
+- **Last item agent was working on:** Implementing SEO-friendly short URLs for all deal types (discounts, coupons, giveaways). The goal was to change URLs from  to .
+- **Status:** IN PROGRESS
+- **Agent Testing Done:** N
+- **Which testing method agent to use?** Frontend testing agent. This is a critical user flow change affecting URL generation on cards and parsing on detail pages. The test should verify that clicking a deal card leads to a correctly formatted short URL and that the detail page loads the correct data.
 - **User Testing Done:** N
 
 **All Pending/In progress Issue list**:
-- **Issue 1: Verify AI Content Generation Feature (P0)**
-  - This is the current highest priority task, as it's a new feature that the user just requested and the agent just implemented.
+- **Issue 1: Test and Verify SEO-friendly Short URLs (P0)**
+- **Issue 2: Happy Scarfs default image feature not working (P1)**
 
 **Issues Detail:**
-- **Issue 1: Verify AI Content Generation Feature**
-  - **Attempted fixes:** N/A. Feature was just implemented.
+- **Issue 1: Test and Verify SEO-friendly Short URLs**
+  - **Attempted fixes:** The agent has modified the frontend and backend code. Frontend card components now generate a URL with a short ID (). The detail page () is updated to extract this short ID. The backend detail endpoints in  were modified to use a regex query () to find documents by a partial ID prefix.
   - **Next debug checklist:**
-    1.  Ask the user to navigate to the admin panel ().
-    2.  Ask them to edit an existing discount or create a new one.
-    3.  Ask them to fill in the Title, Brand, and Discount Text fields.
-    4.  Ask them to click the ✨ Açıklama Oluştur button and confirm if the Uzun Açıklama text area is populated with a relevant, unique description.
-    5.  If it fails, check the browser console for frontend errors and the backend logs (==> /var/log/supervisor/backend.err.log <==
-WARNING:  WatchFiles detected changes in 'server.py'. Reloading...
-INFO:     Shutting down
-INFO:     Waiting for application shutdown.
-INFO:     Application shutdown complete.
-INFO:     Finished server process [743]
-INFO:     Started server process [852]
-INFO:     Waiting for application startup.
-INFO:     Application startup complete.
-INFO:     Shutting down
-INFO:     Waiting for application shutdown.
-INFO:     Application shutdown complete.
-INFO:     Finished server process [852]
-INFO:     Stopping reloader process [741]
-INFO:     Will watch for changes in these directories: ['/app/backend']
-INFO:     Uvicorn running on http://0.0.0.0:8001 (Press CTRL+C to quit)
-INFO:     Started reloader process [871] using WatchFiles
-INFO:     Started server process [873]
-INFO:     Waiting for application startup.
-INFO:     Application startup complete.
-WARNING:  WatchFiles detected changes in 'server.py'. Reloading...
-INFO:     Shutting down
-INFO:     Waiting for application shutdown.
-INFO:     Application shutdown complete.
-INFO:     Finished server process [873]
-INFO:     Started server process [951]
-INFO:     Waiting for application startup.
-INFO:     Application startup complete.
-INFO:     Shutting down
-INFO:     Waiting for application shutdown.
-INFO:     Application shutdown complete.
-INFO:     Finished server process [951]
-INFO:     Stopping reloader process [871]
-INFO:     Will watch for changes in these directories: ['/app/backend']
-INFO:     Uvicorn running on http://0.0.0.0:8001 (Press CTRL+C to quit)
-INFO:     Started reloader process [956] using WatchFiles
-INFO:     Started server process [958]
-INFO:     Waiting for application startup.
-INFO:     Application startup complete.
-WARNING:  WatchFiles detected changes in 'server.py'. Reloading...
-INFO:     Shutting down
-INFO:     Waiting for application shutdown.
-INFO:     Application shutdown complete.
-INFO:     Finished server process [958]
-INFO:     Started server process [1081]
-INFO:     Waiting for application startup.
-INFO:     Application startup complete.
-INFO:     Shutting down
-INFO:     Waiting for application shutdown.
-INFO:     Application shutdown complete.
-INFO:     Finished server process [1081]
-INFO:     Stopping reloader process [956]
-INFO:     Will watch for changes in these directories: ['/app/backend']
-INFO:     Uvicorn running on http://0.0.0.0:8001 (Press CTRL+C to quit)
-INFO:     Started reloader process [1090] using WatchFiles
-INFO:     Started server process [1092]
-INFO:     Waiting for application startup.
-INFO:     Application startup complete.
-2025-12-28 20:48:16,445 - passlib.handlers.bcrypt - WARNING - (trapped) error reading bcrypt version
-Traceback (most recent call last):
-  File "/root/.venv/lib/python3.11/site-packages/passlib/handlers/bcrypt.py", line 620, in _load_backend_mixin
-    version = _bcrypt.__about__.__version__
-              ^^^^^^^^^^^^^^^^^
-AttributeError: module 'bcrypt' has no attribute '__about__'
-INFO:     Will watch for changes in these directories: ['/app/backend']
-INFO:     Uvicorn running on http://0.0.0.0:8001 (Press CTRL+C to quit)
-INFO:     Started reloader process [47] using WatchFiles
-INFO:     Started server process [84]
-INFO:     Waiting for application startup.
-INFO:     Application startup complete.
-WARNING:  WatchFiles detected changes in 'server.py'. Reloading...
-INFO:     Shutting down
-INFO:     Waiting for application shutdown.
-INFO:     Application shutdown complete.
-INFO:     Finished server process [84]
-python-dotenv could not parse statement starting at line 4
-INFO:     Started server process [422]
-INFO:     Waiting for application startup.
-INFO:     Application startup complete.
-INFO:     Shutting down
-INFO:     Waiting for application shutdown.
-INFO:     Application shutdown complete.
-INFO:     Finished server process [422]
-INFO:     Stopping reloader process [47]
-INFO:     Will watch for changes in these directories: ['/app/backend']
-INFO:     Uvicorn running on http://0.0.0.0:8001 (Press CTRL+C to quit)
-INFO:     Started reloader process [607] using WatchFiles
-python-dotenv could not parse statement starting at line 4
-INFO:     Started server process [609]
-INFO:     Waiting for application startup.
-INFO:     Application startup complete.
-2025-12-29 18:05:35,919 - passlib.handlers.bcrypt - WARNING - (trapped) error reading bcrypt version
-Traceback (most recent call last):
-  File "/root/.venv/lib/python3.11/site-packages/passlib/handlers/bcrypt.py", line 620, in _load_backend_mixin
-    version = _bcrypt.__about__.__version__
-              ^^^^^^^^^^^^^^^^^
-AttributeError: module 'bcrypt' has no attribute '__about__'
-INFO:     Will watch for changes in these directories: ['/app/backend']
-INFO:     Uvicorn running on http://0.0.0.0:8001 (Press CTRL+C to quit)
-INFO:     Started reloader process [48] using WatchFiles
-python-dotenv could not parse statement starting at line 4
-
-==> /var/log/supervisor/backend.out.log <==
-INFO:     10.64.130.10:37210 - "GET /api/categories/with-stats HTTP/1.1" 200 OK
-INFO:     10.64.130.10:37214 - "GET /api/discount/783609a9-fbb6-4fcb-b760-04d860918b09/detail HTTP/1.1" 200 OK
-INFO:     10.64.130.10:37214 - "GET /api/categories/with-stats HTTP/1.1" 200 OK
-INFO:     10.64.130.10:37210 - "GET /api/discount/783609a9-fbb6-4fcb-b760-04d860918b09/detail HTTP/1.1" 200 OK
-INFO:     10.64.130.27:50506 - "GET /api/categories/with-stats HTTP/1.1" 200 OK
-INFO:     10.64.130.27:50506 - "GET /api/categories/with-stats HTTP/1.1" 200 OK
-INFO:     10.64.130.9:53016 - "GET /api/expiring-soon HTTP/1.1" 200 OK
-INFO:     10.64.130.27:37720 - "GET /api/coupons HTTP/1.1" 200 OK
-INFO:     10.64.130.9:53018 - "GET /api/featured-deals HTTP/1.1" 200 OK
-INFO:     10.64.130.10:50940 - "GET /api/discounts HTTP/1.1" 200 OK
-INFO:     10.64.130.9:53014 - "GET /api/homepage-brands HTTP/1.1" 200 OK
-INFO:     10.64.130.9:53016 - "GET /api/categories/with-stats HTTP/1.1" 200 OK
-INFO:     10.64.130.27:37714 - "GET /api/brands/list-with-deal-counts HTTP/1.1" 200 OK
-INFO:     10.64.130.9:53018 - "GET /api/expiring-soon HTTP/1.1" 200 OK
-INFO:     10.64.130.27:37714 - "GET /api/coupons HTTP/1.1" 200 OK
-INFO:     10.64.130.10:50970 - "GET /api/discounts HTTP/1.1" 200 OK
-INFO:     10.64.130.10:50954 - "GET /api/featured-deals HTTP/1.1" 200 OK
-INFO:     10.64.130.10:50940 - "GET /api/homepage-brands HTTP/1.1" 200 OK
-INFO:     10.64.130.9:53018 - "GET /api/brands/list-with-deal-counts HTTP/1.1" 200 OK
-INFO:     10.64.130.27:37714 - "GET /api/categories/with-stats HTTP/1.1" 200 OK
-INFO:     10.64.130.27:37714 - "GET /api/categories/with-stats HTTP/1.1" 200 OK
-INFO:     10.64.130.27:37714 - "GET /api/categories/with-stats HTTP/1.1" 200 OK
-INFO:     10.64.130.27:51156 - "GET /api/expiring-soon HTTP/1.1" 200 OK
-INFO:     10.64.130.10:38836 - "GET /api/discounts HTTP/1.1" 200 OK
-INFO:     10.64.135.237:37068 - "GET /api/coupons HTTP/1.1" 200 OK
-INFO:     10.64.130.27:51156 - "GET /api/brands HTTP/1.1" 200 OK
-INFO:     10.64.135.220:60934 - "GET /api/coupons HTTP/1.1" 200 OK
-INFO:     10.64.130.10:38842 - "GET /api/expiring-soon HTTP/1.1" 200 OK
-INFO:     10.64.135.220:60938 - "GET /api/brands HTTP/1.1" 200 OK
-INFO:     10.64.128.6:59486 - "GET /api/discounts HTTP/1.1" 200 OK
-INFO:     10.64.130.9:53032 - "GET /api/categories/with-stats HTTP/1.1" 200 OK
-INFO:     10.64.130.9:51474 - "GET /api/categories/with-stats HTTP/1.1" 200 OK
-INFO:     10.64.130.10:38846 - "GET /api/categories/with-stats HTTP/1.1" 200 OK
-INFO:     10.64.135.219:46792 - "GET /api/categories/with-stats HTTP/1.1" 200 OK
-INFO:     10.64.130.9:51474 - "GET /api/uploads/logos/37bfada6-27cd-48b7-9032-8bc6f548a4c3.png HTTP/1.1" 200 OK
-INFO:     10.64.135.237:37078 - "GET /api/coupons HTTP/1.1" 200 OK
-INFO:     10.64.135.219:46814 - "GET /api/expiring-soon HTTP/1.1" 200 OK
-INFO:     10.64.135.220:60934 - "GET /api/discounts HTTP/1.1" 200 OK
-INFO:     10.64.134.142:44970 - "GET /api/coupons HTTP/1.1" 200 OK
-INFO:     10.64.135.219:46794 - "GET /api/featured-deals HTTP/1.1" 200 OK
-INFO:     10.64.135.219:46814 - "GET /api/discounts HTTP/1.1" 200 OK
-INFO:     10.64.135.220:60934 - "GET /api/expiring-soon HTTP/1.1" 200 OK
-INFO:     10.64.134.142:44984 - "GET /api/featured-deals HTTP/1.1" 200 OK
-INFO:     10.64.135.219:46792 - "GET /api/categories/with-stats HTTP/1.1" 200 OK
-INFO:     10.64.135.237:37068 - "GET /api/categories/with-stats HTTP/1.1" 200 OK
-INFO:     10.64.135.220:60938 - "GET /api/homepage-brands HTTP/1.1" 200 OK
-INFO:     10.64.135.219:46810 - "GET /api/homepage-brands HTTP/1.1" 200 OK
-INFO:     10.64.135.237:37086 - "GET /api/brands/list-with-deal-counts HTTP/1.1" 200 OK
-INFO:     10.64.134.142:44988 - "GET /api/brands/list-with-deal-counts HTTP/1.1" 200 OK
-INFO:     10.64.134.142:44984 - "GET /api/categories/with-stats HTTP/1.1" 200 OK
-INFO:     10.64.135.220:60934 - "GET /api/categories/with-stats HTTP/1.1" 200 OK
-INFO:     10.64.130.9:60584 - "GET /api/categories HTTP/1.1" 200 OK
-INFO:     10.64.130.9:60598 - "GET /api/categories HTTP/1.1" 200 OK
-INFO:     10.64.130.27:51166 - "GET /api/categories/with-stats HTTP/1.1" 200 OK
-INFO:     10.64.130.10:57644 - "GET /api/categories/with-stats HTTP/1.1" 200 OK
-INFO:     10.64.130.27:48446 - "GET /api/categories/with-stats HTTP/1.1" 200 OK
-INFO:     10.64.130.9:60606 - "GET /api/categories/with-stats HTTP/1.1" 200 OK
-INFO:     10.64.130.27:51166 - "GET /api/coupons HTTP/1.1" 200 OK
-INFO:     10.64.130.27:48446 - "GET /api/brands?category_id=dealfinder-284 HTTP/1.1" 200 OK
-INFO:     10.64.130.27:48460 - "GET /api/expiring-soon HTTP/1.1" 200 OK
-INFO:     10.64.130.27:48446 - "GET /api/expiring-soon HTTP/1.1" 200 OK
-INFO:     10.64.130.27:51166 - "GET /api/giveaways HTTP/1.1" 200 OK
-INFO:     10.64.130.10:57644 - "GET /api/discounts HTTP/1.1" 200 OK
-INFO:     10.64.130.9:60598 - "GET /api/giveaways HTTP/1.1" 200 OK
-INFO:     10.64.130.10:57644 - "GET /api/coupons HTTP/1.1" 200 OK
-INFO:     10.64.130.9:60598 - "GET /api/brands?category_id=dealfinder-284 HTTP/1.1" 200 OK
-INFO:     10.64.130.27:51166 - "GET /api/discounts HTTP/1.1" 200 OK
-INFO:     10.64.134.142:36162 - "GET /api/discounts HTTP/1.1" 200 OK
-INFO:     10.64.135.220:48438 - "GET /api/coupons HTTP/1.1" 200 OK
-INFO:     10.64.135.237:33728 - "GET /api/expiring-soon HTTP/1.1" 200 OK
-INFO:     10.64.134.142:36170 - "GET /api/featured-deals HTTP/1.1" 200 OK
-INFO:     10.64.134.142:36162 - "GET /api/discounts HTTP/1.1" 200 OK
-INFO:     10.64.135.237:33728 - "GET /api/coupons HTTP/1.1" 200 OK
-INFO:     10.64.134.142:36170 - "GET /api/expiring-soon HTTP/1.1" 200 OK
-INFO:     10.64.135.219:45168 - "GET /api/categories/with-stats HTTP/1.1" 200 OK
-INFO:     10.64.134.142:36162 - "GET /api/featured-deals HTTP/1.1" 200 OK
-INFO:     10.64.135.220:48422 - "GET /api/homepage-brands HTTP/1.1" 200 OK
-INFO:     10.64.135.220:48430 - "GET /api/brands/list-with-deal-counts HTTP/1.1" 200 OK
-INFO:     10.64.135.220:48422 - "GET /api/categories/with-stats HTTP/1.1" 200 OK
-INFO:     10.64.135.219:45168 - "GET /api/homepage-brands HTTP/1.1" 200 OK
-INFO:     10.64.134.142:36170 - "GET /api/brands/list-with-deal-counts HTTP/1.1" 200 OK
-INFO:     10.64.135.219:45168 - "GET /api/categories/with-stats HTTP/1.1" 200 OK
-INFO:     10.64.135.219:45168 - "GET /api/categories/with-stats HTTP/1.1" 200 OK
-INFO:     10.64.135.220:48430 - "GET /api/uploads/logos/71fba11d-e13e-434c-ac5f-257ab2ad39ec.png HTTP/1.1" 200 OK
-INFO:     10.64.134.142:36170 - "GET /api/uploads/logos/736e8284-f064-4c0b-aff5-7dcae594418e.png HTTP/1.1" 200 OK
-INFO:     10.64.135.219:45168 - "GET /api/categories/with-stats HTTP/1.1" 200 OK
-INFO:     10.64.134.142:36170 - "GET /api/uploads/logos/9194f1b9-fcf9-4d45-bbcc-3029daa9c90d.png HTTP/1.1" 200 OK
-INFO:     10.64.135.219:45170 - "GET /api/uploads/logos/9af19c07-4ff0-4975-a356-cfcce0c770c0.png HTTP/1.1" 200 OK
-INFO:     10.64.135.220:48430 - "GET /api/uploads/logos/036488d1-5ece-4ec2-9117-d5300f0419e0.png HTTP/1.1" 200 OK
-INFO:     10.64.135.220:48438 - "GET /api/uploads/logos/37bfada6-27cd-48b7-9032-8bc6f548a4c3.png HTTP/1.1" 200 OK
-INFO:     10.64.135.237:33728 - "GET /api/uploads/logos/b867d12d-14a8-4652-9f72-6b38df595f7a.png HTTP/1.1" 200 OK
-INFO:     10.64.135.219:45168 - "GET /api/categories/with-stats HTTP/1.1" 200 OK
-INFO:     10.64.135.220:48438 - "GET /api/categories/with-stats HTTP/1.1" 200 OK
-INFO:     10.64.135.237:33728 - "GET /api/categories/with-stats HTTP/1.1" 200 OK
-INFO:     10.64.130.9:45546 - "OPTIONS /api/auth/login HTTP/1.1" 200 OK
-INFO:     10.64.130.10:40988 - "POST /api/auth/login HTTP/1.1" 200 OK
-INFO:     10.64.128.6:38382 - "OPTIONS /api/analytics/dashboard?period=7d HTTP/1.1" 200 OK
-INFO:     10.64.128.8:53102 - "OPTIONS /api/analytics/dashboard?period=7d HTTP/1.1" 200 OK
-INFO:     10.64.128.8:53102 - "GET /api/analytics/dashboard?period=7d HTTP/1.1" 200 OK
-INFO:     10.64.128.8:53102 - "GET /api/analytics/dashboard?period=7d HTTP/1.1" 200 OK) for API errors related to the  endpoint.
-  - **Why fix this issue and what will be achieved with the fix?** This will complete a key feature request from the user, enabling them to easily generate SEO-friendly content.
-  - **Status:** USER VERIFICATION PENDING
+    1.  Restart the backend service to ensure all changes in  are active.
+    2.  Run an end-to-end test using the frontend testing agent:
+        - Navigate to the homepage.
+        - Click a deal card.
+        - Verify the browser URL uses the new short format (e.g., ).
+        - Verify the correct deal content loads on the detail page.
+    3.  If it fails, check backend logs for errors on the detail endpoints (e.g., ). The  logic might be faulty.
+    4.  Check the frontend console on the detail page to confirm the correct ID is being extracted and sent to the API.
+  - **Why fix this issue and what will be achieved with the fix?** To fulfill a user request for cleaner, more readable, and SEO-friendly URLs.
+  - **Status:** IN PROGRESS
   - **Is recurring issue?** N
-  - **Should Test frontend/backend/both after fix?** backend (if verification fails)
+  - **Should Test frontend/backend/both after fix?** both
+  - **Blocked on other issue:** None
+
+- **Issue 2: Happy Scarfs default image feature not working**
+  - **Attempted fixes:** None. The agent confirmed via API that the  for the brand was  but was then diverted to another task before investigating the root cause.
+  - **Next debug checklist:**
+    1.  Ask the user to try re-uploading the Varsayılan Fırsat Görseli for the Happy Scarfs brand in the admin panel ().
+    2.  Use  to inspect the brand's data via . Check if the  field gets populated after the upload.
+    3.  If the field remains , investigate the form submission logic in  (, ) and the backend update logic in  (the  endpoint). The data might not be getting sent from the frontend or saved on the backend correctly.
+  - **Why fix this issue and what will be achieved with the fix?** This will ensure the recently developed fallback image feature is reliable and works for all brands as intended.
+  - **Status:** NOT STARTED
+  - **Is recurring issue?** N
+  - **Should Test frontend/backend/both after fix?** both
   - **Blocked on other issue:** None
 
 **In progress Task List**:
-- None.
+- **Task 1: Complete and Test SEO-Friendly URL Implementation**
+  - **Where to resume:** The code has been written. The immediate next step is to restart the backend and conduct thorough end-to-end testing of the deal click-through flow.
+  - **What will be achieved with this?** Cleaner, shorter URLs site-wide, improving SEO and user experience.
+  - **Status:** IN PROGRESS
+  - **Should Test frontend/backend/both after fix?** both
+  - **Blocked on something:** None.
 
 **Upcoming and Future Tasks**
-
 - **Upcoming Tasks:**
-  - **Cookie Consent Banner (P1):** The user expressed interest in a custom cookie consent banner that doesn't rely on third-party libraries. The user decided to postpone this (sıraya alalım daha sonra yaparız).
-- **Future Tasks (On Hold by User):**
-  - **AI Image Generation (P2):** The user asked if it was possible to generate images for deals using AI. The agent confirmed it's possible but the user decided against it for now (bunu şimdilik yapmayalım).
-  - **Email Marketing Integration (P2):** User asked about using Google Workspace for email marketing. The agent correctly advised against it and suggested alternatives like Resend or SendGrid. The user did not decide on a path forward.
-  - **Full Turkish Alphabet Support (P3):** In .
-  - **Analytics Integration (P3).**
+  - **Implement Blog CTA Boxes (P1):** The user requested implementing in-article Call-to-Action boxes as specified in the  artifact. This involves:
+    - Adding a field to select related product categories when creating/editing a blog post in .
+    - Creating React components for Yazı Ortası CTA Kutusu and Yazı Sonu CTA Kutusu.
+    - Dynamically inserting these components into the content rendered by .
+  - **Cookie Consent Banner (P2):** Postponed by the user (sıraya alalım daha sonra yaparız).
+- **Future Tasks:**
+  - **AI Image Generation (P2):** On hold by the user.
+  - **Email Marketing Integration (P2):** On hold by the user.
+  - **Full Turkish Alphabet Support (P3):** For the  component.
+  - **Analytics Integration (P3):** General future task.
 
 **Completed work in this session**
-- **AI Content Generation Implemented:** Added a new feature in the admin panel to generate deal descriptions using GPT-4o-mini via the  library.
-- **Complete Footer Redesign:** Built a new, complex, multi-section footer from scratch based on user mockups, including SEO enhancements (nofollow tags, last updated date, legal disclaimer).
-- **Sheet Import Logic Fixed:** Resolved a recurring issue where the backend was not correctly parsing columns from the user's Google Sheet, especially the İndirim Metni field.
-- ** Redesign:** Overhauled the store detail page with a new mobile-first layout, a responsive grid for deals, and a new sorting feature.
-- ** Redesign:** Re-architected the page to list brands within a category first, instead of deals directly.
-- **UI/UX Refinements Across Multiple Pages:**
-  - Added sorting modals to  and .
-  - Redesigned the desktop homepage category navigation () to be icon-based.
-  - Fixed the homepage featured deals section () to always show 12 items.
-  - Fixed contrast issues on the Admin Login page.
-  - Added a warning in the admin panel for deals missing an image.
-  - Ensured the footer is visible on all pages on mobile devices by adjusting layouts in .
+- **AI Content Generation Fixed:** Repaired the feature by fixing a  format error and adding a 401 interceptor.
+- **Full Blog Module Implemented:** Added backend models/APIs and frontend pages for public blog and admin management.
+- **Blog Admin Panel Bugs Fixed:** Resolved issues with category dropdowns not loading in the admin form.
+- **Brand Default Image Fallback:** Implemented logic for deals to use a brand's default image if they don't have their own. This included backend changes, admin UI updates, and modifying all card components.
+- **Data Integrity Fix:** Manually corrected a broken logo URL for the 'Adidas' brand in the database.
+- **Multiple UI/UX Refinements:**
+  - Added and styled expiry dates on deal cards per user specifications.
+  - Added WhatsApp/Copy Link share buttons to deal detail pages, including mobile layout fixes.
+  - Enforced uniform card heights by standardizing title container styles.
+- **Deployment Support:** Answered user's questions about deployment infrastructure and costs using the support agent.
 
 **Earlier issues found/mentioned but not fixed**
-- None. The agent has been highly responsive and has addressed all issues raised by the user in this session.
+- The Happy Scarfs default image bug was reported by the user but not addressed. It is now captured in the **All Pending/In progress Issue list**.
 
 **Known issue recurrence from previous fork**
-- **Admin Panel Styling:** The previous fork noted an issue with the admin panel's dark theme. In this session, the agent had to fix a contrast issue on the admin login page (). This suggests the admin panel's styling might be brittle and could require a more systematic review in the future.
+- **Admin Panel Styling:** The previous fork noted potential brittleness in the admin panel's CSS. While no new bugs appeared in this session, the highly iterative nature of UI requests means this remains an area to watch.
 
 **Code Architecture**
-/api/generate-description
+
 
 **Key Technical Concepts**
-- **LLM Integration:** Successfully integrated  via  to provide a core feature (AI content generation). This involved installing the library, setting environment variables, creating a new FastAPI endpoint, and building the frontend interaction.
-- **Iterative UI Development:** The session was a masterclass in responding to rapid, detailed user feedback, involving multiple large-scale redesigns of React components using TailwindCSS.
-- **Complex State Management:** Implemented client-side sorting and filtering logic across multiple pages (, , ) using  and .
-- **Responsive Layouts:** Implemented complex responsive designs, such as the 2/3-column grid for deals on the desktop  and the new icon-based desktop .
-- **Layout System ():** Modified custom layouts (,  in ) to correctly display the global  component on mobile devices where it was previously hidden.
+- **Short URL Routing:** Using a combination of frontend URL generation () and backend regex path matching with a database  query to resolve entities from a partial ID.
+- **API Response Interceptors:** Using  interceptors to globally handle 401 Unauthorized errors and redirect the user.
+- **Pydantic Model Enrichment:** Adding optional fields to Pydantic response models (, ) to prevent FastAPI from stripping out enriched data (like brand details) that is not part of the core DB model.
+- **Data Integrity Debugging:** Identifying and fixing a broken image link by comparing the database value with the actual filename on the server and manually updating the database record.
 
 **key DB schema**
-- **Brand:** The  Pydantic model in  was updated to include  and  to support breadcrumb navigation.
+- **Brand:** Added .
+- **Discount, Coupon, Giveaway (Pydantic Models):** Added , , , .
+- **BlogCategory (New):** 
+- **BlogPost (New):** 
 
 **changes in tech stack**
-- : Added to the backend to facilitate LLM calls using the Emergent LLM Key.
+- No new dependencies added in this session.
 
 **All files of reference**
-- **/app/backend/server.py**: Contains the critical Sheet Import and new AI content generation logic.
-- **/app/frontend/src/pages/admin/AdminDiscountsPage.js**: Contains the new AI button and its frontend logic.
-- **/app/frontend/src/components/Footer.js**: The completely new, user-designed footer component.
-- **/app/frontend/src/pages/BrandPage.js**: The most heavily modified page in this session, with multiple iterative redesigns.
-- **/app/frontend/src/App.js**: Contains the key layout logic that determines which components (like the footer) are visible on which pages.
+- **/app/backend/server.py**: Main file for all backend logic, including new blog endpoints and short ID search logic.
+- **/app/frontend/src/pages/DealDetailPage.js**: Key file for parsing the new short URL format.
+- **/app/frontend/src/utils/helpers.js**: Contains the new URL generation and parsing helper functions.
+- **/app/frontend/src/components/CouponCard.js**, **DiscountCard.js**, **GiveawayCard.js**: These components generate the new short URLs.
+- **/app/frontend/src/pages/admin/AdminBrandsPage.js**: Contains the UI logic for the potentially buggy Default Deal Image upload.
 
 **Areas that need refactoring**:
-- **Component Size:**  and  have become very large and complex. They should be broken down into smaller, more manageable components to improve maintainability.
-- **Admin Panel CSS:** The admin panel has had recurring styling issues (dark theme, contrast). The CSS for the admin section could benefit from a review to make it more robust.
+- ** Decomposition:** The  file has grown to over 3000 lines and is becoming unmanageable. It should be broken down into separate files by concern (e.g., , , , etc.).
+- **Data Enrichment Logic:** The logic to add brand information to deals is duplicated across multiple API endpoints (, , ). This should be centralized into a single reusable function to ensure consistency and reduce code duplication.
 
 **key api endpoints**
-- ****: New endpoint that takes deal information and uses GPT-4o-mini to return a generated description.
-- ****: The endpoint for Google Sheet import, which was heavily modified to fix column mapping logic.
+- **New Blog Endpoints:** , 
+- **Updated Detail Endpoints (for Short ID):**
+  - 
+  - 
+  - 
 
 **Critical Info for New Agent**
-- **Your immediate priority is user verification.** Ask the user to test the new AI Content Generation button in the admin panel and confirm it works.
-- **The user's workflow is highly iterative.** Expect to receive large batches of UI/UX change requests. Always confirm your plan before implementing.
-- **Postponed Tasks:** The user has explicitly delayed the Cookie Consent Banner and AI Image Generation features. Do not work on these unless the user reprioritizes them.
-- **Respond in Turkish.**
+- **Your immediate priority is to test the new short URL feature.** The code is fully implemented but completely untested. A failure here would break all links to deal detail pages.
+- **Next, you must investigate the Happy Scarfs bug.** The user has reported that the default image upload is not working for this brand, which points to a bug in the feature you just built.
+- **The user gives very specific, iterative UI feedback.** Always confirm your understanding and plan before coding, and be prepared to make small, precise adjustments to layout, fonts, and text based on feedback.
+- **You must respond in Turkish.**
 
 **documents and test reports created in this job**
-- None.
+- 
 
 **Last 10 User Messages and any pending HUMAN messages**
-1.  **Request:** Add a footer disclaimer and the AI content generation feature. **Status:** DONE (Pending Verification)
-2.  **Question:** How to add a legal disclaimer to protect the site? **Status:** Answered
-3.  **Question:** How can we ensure AI-generated content is reliable and doesn't make false claims? **Status:** Answered with a safe prompt strategy.
-4.  **Question:** Is it possible to add a feature to generate descriptions for deals that don't have one? **Status:** Answered
-5.  **Question:** Is it possible to generate images for deals using AI? **Status:** Answered
-6.  **Request:** Ensure the footer appears on all pages, including store detail pages where it's missing on mobile. **Status:** DONE
-7.  **Feedback:** The new footer is missing key SEO elements ( tags, last updated date). **Status:** DONE
-8.  **Request:** Provides detailed specifications and screenshots for a brand new, complex footer design. **Status:** DONE
-9.  **Question:** Why are there not 12 featured deals on the homepage as requested? **Status:** Answered and fixed (by supplementing with latest deals).
-10. **Feedback:** The desktop category navigation is not what was intended; it should be icon-based. **Status:** DONE
+1.  **Request:** Equalize card heights so they don't look uneven. -> **Status:** DONE (but later revised).
+2.  **Request:** Change card titles to be single-line to fix height issues. -> **Status:** DONE.
+3.  **Question:** Is my URL structure () good for SEO? -> **Status:** Answered, with a recommendation to shorten the UUID.
+4.  **Request:** Yes, let's shorten the URLs across the whole site. -> **Status:** IN PROGRESS.
+5.  **Feedback:** The fallback image on Adidas cards is working, but now the Adidas logo is broken. -> **Status:** FIXED (Data integrity issue).
+6.  **Feedback:** I added an image to the Happy Scarfs store, but the fallback isn't working for it. -> **Status:** NOT ADDRESSED.
+7.  **Request:** Let's add the expiry dates back to the cards. -> **Status:** DONE.
+8.  **Request:** Add the label Bitiş Tarihi to the date. -> **Status:** DONE.
+9.  **Request:** For mobile, split the expiry date into two lines and add share buttons to the detail page. -> **Status:** DONE.
+10. **Feedback:** The new share buttons are breaking the layout on mobile. -> **Status:** FIXED.
 
 **Project Health Check:**
-- **Broken:** None.
-- **Mocked:** Data is live from the user's Google Sheet. The AI content generation feature uses the live GPT-4o-mini service.
+- **Broken:**
+  - The SEO-friendly short URL feature is implemented but untested and should be considered broken until verified.
+  - The Default Deal Image upload feature is reported as not working for at least one brand (Happy Scarfs).
+- **Mocked:** None. Data is live.
 
 **3rd Party Integrations**
 - **Google Sheets:** Used for admin data import via .
 - **OpenAI GPT-4o-mini:** Used for AI content generation via . Uses Emergent LLM Key.
 
 **Testing status**
-- **Testing agent used after significant changes:** NO (Agent relied heavily on the  tool for UI verification, which was effective for the tasks).
+- **Testing agent used after significant changes:** YES (For the backend blog feature).
 - **Troubleshoot agent used after agent stuck in loop:** NO
-- **Test files created:** None.
-- **Known regressions:** None.
+- **Test files created:** 
+- **Known regressions:** None confirmed, but the un-tested short URL feature is a high risk for regression.
 
 **Credentials to test flow:**
 - **Admin Panel URL:** 
@@ -354,4 +181,5 @@ INFO:     10.64.128.8:53102 - "GET /api/analytics/dashboard?period=7d HTTP/1.1" 
 - **Password:** 
 
 **What agent forgot to execute**
-- Nothing. The agent successfully navigated a very large and complex set of user requests with high accuracy.</analysis>
+- The agent failed to investigate the user's report that the  upload was not working for the Happy Scarfs brand.
+- The agent did not implement the in-article CTA boxes (Yazı Ortası CTA Kutusu and Yazı Sonu CTA Kutusu) which were part of the original blog feature request.</analysis>
