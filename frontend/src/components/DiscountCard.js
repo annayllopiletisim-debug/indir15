@@ -2,22 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { ChevronRight } from 'lucide-react';
 import { BaseCard } from './BaseCard';
-import { trackClick, buildUTMLink } from '../utils/helpers';
-
-// Helper to generate URL slug
-const generateSlug = (title) => {
-  if (!title) return '';
-  const trMap = {'ı': 'i', 'ğ': 'g', 'ü': 'u', 'ş': 's', 'ö': 'o', 'ç': 'c',
-                 'İ': 'i', 'Ğ': 'g', 'Ü': 'u', 'Ş': 's', 'Ö': 'o', 'Ç': 'c'};
-  let slug = title.toLowerCase();
-  Object.entries(trMap).forEach(([tr, en]) => {
-    slug = slug.split(tr).join(en);
-  });
-  slug = slug.replace(/[^a-z0-9\s-]/g, '');
-  slug = slug.replace(/[\s_]+/g, '-');
-  slug = slug.replace(/-+/g, '-').replace(/^-|-$/g, '');
-  return slug.substring(0, 50);
-};
+import { trackClick, buildUTMLink, generateSlug, getShortId } from '../utils/helpers';
 
 const DiscountCard = ({ discount, brand, compact = false }) => {
   const handleGoToStore = (e) => {
@@ -38,9 +23,10 @@ const DiscountCard = ({ discount, brand, compact = false }) => {
   const brandLogoUrl = brand?.logo_url || discount.brand_logo_url;
   const brandDefaultDealImage = brand?.default_deal_image || discount.brand_default_deal_image;
 
-  // Generate detail page URL
+  // Generate SEO-friendly detail page URL with short ID
   const discountSlug = generateSlug(discount.title);
-  const detailUrl = `/magaza/${brandSlug}/indirim/${discountSlug}-${discount.id}`;
+  const shortId = getShortId(discount.id);
+  const detailUrl = `/magaza/${brandSlug}/indirim/${discountSlug}-${shortId}`;
 
   const actions = (
     <button
