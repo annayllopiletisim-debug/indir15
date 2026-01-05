@@ -384,13 +384,13 @@ const AdminBrandsPage = () => {
                 ) : (
                   <div className="flex gap-2">
                     <input
-                      type="url"
+                      type="text"
                       value={formData.logo_url}
                       onChange={(e) => setFormData({...formData, logo_url: e.target.value})}
                       className="flex-1 px-4 py-2 bg-void-subtle rounded-lg focus:outline-none focus:ring-2 focus:ring-neon-purple"
                       placeholder="https://..."
                     />
-                    {formData.logo_url && !formData.logo_url.startsWith('/uploads/') && (
+                    {formData.logo_url && !isLocalUpload(formData.logo_url) && (
                       <button
                         type="button"
                         onClick={handleImportFromUrl}
@@ -406,7 +406,7 @@ const AdminBrandsPage = () => {
                 
                 {formData.logo_url && (
                   <p className="text-xs text-gray-400 mt-2">
-                    {formData.logo_url.startsWith('/uploads/') ? '✓ Sunucuda kayıtlı' : '⚠ Harici URL'}
+                    {isLocalUpload(formData.logo_url) ? '✓ Sunucuda kayıtlı' : '⚠ Harici URL'}
                   </p>
                 )}
               </div>
