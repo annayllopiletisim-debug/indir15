@@ -20,6 +20,31 @@ export const trackClick = async (type, itemId, brandId, categoryId = null) => {
   }
 };
 
+// Generate URL-friendly slug from title
+export const generateSlug = (title) => {
+  if (!title) return '';
+  return title
+    .toLowerCase()
+    .replace(/ğ/g, 'g').replace(/ü/g, 'u').replace(/ş/g, 's')
+    .replace(/ı/g, 'i').replace(/ö/g, 'o').replace(/ç/g, 'c')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '');
+};
+
+// Get short ID (first 8 characters of UUID) for SEO-friendly URLs
+export const getShortId = (fullId) => {
+  if (!fullId) return '';
+  return fullId.split('-')[0]; // Returns first 8 chars before the first dash
+};
+
+// Extract short ID from URL slug (e.g., "sezonun-sonu-indirimi-b07dbb23" -> "b07dbb23")
+export const extractShortIdFromSlug = (slug) => {
+  if (!slug) return null;
+  const parts = slug.split('-');
+  return parts[parts.length - 1]; // Last part is the short ID
+};
+
 // Get or create session ID for tracking
 export const getSessionId = () => {
   let sessionId = sessionStorage.getItem('session_id');
