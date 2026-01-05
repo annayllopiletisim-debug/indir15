@@ -713,12 +713,20 @@ async def get_coupons(brand_id: Optional[str] = None):
 def generate_slug(title: str) -> str:
     """Generate URL-friendly slug from title"""
     import re
-    # Turkish character replacements
-    tr_map = {'ı': 'i', 'ğ': 'g', 'ü': 'u', 'ş': 's', 'ö': 'o', 'ç': 'c',
-              'İ': 'i', 'Ğ': 'g', 'Ü': 'u', 'Ş': 's', 'Ö': 'o', 'Ç': 'c'}
-    slug = title.lower()
-    for tr, en in tr_map.items():
+    # Turkish character replacements - apply BEFORE lowercase
+    tr_upper = {'İ': 'i', 'I': 'i', 'Ğ': 'g', 'Ü': 'u', 'Ş': 's', 'Ö': 'o', 'Ç': 'c'}
+    tr_lower = {'ı': 'i', 'ğ': 'g', 'ü': 'u', 'ş': 's', 'ö': 'o', 'ç': 'c'}
+    
+    slug = title
+    # First replace Turkish uppercase letters
+    for tr, en in tr_upper.items():
         slug = slug.replace(tr, en)
+    # Then lowercase
+    slug = slug.lower()
+    # Then replace Turkish lowercase letters
+    for tr, en in tr_lower.items():
+        slug = slug.replace(tr, en)
+    
     slug = re.sub(r'[^a-z0-9\s-]', '', slug)
     slug = re.sub(r'[\s_]+', '-', slug)
     slug = re.sub(r'-+', '-', slug).strip('-')
