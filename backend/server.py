@@ -996,9 +996,10 @@ async def get_giveaway_detail(giveaway_id: str):
             expiry = expiry.replace(tzinfo=timezone.utc)
         is_expired = expiry < now
     
-    # Generate slug for URL
+    # Generate slug for URL - use short ID for SEO-friendly URLs
     giveaway_slug = generate_slug(giveaway['title'])
-    canonical_url = f"/magaza/{brand['slug']}/cekilis/{giveaway_slug}-{giveaway_id}"
+    short_id = giveaway['id'].split('-')[0]
+    canonical_url = f"/magaza/{brand['slug']}/cekilis/{giveaway_slug}-{short_id}"
     
     # SEO Meta
     seo_meta = {
