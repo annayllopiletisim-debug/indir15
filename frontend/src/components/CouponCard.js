@@ -3,22 +3,7 @@ import { Link } from 'react-router-dom';
 import { Copy, Check, X, ChevronRight, ExternalLink } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { BaseCard } from './BaseCard';
-import { trackClick, buildUTMLink } from '../utils/helpers';
-
-// Helper to generate URL slug
-const generateSlug = (title) => {
-  if (!title) return '';
-  const trMap = {'ı': 'i', 'ğ': 'g', 'ü': 'u', 'ş': 's', 'ö': 'o', 'ç': 'c',
-                 'İ': 'i', 'Ğ': 'g', 'Ü': 'u', 'Ş': 's', 'Ö': 'o', 'Ç': 'c'};
-  let slug = title.toLowerCase();
-  Object.entries(trMap).forEach(([tr, en]) => {
-    slug = slug.split(tr).join(en);
-  });
-  slug = slug.replace(/[^a-z0-9\s-]/g, '');
-  slug = slug.replace(/[\s_]+/g, '-');
-  slug = slug.replace(/-+/g, '-').replace(/^-|-$/g, '');
-  return slug.substring(0, 50);
-};
+import { trackClick, buildUTMLink, generateSlug, getShortId } from '../utils/helpers';
 
 const CouponCard = ({ coupon, brand, compact = false }) => {
   const [showModal, setShowModal] = useState(false);
@@ -30,9 +15,10 @@ const CouponCard = ({ coupon, brand, compact = false }) => {
   const brandLogoUrl = brand?.logo_url || coupon.brand_logo_url;
   const brandDefaultDealImage = brand?.default_deal_image || coupon.brand_default_deal_image;
 
-  // Generate detail page URL
+  // Generate SEO-friendly detail page URL with short ID
   const couponSlug = generateSlug(coupon.title);
-  const detailUrl = `/magaza/${brandSlug}/kupon/${couponSlug}-${coupon.id}`;
+  const shortId = getShortId(coupon.id);
+  const detailUrl = `/magaza/${brandSlug}/kupon/${couponSlug}-${shortId}`;
 
   const handleGetCode = (e) => {
     e.preventDefault();
