@@ -1,4 +1,40 @@
 backend:
+  - task: "SEO Short URL - Discount Detail"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "main"
+        comment: "✅ GET /api/discount/{short_id}/detail working. Short ID (8 chars) resolves correctly."
+
+  - task: "SEO Short URL - Coupon Detail"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "main"
+        comment: "✅ GET /api/coupon/{short_id}/detail working. Short ID (8 chars) resolves correctly."
+
+  - task: "SEO Short URL - Giveaway Detail"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "main"
+        comment: "✅ GET /api/giveaway/{short_id}/detail working. Short ID (8 chars) resolves correctly."
+
   - task: "Blog Categories API"
     implemented: true
     working: true
