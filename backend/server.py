@@ -961,12 +961,19 @@ async def get_giveaway_detail(giveaway_id: str):
     """
     Get single giveaway with full details for detail page
     Includes: brand info, SEO meta, related deals, expired status
+    Supports both full UUID and short ID (first 8 chars)
     """
     base_url = os.environ.get('SITE_URL', 'https://indirimkestet.com')
     now = datetime.now(timezone.utc)
     
-    # Get giveaway
+    # Get giveaway - support both full UUID and short ID
     giveaway = await db.giveaways.find_one({'id': giveaway_id}, {'_id': 0})
+    if not giveaway:
+        # Try finding by short ID (first 8 characters match)
+        giveaway = await db.giveaways.find_one(
+            {'id': {'$regex': f'^{giveaway_id}'}}, 
+            {'_id': 0}
+        )
     if not giveaway:
         raise HTTPException(status_code=404, detail="Çekiliş bulunamadı")
     
