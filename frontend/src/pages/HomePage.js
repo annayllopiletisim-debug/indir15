@@ -247,10 +247,10 @@ const HomePage = () => {
                   <Link
                     key={brand.id}
                     to={`/magaza/${brand.slug}`}
-                    className="flex-shrink-0 flex flex-col items-center relative"
+                    className="flex-shrink-0 flex flex-col items-center relative group"
                   >
                     {/* Kare logo kartı */}
-                    <div className="w-20 h-20 bg-white rounded-xl border border-gray-200 flex items-center justify-center p-2 hover:border-primary/50 hover:shadow-md transition-all overflow-hidden">
+                    <div className="w-[72px] h-[72px] bg-white rounded-xl border border-gray-200 flex items-center justify-center p-1.5 group-hover:border-primary/50 group-hover:shadow-lg transition-all overflow-hidden">
                       {brand.logo_url ? (
                         <img 
                           src={brand.logo_url.startsWith('/uploads/') 
@@ -270,13 +270,13 @@ const HomePage = () => {
                     </div>
                     
                     {/* Marka adı - kartın altında */}
-                    <span className="text-xs font-medium text-center mt-2 max-w-[80px] truncate">
+                    <span className="text-xs font-medium text-center mt-1.5 max-w-[72px] truncate text-foreground">
                       {brand.name}
                     </span>
                     
                     {/* İndirim sayısı badge - sağ üst köşe */}
                     {dealCount > 0 && (
-                      <span className="absolute -top-1 -right-1 min-w-[20px] h-[20px] px-1 flex items-center justify-center bg-primary text-white text-xs font-bold rounded-full border-2 border-background shadow-sm z-10">
+                      <span className="absolute -top-1.5 -right-1.5 min-w-[20px] h-[20px] px-1 flex items-center justify-center bg-primary text-white text-xs font-bold rounded-full border-2 border-background shadow-sm z-10">
                         {dealCount}
                       </span>
                     )}
