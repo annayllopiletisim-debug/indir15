@@ -89,11 +89,17 @@ const AdminBrandsPage = () => {
     }
   };
 
+  // Helper to check if URL is a local upload
+  const isLocalUpload = (url) => {
+    if (!url) return false;
+    return url.startsWith('/uploads/') || url.startsWith('/api/uploads/');
+  };
+
   const handleEdit = (brand) => {
     setFormData(brand);
     setEditingId(brand.id);
-    setLogoInputMode(brand.logo_url?.startsWith('/uploads/') ? 'upload' : 'url');
-    setDealImageInputMode(brand.default_deal_image?.startsWith('/uploads/') ? 'upload' : 'url');
+    setLogoInputMode(isLocalUpload(brand.logo_url) ? 'upload' : 'url');
+    setDealImageInputMode(isLocalUpload(brand.default_deal_image) ? 'upload' : 'url');
     setShowForm(true);
   };
 
