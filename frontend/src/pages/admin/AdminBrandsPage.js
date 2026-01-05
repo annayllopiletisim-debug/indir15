@@ -469,7 +469,7 @@ const AdminBrandsPage = () => {
                 ) : (
                   <div className="flex gap-2">
                     <input
-                      type="url"
+                      type="text"
                       value={formData.default_deal_image || ''}
                       onChange={(e) => setFormData({...formData, default_deal_image: e.target.value})}
                       className="flex-1 px-4 py-2 bg-void-subtle rounded-lg focus:outline-none focus:ring-2 focus:ring-neon-blue"
@@ -488,7 +488,7 @@ const AdminBrandsPage = () => {
                 {formData.default_deal_image && (
                   <div className="flex items-center justify-between mt-2">
                     <p className="text-xs text-gray-400">
-                      {formData.default_deal_image.startsWith('/uploads/') ? '✓ Sunucuda kayıtlı' : '⚠ Harici URL'}
+                      {isLocalUpload(formData.default_deal_image) ? '✓ Sunucuda kayıtlı' : '⚠ Harici URL'}
                     </p>
                     <button
                       type="button"
