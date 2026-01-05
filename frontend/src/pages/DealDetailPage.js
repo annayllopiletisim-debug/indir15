@@ -56,22 +56,28 @@ const DealDetailPage = () => {
     window.scrollTo({ top: 0, behavior: 'instant' });
   }, [brandSlug, dealSlug]);
 
-  // Extract ID from slug (format: title-slug-uuid where uuid is like xxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx)
-  // UUID has 5 parts separated by hyphens
+  // Extract ID from slug - supports both full UUID and short ID (8 chars)
+  // Format: title-slug-{id} where id can be full UUID or short ID
   const extractIdFromSlug = (slug) => {
     if (!slug) return null;
     const parts = slug.split('-');
-    // UUID is 36 chars: 8-4-4-4-12
-    // Take last 5 parts and join them
+    
+    // First try: Check if last part is a short ID (8 hex chars)
+    const lastPart = parts[parts.length - 1];
+    if (lastPart && /^[a-f0-9]{8}$/i.test(lastPart)) {
+      return lastPart; // Return short ID
+    }
+    
+    // Second try: Full UUID (8-4-4-4-12 format)
     if (parts.length >= 5) {
       const uuidParts = parts.slice(-5);
       const potentialUuid = uuidParts.join('-');
-      // Validate UUID format (8-4-4-4-12)
       if (/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(potentialUuid)) {
         return potentialUuid;
       }
     }
-    // Fallback: try to find UUID pattern anywhere in slug
+    
+    // Fallback: try to find full UUID pattern anywhere in slug
     const uuidMatch = slug.match(/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/i);
     return uuidMatch ? uuidMatch[0] : null;
   };
