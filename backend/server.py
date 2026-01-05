@@ -850,8 +850,14 @@ async def get_discount_detail(discount_id: str):
     base_url = os.environ.get('SITE_URL', 'https://indirimkestet.com')
     now = datetime.now(timezone.utc)
     
-    # Get discount
+    # Get discount - support both full UUID and short ID
     discount = await db.discounts.find_one({'id': discount_id}, {'_id': 0})
+    if not discount:
+        # Try finding by short ID (first 8 characters match)
+        discount = await db.discounts.find_one(
+            {'id': {'$regex': f'^{discount_id}'}}, 
+            {'_id': 0}
+        )
     if not discount:
         raise HTTPException(status_code=404, detail="İndirim bulunamadı")
     
@@ -875,9 +881,10 @@ async def get_discount_detail(discount_id: str):
             expiry = expiry.replace(tzinfo=timezone.utc)
         is_expired = expiry < now
     
-    # Generate slug for URL
+    # Generate slug for URL - use short ID for SEO-friendly URLs
     discount_slug = generate_slug(discount['title'])
-    canonical_url = f"/magaza/{brand['slug']}/indirim/{discount_slug}-{discount_id}"
+    short_id = discount['id'].split('-')[0]
+    canonical_url = f"/magaza/{brand['slug']}/indirim/{discount_slug}-{short_id}"
     
     # SEO Meta
     seo_meta = {
