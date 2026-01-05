@@ -229,7 +229,7 @@ const HomePage = () => {
         <CategorySlider />
 
         {/* ═══════════════════════════════════════════════════════════════
-            1️⃣ POPÜLER MAĞAZALAR (Büyütülmüş logolar + indirim sayısı badge)
+            1️⃣ POPÜLER MAĞAZALAR (Kare logo kartları + indirim sayısı badge)
         ═══════════════════════════════════════════════════════════════ */}
         {brands.length > 0 && (
           <section className="container mx-auto px-4 py-4">
@@ -240,21 +240,43 @@ const HomePage = () => {
               </Link>
             </div>
 
-            <div className="flex gap-3 overflow-x-auto pb-2 pt-3 -mx-4 px-4 scrollbar-hide">
+            <div className="flex gap-4 overflow-x-auto pb-2 pt-3 -mx-4 px-4 scrollbar-hide">
               {brands.slice(0, 10).map((brand) => {
                 const dealCount = brandDealCounts[brand.id] || 0;
                 return (
                   <Link
                     key={brand.id}
                     to={`/magaza/${brand.slug}`}
-                    className="flex-shrink-0 flex items-center gap-3 px-4 py-2.5 bg-card border border-border rounded-xl hover:border-primary/30 transition-colors relative overflow-visible"
+                    className="flex-shrink-0 flex flex-col items-center relative"
                   >
-                    <BrandLogo logoUrl={brand.logo_url} brandName={brand.name} size="sm" />
-                    <span className="text-sm font-medium whitespace-nowrap">{brand.name}</span>
+                    {/* Kare logo kartı */}
+                    <div className="w-20 h-20 bg-white rounded-xl border border-gray-200 flex items-center justify-center p-2 hover:border-primary/50 hover:shadow-md transition-all overflow-hidden">
+                      {brand.logo_url ? (
+                        <img 
+                          src={brand.logo_url.startsWith('/uploads/') 
+                            ? `${process.env.REACT_APP_BACKEND_URL}/api${brand.logo_url}` 
+                            : brand.logo_url.startsWith('/api/uploads/') 
+                            ? `${process.env.REACT_APP_BACKEND_URL}${brand.logo_url}`
+                            : brand.logo_url
+                          } 
+                          alt={brand.name}
+                          className="w-full h-full object-contain"
+                        />
+                      ) : (
+                        <span className="text-2xl font-bold text-gray-400">
+                          {brand.name.charAt(0)}
+                        </span>
+                      )}
+                    </div>
                     
-                    {/* İndirim sayısı badge */}
+                    {/* Marka adı - kartın altında */}
+                    <span className="text-xs font-medium text-center mt-2 max-w-[80px] truncate">
+                      {brand.name}
+                    </span>
+                    
+                    {/* İndirim sayısı badge - sağ üst köşe */}
                     {dealCount > 0 && (
-                      <span className="absolute -top-2.5 -right-2.5 min-w-[22px] h-[22px] px-1.5 flex items-center justify-center bg-primary text-white text-xs font-bold rounded-full border-2 border-background shadow-sm z-10">
+                      <span className="absolute -top-1 -right-1 min-w-[20px] h-[20px] px-1 flex items-center justify-center bg-primary text-white text-xs font-bold rounded-full border-2 border-background shadow-sm z-10">
                         {dealCount}
                       </span>
                     )}
