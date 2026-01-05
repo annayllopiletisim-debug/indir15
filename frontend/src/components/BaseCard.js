@@ -216,8 +216,12 @@ const BaseCard = ({
                   </span>
                 )}
 
-                {/* Campaign Title - Fixed 2-line height for consistent card sizes */}
-                <h3 className="text-base font-semibold text-foreground line-clamp-2 leading-snug min-h-[2.75rem]">
+                {/* Campaign Title - Single line, smaller font for long titles */}
+                <h3 
+                  className={`font-semibold text-foreground truncate leading-snug ${
+                    title && title.length > 30 ? 'text-sm' : 'text-base'
+                  }`}
+                >
                   {title}
                 </h3>
                 
