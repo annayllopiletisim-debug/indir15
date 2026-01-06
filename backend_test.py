@@ -675,6 +675,164 @@ class CouponAPITester:
         print("\n   ✅ Image URL field testing completed!")
         return True
 
+    def test_upload_endpoint(self):
+        """Test the new /api/upload endpoint for image uploads"""
+        print("\n📤 Testing Image Upload Endpoint...")
+        
+        if not self.token:
+            print("   ❌ No admin token available, skipping upload tests")
+            return False
+        
+        # Create a simple test image file (1x1 pixel PNG)
+        import io
+        import base64
+        
+        # 1x1 pixel PNG in base64
+        png_data = base64.b64decode(
+            'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChAI9jU77zgAAAABJRU5ErkJggg=='
+        )
+        
+        print("\n   1. Testing POST /api/upload - Upload test image...")
+        
+        # Prepare multipart form data
+        files = {'file': ('test_image.png', io.BytesIO(png_data), 'image/png')}
+        headers = {'Authorization': f'Bearer {self.token}'}
+        
+        url = f"{self.base_url}/api/upload"
+        self.tests_run += 1
+        print(f"   URL: {url}")
+        
+        try:
+            import requests
+            response = requests.post(url, files=files, headers=headers, timeout=10)
+            
+            success = response.status_code == 200
+            if success:
+                self.tests_passed += 1
+                print(f"✅ Upload successful - Status: {response.status_code}")
+                
+                try:
+                    response_data = response.json()
+                    print(f"   Response keys: {list(response_data.keys())}")
+                    
+                    # Verify response structure
+                    if 'url' in response_data and 'filename' in response_data:
+                        upload_url = response_data['url']
+                        filename = response_data['filename']
+                        
+                        print(f"   ✅ Response has required fields")
+                        print(f"   📁 Filename: {filename}")
+                        print(f"   🔗 URL: {upload_url}")
+                        
+                        # Verify URL format
+                        if upload_url.startswith('/api/uploads/images/') and filename in upload_url:
+                            print(f"   ✅ URL format is correct: /api/uploads/images/{filename}")
+                        else:
+                            print(f"   ❌ URL format incorrect. Expected: /api/uploads/images/{filename}, Got: {upload_url}")
+                        
+                        # Test 2: Verify the uploaded file is accessible
+                        print(f"\n   2. Testing GET {upload_url} - Verify uploaded file is accessible...")
+                        
+                        file_url = f"{self.base_url}{upload_url}"
+                        self.tests_run += 1
+                        print(f"   File URL: {file_url}")
+                        
+                        try:
+                            file_response = requests.get(file_url, timeout=10)
+                            
+                            if file_response.status_code == 200:
+                                self.tests_passed += 1
+                                print(f"✅ File accessible - Status: {file_response.status_code}")
+                                
+                                # Verify content type
+                                content_type = file_response.headers.get('content-type', '')
+                                if 'image' in content_type:
+                                    print(f"   ✅ Content-Type is image: {content_type}")
+                                else:
+                                    print(f"   ⚠️  Content-Type: {content_type}")
+                                
+                                # Verify file size
+                                content_length = len(file_response.content)
+                                if content_length > 0:
+                                    print(f"   ✅ File has content: {content_length} bytes")
+                                else:
+                                    print(f"   ❌ File is empty")
+                                    
+                            else:
+                                print(f"❌ File not accessible - Status: {file_response.status_code}")
+                                print(f"   Response: {file_response.text[:200]}...")
+                                
+                        except Exception as e:
+                            print(f"❌ File access failed - Error: {str(e)}")
+                        
+                    else:
+                        print(f"   ❌ Response missing required fields. Available: {list(response_data.keys())}")
+                        
+                except Exception as e:
+                    print(f"   ❌ Failed to parse JSON response: {str(e)}")
+                    print(f"   Response: {response.text[:200]}...")
+                    
+            else:
+                print(f"❌ Upload failed - Expected 200, got {response.status_code}")
+                print(f"   Response: {response.text[:200]}...")
+                
+        except Exception as e:
+            print(f"❌ Upload request failed - Error: {str(e)}")
+            return False
+        
+        # Test 3: Test upload with invalid file type
+        print(f"\n   3. Testing POST /api/upload - Invalid file type (should fail)...")
+        
+        # Create a text file instead of image
+        text_data = b"This is not an image file"
+        files = {'file': ('test.txt', io.BytesIO(text_data), 'text/plain')}
+        
+        self.tests_run += 1
+        try:
+            response = requests.post(url, files=files, headers=headers, timeout=10)
+            
+            if response.status_code == 400:
+                self.tests_passed += 1
+                print(f"✅ Invalid file type correctly rejected - Status: {response.status_code}")
+                
+                try:
+                    error_data = response.json()
+                    if 'detail' in error_data:
+                        print(f"   ✅ Error message: {error_data['detail']}")
+                    else:
+                        print(f"   ⚠️  Error response: {error_data}")
+                except:
+                    print(f"   ⚠️  Error response: {response.text[:100]}...")
+            else:
+                print(f"❌ Invalid file type not rejected - Status: {response.status_code}")
+                print(f"   Expected 400, got {response.status_code}")
+                
+        except Exception as e:
+            print(f"❌ Invalid file test failed - Error: {str(e)}")
+        
+        # Test 4: Test upload without authentication
+        print(f"\n   4. Testing POST /api/upload - Without authentication (should fail)...")
+        
+        files = {'file': ('test_image.png', io.BytesIO(png_data), 'image/png')}
+        headers_no_auth = {}  # No authorization header
+        
+        self.tests_run += 1
+        try:
+            response = requests.post(url, files=files, headers=headers_no_auth, timeout=10)
+            
+            if response.status_code == 401:
+                self.tests_passed += 1
+                print(f"✅ Unauthenticated request correctly rejected - Status: {response.status_code}")
+            else:
+                print(f"❌ Unauthenticated request not rejected - Status: {response.status_code}")
+                print(f"   Expected 401, got {response.status_code}")
+                
+        except Exception as e:
+            print(f"❌ Unauthenticated test failed - Error: {str(e)}")
+        
+        print("\n   ✅ Upload endpoint testing completed!")
+        return True
+
 def main():
     print("🚀 Starting SavvySaver API Tests...")
     print("=" * 50)
