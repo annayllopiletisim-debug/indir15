@@ -26,7 +26,7 @@ const ContactPage = () => {
                   <Mail className="w-6 h-6 text-neon-purple" />
                 </div>
                 <h3 className="font-heading font-bold mb-2">E-posta</h3>
-                <p className="text-sm text-muted-foreground">info@İndirim Keşfet.com</p>
+                <p className="text-sm text-muted-foreground">hello@indirimkesfet.com</p>
               </div>
 
               <div className="glass-effect p-6 rounded-2xl text-center">
