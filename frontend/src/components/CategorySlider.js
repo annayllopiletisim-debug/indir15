@@ -21,25 +21,26 @@ import {
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
-// Category icon mapping based on slug
+// Category icon mapping based on slug with colors
 const getCategoryIcon = (slug) => {
   const iconMap = {
-    'spor': Dumbbell,
-    'moda': Shirt,
-    'elektronik': Smartphone,
-    'banka': Landmark,
-    'market': ShoppingBag,
-    'yemek': Utensils,
-    'ev-yasam': Home,
-    'otomotiv': Car,
-    'seyahat': Plane,
-    'kozmetik': Sparkles,
-    'bebek': Baby,
-    'kitap': Book,
-    'oyun': Gamepad2,
-    'saglik': Heart,
+    'spor': { icon: Dumbbell, color: 'text-orange-500' },
+    'moda': { icon: Shirt, color: 'text-pink-500' },
+    'elektronik': { icon: Smartphone, color: 'text-blue-500' },
+    'banka': { icon: Landmark, color: 'text-emerald-600' },
+    'market': { icon: ShoppingBag, color: 'text-violet-500' },
+    'yemek': { icon: Utensils, color: 'text-yellow-600' },
+    'gida': { icon: Utensils, color: 'text-yellow-600' },
+    'ev-yasam': { icon: Home, color: 'text-green-500' },
+    'otomotiv': { icon: Car, color: 'text-gray-600' },
+    'seyahat': { icon: Plane, color: 'text-sky-500' },
+    'kozmetik': { icon: Sparkles, color: 'text-purple-500' },
+    'bebek': { icon: Baby, color: 'text-pink-400' },
+    'kitap': { icon: Book, color: 'text-amber-600' },
+    'oyun': { icon: Gamepad2, color: 'text-indigo-500' },
+    'saglik': { icon: Heart, color: 'text-red-500' },
   };
-  return iconMap[slug] || LayoutGrid;
+  return iconMap[slug] || { icon: LayoutGrid, color: 'text-primary' };
 };
 
 const CategorySlider = () => {
