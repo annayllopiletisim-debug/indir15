@@ -298,7 +298,7 @@ const AdminCouponsPage = () => {
                   <td className="px-4 py-3"><code className="px-2 py-1 bg-void-subtle rounded text-sm">{coupon.code}</code></td>
                   <td className="px-4 py-3 text-gray-400">{getBrandName(coupon.brand_id)}</td>
                   <td className="px-4 py-3 text-sm text-gray-400">
-                    {coupon.expiry_date ? new Date(coupon.expiry_date).toLocaleDateString('tr-TR') : '-'}
+                    {coupon.expiry_date ? new Date(coupon.expiry_date).toLocaleDateString('tr-TR') : 'Süresiz'}
                   </td>
                   <td className="px-4 py-3">
                     <span className={`px-2 py-1 rounded-full text-xs ${
