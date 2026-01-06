@@ -212,7 +212,7 @@ function DealCard({ deal, type }: { deal: any; type: string }) {
             {brand && (
               <div className="flex items-center gap-2 mb-1">
                 {brand.logo_url && (
-                  <img src={brand.logo_url} alt={brand.name} className="w-6 h-6 rounded object-contain" />
+                  <img src={getImageUrl(brand.logo_url)} alt={brand.name} className="w-6 h-6 rounded object-contain" />
                 )}
                 <span className="text-sm font-medium truncate">{brand.name}</span>
               </div>
@@ -244,7 +244,7 @@ function CouponCard({ coupon }: { coupon: any }) {
     <article className="bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all duration-200 overflow-hidden border border-border p-4">
       <div className="flex items-center gap-3 mb-3">
         {brand?.logo_url && (
-          <img src={brand.logo_url} alt={brand.name} className="w-10 h-10 rounded-lg object-contain border" />
+          <img src={getImageUrl(brand.logo_url)} alt={brand.name} className="w-10 h-10 rounded-lg object-contain border" />
         )}
         <div>
           <span className="font-medium">{brand?.name}</span>
