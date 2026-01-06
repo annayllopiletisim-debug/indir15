@@ -164,7 +164,7 @@ metadata:
 
 test_plan:
   current_focus:
-    - "SEO Short URL - Frontend Implementation"
+    - "Image Upload Endpoint"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
