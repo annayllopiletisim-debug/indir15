@@ -230,8 +230,9 @@ const HomePage = () => {
 
         {/* ═══════════════════════════════════════════════════════════════
             1️⃣ POPÜLER MAĞAZALAR (Kare logo kartları + indirim sayısı badge)
+            Minimum 30 mağaza, swipe edilebilir
         ═══════════════════════════════════════════════════════════════ */}
-        {brands.length > 0 && (
+        {allBrands.length > 0 && (
           <section className="container mx-auto px-4 py-4">
             <div className="flex items-center justify-between mb-3">
               <span className="text-sm text-muted-foreground">Popüler Mağazalar</span>
@@ -240,14 +241,14 @@ const HomePage = () => {
               </Link>
             </div>
 
-            <div className="flex gap-4 overflow-x-auto pb-2 pt-3 -mx-4 px-4 scrollbar-hide">
-              {brands.slice(0, 10).map((brand) => {
-                const dealCount = brandDealCounts[brand.id] || 0;
+            <div className="flex gap-4 overflow-x-auto pb-2 pt-3 -mx-4 px-4 scrollbar-hide snap-x snap-mandatory">
+              {allBrands.slice(0, 30).map((brand) => {
+                const dealCount = brand.deal_count || brandDealCounts[brand.id] || 0;
                 return (
                   <Link
                     key={brand.id}
                     to={`/magaza/${brand.slug}`}
-                    className="flex-shrink-0 flex flex-col items-center relative group"
+                    className="flex-shrink-0 flex flex-col items-center relative group snap-start"
                   >
                     {/* Kare logo kartı */}
                     <div className="w-[72px] h-[72px] bg-white rounded-xl border border-gray-200 flex items-center justify-center p-1.5 group-hover:border-primary/50 group-hover:shadow-lg transition-all overflow-hidden">
