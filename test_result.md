@@ -107,6 +107,18 @@ backend:
         agent: "testing"
         comment: "✅ Blog Post CRUD operations working correctly. Successfully tested POST /api/blog/posts (create), GET /api/blog/posts/{slug} (read), PUT /api/blog/posts/{id} (update), and DELETE /api/blog/posts/{id} (delete). All operations require authentication and work as expected."
 
+  - task: "Image Upload Endpoint"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "✅ Image upload endpoint /api/upload working perfectly! Successfully tested: 1) Admin login with credentials (admin/admin123), 2) POST /api/upload with image file returns correct response format {url: '/api/uploads/images/{filename}', filename: '{filename}'}, 3) Uploaded file accessible via GET request to returned URL with proper content-type (image/png), 4) File validation correctly rejects invalid file types (400 status), 5) Authentication properly required (403 for unauthenticated requests). Upload endpoint fully functional and secure."
+
 frontend:
   - task: "SEO Short URL - Frontend Implementation"
     implemented: true
