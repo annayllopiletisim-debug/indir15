@@ -144,7 +144,7 @@ const CategoryNav = () => {
           })}
           
           {hiddenCategories.length > 0 && (
-            <div className="relative">
+            <div className="relative" ref={dropdownRef}>
               <button
                 onClick={() => setShowAll(!showAll)}
                 className="px-3 py-2 rounded-lg border border-border hover:border-primary/50 hover:bg-muted/50 transition-all font-medium text-sm flex items-center gap-2"
@@ -165,7 +165,7 @@ const CategoryNav = () => {
                   >
                     {hiddenCategories.map((category) => {
                       const isActive = location.pathname === `/kategori/${category.slug}`;
-                      const IconComponent = getCategoryIcon(category.slug);
+                      const { icon: IconComponent, color: iconColor } = getCategoryIcon(category.slug);
                       return (
                         <Link
                           key={category.id}
@@ -177,7 +177,7 @@ const CategoryNav = () => {
                           }`}
                           onClick={() => setShowAll(false)}
                         >
-                          <IconComponent className={`w-4 h-4 ${isActive ? 'text-primary' : 'text-muted-foreground'}`} />
+                          <IconComponent className={`w-4 h-4 ${isActive ? 'text-primary' : iconColor}`} />
                           {category.name}
                           {category.total_deals > 0 && (
                             <span className="text-xs text-muted-foreground ml-auto">
