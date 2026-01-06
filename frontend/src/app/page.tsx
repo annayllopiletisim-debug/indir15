@@ -1,9 +1,9 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
-import Image from 'next/image';
 import connectDB from '@/lib/db';
 import { Brand, Discount, Coupon, Category } from '@/lib/models';
 import { getShortId, generateSlug } from '@/lib/utils';
+import { getImageUrl } from '@/lib/image';
 import { Flame, Tag, Gift, ArrowRight, Clock } from 'lucide-react';
 
 export const metadata: Metadata = {
