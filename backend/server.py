@@ -523,6 +523,36 @@ async def delete_category(category_id: str, user: AdminUser = Depends(get_curren
 
 # ================== UPLOAD ENDPOINTS ==================
 
+# General image upload endpoint for deals/campaigns
+@api_router.post("/upload", response_model=UploadResponse)
+async def upload_image(file: UploadFile = File(...), user: AdminUser = Depends(get_current_user)):
+    """Upload general images for deals, campaigns, etc."""
+    # Validate file type
+    allowed_types = ['image/jpeg', 'image/png', 'image/webp', 'image/gif']
+    if file.content_type not in allowed_types:
+        raise HTTPException(status_code=400, detail="Görsel dosyası JPEG, PNG, WebP veya GIF formatında olmalıdır")
+    
+    # Read and check file size (max 5MB)
+    content = await file.read()
+    max_size = 5 * 1024 * 1024  # 5MB
+    if len(content) > max_size:
+        raise HTTPException(status_code=400, detail="Görsel dosyası en fazla 5MB olabilir")
+    
+    # Create images directory if not exists
+    images_dir = UPLOADS_DIR / 'images'
+    images_dir.mkdir(exist_ok=True)
+    
+    # Generate unique filename
+    ext = file.filename.split('.')[-1] if '.' in file.filename else 'jpg'
+    filename = f"{uuid.uuid4()}.{ext}"
+    filepath = images_dir / filename
+    
+    # Save file
+    async with aiofiles.open(filepath, 'wb') as f:
+        await f.write(content)
+    
+    return UploadResponse(url=f"/api/uploads/images/{filename}", filename=filename)
+
 @api_router.post("/upload/logo", response_model=UploadResponse)
 async def upload_logo(file: UploadFile = File(...), user: AdminUser = Depends(get_current_user)):
     # Validate file type
