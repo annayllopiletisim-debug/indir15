@@ -193,9 +193,9 @@ const BaseCard = ({
 
               {/* Right: Content - aligned with image top */}
               <div className="flex-1 min-w-0 flex flex-col py-0 pr-1">
-                {/* Brand Logo + Name */}
+                {/* Brand Logo + Name - Single line, smaller font if needed */}
                 {brandName && (
-                  <div className="inline-flex items-center gap-2.5 mb-2 self-start">
+                  <div className="inline-flex items-center gap-2.5 mb-2 self-start max-w-full">
                     {brandLogoUrl && (
                       <div className="w-10 h-10 sm:w-12 sm:h-12 bg-white rounded-lg border border-gray-200 flex items-center justify-center overflow-hidden flex-shrink-0">
                         <img 
@@ -205,7 +205,9 @@ const BaseCard = ({
                         />
                       </div>
                     )}
-                    <span className="text-xl sm:text-2xl font-bold text-foreground">{brandName}</span>
+                    <span className={`font-bold text-foreground truncate ${
+                      brandName.length > 15 ? 'text-base sm:text-lg' : 'text-lg sm:text-xl'
+                    }`}>{brandName}</span>
                   </div>
                 )}
 
