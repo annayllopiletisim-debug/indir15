@@ -46,6 +46,7 @@ const CategoryNav = () => {
   const [categories, setCategories] = useState([]);
   const [showAll, setShowAll] = useState(false);
   const location = useLocation();
+  const dropdownRef = useRef(null);
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -61,21 +62,37 @@ const CategoryNav = () => {
     fetchCategories();
   }, []);
 
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setShowAll(false);
+      }
+    };
+
+    if (showAll) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showAll]);
+
   const visibleCategories = categories.slice(0, 6);
   const hiddenCategories = categories.slice(6);
 
   // Check if "Tümü" should be active (home page or no category selected)
   const isAllActive = location.pathname === '/' || location.pathname === '/kategoriler';
 
-  // Get icon for category
+  // Get icon and color for category
   const getCategoryIcon = (slug) => {
     const normalizedSlug = slug?.toLowerCase().replace(/[ıİ]/g, 'i').replace(/[şŞ]/g, 's').replace(/[ğĞ]/g, 'g').replace(/[üÜ]/g, 'u').replace(/[öÖ]/g, 'o').replace(/[çÇ]/g, 'c');
-    for (const [key, Icon] of Object.entries(categoryIcons)) {
+    for (const [key, data] of Object.entries(categoryIcons)) {
       if (normalizedSlug?.includes(key)) {
-        return Icon;
+        return data;
       }
     }
-    return ShoppingBag;
+    return { icon: ShoppingBag, color: 'text-violet-500' };
   };
 
   return (
