@@ -95,7 +95,7 @@ const CategorySlider = () => {
 
         {categories.map((category) => {
           const isActive = location.pathname === `/kategori/${category.slug}`;
-          const IconComponent = getCategoryIcon(category.slug);
+          const { icon: IconComponent, color: iconColor } = getCategoryIcon(category.slug);
           return (
             <Link
               key={category.id}
@@ -107,7 +107,7 @@ const CategorySlider = () => {
               }`}
               data-testid={`category-slide-${category.slug}`}
             >
-              <IconComponent className="w-4 h-4" />
+              <IconComponent className={`w-4 h-4 ${isActive ? 'text-primary' : iconColor}`} />
               {category.name}
               {/* İndirim sayısı badge */}
               {category.total_deals > 0 && (
