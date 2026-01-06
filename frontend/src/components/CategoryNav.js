@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { 
   ChevronDown, 
@@ -22,24 +22,24 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
-// Category icons mapping
+// Category icons mapping with colors
 const categoryIcons = {
-  'spor': Dumbbell,
-  'moda': Shirt,
-  'elektronik': Smartphone,
-  'gida': Utensils,
-  'yemek': Utensils,
-  'ev': Home,
-  'mobilya': Home,
-  'otomotiv': Car,
-  'seyahat': Plane,
-  'kozmetik': Sparkles,
-  'bebek': Baby,
-  'banka': Landmark,
-  'finans': Landmark,
-  'oyun': Gamepad2,
-  'saglik': Heart,
-  'alisveris': ShoppingBag,
+  'spor': { icon: Dumbbell, color: 'text-orange-500' },
+  'moda': { icon: Shirt, color: 'text-pink-500' },
+  'elektronik': { icon: Smartphone, color: 'text-blue-500' },
+  'gida': { icon: Utensils, color: 'text-yellow-600' },
+  'yemek': { icon: Utensils, color: 'text-yellow-600' },
+  'ev': { icon: Home, color: 'text-green-500' },
+  'mobilya': { icon: Home, color: 'text-green-500' },
+  'otomotiv': { icon: Car, color: 'text-gray-600' },
+  'seyahat': { icon: Plane, color: 'text-sky-500' },
+  'kozmetik': { icon: Sparkles, color: 'text-purple-500' },
+  'bebek': { icon: Baby, color: 'text-pink-400' },
+  'banka': { icon: Landmark, color: 'text-emerald-600' },
+  'finans': { icon: Landmark, color: 'text-emerald-600' },
+  'oyun': { icon: Gamepad2, color: 'text-indigo-500' },
+  'saglik': { icon: Heart, color: 'text-red-500' },
+  'alisveris': { icon: ShoppingBag, color: 'text-violet-500' },
 };
 
 const CategoryNav = () => {
