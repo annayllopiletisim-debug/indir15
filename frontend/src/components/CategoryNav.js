@@ -118,7 +118,7 @@ const CategoryNav = () => {
 
           {visibleCategories.map((category) => {
             const isActive = location.pathname === `/kategori/${category.slug}`;
-            const IconComponent = getCategoryIcon(category.slug);
+            const { icon: IconComponent, color: iconColor } = getCategoryIcon(category.slug);
             return (
               <Link
                 key={category.id}
@@ -130,7 +130,7 @@ const CategoryNav = () => {
                 }`}
                 data-testid={`category-nav-${category.slug}`}
               >
-                <IconComponent className={`w-4 h-4 ${isActive ? 'text-primary' : 'text-muted-foreground'}`} />
+                <IconComponent className={`w-4 h-4 ${isActive ? 'text-primary' : iconColor}`} />
                 {category.name}
                 {category.total_deals > 0 && (
                   <span className={`text-xs px-1.5 py-0.5 rounded-full ${
