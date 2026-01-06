@@ -63,24 +63,8 @@ const Header = () => {
               {/* Desktop Nav - With icons and borders like mobile */}
               <nav className="hidden lg:flex items-center space-x-2">
                 <Link 
-                  to="/kategoriler" 
-                  className="px-3 py-2 rounded-lg border border-border hover:border-primary/50 hover:bg-muted/50 transition-all flex items-center gap-2 text-sm font-medium" 
-                  data-testid="header-categories-link"
-                >
-                  <LayoutGrid className="w-4 h-4 text-primary" />
-                  Kategoriler
-                </Link>
-                <Link 
-                  to="/magazalar" 
-                  className="px-3 py-2 rounded-lg border border-border hover:border-primary/50 hover:bg-muted/50 transition-all flex items-center gap-2 text-sm font-medium" 
-                  data-testid="header-stores-link"
-                >
-                  <Store className="w-4 h-4 text-primary" />
-                  Mağazalar
-                </Link>
-                <Link 
                   to="/son-24-saat" 
-                  className="px-3 py-2 rounded-lg border border-orange-300 dark:border-orange-700 bg-orange-50 dark:bg-orange-900/20 hover:bg-orange-100 dark:hover:bg-orange-900/40 transition-all flex items-center gap-2 text-sm font-medium text-orange-600 dark:text-orange-400" 
+                  className="px-3 py-2 rounded-lg border border-red-300 dark:border-red-700 bg-red-50 dark:bg-red-900/20 hover:bg-red-100 dark:hover:bg-red-900/40 transition-all flex items-center gap-2 text-sm font-medium text-red-600 dark:text-red-400" 
                   data-testid="header-expiring-link"
                 >
                   <Flame className="w-4 h-4" />
