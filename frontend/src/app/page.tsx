@@ -98,7 +98,7 @@ export default async function HomePage() {
               <div className="w-[72px] h-[72px] bg-white rounded-xl border border-gray-200 flex items-center justify-center p-1.5 group-hover:border-primary/50 group-hover:shadow-lg transition-all overflow-hidden relative">
                 {brand.logo_url ? (
                   <img
-                    src={brand.logo_url.startsWith('/') ? brand.logo_url : `/api/uploads/${brand.logo_url}`}
+                    src={brand.logo_url.startsWith('http') ? brand.logo_url : `https://kesfet-deals.preview.emergentagent.com${brand.logo_url.startsWith('/api') ? brand.logo_url : '/api' + brand.logo_url}`}
                     alt={brand.name}
                     className="w-full h-full object-contain"
                   />
