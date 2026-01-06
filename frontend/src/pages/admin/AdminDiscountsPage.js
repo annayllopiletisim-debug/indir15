@@ -349,11 +349,11 @@ const AdminDiscountsPage = () => {
                   </td>
                   <td className="px-4 py-3 text-gray-400">{getBrandName(discount.brand_id)}</td>
                   <td className="px-4 py-3 text-sm text-gray-400">
-                    {discount.expiry_date ? new Date(discount.expiry_date).toLocaleDateString('tr-TR') : '-'}
+                    {discount.expiry_date ? new Date(discount.expiry_date).toLocaleDateString('tr-TR') : 'Süresiz'}
                   </td>
                   <td className="px-4 py-3">
-                    <span className={`px-2 py-1 rounded-full text-xs ${isExpired(discount.expiry_date) ? 'bg-red-500/20 text-red-400' : 'bg-green-500/20 text-green-400'}`}>
-                      {isExpired(discount.expiry_date) ? 'Süresi Doldu' : 'Aktif'}
+                    <span className={`px-2 py-1 rounded-full text-xs ${discount.expiry_date && isExpired(discount.expiry_date) ? 'bg-red-500/20 text-red-400' : 'bg-green-500/20 text-green-400'}`}>
+                      {discount.expiry_date && isExpired(discount.expiry_date) ? 'Süresi Doldu' : 'Aktif'}
                     </span>
                   </td>
                   <td className="px-4 py-3 text-right">
