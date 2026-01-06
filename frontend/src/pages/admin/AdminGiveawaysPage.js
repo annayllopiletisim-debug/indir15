@@ -238,7 +238,7 @@ const AdminGiveawaysPage = () => {
                     </span>
                   </td>
                   <td className="p-4 text-sm">
-                    {giveaway.expiry_date ? new Date(giveaway.expiry_date).toLocaleDateString('tr-TR') : '-'}
+                    {giveaway.expiry_date ? new Date(giveaway.expiry_date).toLocaleDateString('tr-TR') : 'Süresiz'}
                   </td>
                   <td className="p-4">
                     <span className={`px-2 py-1 rounded text-xs ${
