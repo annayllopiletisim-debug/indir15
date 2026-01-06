@@ -190,13 +190,13 @@ function DealCard({ deal, type }: { deal: any; type: string }) {
           <div className="w-24 h-24 rounded-xl overflow-hidden bg-violet-100 flex-shrink-0">
             {deal.image_url || brand?.default_deal_image ? (
               <img
-                src={deal.image_url || brand?.default_deal_image}
+                src={getImageUrl(deal.image_url || brand?.default_deal_image)}
                 alt={deal.title}
                 className="w-full h-full object-cover"
               />
             ) : brand?.logo_url ? (
               <img
-                src={brand.logo_url}
+                src={getImageUrl(brand.logo_url)}
                 alt={brand.name}
                 className="w-full h-full object-contain p-2"
               />
