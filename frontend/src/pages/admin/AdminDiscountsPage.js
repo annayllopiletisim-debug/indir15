@@ -252,7 +252,7 @@ const AdminDiscountsPage = () => {
                     <Input value={formData.discount_text} onChange={(e) => setFormData({...formData, discount_text: e.target.value})} placeholder="%30 İndirim" />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium mb-1">Bitiş Tarihi</label>
+                    <label className="block text-sm font-medium mb-1">Bitiş Tarihi <span className="text-gray-400 font-normal">(Opsiyonel - Boş bırakılırsa süresiz)</span></label>
                     <Input type="datetime-local" value={formData.expiry_date} onChange={(e) => setFormData({...formData, expiry_date: e.target.value})} />
                   </div>
                 </div>
