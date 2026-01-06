@@ -218,11 +218,10 @@ const BaseCard = ({
                   </span>
                 )}
 
-                {/* Campaign Title - Single line, smaller font for long titles */}
+                {/* Campaign Title - Max 2 lines with ellipsis */}
                 <h3 
-                  className={`font-semibold text-foreground truncate leading-snug ${
-                    title && title.length > 30 ? 'text-sm' : 'text-base'
-                  }`}
+                  className="font-semibold text-foreground line-clamp-2 leading-snug text-sm sm:text-base h-[2.6rem] sm:h-[2.8rem]"
+                  title={title}
                 >
                   {title}
                 </h3>
