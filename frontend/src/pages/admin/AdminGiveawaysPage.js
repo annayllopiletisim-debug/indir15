@@ -178,7 +178,7 @@ const AdminGiveawaysPage = () => {
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium mb-1">Bitiş Tarihi</label>
+                    <label className="block text-sm font-medium mb-1">Bitiş Tarihi <span className="text-gray-400 font-normal">(Opsiyonel - Boş bırakılırsa süresiz)</span></label>
                     <Input type="date" value={formData.expiry_date} onChange={(e) => setFormData({...formData, expiry_date: e.target.value})} />
                   </div>
                   <div className="flex items-center gap-2 pt-6">
