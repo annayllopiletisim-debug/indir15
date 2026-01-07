@@ -33,8 +33,8 @@ export default function DealCard({ deal, brand, href }: DealCardProps) {
   };
 
   return (
-    <Link href={href} className="block group">
-      <article className="bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all p-4 border border-gray-100 h-full group-hover:border-purple-200">
+    <Link href={href} className="block group h-full">
+      <article className="bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all p-4 border border-gray-100 h-full group-hover:border-purple-200 flex flex-col">
         <div className="flex gap-4">
           <div className="w-20 h-20 rounded-xl overflow-hidden bg-purple-50 flex-shrink-0">
             {deal.image_url || brand?.default_deal_image ? (
@@ -53,26 +53,28 @@ export default function DealCard({ deal, brand, href }: DealCardProps) {
                 {deal.discount_text}
               </span>
             )}
-            <h3 className="font-semibold text-sm line-clamp-2 mb-2 group-hover:text-purple-600 transition-colors">{deal.title}</h3>
-            {deal.expiry_date && (
-              <div className="flex items-center gap-1 text-xs text-gray-500 mt-auto">
-                <Clock className="w-3 h-3" />
-                {new Date(deal.expiry_date).toLocaleDateString('tr-TR')}
-              </div>
-            )}
+            {/* Fixed height title area - always 2 lines */}
+            <h3 className="font-semibold text-sm line-clamp-2 min-h-[2.5rem] group-hover:text-purple-600 transition-colors">{deal.title}</h3>
+            {/* Fixed height for date area */}
+            <div className="h-5 mt-auto">
+              {deal.expiry_date && (
+                <div className="flex items-center gap-1 text-xs text-gray-500">
+                  <Clock className="w-3 h-3" />
+                  {new Date(deal.expiry_date).toLocaleDateString('tr-TR')}
+                </div>
+              )}
+            </div>
           </div>
         </div>
         
-        {/* CTA Button */}
-        {destinationUrl && (
-          <button 
-            onClick={handleCtaClick}
-            className="mt-4 w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-purple-600 text-white rounded-xl font-semibold hover:bg-purple-700 transition-colors text-sm"
-          >
-            Mağazaya Git
-            <ExternalLink className="w-4 h-4" />
-          </button>
-        )}
+        {/* CTA Button - always at bottom */}
+        <button 
+          onClick={handleCtaClick}
+          className="mt-4 w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-purple-600 text-white rounded-xl font-semibold hover:bg-purple-700 transition-colors text-sm"
+        >
+          Mağazaya Git
+          <ExternalLink className="w-4 h-4" />
+        </button>
       </article>
     </Link>
   );
