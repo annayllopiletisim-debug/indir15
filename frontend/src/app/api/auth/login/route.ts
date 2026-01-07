@@ -11,19 +11,13 @@ const ADMIN_PASSWORD_HASH = '$2b$12$KyxZqhWBt9ViySfOUH1DSumNQ6e0wjhhR.XjeeikyQct
 export async function POST(request: Request) {
   try {
     const { username, password } = await request.json();
-    
-    console.log('Login attempt:', { username, envUser: ADMIN_USERNAME });
-    console.log('Hash from env:', ADMIN_PASSWORD_HASH);
 
     // Validate credentials
     if (username !== ADMIN_USERNAME) {
-      console.log('Username mismatch');
       return NextResponse.json({ error: 'Geçersiz kullanıcı adı veya şifre' }, { status: 401 });
     }
 
     const isValidPassword = bcrypt.compareSync(password, ADMIN_PASSWORD_HASH);
-    console.log('Password valid:', isValidPassword);
-    
     if (!isValidPassword) {
       return NextResponse.json({ error: 'Geçersiz kullanıcı adı veya şifre' }, { status: 401 });
     }
