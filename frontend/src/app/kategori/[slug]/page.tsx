@@ -4,8 +4,8 @@ import { notFound } from 'next/navigation';
 import connectDB from '@/lib/db';
 import { Category, Brand, Discount, Coupon } from '@/lib/models';
 import { getImageUrl } from '@/lib/image';
-import { getShortId, generateSlug } from '@/lib/utils';
-import { Tag, Clock, Store } from 'lucide-react';
+import { Store } from 'lucide-react';
+import CategoryDealsFilter from '@/components/CategoryDealsFilter';
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -124,111 +124,21 @@ export default async function CategoryPage({ params }: Props) {
           </section>
         )}
 
-        {/* Discounts */}
-        {discounts.length > 0 && (
-          <section className="mb-10">
-            <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
-              <Tag className="w-5 h-5 text-primary" />
-              İndirimler
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {discounts.map((discount: any) => (
-                <DealCard key={discount.id} deal={discount} type="indirim" />
-              ))}
-            </div>
-          </section>
+        {/* Deals with Filter */}
+        {(discounts.length > 0 || coupons.length > 0) && (
+          <CategoryDealsFilter 
+            discounts={discounts} 
+            coupons={coupons}
+            category={category} 
+          />
         )}
 
-        {/* Coupons */}
-        {coupons.length > 0 && (
-          <section className="mb-10">
-            <h2 className="text-xl font-bold mb-4">Kupon Kodları</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {coupons.map((coupon: any) => (
-                <CouponCard key={coupon.id} coupon={coupon} />
-              ))}
-            </div>
-          </section>
+        {discounts.length === 0 && coupons.length === 0 && (
+          <div className="text-center py-12 bg-white rounded-2xl">
+            <p className="text-gray-500">Bu kategoride henüz fırsat bulunmuyor.</p>
+          </div>
         )}
       </div>
     </div>
-  );
-}
-
-function DealCard({ deal, type }: { deal: any; type: string }) {
-  const brand = deal.brand;
-  if (!brand) return null;
-  
-  const shortId = getShortId(deal.id);
-  const slug = generateSlug(deal.title);
-  const href = `/magaza/${brand.slug}/${type}/${slug}-${shortId}`;
-
-  return (
-    <Link href={href} className="block">
-      <article className="bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all p-4 border h-full">
-        <div className="flex gap-4">
-          <div className="w-20 h-20 rounded-xl overflow-hidden bg-violet-50 flex-shrink-0">
-            {deal.image_url || brand.default_deal_image ? (
-              <img src={getImageUrl(deal.image_url || brand.default_deal_image)} alt={deal.title} className="w-full h-full object-cover" />
-            ) : brand.logo_url ? (
-              <img src={getImageUrl(brand.logo_url)} alt={brand.name} className="w-full h-full object-contain p-2" />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center text-violet-300">
-                <Tag className="w-8 h-8" />
-              </div>
-            )}
-          </div>
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2 mb-1">
-              {brand.logo_url && (
-                <img src={getImageUrl(brand.logo_url)} alt={brand.name} className="w-5 h-5 rounded object-contain" />
-              )}
-              <span className="text-xs font-medium truncate text-muted-foreground">{brand.name}</span>
-            </div>
-            {deal.discount_text && (
-              <span className="inline-block px-2 py-0.5 text-xs font-bold rounded-full bg-green-100 text-green-700 mb-1">
-                {deal.discount_text}
-              </span>
-            )}
-            <h3 className="font-semibold text-sm line-clamp-2">{deal.title}</h3>
-            {deal.expiry_date && (
-              <div className="flex items-center gap-1 text-xs text-muted-foreground mt-2">
-                <Clock className="w-3 h-3" />
-                {new Date(deal.expiry_date).toLocaleDateString('tr-TR')}
-              </div>
-            )}
-          </div>
-        </div>
-      </article>
-    </Link>
-  );
-}
-
-function CouponCard({ coupon }: { coupon: any }) {
-  const brand = coupon.brand;
-  
-  return (
-    <article className="bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all p-4 border">
-      <div className="flex items-center gap-2 mb-2">
-        {brand?.logo_url && (
-          <img src={getImageUrl(brand.logo_url)} alt={brand.name} className="w-6 h-6 rounded object-contain" />
-        )}
-        <span className="text-sm font-medium">{brand?.name}</span>
-      </div>
-      {coupon.discount_text && (
-        <span className="inline-block px-2 py-0.5 text-xs font-bold rounded-full bg-green-100 text-green-700 mb-2">
-          {coupon.discount_text}
-        </span>
-      )}
-      <h3 className="font-semibold text-sm mb-3 line-clamp-2">{coupon.title}</h3>
-      <div className="flex items-center gap-2">
-        <code className="flex-1 px-3 py-2 bg-violet-50 border border-dashed border-violet-300 rounded-lg text-center font-mono font-bold text-violet-700 text-sm">
-          {coupon.code}
-        </code>
-        <button className="px-3 py-2 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary/90">
-          Kopyala
-        </button>
-      </div>
-    </article>
   );
 }
