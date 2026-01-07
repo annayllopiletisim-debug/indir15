@@ -21,8 +21,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const shortId = extractIdFromSlug(dealSlug);
   
   await connectDB();
-  const discount = await Discount.findOne({ id: { $regex: `^${shortId}` } }).lean();
   
+  // Parallel queries for discount and brand
+  const discount = await Discount.findOne({ id: { $regex: `^${shortId}` } }).lean();
   if (!discount) return { title: 'İndirim Bulunamadı' };
   
   const brand = await Brand.findOne({ id: (discount as any).brand_id }).lean();
@@ -39,15 +40,19 @@ async function getDealData(dealSlug: string) {
   const shortId = extractIdFromSlug(dealSlug);
   
   await connectDB();
+  
+  // First get the discount
   const discount = await Discount.findOne({ id: { $regex: `^${shortId}` } }).lean();
   if (!discount) return null;
   
-  const brand = await Brand.findOne({ id: (discount as any).brand_id }).lean();
-  
-  const relatedDiscounts = await Discount.find({
-    brand_id: (discount as any).brand_id,
-    id: { $ne: (discount as any).id }
-  }).limit(4).lean();
+  // Parallel queries for brand and related discounts
+  const [brand, relatedDiscounts] = await Promise.all([
+    Brand.findOne({ id: (discount as any).brand_id }).lean(),
+    Discount.find({
+      brand_id: (discount as any).brand_id,
+      id: { $ne: (discount as any).id }
+    }).limit(4).lean()
+  ]);
   
   return {
     discount: { ...(discount as any), _id: (discount as any)._id?.toString() },
