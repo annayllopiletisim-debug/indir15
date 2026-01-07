@@ -3,54 +3,31 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Search, Menu, X, Flame, Mail, Tag, Gift, Home, Clock } from 'lucide-react';
+import { Menu, X, Flame, Mail, Home, Clock, Tag, Gift } from 'lucide-react';
+import SearchBar from './SearchBar';
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const pathname = usePathname();
-  const isHomePage = pathname === '/';
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border bg-white">
       <div className="container mx-auto px-4">
-        <div className="flex h-16 items-center justify-between">
+        <div className="flex h-16 items-center gap-4">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2">
+          <Link href="/" className="flex items-center gap-2 flex-shrink-0">
             <span className="text-xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
               İndirim Keşfet
             </span>
           </Link>
 
-          {/* Search - Desktop (hidden on homepage) */}
-          {!isHomePage && (
-            <div className="hidden md:flex flex-1 max-w-md mx-8">
-              <div className="relative w-full">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                <input
-                  type="search"
-                  placeholder="Mağaza veya kampanya ara..."
-                  className="w-full pl-10 pr-4 py-2 rounded-xl border border-gray-200 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                />
-              </div>
-            </div>
-          )}
+          {/* Search - Desktop */}
+          <div className="hidden md:flex flex-1 max-w-xl">
+            <SearchBar compact />
+          </div>
 
           {/* Navigation - Desktop */}
-          <nav className="hidden lg:flex items-center space-x-2">
-            <Link
-              href="/magazalar"
-              className="px-3 py-2 rounded-lg hover:bg-gray-100 transition-all flex items-center gap-2 text-sm font-medium text-gray-700"
-            >
-              <Tag className="w-4 h-4 text-purple-600" />
-              Mağazalar
-            </Link>
-            <Link
-              href="/kuponlar"
-              className="px-3 py-2 rounded-lg hover:bg-gray-100 transition-all flex items-center gap-2 text-sm font-medium text-gray-700"
-            >
-              <Gift className="w-4 h-4 text-purple-600" />
-              Kuponlar
-            </Link>
+          <nav className="hidden lg:flex items-center space-x-1 flex-shrink-0">
             <Link
               href="/bitmek-uzere"
               className="px-3 py-2 rounded-lg border border-orange-300 bg-orange-50 hover:bg-orange-100 transition-all flex items-center gap-2 text-sm font-medium text-orange-600"
@@ -76,7 +53,7 @@ export default function Header() {
 
           {/* Mobile Menu Button */}
           <button 
-            className="lg:hidden p-2 rounded-lg hover:bg-gray-100"
+            className="lg:hidden p-2 rounded-lg hover:bg-gray-100 ml-auto"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
           >
             {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
@@ -89,13 +66,8 @@ export default function Header() {
         <div className="lg:hidden border-t bg-white">
           <div className="container mx-auto px-4 py-4 space-y-2">
             {/* Mobile Search */}
-            <div className="relative mb-4">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-              <input
-                type="search"
-                placeholder="Mağaza veya kampanya ara..."
-                className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-500"
-              />
+            <div className="mb-4">
+              <SearchBar />
             </div>
 
             <Link
