@@ -87,9 +87,36 @@ export default function AdminDiscountsPage() {
       discount_text: discount.discount_text || '',
       expiry_date: discount.expiry_date?.split('T')[0] || '',
       is_featured: discount.is_featured || false,
+      destination_url: discount.destination_url || '',
+      image_url: discount.image_url || '',
     });
     setEditingId(discount.id);
     setShowForm(true);
+  };
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploading(true);
+    try {
+      const uploadFormData = new FormData();
+      uploadFormData.append('file', file);
+
+      const res = await fetch('/api/upload', {
+        method: 'POST',
+        body: uploadFormData,
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        setFormData({ ...formData, image_url: data.url });
+      }
+    } catch (err) {
+      console.error('Upload error:', err);
+    } finally {
+      setUploading(false);
+    }
   };
 
   const handleDelete = async (id: string) => {
@@ -103,7 +130,7 @@ export default function AdminDiscountsPage() {
   };
 
   const resetForm = () => {
-    setFormData({ brand_id: '', title: '', description: '', discount_text: '', expiry_date: '', is_featured: false });
+    setFormData({ brand_id: '', title: '', description: '', discount_text: '', expiry_date: '', is_featured: false, destination_url: '', image_url: '' });
     setEditingId(null);
     setShowForm(false);
   };
