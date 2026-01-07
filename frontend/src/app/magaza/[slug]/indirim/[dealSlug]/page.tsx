@@ -204,7 +204,7 @@ export default async function DiscountDetailPage({ params }: Props) {
                 {/* Sidebar CTA */}
                 {!isExpired && destinationUrl && (
                   <a
-                    href={destinationUrl}
+                    href={addUtmParams(destinationUrl)}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-purple-600 text-white rounded-xl font-semibold hover:bg-purple-700 transition-colors mb-3"
