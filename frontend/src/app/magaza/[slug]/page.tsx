@@ -6,7 +6,9 @@ import { Brand, Discount, Coupon, Giveaway } from '@/lib/models';
 import { getImageUrl } from '@/lib/image';
 import { getShortId, generateSlug } from '@/lib/utils';
 import { addUtmParams } from '@/lib/utm';
-import { Tag, Ticket, Gift, ExternalLink, Clock, Copy } from 'lucide-react';
+import { Tag, Ticket, Gift, ExternalLink } from 'lucide-react';
+import DealCard from '@/components/DealCard';
+import CouponCard from '@/components/CouponCard';
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -109,9 +111,14 @@ export default async function BrandPage({ params }: Props) {
               İndirimler ({discounts.length})
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {discounts.map((discount: any) => (
-                <DealCard key={discount.id} deal={discount} brand={brand} type="indirim" />
-              ))}
+              {discounts.map((discount: any) => {
+                const shortId = getShortId(discount.id);
+                const dealSlug = generateSlug(discount.title);
+                const href = `/magaza/${brand.slug}/indirim/${dealSlug}-${shortId}`;
+                return (
+                  <DealCard key={discount.id} deal={discount} brand={brand} href={href} />
+                );
+              })}
             </div>
           </section>
         )}
@@ -139,9 +146,14 @@ export default async function BrandPage({ params }: Props) {
               Çekilişler ({giveaways.length})
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {giveaways.map((giveaway: any) => (
-                <DealCard key={giveaway.id} deal={giveaway} brand={brand} type="cekilis" />
-              ))}
+              {giveaways.map((giveaway: any) => {
+                const shortId = getShortId(giveaway.id);
+                const dealSlug = generateSlug(giveaway.title);
+                const href = `/magaza/${brand.slug}/cekilis/${dealSlug}-${shortId}`;
+                return (
+                  <DealCard key={giveaway.id} deal={giveaway} brand={brand} href={href} />
+                );
+              })}
             </div>
           </section>
         )}
@@ -153,103 +165,5 @@ export default async function BrandPage({ params }: Props) {
         )}
       </div>
     </div>
-  );
-}
-
-function DealCard({ deal, brand, type }: { deal: any; brand: any; type: string }) {
-  const shortId = getShortId(deal.id);
-  const dealSlug = generateSlug(deal.title);
-  const href = `/magaza/${brand.slug}/${type}/${dealSlug}-${shortId}`;
-  const destinationUrl = deal.destination_url || brand.affiliate_url || brand.website_url;
-
-  return (
-    <Link href={href} className="block group">
-      <article className="bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all p-4 border border-gray-100 h-full group-hover:border-purple-200">
-        <div className="flex gap-4">
-          <div className="w-20 h-20 rounded-xl overflow-hidden bg-purple-50 flex-shrink-0">
-            {deal.image_url || brand.default_deal_image ? (
-              <img src={getImageUrl(deal.image_url || brand.default_deal_image)} alt={deal.title} className="w-full h-full object-cover" />
-            ) : brand.logo_url ? (
-              <img src={getImageUrl(brand.logo_url)} alt={brand.name} className="w-full h-full object-contain p-2" />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center text-purple-300">
-                <Tag className="w-8 h-8" />
-              </div>
-            )}
-          </div>
-          <div className="flex-1 min-w-0 flex flex-col">
-            {deal.discount_text && (
-              <span className="inline-block self-start px-2 py-0.5 text-xs font-bold rounded-full bg-green-100 text-green-700 mb-1">
-                {deal.discount_text}
-              </span>
-            )}
-            <h3 className="font-semibold text-sm line-clamp-2 mb-2 group-hover:text-purple-600 transition-colors">{deal.title}</h3>
-            {deal.expiry_date && (
-              <div className="flex items-center gap-1 text-xs text-gray-500 mt-auto">
-                <Clock className="w-3 h-3" />
-                {new Date(deal.expiry_date).toLocaleDateString('tr-TR')}
-              </div>
-            )}
-          </div>
-        </div>
-        
-        {/* CTA Button */}
-        {destinationUrl && (
-          <a 
-            href={addUtmParams(destinationUrl)}
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={(e) => e.stopPropagation()}
-            className="mt-4 w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-purple-600 text-white rounded-xl font-semibold hover:bg-purple-700 transition-colors text-sm"
-          >
-            Mağazaya Git
-            <ExternalLink className="w-4 h-4" />
-          </a>
-        )}
-      </article>
-    </Link>
-  );
-}
-
-function CouponCard({ coupon, brand }: { coupon: any; brand: any }) {
-  const destinationUrl = coupon.destination_url || brand.affiliate_url || brand.website_url;
-
-  return (
-    <article className="bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all p-4 border border-gray-100">
-      {coupon.discount_text && (
-        <span className="inline-block px-2 py-0.5 text-xs font-bold rounded-full bg-green-100 text-green-700 mb-2">
-          {coupon.discount_text}
-        </span>
-      )}
-      <h3 className="font-semibold text-sm mb-3 line-clamp-2">{coupon.title}</h3>
-      <div className="flex items-center gap-2 mb-3">
-        <code className="flex-1 px-3 py-2 bg-purple-50 border border-dashed border-purple-300 rounded-lg text-center font-mono font-bold text-purple-700 text-sm">
-          {coupon.code}
-        </code>
-        <button className="p-2 bg-purple-100 text-purple-600 rounded-lg hover:bg-purple-200 transition-colors" title="Kopyala">
-          <Copy className="w-5 h-5" />
-        </button>
-      </div>
-      
-      {/* CTA Button */}
-      {destinationUrl && (
-        <a 
-          href={addUtmParams(destinationUrl)}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-purple-600 text-white rounded-xl font-semibold hover:bg-purple-700 transition-colors text-sm"
-        >
-          Mağazaya Git
-          <ExternalLink className="w-4 h-4" />
-        </a>
-      )}
-      
-      {coupon.expiry_date && (
-        <div className="flex items-center gap-1 text-xs text-gray-500 mt-3">
-          <Clock className="w-3 h-3" />
-          Son: {new Date(coupon.expiry_date).toLocaleDateString('tr-TR')}
-        </div>
-      )}
-    </article>
   );
 }
