@@ -100,6 +100,17 @@ const BlogPostSchema = new Schema({
   updated_at: { type: Date, default: Date.now },
 }, { collection: 'blog_posts' });
 
+// Contact Message Schema
+const ContactMessageSchema = new Schema({
+  id: { type: String, required: true, unique: true },
+  name: { type: String, required: true },
+  email: { type: String, required: true },
+  subject: String,
+  message: { type: String, required: true },
+  is_read: { type: Boolean, default: false },
+  created_at: { type: Date, default: Date.now },
+}, { collection: 'contact_messages' });
+
 export const Brand = models.Brand || mongoose.model('Brand', BrandSchema);
 export const Discount = models.Discount || mongoose.model('Discount', DiscountSchema);
 export const Coupon = models.Coupon || mongoose.model('Coupon', CouponSchema);
@@ -107,3 +118,4 @@ export const Giveaway = models.Giveaway || mongoose.model('Giveaway', GiveawaySc
 export const Category = models.Category || mongoose.model('Category', CategorySchema);
 export const Newsletter = models.Newsletter || mongoose.model('Newsletter', NewsletterSchema);
 export const BlogPost = models.BlogPost || mongoose.model('BlogPost', BlogPostSchema);
+export const ContactMessage = models.ContactMessage || mongoose.model('ContactMessage', ContactMessageSchema);
