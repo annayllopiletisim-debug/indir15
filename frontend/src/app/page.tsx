@@ -119,48 +119,6 @@ export default async function HomePage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Search Section */}
-      <section className="bg-white py-6 border-b">
-        <div className="container mx-auto px-4">
-          <div className="relative max-w-2xl mx-auto">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-            <input
-              type="text"
-              placeholder="Marka ve kampanya ara..."
-              className="w-full pl-12 pr-4 py-4 border border-gray-200 rounded-2xl text-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent shadow-sm"
-            />
-          </div>
-        </div>
-      </section>
-
-      {/* Category Pills */}
-      <section className="bg-white py-4 border-b">
-        <div className="container mx-auto px-4">
-          <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
-            <Link
-              href="/"
-              className="flex-shrink-0 flex items-center gap-2 px-5 py-2.5 rounded-full bg-purple-600 text-white font-medium"
-            >
-              <span className="text-lg">📦</span>
-              Tümü
-            </Link>
-            {categories.slice(0, 8).map((category: any) => {
-              const config = categoryConfig[category.slug] || { icon: '📁', color: 'text-gray-600' };
-              return (
-                <Link
-                  key={category.id}
-                  href={`/kategori/${category.slug}`}
-                  className="flex-shrink-0 flex items-center gap-2 px-5 py-2.5 rounded-full bg-white border border-gray-200 hover:border-purple-300 hover:shadow-md transition-all font-medium"
-                >
-                  <span className={`text-lg ${config.color}`}>{config.icon}</span>
-                  <span>{category.name}</span>
-                </Link>
-              );
-            })}
-          </div>
-        </div>
-      </section>
-
       {/* Popüler Mağazalar */}
       <section className="container mx-auto px-4 py-8">
         <div className="flex items-center justify-between mb-6">
