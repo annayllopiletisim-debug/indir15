@@ -1,179 +1,198 @@
 <analysis>**original_problem_statement:**
-The user's initial goal was to build a highly optimized, SEO-driven Turkish deals platform named İndirim Keşfet. The platform supports Discounts, Coupons, and Giveaways, with programmatic SEO pages and an admin panel featuring Google Sheet import. The project has since evolved into a highly iterative UI/UX-focused development process, with the user providing rapid, detailed feedback and requesting significant redesigns of major pages. Key features include AI-powered content generation, a full blog module, and fallback images for deals.
+The user's initial goal was to build a highly optimized, SEO-driven Turkish deals platform. The project started as a React SPA with a FastAPI backend. However, due to SEO concerns raised by the user regarding the SPA architecture, the user explicitly requested a full migration to Next.js to achieve Server-Side Rendering (SSR) for better performance and search engine indexing.
 
 **PRODUCT REQUIREMENTS (latest consolidated version):**
-- **Core Functionality:** A full-stack application (React, FastAPI, MongoDB) serving as a deals platform.
-- **Admin Panel:** Full CRUD for all content types (Deals, Coupons, Giveaways, Brands, Blog Posts), Google Sheet import, and image uploads.
-- **UI/UX - Mobile First & Iterative:** The user is heavily focused on UI/UX, providing frequent, detailed feedback. Recent work involved multiple card layout adjustments, adding share buttons, and refining mobile views.
-- **SEO Enhancements:** The user is focused on SEO, requesting features like a detailed footer, and most recently, a cleaner URL structure that removes long UUIDs.
-- **Blog Module:** A complete blog with categories, posts, admin management, and on-page SEO fields. The implementation should also include in-article CTA boxes linking to product categories.
-- **Fallback Image Logic:** If a specific deal does not have a cover image, the system should use a default image specified at the brand level.
+- **Core Architecture:** A full-stack application built with Next.js (App Router) for optimal SEO and performance, using TailwindCSS and shadcn/ui for the frontend, and MongoDB for the database.
+- **Key Features:** The platform must support Discounts, Coupons, and Giveaways. It requires a full blog module and an admin panel for all content management.
+- **Public Pages (SSR):** Homepage, Store listings, Category listings, individual Store/Category pages, Deal detail pages, and static pages like Contact must be server-side rendered.
+- **Admin Panel:** A comprehensive admin panel with full CRUD functionality for all content types (Deals, Coupons, Giveaways, Brands, Blog Posts, Categories). This section should be client-side rendered and protected by authentication.
+- **UI/UX Requests:**
+    - Redesign the Popular Stores section on the homepage to be a swipeable carousel showing at least 30 stores, with a specific card design (square logo, white background, brand name below).
+    - Update category navigation to use colored icons and have the More dropdown close on an outside click.
+    - Refine deal card layouts to ensure uniform height, with the brand name on a single line and the deal title spanning up to two lines.
+- **Integrations:**
+    - Implement Google Tag Manager.
+    - Plan for Brevo integration for email marketing.
 
 **User's preferred language**: Turkish
 
 **what currently exists?**
-A functional full-stack application with a React frontend, FastAPI backend, and MongoDB database. The agent has recently completed several significant tasks:
-- **Fixed Critical Bugs:** Resolved an issue with the AI content generation feature caused by a  file formatting error and added an API interceptor to handle expired sessions gracefully.
-- **Implemented Blog Module:** Created a complete blog system including backend models/APIs () and frontend pages for listing (), detail view (), and a full admin management interface (). Also fixed follow-up bugs related to category loading in the admin panel.
-- **Implemented Brand Image Fallback:** Added a  field to brands. This involved updating the backend model and API, adding a new upload field to the admin brands page, and modifying all card components (, etc.) to use this image as a fallback.
-- **Iterative UI/UX Improvements:**
-  - Added expiry dates to deal cards with specific formatting and layout as requested by the user.
-  - Added WhatsApp and Copy Link sharing buttons to deal detail pages and fixed mobile layout issues.
-  - Adjusted card title styling multiple times to ensure all cards on a page have a uniform height.
-- **SEO URL Structure Refactoring:** Began implementing a change to shorten deal URLs by replacing the full UUID with a short, 8-character version for better SEO and readability. The code has been written but not tested.
+The agent has successfully migrated the application from a Create React App (SPA) + FastAPI architecture to a monolithic Next.js 14 application using the App Router. The old  directory is now obsolete, and all API logic resides in Next.js API Routes within .
+
+**Key migration achievements:**
+- **SSR Public Pages:** The homepage, store/category list pages, and individual store/category detail pages are fully implemented with Server-Side Rendering, fetching data directly from MongoDB.
+- **Admin Panel Foundation:** The admin panel login, authentication (JWT in cookies), and the main dashboard page are complete and functional. The dashboard displays key statistics fetched from the database.
+- **UI/UX Updates:** All recent user requests for UI changes (Popular Stores carousel, category icon colors, header cleanup, card design consistency) have been implemented in the new Next.js components.
+- **Bug Fixes:** Several bugs from the old application (Turkish character slugification, optional expiry dates, admin form validation for uploaded images, and missing image upload endpoint) were addressed during the implementation of the old app, and the learnings were partially carried over.
 
 **Last working item**:
-- **Last item agent was working on:** Implementing SEO-friendly short URLs for all deal types (discounts, coupons, giveaways). The goal was to change URLs from  to .
+- **Last item agent was working:** Implementing the Admin Panel. The agent had just successfully implemented the login and main dashboard page and was creating the file structure for the remaining CRUD pages (Brands, Discounts, Coupons).
 - **Status:** IN PROGRESS
-- **Agent Testing Done:** N
-- **Which testing method agent to use?** Frontend testing agent. This is a critical user flow change affecting URL generation on cards and parsing on detail pages. The test should verify that clicking a deal card leads to a correctly formatted short URL and that the detail page loads the correct data.
+- **Agent Testing Done:** Y (Tested admin login and dashboard functionality with  and screenshots).
+- **Which testing method agent to use?** Frontend testing agent. Once a full CRUD section (e.g., Brands) is complete, the testing agent should be used to verify the create, read, update, and delete flows from the UI.
 - **User Testing Done:** N
 
 **All Pending/In progress Issue list**:
-- **Issue 1: Test and Verify SEO-friendly Short URLs (P0)**
-- **Issue 2: Happy Scarfs default image feature not working (P1)**
+- **Issue 1: Admin Login Password Hash is Hardcoded (P0)**
+- **Issue 2: Admin Form Validation for Uploaded Images (P1)**
+- **Issue 3: Generic Image Upload API Endpoint Missing (P1)**
 
 **Issues Detail:**
-- **Issue 1: Test and Verify SEO-friendly Short URLs**
-  - **Attempted fixes:** The agent has modified the frontend and backend code. Frontend card components now generate a URL with a short ID (). The detail page () is updated to extract this short ID. The backend detail endpoints in  were modified to use a regex query () to find documents by a partial ID prefix.
+- **Issue 1: Admin Login Password Hash is Hardcoded**
+  - **Attempted fixes:** The agent discovered that the  character in the bcrypt hash stored in  was being misinterpreted by the shell, causing the variable to be read incorrectly. As a temporary workaround to unblock development, the agent hardcoded the hash directly into the  file.
   - **Next debug checklist:**
-    1.  Restart the backend service to ensure all changes in  are active.
-    2.  Run an end-to-end test using the frontend testing agent:
-        - Navigate to the homepage.
-        - Click a deal card.
-        - Verify the browser URL uses the new short format (e.g., ).
-        - Verify the correct deal content loads on the detail page.
-    3.  If it fails, check backend logs for errors on the detail endpoints (e.g., ). The  logic might be faulty.
-    4.  Check the frontend console on the detail page to confirm the correct ID is being extracted and sent to the API.
-  - **Why fix this issue and what will be achieved with the fix?** To fulfill a user request for cleaner, more readable, and SEO-friendly URLs.
-  - **Status:** IN PROGRESS
-  - **Is recurring issue?** N
-  - **Should Test frontend/backend/both after fix?** both
-  - **Blocked on other issue:** None
-
-- **Issue 2: Happy Scarfs default image feature not working**
-  - **Attempted fixes:** None. The agent confirmed via API that the  for the brand was  but was then diverted to another task before investigating the root cause.
-  - **Next debug checklist:**
-    1.  Ask the user to try re-uploading the Varsayılan Fırsat Görseli for the Happy Scarfs brand in the admin panel ().
-    2.  Use  to inspect the brand's data via . Check if the  field gets populated after the upload.
-    3.  If the field remains , investigate the form submission logic in  (, ) and the backend update logic in  (the  endpoint). The data might not be getting sent from the frontend or saved on the backend correctly.
-  - **Why fix this issue and what will be achieved with the fix?** This will ensure the recently developed fallback image feature is reliable and works for all brands as intended.
+    1.  Investigate proper ways to store secrets with special characters for Next.js. The hash should be wrapped in single quotes in the  file (e.g., ).
+    2.  Modify the  file with the correctly escaped hash.
+    3.  Remove the hardcoded hash from the login API route and replace it with .
+    4.  Restart the development server and test the login functionality.
+  - **Why fix this issue and what will be achieved with the fix?** Hardcoding credentials is a major security risk and bad practice. This fix will secure the admin password and make it configurable via environment variables as intended.
   - **Status:** NOT STARTED
   - **Is recurring issue?** N
+  - **Should Test frontend/backend/both after fix?** backend (API route)
+  - **Blocked on other issue:** None
+
+- **Issue 2: Admin Form Validation for Uploaded Images**
+  - **Description:** In the previous React app, the user reported a bug where editing a brand and saving would fail if the brand already had an uploaded logo (e.g., ). The form incorrectly treated the local path as an invalid external URL. The agent fixed this in the React app. This functionality needs to be implemented/verified in the new Next.js admin pages.
+  - **Next debug checklist:**
+    1. Implement the Edit Brand functionality in .
+    2. Ensure the form logic correctly identifies existing uploaded images (paths starting with  or ) and doesn't trigger URL validation errors upon submission.
+    3. Create a helper function  if not already present.
+  - **Why fix this issue and what will be achieved with the fix?** It will prevent a frustrating user experience where admins cannot update brand information without re-uploading the logo every time.
+  - **Status:** NOT STARTED
+  - **Is recurring issue?** Y
+  - **Should Test frontend/backend/both after fix?** Frontend
+  - **Blocked on other issue:** None
+
+- **Issue 3: Generic Image Upload API Endpoint Missing**
+  - **Description:** The user reported that uploading images for deals was failing. The agent fixed this in the old FastAPI backend by adding a generic  endpoint. This endpoint needs to be created as a Next.js API Route.
+  - **Next debug checklist:**
+    1. Create a new API route, e.g., .
+    2. This route should handle  requests, save the uploaded file to the  directory with a unique name, and return the public URL ().
+    3. Secure this endpoint to ensure only authenticated admins can use it.
+    4. Integrate this endpoint into the admin forms for creating/editing deals.
+  - **Why fix this issue and what will be achieved with the fix?** It is a core requirement for admins to be able to add images to deals, coupons, and giveaways.
+  - **Status:** NOT STARTED
+  - **Is recurring issue?** Y
   - **Should Test frontend/backend/both after fix?** both
   - **Blocked on other issue:** None
 
+
 **In progress Task List**:
-- **Task 1: Complete and Test SEO-Friendly URL Implementation**
-  - **Where to resume:** The code has been written. The immediate next step is to restart the backend and conduct thorough end-to-end testing of the deal click-through flow.
-  - **What will be achieved with this?** Cleaner, shorter URLs site-wide, improving SEO and user experience.
+- **Task 1: Complete Next.js Migration - Phase 4: Admin Panel CRUD (P0)**
+  - **Where to resume:** The agent has created the page files for  and  and the API route files for , , and . The next step is to build the UI and data-fetching logic for the Mağazalar (Brands) page () as the first complete CRUD example.
+  - **What will be achieved with this?** A fully functional admin panel within the new Next.js architecture, allowing the user to manage all site content.
   - **Status:** IN PROGRESS
   - **Should Test frontend/backend/both after fix?** both
   - **Blocked on something:** None.
 
 **Upcoming and Future Tasks**
 - **Upcoming Tasks:**
-  - **Implement Blog CTA Boxes (P1):** The user requested implementing in-article Call-to-Action boxes as specified in the  artifact. This involves:
-    - Adding a field to select related product categories when creating/editing a blog post in .
-    - Creating React components for Yazı Ortası CTA Kutusu and Yazı Sonu CTA Kutusu.
-    - Dynamically inserting these components into the content rendered by .
-  - **Cookie Consent Banner (P2):** Postponed by the user (sıraya alalım daha sonra yaparız).
+  - **(P0) Next.js Migration - Phase 4 (Continued):**
+    - Implement full CRUD for **Discounts**, **Coupons**, **Giveaways**, and **Categories** in the admin panel.
+  - **(P1) Next.js Migration - Phase 5: Blog and Finalization**
+    - Re-implement the **Blog** module (listing, detail pages, and admin management) in Next.js.
+    - Automatically generate .
 - **Future Tasks:**
-  - **AI Image Generation (P2):** On hold by the user.
-  - **Email Marketing Integration (P2):** On hold by the user.
-  - **Full Turkish Alphabet Support (P3):** For the  component.
-  - **Analytics Integration (P3):** General future task.
+  - **(P1) Brevo Integration:** Implement newsletter subscription form logic to send emails to a Brevo account.
+  - **(P2) Admin Subscribers Page:** Create a new page in the admin panel to view the list of newsletter subscribers from the database.
+  - **(P2) Cookie Consent Banner:** Implement a cookie consent banner.
 
 **Completed work in this session**
-- **AI Content Generation Fixed:** Repaired the feature by fixing a  format error and adding a 401 interceptor.
-- **Full Blog Module Implemented:** Added backend models/APIs and frontend pages for public blog and admin management.
-- **Blog Admin Panel Bugs Fixed:** Resolved issues with category dropdowns not loading in the admin form.
-- **Brand Default Image Fallback:** Implemented logic for deals to use a brand's default image if they don't have their own. This included backend changes, admin UI updates, and modifying all card components.
-- **Data Integrity Fix:** Manually corrected a broken logo URL for the 'Adidas' brand in the database.
-- **Multiple UI/UX Refinements:**
-  - Added and styled expiry dates on deal cards per user specifications.
-  - Added WhatsApp/Copy Link share buttons to deal detail pages, including mobile layout fixes.
-  - Enforced uniform card heights by standardizing title container styles.
-- **Deployment Support:** Answered user's questions about deployment infrastructure and costs using the support agent.
+- **MAJOR: Migrated entire application from React (SPA) + FastAPI to a full-stack Next.js (App Router) application.**
+  - **Phase 1: Project Setup:** Initialized Next.js, configured TailwindCSS, shadcn/ui, and MongoDB.
+  - **Phase 2: SSR Public Pages:** Built and deployed server-rendered public pages for the homepage, stores, categories, contact, and more, ensuring content is available for SEO crawlers.
+  - **Phase 3: Admin Auth & Dashboard:** Built the admin login system with JWT and created the main dashboard page.
+- **Resolved Critical Bugs in Old App (before migration):**
+  - Fixed a slug generation bug for Turkish characters (İ).
+  - Fixed a deal image upload failure by adding a missing API endpoint.
+  - Fixed a validation bug preventing deals from being saved without an expiry date.
+  - Fixed an admin form validation bug for existing uploaded images.
+- **Implemented Multiple UI/UX Requests:**
+  - Redesigned Popular Stores into a swipeable carousel.
+  - Removed header buttons and updated category navigation with colored icons and improved dropdown behavior.
+  - Standardized the height and layout of all deal cards.
+- **Added Google Tag Manager** to the application's HTML structure.
 
 **Earlier issues found/mentioned but not fixed**
-- The Happy Scarfs default image bug was reported by the user but not addressed. It is now captured in the **All Pending/In progress Issue list**.
+- The user requests for Brevo integration and a newsletter subscribers page were postponed to prioritize the critical Next.js migration. They are now listed under Future Tasks.
 
 **Known issue recurrence from previous fork**
-- **Admin Panel Styling:** The previous fork noted potential brittleness in the admin panel's CSS. While no new bugs appeared in this session, the highly iterative nature of UI requests means this remains an area to watch.
+- **Admin Panel Bugs:** Several bugs related to the admin panel (image uploads, form validation) were fixed in the old React app and are now resurfacing as required implementations for the new Next.js admin panel. These are captured in the All Pending/In progress Issue list.
 
 **Code Architecture**
 
 
 **Key Technical Concepts**
-- **Short URL Routing:** Using a combination of frontend URL generation () and backend regex path matching with a database  query to resolve entities from a partial ID.
-- **API Response Interceptors:** Using  interceptors to globally handle 401 Unauthorized errors and redirect the user.
-- **Pydantic Model Enrichment:** Adding optional fields to Pydantic response models (, ) to prevent FastAPI from stripping out enriched data (like brand details) that is not part of the core DB model.
-- **Data Integrity Debugging:** Identifying and fixing a broken image link by comparing the database value with the actual filename on the server and manually updating the database record.
+- **Next.js App Router:** The new foundation of the app, enabling SSR, SSG, and API Routes.
+- **Server-Side Rendering (SSR):** Public-facing pages are rendered on the server for optimal SEO and fast initial load.
+- **API Routes:** The entire FastAPI backend has been replaced with Next.js API routes for a monolithic full-stack structure.
+- **JWT Authentication:** Admin authentication is handled by signing a JWT and storing it in a secure, HTTP-only cookie.
+- **Environment Variable Handling:** Encountered and worked around an issue with shell expansion of  characters in  files, leading to a temporary hardcoded secret.
 
 **key DB schema**
-- **Brand:** Added .
-- **Discount, Coupon, Giveaway (Pydantic Models):** Added , , , .
-- **BlogCategory (New):** 
-- **BlogPost (New):** 
+- No changes made to the MongoDB schema. The data models were translated into TypeScript interfaces in .
 
 **changes in tech stack**
-- No new dependencies added in this session.
+- **Complete architectural shift:** Replaced **Create React App (SPA) + FastAPI (Python)** with a monolithic **Next.js 14 (TypeScript)** application. The Python backend is now obsolete.
+- **New Dependencies:** , , , , .
 
 **All files of reference**
-- **/app/backend/server.py**: Main file for all backend logic, including new blog endpoints and short ID search logic.
-- **/app/frontend/src/pages/DealDetailPage.js**: Key file for parsing the new short URL format.
-- **/app/frontend/src/utils/helpers.js**: Contains the new URL generation and parsing helper functions.
-- **/app/frontend/src/components/CouponCard.js**, **DiscountCard.js**, **GiveawayCard.js**: These components generate the new short URLs.
-- **/app/frontend/src/pages/admin/AdminBrandsPage.js**: Contains the UI logic for the potentially buggy Default Deal Image upload.
+- **/app/frontend/src/app/api/auth/login/route.ts**: Admin login endpoint. **Contains a hardcoded password hash that must be fixed.**
+- **/app/frontend/src/app/admin/(dashboard)/layout.tsx**: Layout for the protected admin area, handles session checking.
+- **/app/frontend/src/app/admin/(dashboard)/magazalar/page.tsx**: The next page to be implemented for Brand CRUD.
+- **/app/frontend/src/app/page.tsx**: The SSR homepage, a good reference for fetching and displaying data.
+- **/app/frontend/src/lib/db.ts**: The MongoDB database connection utility.
+- **/app/backend/**: This entire directory is **obsolete**.
 
 **Areas that need refactoring**:
-- ** Decomposition:** The  file has grown to over 3000 lines and is becoming unmanageable. It should be broken down into separate files by concern (e.g., , , , etc.).
-- **Data Enrichment Logic:** The logic to add brand information to deals is duplicated across multiple API endpoints (, , ). This should be centralized into a single reusable function to ensure consistency and reduce code duplication.
+- **Remove Obsolete Backend:** The entire  directory should be deleted to avoid confusion.
+- **Fix Hardcoded Secret:** The hardcoded password hash in the login API route must be replaced with a proper environment variable.
 
 **key api endpoints**
-- **New Blog Endpoints:** , 
-- **Updated Detail Endpoints (for Short ID):**
-  - 
-  - 
-  - 
+- : Admin login.
+- : CRUD for brands.
+- : Update/Delete for a single brand.
+- (To be created) Similar RESTful endpoints for , , , .
 
 **Critical Info for New Agent**
-- **Your immediate priority is to test the new short URL feature.** The code is fully implemented but completely untested. A failure here would break all links to deal detail pages.
-- **Next, you must investigate the Happy Scarfs bug.** The user has reported that the default image upload is not working for this brand, which points to a bug in the feature you just built.
-- **The user gives very specific, iterative UI feedback.** Always confirm your understanding and plan before coding, and be prepared to make small, precise adjustments to layout, fonts, and text based on feedback.
+- **The application has been migrated to Next.js.** Do NOT work in the  directory; it is obsolete. All new work happens in .
+- **Your immediate priority is to complete the admin panel migration.** Start with the Mağazalar (Brands) CRUD functionality.
+- **You MUST fix the hardcoded password hash in the login API route.** This is a critical security vulnerability and a temporary workaround.
+- The user is technically savvy and made a deliberate choice to move to Next.js for SEO. Ensure all public pages remain performant and server-rendered.
 - **You must respond in Turkish.**
 
 **documents and test reports created in this job**
-- 
+- None.
 
 **Last 10 User Messages and any pending HUMAN messages**
-1.  **Request:** Equalize card heights so they don't look uneven. -> **Status:** DONE (but later revised).
-2.  **Request:** Change card titles to be single-line to fix height issues. -> **Status:** DONE.
-3.  **Question:** Is my URL structure () good for SEO? -> **Status:** Answered, with a recommendation to shorten the UUID.
-4.  **Request:** Yes, let's shorten the URLs across the whole site. -> **Status:** IN PROGRESS.
-5.  **Feedback:** The fallback image on Adidas cards is working, but now the Adidas logo is broken. -> **Status:** FIXED (Data integrity issue).
-6.  **Feedback:** I added an image to the Happy Scarfs store, but the fallback isn't working for it. -> **Status:** NOT ADDRESSED.
-7.  **Request:** Let's add the expiry dates back to the cards. -> **Status:** DONE.
-8.  **Request:** Add the label Bitiş Tarihi to the date. -> **Status:** DONE.
-9.  **Request:** For mobile, split the expiry date into two lines and add share buttons to the detail page. -> **Status:** DONE.
-10. **Feedback:** The new share buttons are breaking the layout on mobile. -> **Status:** FIXED.
+1.  **Request:** Add Google Tag Manager code. -> **Status:** DONE.
+2.  **Question:** Is my site SPA? This seems bad for SEO. -> **Status:** Agent confirmed it is an SPA and explained the SEO drawbacks.
+3.  **Request:** I don't want an SPA. Let's plan a migration to Next.js. How long will it take? -> **Status:** Agent provided a detailed migration plan and timeline.
+4.  **Confirmation:** I don't want an SPA, I want a fast, SEO-friendly site. -> **Status:** Agent recommended Next.js as the best solution.
+5.  **Decision:** Let's start the Next.js migration. -> **Status:** IN PROGRESS (Migration started).
+6.  **Confirmation:** Let's move to the next phase (alt sayfalar). -> **Status:** DONE (Public pages created).
+7.  **Confirmation:**  (continue) -> **Status:** DONE (Admin auth and dashboard created).
+8.  **Confirmation:**  (continue) -> **Status:** Agent is about to start the next step.
+9.  **Message about contact page email** -> **Status:** Addressed before migration.
+10. **Message about newsletter subscribers** -> **Status:** Addressed before migration, now a future task.
 
 **Project Health Check:**
 - **Broken:**
-  - The SEO-friendly short URL feature is implemented but untested and should be considered broken until verified.
-  - The Default Deal Image upload feature is reported as not working for at least one brand (Happy Scarfs).
-- **Mocked:** None. Data is live.
+  - The admin panel is mostly non-functional beyond the dashboard. CRUD operations for all content types are missing.
+  - Admin authentication relies on a hardcoded password hash.
+- **Mocked:**
+  - None. All data is being pulled from the live MongoDB database.
 
 **3rd Party Integrations**
-- **Google Sheets:** Used for admin data import via .
-- **OpenAI GPT-4o-mini:** Used for AI content generation via . Uses Emergent LLM Key.
+- **Google Sheets:** Used in the old backend for data import. Needs to be re-evaluated/re-implemented for the Next.js admin panel if still required.
+- **OpenAI GPT-4o-mini:** Used for AI content generation in the old backend. Needs to be re-implemented as a Next.js API route if still required. Uses Emergent LLM Key.
+- **Brevo:** Requested by the user for email marketing. Not yet implemented.
 
 **Testing status**
-- **Testing agent used after significant changes:** YES (For the backend blog feature).
+- **Testing agent used after significant changes:** NO (not yet for the Next.js app).
 - **Troubleshoot agent used after agent stuck in loop:** NO
-- **Test files created:** 
-- **Known regressions:** None confirmed, but the un-tested short URL feature is a high risk for regression.
+- **Test files created:** None for the new Next.js app.
+- **Known regressions:** All admin panel functionality from the old app is currently missing in the new app and needs to be rebuilt.
 
 **Credentials to test flow:**
 - **Admin Panel URL:** 
@@ -181,5 +200,4 @@ A functional full-stack application with a React frontend, FastAPI backend, and 
 - **Password:** 
 
 **What agent forgot to execute**
-- The agent failed to investigate the user's report that the  upload was not working for the Happy Scarfs brand.
-- The agent did not implement the in-article CTA boxes (Yazı Ortası CTA Kutusu and Yazı Sonu CTA Kutusu) which were part of the original blog feature request.</analysis>
+- The agent correctly deferred user requests for Brevo integration and a Subscribers page to prioritize the massive Next.js migration task. These are captured as future tasks. The blog module also needs to be rebuilt in Next.js.</analysis>

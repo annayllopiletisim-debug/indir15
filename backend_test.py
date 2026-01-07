@@ -4,7 +4,7 @@ import json
 from datetime import datetime
 
 class CouponAPITester:
-    def __init__(self, base_url="https://kesfet-deals.preview.emergentagent.com"):
+    def __init__(self, base_url="https://findcoupons.preview.emergentagent.com"):
         self.base_url = base_url
         self.token = None
         self.tests_run = 0
