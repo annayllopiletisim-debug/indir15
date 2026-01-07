@@ -88,7 +88,7 @@ export default function AdminGiveawaysPage() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Bu \u00e7ekili\u015fi silmek istedi\u011finizden emin misiniz?')) return;
+    if (!confirm('Bu çekilişi silmek istediğinizden emin misiniz?')) return;
     try {
       await fetch(`/api/giveaways/${id}`, { method: 'DELETE' });
       fetchData();
@@ -141,38 +141,38 @@ export default function AdminGiveawaysPage() {
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-white">\u00c7ekili\u015fler</h1>
+        <h1 className="text-2xl font-bold text-white">Çekilişler</h1>
         <button
           onClick={() => setShowForm(true)}
           className="px-4 py-2 bg-purple-600 text-white rounded-lg flex items-center gap-2 hover:bg-purple-700"
         >
           <Plus className="w-5 h-5" />
-          Yeni \u00c7ekili\u015f
+          Yeni Çekiliş
         </button>
       </div>
 
       {showForm && (
         <div className="bg-slate-800 rounded-xl border border-slate-700 p-6 mb-6">
           <h2 className="text-lg font-semibold text-white mb-4">
-            {editingId ? '\u00c7ekili\u015f D\u00fczenle' : 'Yeni \u00c7ekili\u015f'}
+            {editingId ? 'Çekiliş Düzenle' : 'Yeni Çekiliş'}
           </h2>
           <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm text-gray-400 mb-1">Ma\u011faza *</label>
+              <label className="block text-sm text-gray-400 mb-1">Mağaza *</label>
               <select
                 value={formData.brand_id}
                 onChange={(e) => setFormData({ ...formData, brand_id: e.target.value })}
                 className="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white"
                 required
               >
-                <option value="">Se\u00e7in...</option>
+                <option value="">Seçin...</option>
                 {brands.map(brand => (
                   <option key={brand.id} value={brand.id}>{brand.name}</option>
                 ))}
               </select>
             </div>
             <div>
-              <label className="block text-sm text-gray-400 mb-1">Biti\u015f Tarihi</label>
+              <label className="block text-sm text-gray-400 mb-1">Bitiş Tarihi</label>
               <input
                 type="date"
                 value={formData.expiry_date}
@@ -181,7 +181,7 @@ export default function AdminGiveawaysPage() {
               />
             </div>
             <div className="col-span-2">
-              <label className="block text-sm text-gray-400 mb-1">Ba\u015fl\u0131k *</label>
+              <label className="block text-sm text-gray-400 mb-1">Başlık *</label>
               <input
                 type="text"
                 value={formData.title}
@@ -191,7 +191,7 @@ export default function AdminGiveawaysPage() {
               />
             </div>
             <div className="col-span-2">
-              <label className="block text-sm text-gray-400 mb-1">A\u00e7\u0131klama</label>
+              <label className="block text-sm text-gray-400 mb-1">Açıklama</label>
               <textarea
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
@@ -209,27 +209,27 @@ export default function AdminGiveawaysPage() {
               />
             </div>
             <div>
-              <label className="block text-sm text-gray-400 mb-1">G\u00f6rsel</label>
+              <label className="block text-sm text-gray-400 mb-1">Görsel</label>
               <div className="flex gap-2">
                 <input
                   type="text"
                   value={formData.image_url}
                   onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
-                  placeholder="URL veya y\u00fckle"
+                  placeholder="URL veya yükle"
                   className="flex-1 px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white"
                 />
                 <label className="px-4 py-2 bg-slate-600 text-white rounded-lg cursor-pointer hover:bg-slate-500">
-                  {uploading ? 'Y\u00fckleniyor...' : 'Y\u00fckle'}
+                  {uploading ? 'Yükleniyor...' : 'Yükle'}
                   <input type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
                 </label>
               </div>
             </div>
             <div className="col-span-2 flex gap-2">
               <button type="submit" className="px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700">
-                {editingId ? 'G\u00fcncelle' : 'Kaydet'}
+                {editingId ? 'Güncelle' : 'Kaydet'}
               </button>
               <button type="button" onClick={resetForm} className="px-6 py-2 bg-slate-700 text-white rounded-lg hover:bg-slate-600">
-                \u0130ptal
+                İptal
               </button>
             </div>
           </form>
@@ -240,11 +240,11 @@ export default function AdminGiveawaysPage() {
         <table className="w-full">
           <thead className="bg-slate-700">
             <tr>
-              <th className="px-4 py-3 text-left text-sm font-medium text-gray-300">G\u00f6rsel</th>
-              <th className="px-4 py-3 text-left text-sm font-medium text-gray-300">Ba\u015fl\u0131k</th>
-              <th className="px-4 py-3 text-left text-sm font-medium text-gray-300">Ma\u011faza</th>
-              <th className="px-4 py-3 text-left text-sm font-medium text-gray-300">Biti\u015f</th>
-              <th className="px-4 py-3 text-right text-sm font-medium text-gray-300">\u0130\u015flemler</th>
+              <th className="px-4 py-3 text-left text-sm font-medium text-gray-300">Görsel</th>
+              <th className="px-4 py-3 text-left text-sm font-medium text-gray-300">Başlık</th>
+              <th className="px-4 py-3 text-left text-sm font-medium text-gray-300">Mağaza</th>
+              <th className="px-4 py-3 text-left text-sm font-medium text-gray-300">Bitiş</th>
+              <th className="px-4 py-3 text-right text-sm font-medium text-gray-300">İşlemler</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-700">
@@ -262,7 +262,7 @@ export default function AdminGiveawaysPage() {
                 <td className="px-4 py-3 text-white">{giveaway.title}</td>
                 <td className="px-4 py-3 text-gray-400">{getBrandName(giveaway.brand_id)}</td>
                 <td className="px-4 py-3 text-gray-400">
-                  {giveaway.expiry_date ? new Date(giveaway.expiry_date).toLocaleDateString('tr-TR') : 'S\u00fcresiz'}
+                  {giveaway.expiry_date ? new Date(giveaway.expiry_date).toLocaleDateString('tr-TR') : 'Süresiz'}
                 </td>
                 <td className="px-4 py-3 text-right">
                   <button onClick={() => handleEdit(giveaway)} className="p-2 text-gray-400 hover:text-white">

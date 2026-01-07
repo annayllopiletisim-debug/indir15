@@ -75,7 +75,7 @@ export default function AdminCategoriesPage() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Bu kategoriyi silmek istedi\u011finizden emin misiniz?')) return;
+    if (!confirm('Bu kategoriyi silmek istediğinizden emin misiniz?')) return;
     try {
       await fetch(`/api/categories/${id}`, { method: 'DELETE' });
       fetchCategories();
@@ -93,12 +93,12 @@ export default function AdminCategoriesPage() {
   const generateSlug = (name: string) => {
     return name
       .toLowerCase()
-      .replace(/[\u0131\u0130]/g, 'i')
-      .replace(/[\u011f\u011e]/g, 'g')
-      .replace(/[\u00fc\u00dc]/g, 'u')
-      .replace(/[\u015f\u015e]/g, 's')
-      .replace(/[\u00f6\u00d6]/g, 'o')
-      .replace(/[\u00e7\u00c7]/g, 'c')
+      .replace(/[ıİ]/g, 'i')
+      .replace(/[ğĞ]/g, 'g')
+      .replace(/[üÜ]/g, 'u')
+      .replace(/[şŞ]/g, 's')
+      .replace(/[öÖ]/g, 'o')
+      .replace(/[çÇ]/g, 'c')
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/^-|-$/g, '');
   };
@@ -127,11 +127,11 @@ export default function AdminCategoriesPage() {
       {showForm && (
         <div className="bg-slate-800 rounded-xl border border-slate-700 p-6 mb-6">
           <h2 className="text-lg font-semibold text-white mb-4">
-            {editingId ? 'Kategori D\u00fczenle' : 'Yeni Kategori'}
+            {editingId ? 'Kategori Düzenle' : 'Yeni Kategori'}
           </h2>
           <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm text-gray-400 mb-1">Kategori Ad\u0131 *</label>
+              <label className="block text-sm text-gray-400 mb-1">Kategori Adı *</label>
               <input
                 type="text"
                 value={formData.name}
@@ -154,7 +154,7 @@ export default function AdminCategoriesPage() {
               />
             </div>
             <div className="col-span-2">
-              <label className="block text-sm text-gray-400 mb-1">A\u00e7\u0131klama</label>
+              <label className="block text-sm text-gray-400 mb-1">Açıklama</label>
               <textarea
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
@@ -163,17 +163,17 @@ export default function AdminCategoriesPage() {
               />
             </div>
             <div>
-              <label className="block text-sm text-gray-400 mb-1">\u0130kon (emoji veya icon ad\u0131)</label>
+              <label className="block text-sm text-gray-400 mb-1">İkon (emoji veya icon adı)</label>
               <input
                 type="text"
                 value={formData.icon}
                 onChange={(e) => setFormData({ ...formData, icon: e.target.value })}
-                placeholder="\u00f6rn: shopping-bag, gift, percent"
+                placeholder="örn: shopping-bag, gift, percent"
                 className="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white"
               />
             </div>
             <div>
-              <label className="block text-sm text-gray-400 mb-1">S\u0131ra</label>
+              <label className="block text-sm text-gray-400 mb-1">Sıra</label>
               <input
                 type="number"
                 value={formData.order}
@@ -183,10 +183,10 @@ export default function AdminCategoriesPage() {
             </div>
             <div className="col-span-2 flex gap-2">
               <button type="submit" className="px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700">
-                {editingId ? 'G\u00fcncelle' : 'Kaydet'}
+                {editingId ? 'Güncelle' : 'Kaydet'}
               </button>
               <button type="button" onClick={resetForm} className="px-6 py-2 bg-slate-700 text-white rounded-lg hover:bg-slate-600">
-                \u0130ptal
+                İptal
               </button>
             </div>
           </form>
@@ -197,11 +197,11 @@ export default function AdminCategoriesPage() {
         <table className="w-full">
           <thead className="bg-slate-700">
             <tr>
-              <th className="px-4 py-3 text-left text-sm font-medium text-gray-300">\u0130kon</th>
+              <th className="px-4 py-3 text-left text-sm font-medium text-gray-300">İkon</th>
               <th className="px-4 py-3 text-left text-sm font-medium text-gray-300">Ad</th>
               <th className="px-4 py-3 text-left text-sm font-medium text-gray-300">Slug</th>
-              <th className="px-4 py-3 text-left text-sm font-medium text-gray-300">S\u0131ra</th>
-              <th className="px-4 py-3 text-right text-sm font-medium text-gray-300">\u0130\u015flemler</th>
+              <th className="px-4 py-3 text-left text-sm font-medium text-gray-300">Sıra</th>
+              <th className="px-4 py-3 text-right text-sm font-medium text-gray-300">İşlemler</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-700">
