@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from 'react';
 import { Tag, Ticket, Gift, Clock, TrendingUp, Sparkles } from 'lucide-react';
-import DealCard from '@/components/DealCard';
+import FeaturedDealCard from '@/components/FeaturedDealCard';
 import CouponCard from '@/components/CouponCard';
 import { getShortId, generateSlug } from '@/lib/utils';
 
@@ -128,7 +128,7 @@ export default function BrandDealsFilter({ discounts, coupons, giveaways, brand 
             const dealSlug = generateSlug(discount.title);
             const href = `/magaza/${brand.slug}/indirim/${dealSlug}-${shortId}`;
             return (
-              <DealCard key={discount.id} deal={discount} brand={brand} href={href} />
+              <FeaturedDealCard key={discount.id} deal={{ ...discount, brand }} detailHref={href} />
             );
           })}
           {filteredDiscounts.length === 0 && (
@@ -159,7 +159,7 @@ export default function BrandDealsFilter({ discounts, coupons, giveaways, brand 
             const dealSlug = generateSlug(giveaway.title);
             const href = `/magaza/${brand.slug}/cekilis/${dealSlug}-${shortId}`;
             return (
-              <DealCard key={giveaway.id} deal={giveaway} brand={brand} href={href} />
+              <FeaturedDealCard key={giveaway.id} deal={{ ...giveaway, brand }} detailHref={href} />
             );
           })}
           {giveaways.length === 0 && (
