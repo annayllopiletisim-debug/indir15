@@ -101,7 +101,7 @@ export default async function DiscountDetailPage({ params }: Props) {
                   <div className="flex items-center gap-4 mb-6 pb-6 border-b">
                     <div className="w-16 h-16 bg-white rounded-xl border-2 border-gray-100 flex items-center justify-center p-2 overflow-hidden">
                       {brand.logo_url ? (
-                        <img src={getImageUrl(brand.logo_url)} alt={brand.name} className="max-w-full max-h-full object-contain" />
+                        <img src={getImageUrl(brand.logo_url)} alt={brand.name} loading="lazy" className="max-w-full max-h-full object-contain" />
                       ) : (
                         <span className="text-2xl font-bold text-gray-400">{brand.name.charAt(0)}</span>
                       )}
@@ -197,7 +197,7 @@ export default async function DiscountDetailPage({ params }: Props) {
                 <div className="text-center mb-4">
                   <div className="w-20 h-20 mx-auto bg-white rounded-2xl border-2 border-gray-100 flex items-center justify-center p-3 mb-3 overflow-hidden">
                     {brand.logo_url ? (
-                      <img src={getImageUrl(brand.logo_url)} alt={brand.name} className="max-w-full max-h-full object-contain" />
+                      <img src={getImageUrl(brand.logo_url)} alt={brand.name} loading="lazy" className="max-w-full max-h-full object-contain" />
                     ) : (
                       <span className="text-3xl font-bold text-gray-400">{brand.name.charAt(0)}</span>
                     )}
