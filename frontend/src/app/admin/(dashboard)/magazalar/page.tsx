@@ -120,7 +120,7 @@ export default function AdminBrandsPage() {
       });
 
       if (res.ok) {
-        fetchBrands();
+        fetchData();
         resetForm();
       }
     } catch (err) {
@@ -134,8 +134,10 @@ export default function AdminBrandsPage() {
       slug: brand.slug,
       description: brand.description || '',
       logo_url: brand.logo_url || '',
+      default_deal_image: brand.default_deal_image || '',
       website_url: brand.website_url || '',
       affiliate_url: brand.affiliate_url || '',
+      category_ids: brand.category_ids || [],
       is_featured: brand.is_featured || false,
     });
     setEditingId(brand.id);
@@ -167,20 +169,57 @@ export default function AdminBrandsPage() {
     }
   };
 
+  const handleDealImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploadingDealImage(true);
+    try {
+      const uploadFormData = new FormData();
+      uploadFormData.append('file', file);
+
+      const res = await fetch('/api/upload', {
+        method: 'POST',
+        body: uploadFormData,
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        setFormData({ ...formData, default_deal_image: data.url });
+      }
+    } catch (err) {
+      console.error('Upload error:', err);
+    } finally {
+      setUploadingDealImage(false);
+    }
+  };
+
+  const handleCategoryToggle = (categoryId: string) => {
+    const newCategoryIds = formData.category_ids.includes(categoryId)
+      ? formData.category_ids.filter(id => id !== categoryId)
+      : [...formData.category_ids, categoryId];
+    setFormData({ ...formData, category_ids: newCategoryIds });
+  };
+
   const handleDelete = async (id: string) => {
     if (!confirm('Bu mağazayı silmek istediğinizden emin misiniz?')) return;
     try {
       await fetch(`/api/brands/${id}`, { method: 'DELETE' });
-      fetchBrands();
+      fetchData();
     } catch (err) {
       console.error('Error:', err);
     }
   };
 
   const resetForm = () => {
-    setFormData({ name: '', slug: '', description: '', logo_url: '', website_url: '', affiliate_url: '', is_featured: false });
+    setFormData({ name: '', slug: '', description: '', logo_url: '', default_deal_image: '', website_url: '', affiliate_url: '', category_ids: [], is_featured: false });
     setEditingId(null);
     setShowForm(false);
+  };
+
+  const getCategoryNames = (categoryIds: string[] | undefined) => {
+    if (!categoryIds || categoryIds.length === 0) return '-';
+    return categoryIds.map(id => categories.find(c => c.id === id)?.name || '').filter(Boolean).join(', ');
   };
 
   const generateSlug = (name: string) => {
