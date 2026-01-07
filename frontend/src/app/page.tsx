@@ -4,7 +4,7 @@ import connectDB from '@/lib/db';
 import { Brand, Discount, Coupon, Category } from '@/lib/models';
 import { getShortId, generateSlug } from '@/lib/utils';
 import { getImageUrl } from '@/lib/image';
-import { Search, ArrowRight, Star, Gift, Copy, ExternalLink } from 'lucide-react';
+import { ArrowRight, Star, Gift, Copy, ExternalLink } from 'lucide-react';
 import FeaturedDealCard from '@/components/FeaturedDealCard';
 import { addUtmParams } from '@/lib/utm';
 
@@ -14,18 +14,6 @@ export const metadata: Metadata = {
 };
 
 export const revalidate = 60;
-
-// Category icons and colors
-const categoryConfig: Record<string, { icon: string; color: string }> = {
-  'spor': { icon: '⚽', color: 'text-green-600' },
-  'moda': { icon: '👗', color: 'text-pink-600' },
-  'elektronik': { icon: '📱', color: 'text-blue-600' },
-  'gida': { icon: '🍴', color: 'text-orange-600' },
-  'banka': { icon: '🏛️', color: 'text-purple-600' },
-  'saglik': { icon: '💊', color: 'text-red-600' },
-  'egitim': { icon: '📚', color: 'text-yellow-600' },
-  'seyahat': { icon: '✈️', color: 'text-cyan-600' },
-};
 
 async function getHomeData() {
   await connectDB();
