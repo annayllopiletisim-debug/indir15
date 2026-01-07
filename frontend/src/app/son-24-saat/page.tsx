@@ -95,7 +95,7 @@ function DealCard({ deal }: { deal: any }) {
       <div className="flex items-start gap-4">
         {brand?.logo_url && (
           <div className="w-14 h-14 rounded-xl border border-gray-200 bg-white flex items-center justify-center p-2 overflow-hidden flex-shrink-0">
-            <img src={getImageUrl(brand.logo_url)} alt={brand.name} className="max-w-full max-h-full object-contain" />
+            <img src={getImageUrl(brand.logo_url)} alt={brand.name} loading="lazy" className="max-w-full max-h-full object-contain" />
           </div>
         )}
         <div className="flex-1">
@@ -135,7 +135,7 @@ function CouponCard({ coupon }: { coupon: any }) {
       <div className="flex items-center gap-3 mb-3">
         {brand?.logo_url && (
           <div className="w-10 h-10 rounded-lg border border-gray-200 bg-white flex items-center justify-center p-1 overflow-hidden">
-            <img src={getImageUrl(brand.logo_url)} alt={brand.name} className="max-w-full max-h-full object-contain" />
+            <img src={getImageUrl(brand.logo_url)} alt={brand.name} loading="lazy" className="max-w-full max-h-full object-contain" />
           </div>
         )}
         <span className="font-bold text-gray-800">{brand?.name}</span>
