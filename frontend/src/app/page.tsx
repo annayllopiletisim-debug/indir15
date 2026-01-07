@@ -142,7 +142,6 @@ export default async function HomePage() {
                 >
                   <span className={`text-lg ${config.color}`}>{config.icon}</span>
                   <span>{category.name}</span>
-                  <span className="text-gray-400 text-sm">({category.deal_count || 0})</span>
                 </Link>
               );
             })}
