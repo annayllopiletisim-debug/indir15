@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Plus, Pencil, Trash2, Loader2 } from 'lucide-react';
+import { Plus, Pencil, Trash2, Loader2, Upload } from 'lucide-react';
 
 interface Brand {
   id: string;
@@ -17,6 +17,8 @@ interface Discount {
   discount_text?: string;
   expiry_date?: string;
   is_featured?: boolean;
+  destination_url?: string;
+  image_url?: string;
 }
 
 export default function AdminDiscountsPage() {
@@ -25,6 +27,7 @@ export default function AdminDiscountsPage() {
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
   const [formData, setFormData] = useState({
     brand_id: '',
     title: '',
@@ -32,6 +35,8 @@ export default function AdminDiscountsPage() {
     discount_text: '',
     expiry_date: '',
     is_featured: false,
+    destination_url: '',
+    image_url: '',
   });
 
   useEffect(() => {
