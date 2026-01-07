@@ -140,7 +140,7 @@ export default async function HomePage() {
           </Link>
         </div>
         <div className="flex gap-5 overflow-x-auto pb-4 scrollbar-hide">
-          {brands.map((brand: any) => (
+          {brands.filter((b: any) => b.deal_count > 0).map((brand: any) => (
             <Link
               key={brand.id}
               href={`/magaza/${brand.slug}`}
@@ -152,12 +152,16 @@ export default async function HomePage() {
                     src={getImageUrl(brand.logo_url)}
                     alt={brand.name}
                     className="w-full h-full object-contain"
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement;
+                      target.style.display = 'none';
+                      target.nextElementSibling?.classList.remove('hidden');
+                    }}
                   />
-                ) : (
-                  <span className="text-2xl font-bold text-gray-300">
-                    {brand.name.charAt(0)}
-                  </span>
-                )}
+                ) : null}
+                <span className={`text-2xl font-bold text-purple-400 ${brand.logo_url ? 'hidden' : ''}`}>
+                  {brand.name.charAt(0)}
+                </span>
                 {brand.deal_count > 0 && (
                   <span className="absolute -top-2 -right-2 min-w-[24px] h-[24px] px-1.5 flex items-center justify-center bg-purple-600 text-white text-xs font-bold rounded-full border-2 border-white shadow">
                     {brand.deal_count}
