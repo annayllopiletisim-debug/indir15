@@ -148,7 +148,7 @@ export default async function DiscountDetailPage({ params }: Props) {
                 {/* CTA Button - Prominent */}
                 {!isExpired && destinationUrl && (
                   <a
-                    href={destinationUrl}
+                    href={addUtmParams(destinationUrl)}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="w-full md:w-auto inline-flex items-center justify-center gap-3 px-8 py-4 bg-purple-600 text-white rounded-2xl font-bold text-lg hover:bg-purple-700 transition-colors shadow-lg shadow-purple-200 mb-6"
