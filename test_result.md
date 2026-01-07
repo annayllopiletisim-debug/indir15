@@ -4,6 +4,37 @@
 - All CRUD operations for admin panel should be tested
 - Image upload functionality should be verified
 - Login/logout flow should work correctly
+- Admin panel filters should work correctly
+- Analytics dashboard should show correct data
+
+## Test Status
+- Homepage: PASS
+- Admin Login: PASS ✅
+- Dashboard: PASS
+- Mağazalar (Brands) CRUD: PASS ✅
+- İndirimler (Discounts) CRUD: PASS ✅
+- Kuponlar (Coupons) CRUD: PASS ✅
+- Çekilişler (Giveaways) CRUD: PASS ✅
+- Kategoriler (Categories) CRUD: PASS ✅
+- Image Upload: PASS ✅
+- Authentication Requirements: PASS ✅
+
+## Admin Panel Filters - TO TEST
+- Mağazalar filters: Search, Featured filter, Sort
+- İndirimler filters: Search, Brand filter, Featured filter, Sort
+- Kuponlar filters: Search, Brand filter, Status filter, Sort
+
+## Analytics Dashboard - TO TEST
+- Total clicks counter
+- Blog views counter
+- Top clicked discounts list
+- Top clicked coupons list
+- Top viewed blog posts list
+
+## Click Tracking API - TO TEST
+- POST /api/track/click for discounts
+- POST /api/track/click for coupons
+- POST /api/track/click for giveaways
 
 ## Test Status
 - Homepage: PASS
