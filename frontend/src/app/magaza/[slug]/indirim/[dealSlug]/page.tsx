@@ -7,7 +7,7 @@ import { getImageUrl } from '@/lib/image';
 import { ExternalLink, Clock, Tag, ArrowLeft, Share2 } from 'lucide-react';
 
 interface Props {
-  params: Promise<{ brand: string; dealSlug: string }>;
+  params: Promise<{ slug: string; dealSlug: string }>;
 }
 
 function extractIdFromSlug(slug: string): string {
