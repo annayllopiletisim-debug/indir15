@@ -28,16 +28,42 @@ const categoryConfig: Record<string, { icon: string; color: string }> = {
 async function getHomeData() {
   await connectDB();
   
-  const [brands, discounts, coupons, categories] = await Promise.all([
-    Brand.find({}).sort({ deal_count: -1 }).limit(30).lean(),
-    Discount.find({ is_featured: true }).sort({ created_at: -1 }).limit(12).lean(),
+  // Get all discounts to count per brand
+  const allDiscounts = await Discount.find({}).lean();
+  
+  // Count discounts per brand
+  const brandDiscountCount: Record<string, number> = {};
+  allDiscounts.forEach((d: any) => {
+    if (d.brand_id) {
+      brandDiscountCount[d.brand_id] = (brandDiscountCount[d.brand_id] || 0) + 1;
+    }
+  });
+
+  const [brands, coupons, categories] = await Promise.all([
+    Brand.find({}).limit(30).lean(),
     Coupon.find({ is_active: true }).sort({ created_at: -1 }).limit(6).lean(),
     Category.find({}).sort({ order: 1 }).lean(),
   ]);
 
-  const brandMap = new Map(brands.map((b: any) => [b.id, b]));
+  // Enrich brands with actual discount count and sort by it
+  const enrichedBrands = brands.map((b: any) => ({
+    ...b,
+    _id: b._id?.toString(),
+    deal_count: brandDiscountCount[b.id] || 0,
+  })).sort((a: any, b: any) => b.deal_count - a.deal_count);
+
+  const brandMap = new Map(enrichedBrands.map((b: any) => [b.id, b]));
   
-  const enrichedDiscounts = discounts.map((d: any) => ({
+  // Get featured discounts
+  const discounts = await Discount.find({ is_featured: true }).sort({ created_at: -1 }).limit(12).lean();
+  
+  // If not enough featured, get latest ones
+  let finalDiscounts = discounts;
+  if (discounts.length < 6) {
+    finalDiscounts = await Discount.find({}).sort({ created_at: -1 }).limit(12).lean();
+  }
+  
+  const enrichedDiscounts = finalDiscounts.map((d: any) => ({
     ...d,
     _id: d._id?.toString(),
     brand: brandMap.get(d.brand_id) || null,
