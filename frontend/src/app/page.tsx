@@ -182,6 +182,7 @@ export default async function HomePage() {
                     <img
                       src={getImageUrl(brand.logo_url)}
                       alt={brand.name}
+                      loading="lazy"
                       className="w-full h-full object-contain"
                     />
                   ) : (
