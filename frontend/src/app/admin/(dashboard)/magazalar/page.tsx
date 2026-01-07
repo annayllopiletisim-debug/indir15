@@ -1,7 +1,13 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
-import { Plus, Pencil, Trash2, Loader2, Upload, Search, Filter, X } from 'lucide-react';
+import { Plus, Pencil, Trash2, Loader2, Upload, Search, Filter, X, Image } from 'lucide-react';
+
+interface Category {
+  id: string;
+  name: string;
+  slug: string;
+}
 
 interface Brand {
   id: string;
@@ -9,22 +15,27 @@ interface Brand {
   slug: string;
   description?: string;
   logo_url?: string;
+  default_deal_image?: string;
   website_url?: string;
   affiliate_url?: string;
+  category_ids?: string[];
   is_featured?: boolean;
   deal_count?: number;
 }
 
 export default function AdminBrandsPage() {
   const [brands, setBrands] = useState<Brand[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
+  const [uploadingDealImage, setUploadingDealImage] = useState(false);
   
   // Filter states
   const [searchTerm, setSearchTerm] = useState('');
   const [filterFeatured, setFilterFeatured] = useState<'all' | 'yes' | 'no'>('all');
+  const [filterCategory, setFilterCategory] = useState<string>('all');
   const [sortBy, setSortBy] = useState<'name' | 'deal_count' | 'newest'>('name');
 
   const [formData, setFormData] = useState({
@@ -32,13 +43,15 @@ export default function AdminBrandsPage() {
     slug: '',
     description: '',
     logo_url: '',
+    default_deal_image: '',
     website_url: '',
     affiliate_url: '',
+    category_ids: [] as string[],
     is_featured: false,
   });
 
   useEffect(() => {
-    fetchBrands();
+    fetchData();
   }, []);
 
   // Filtered and sorted brands
@@ -59,6 +72,11 @@ export default function AdminBrandsPage() {
     } else if (filterFeatured === 'no') {
       result = result.filter(b => !b.is_featured);
     }
+
+    // Category filter
+    if (filterCategory !== 'all') {
+      result = result.filter(b => b.category_ids?.includes(filterCategory));
+    }
     
     // Sort
     if (sortBy === 'name') {
@@ -68,15 +86,22 @@ export default function AdminBrandsPage() {
     }
     
     return result;
-  }, [brands, searchTerm, filterFeatured, sortBy]);
+  }, [brands, searchTerm, filterFeatured, filterCategory, sortBy]);
 
-  const fetchBrands = async () => {
+  const fetchData = async () => {
     try {
-      const res = await fetch('/api/brands');
-      const data = await res.json();
-      setBrands(data);
+      const [brandsRes, categoriesRes] = await Promise.all([
+        fetch('/api/brands'),
+        fetch('/api/categories')
+      ]);
+      const [brandsData, categoriesData] = await Promise.all([
+        brandsRes.json(),
+        categoriesRes.json()
+      ]);
+      setBrands(brandsData);
+      setCategories(categoriesData);
     } catch (err) {
-      console.error('Error fetching brands:', err);
+      console.error('Error fetching data:', err);
     } finally {
       setLoading(false);
     }
