@@ -290,30 +290,28 @@ function FeaturedDealCard({ deal }: { deal: any }) {
               <span className="text-sm text-gray-400">Süresiz</span>
             )}
             
-            {destinationUrl ? (
+            {destinationUrl && (
               <a 
                 href={addUtmParams(destinationUrl)}
                 target="_blank"
                 rel="noopener noreferrer"
-                onClick={(e) => e.stopPropagation()}
-                className="flex items-center gap-1 px-5 py-2.5 bg-purple-600 text-white rounded-full font-semibold hover:bg-purple-700 transition-colors text-sm"
+                onClick={(e) => e.preventDefault()}
+                onClickCapture={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  window.open(addUtmParams(destinationUrl), '_blank');
+                }}
+                className="flex items-center gap-1 px-5 py-2.5 bg-purple-600 text-white rounded-full font-semibold hover:bg-purple-700 transition-colors text-sm z-10 relative"
               >
                 Mağazaya Git
                 <ExternalLink className="w-4 h-4" />
               </a>
-            ) : (
-              <Link 
-                href={detailHref}
-                className="flex items-center gap-1 px-5 py-2.5 bg-purple-600 text-white rounded-full font-semibold hover:bg-purple-700 transition-colors text-sm"
-              >
-                Detaylar
-                <ChevronRight className="w-4 h-4" />
-              </Link>
             )}
           </div>
         </div>
       </div>
     </article>
+    </Link>
   );
 }
 
