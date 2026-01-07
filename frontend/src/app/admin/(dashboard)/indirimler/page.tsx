@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
-import { Plus, Pencil, Trash2, Loader2, Upload, Search, X } from 'lucide-react';
+import { Plus, Pencil, Trash2, Loader2, Upload, Search, X, CheckSquare, Square } from 'lucide-react';
 
 interface Brand {
   id: string;
@@ -28,6 +28,8 @@ export default function AdminDiscountsPage() {
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [deleting, setDeleting] = useState(false);
 
   // Filter states
   const [searchTerm, setSearchTerm] = useState('');
@@ -91,6 +93,45 @@ export default function AdminDiscountsPage() {
     setFilterBrand('all');
     setFilterFeatured('all');
     setSortBy('newest');
+  };
+
+  // Selection handlers
+  const toggleSelect = (id: string) => {
+    const newSet = new Set(selectedIds);
+    if (newSet.has(id)) {
+      newSet.delete(id);
+    } else {
+      newSet.add(id);
+    }
+    setSelectedIds(newSet);
+  };
+
+  const toggleSelectAll = () => {
+    if (selectedIds.size === filteredDiscounts.length) {
+      setSelectedIds(new Set());
+    } else {
+      setSelectedIds(new Set(filteredDiscounts.map(d => d.id)));
+    }
+  };
+
+  const handleBulkDelete = async () => {
+    if (selectedIds.size === 0) return;
+    if (!confirm(`${selectedIds.size} indirimi silmek istediğinizden emin misiniz?`)) return;
+    
+    setDeleting(true);
+    try {
+      await Promise.all(
+        Array.from(selectedIds).map(id => 
+          fetch(`/api/discounts/${id}`, { method: 'DELETE' })
+        )
+      );
+      setSelectedIds(new Set());
+      fetchData();
+    } catch (err) {
+      console.error('Bulk delete error:', err);
+    } finally {
+      setDeleting(false);
+    }
   };
 
   const fetchData = async () => {
