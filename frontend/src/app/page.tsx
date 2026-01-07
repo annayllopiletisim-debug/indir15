@@ -54,6 +54,23 @@ async function getHomeData() {
     deal_count: brandDiscountCount[b.id] || 0,
   })).sort((a: any, b: any) => b.deal_count - a.deal_count);
 
+  // Count deals per category based on brand's category_ids
+  const categoryDealCount: Record<string, number> = {};
+  enrichedBrands.forEach((brand: any) => {
+    if (brand.category_ids && brand.deal_count > 0) {
+      brand.category_ids.forEach((catId: string) => {
+        categoryDealCount[catId] = (categoryDealCount[catId] || 0) + brand.deal_count;
+      });
+    }
+  });
+
+  // Enrich categories with deal count
+  const enrichedCategories = categories.map((c: any) => ({
+    ...c,
+    _id: c._id?.toString(),
+    deal_count: categoryDealCount[c.id] || 0,
+  }));
+
   const brandMap = new Map(enrichedBrands.map((b: any) => [b.id, b]));
   
   // Get featured discounts
@@ -81,7 +98,7 @@ async function getHomeData() {
     brands: enrichedBrands,
     discounts: enrichedDiscounts,
     coupons: enrichedCoupons,
-    categories: categories.map((c: any) => ({ ...c, _id: c._id?.toString() })),
+    categories: enrichedCategories,
   };
 }
 
