@@ -205,22 +205,54 @@ export default function AdminBrandsPage() {
               />
             </div>
             <div>
-              <label className="block text-sm text-gray-400 mb-1">Logo URL</label>
-              <input
-                type="text"
-                value={formData.logo_url}
-                onChange={(e) => setFormData({ ...formData, logo_url: e.target.value })}
-                className="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white"
-              />
+              <label className="block text-sm text-gray-400 mb-1">Logo</label>
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={formData.logo_url}
+                  onChange={(e) => setFormData({ ...formData, logo_url: e.target.value })}
+                  placeholder="URL veya yükle"
+                  className="flex-1 px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white"
+                />
+                <label className="px-4 py-2 bg-slate-600 text-white rounded-lg cursor-pointer hover:bg-slate-500 flex items-center gap-2">
+                  {uploading ? 'Yükleniyor...' : <><Upload className="w-4 h-4" /> Yükle</>}
+                  <input type="file" accept="image/*" onChange={handleLogoUpload} className="hidden" disabled={uploading} />
+                </label>
+              </div>
+              {formData.logo_url && (
+                <div className="mt-2">
+                  <img src={formData.logo_url} alt="Logo önizleme" className="w-16 h-16 object-contain rounded bg-white p-1" />
+                </div>
+              )}
             </div>
             <div>
               <label className="block text-sm text-gray-400 mb-1">Website URL</label>
               <input
-                type="text"
+                type="url"
                 value={formData.website_url}
                 onChange={(e) => setFormData({ ...formData, website_url: e.target.value })}
                 className="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white"
               />
+            </div>
+            <div>
+              <label className="block text-sm text-gray-400 mb-1">Affiliate URL</label>
+              <input
+                type="url"
+                value={formData.affiliate_url}
+                onChange={(e) => setFormData({ ...formData, affiliate_url: e.target.value })}
+                className="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white"
+              />
+            </div>
+            <div className="flex items-center">
+              <label className="flex items-center gap-2 text-white cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={formData.is_featured}
+                  onChange={(e) => setFormData({ ...formData, is_featured: e.target.checked })}
+                  className="w-5 h-5 rounded"
+                />
+                Öne Çıkan Mağaza
+              </label>
             </div>
             <div className="col-span-2 flex gap-2">
               <button
