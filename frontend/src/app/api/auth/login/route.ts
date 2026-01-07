@@ -16,7 +16,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Geçersiz kullanıcı adı veya şifre' }, { status: 401 });
     }
 
-    const isValidPassword = await bcrypt.compare(password, ADMIN_PASSWORD_HASH);
+    const isValidPassword = bcrypt.compareSync(password, ADMIN_PASSWORD_HASH);
     if (!isValidPassword) {
       return NextResponse.json({ error: 'Geçersiz kullanıcı adı veya şifre' }, { status: 401 });
     }
