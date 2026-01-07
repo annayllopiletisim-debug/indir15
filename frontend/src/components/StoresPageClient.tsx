@@ -149,7 +149,7 @@ export default function StoresPageClient({ brands, categories }: StoresPageClien
                   {/* Logo with white background */}
                   <div className="w-full aspect-square bg-white rounded-lg border border-gray-100 flex items-center justify-center p-3 mb-3 group-hover:border-purple-200 transition-colors">
                     {brand.logo_url ? (
-                      <img src={getImageUrl(brand.logo_url)} alt={brand.name} className="w-full h-full object-contain" />
+                      <img src={getImageUrl(brand.logo_url)} alt={brand.name} loading="lazy" className="w-full h-full object-contain" />
                     ) : (
                       <span className="text-3xl font-bold text-gray-300">{brand.name.charAt(0)}</span>
                     )}
