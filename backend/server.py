@@ -7,7 +7,8 @@ app = FastAPI()
 @app.api_route("/{path:path}", methods=["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"])
 async def proxy(request: Request, path: str):
     async with httpx.AsyncClient(timeout=30.0) as client:
-        url = f"http://localhost:3000/api/{path}"
+        # Path already includes 'api/' so just pass it directly to Next.js
+        url = f"http://localhost:3000/{path}"
         body = await request.body()
         
         response = await client.request(
