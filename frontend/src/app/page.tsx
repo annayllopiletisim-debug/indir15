@@ -266,7 +266,7 @@ function CouponCard({ coupon }: { coupon: any }) {
       <div className="flex items-center gap-3 mb-4">
         {brand?.logo_url && (
           <div className="w-12 h-12 rounded-xl border border-gray-200 bg-white flex items-center justify-center p-1 overflow-hidden">
-            <img src={getImageUrl(brand.logo_url)} alt={brand.name} className="max-w-full max-h-full object-contain" />
+            <img src={getImageUrl(brand.logo_url)} alt={brand.name} loading="lazy" className="max-w-full max-h-full object-contain" />
           </div>
         )}
         <div>
