@@ -293,13 +293,14 @@ function FeaturedDealCard({ deal }: { deal: any }) {
             
             {destinationUrl ? (
               <a 
-                href={destinationUrl}
+                href={addUtmParams(destinationUrl)}
                 target="_blank"
                 rel="noopener noreferrer"
+                onClick={(e) => e.stopPropagation()}
                 className="flex items-center gap-1 px-5 py-2.5 bg-purple-600 text-white rounded-full font-semibold hover:bg-purple-700 transition-colors text-sm"
               >
                 Mağazaya Git
-                <ChevronRight className="w-4 h-4" />
+                <ExternalLink className="w-4 h-4" />
               </a>
             ) : (
               <Link 
