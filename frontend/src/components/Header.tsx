@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Search, Menu, X, Flame, Mail, Tag, Gift, Home } from 'lucide-react';
+import { Search, Menu, X, Flame, Mail, Tag, Gift, Home, Clock } from 'lucide-react';
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -50,6 +50,13 @@ export default function Header() {
             >
               <Gift className="w-4 h-4 text-purple-600" />
               Kuponlar
+            </Link>
+            <Link
+              href="/bitmek-uzere"
+              className="px-3 py-2 rounded-lg border border-orange-300 bg-orange-50 hover:bg-orange-100 transition-all flex items-center gap-2 text-sm font-medium text-orange-600"
+            >
+              <Clock className="w-4 h-4" />
+              Bitmek Üzere
             </Link>
             <Link
               href="/son-24-saat"
@@ -114,6 +121,14 @@ export default function Header() {
             >
               <Gift className="w-5 h-5 text-purple-600" />
               Kuponlar
+            </Link>
+            <Link
+              href="/bitmek-uzere"
+              className="flex items-center gap-3 px-4 py-3 rounded-xl bg-orange-50 text-orange-600 font-medium"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              <Clock className="w-5 h-5" />
+              Bitmek Üzere
             </Link>
             <Link
               href="/son-24-saat"
