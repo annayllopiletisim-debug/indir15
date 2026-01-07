@@ -1,6 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // Enable Gzip/Brotli compression
+  compress: true,
   // Image optimization
   images: {
     remotePatterns: [
@@ -8,8 +10,12 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: '**',
       },
+      {
+        protocol: 'http',
+        hostname: 'localhost',
+      },
     ],
-    unoptimized: true,
+    formats: ['image/avif', 'image/webp'],
   },
   // Allow external images
   experimental: {
