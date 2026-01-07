@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { Plus, Pencil, Trash2, Loader2, Copy } from 'lucide-react';
+import { useState, useEffect, useMemo } from 'react';
+import { Plus, Pencil, Trash2, Loader2, Copy, Search, X } from 'lucide-react';
 
 interface Brand {
   id: string;
@@ -24,6 +24,13 @@ export default function AdminCouponsPage() {
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
+
+  // Filter states
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterBrand, setFilterBrand] = useState<string>('all');
+  const [filterStatus, setFilterStatus] = useState<'all' | 'active' | 'inactive'>('all');
+  const [sortBy, setSortBy] = useState<'newest' | 'code' | 'title'>('newest');
+
   const [formData, setFormData] = useState({
     brand_id: '',
     title: '',
@@ -36,6 +43,47 @@ export default function AdminCouponsPage() {
   useEffect(() => {
     fetchData();
   }, []);
+
+  // Filtered and sorted coupons
+  const filteredCoupons = useMemo(() => {
+    let result = [...coupons];
+    
+    // Search filter
+    if (searchTerm) {
+      result = result.filter(c => 
+        c.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        c.code.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+    
+    // Brand filter
+    if (filterBrand !== 'all') {
+      result = result.filter(c => c.brand_id === filterBrand);
+    }
+    
+    // Status filter
+    if (filterStatus === 'active') {
+      result = result.filter(c => c.is_active);
+    } else if (filterStatus === 'inactive') {
+      result = result.filter(c => !c.is_active);
+    }
+    
+    // Sort
+    if (sortBy === 'code') {
+      result.sort((a, b) => a.code.localeCompare(b.code));
+    } else if (sortBy === 'title') {
+      result.sort((a, b) => a.title.localeCompare(b.title));
+    }
+    
+    return result;
+  }, [coupons, searchTerm, filterBrand, filterStatus, sortBy]);
+
+  const clearFilters = () => {
+    setSearchTerm('');
+    setFilterBrand('all');
+    setFilterStatus('all');
+    setSortBy('newest');
+  };
 
   const fetchData = async () => {
     try {
@@ -115,7 +163,7 @@ export default function AdminCouponsPage() {
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-white">Kuponlar</h1>
+        <h1 className="text-2xl font-bold text-white">Kuponlar ({coupons.length})</h1>
         <button
           onClick={() => setShowForm(true)}
           className="px-4 py-2 bg-purple-600 text-white rounded-lg flex items-center gap-2 hover:bg-purple-700"
@@ -123,6 +171,58 @@ export default function AdminCouponsPage() {
           <Plus className="w-5 h-5" />
           Yeni Kupon
         </button>
+      </div>
+
+      {/* Filters */}
+      <div className="bg-slate-800 rounded-xl border border-slate-700 p-4 mb-6">
+        <div className="flex flex-wrap items-center gap-4">
+          <div className="flex-1 min-w-[200px] relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <input
+              type="text"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder="Kupon veya kod ara..."
+              className="w-full pl-10 pr-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-gray-400"
+            />
+          </div>
+          <select
+            value={filterBrand}
+            onChange={(e) => setFilterBrand(e.target.value)}
+            className="px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white"
+          >
+            <option value="all">Tüm Mağazalar</option>
+            {brands.map(brand => (
+              <option key={brand.id} value={brand.id}>{brand.name}</option>
+            ))}
+          </select>
+          <select
+            value={filterStatus}
+            onChange={(e) => setFilterStatus(e.target.value as any)}
+            className="px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white"
+          >
+            <option value="all">Tüm Durumlar</option>
+            <option value="active">Aktif</option>
+            <option value="inactive">Pasif</option>
+          </select>
+          <select
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value as any)}
+            className="px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white"
+          >
+            <option value="newest">En Yeni</option>
+            <option value="code">Koda Göre</option>
+            <option value="title">Ada Göre</option>
+          </select>
+          {(searchTerm || filterBrand !== 'all' || filterStatus !== 'all' || sortBy !== 'newest') && (
+            <button onClick={clearFilters} className="p-2 text-gray-400 hover:text-white">
+              <X className="w-5 h-5" />
+            </button>
+          )}
+        </div>
+        <div className="mt-2 text-sm text-gray-400">
+          {filteredCoupons.length} sonuç gösteriliyor
+        </div>
       </div>
 
       {showForm && (
@@ -209,7 +309,7 @@ export default function AdminCouponsPage() {
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-700">
-            {coupons.map((coupon) => (
+            {filteredCoupons.map((coupon) => (
               <tr key={coupon.id} className="hover:bg-slate-700/50">
                 <td className="px-4 py-3 text-white">{coupon.title}</td>
                 <td className="px-4 py-3 text-gray-400">{getBrandName(coupon.brand_id)}</td>
