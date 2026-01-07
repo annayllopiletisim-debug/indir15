@@ -14,10 +14,20 @@ interface DealCardProps {
 export default function DealCard({ deal, brand, href }: DealCardProps) {
   const destinationUrl = deal.destination_url || brand?.affiliate_url || brand?.website_url;
 
-  const handleCtaClick = (e: React.MouseEvent) => {
+  const handleCtaClick = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     if (destinationUrl) {
+      // Track click
+      try {
+        await fetch('/api/track/click', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ type: 'discount', id: deal.id }),
+        });
+      } catch (err) {
+        console.error('Track click error:', err);
+      }
       window.open(addUtmParams(destinationUrl), '_blank');
     }
   };

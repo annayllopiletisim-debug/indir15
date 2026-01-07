@@ -21,8 +21,18 @@ export default function CouponCard({ coupon, brand }: CouponCardProps) {
     }
   };
 
-  const handleCtaClick = () => {
+  const handleCtaClick = async () => {
     if (destinationUrl) {
+      // Track click
+      try {
+        await fetch('/api/track/click', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ type: 'coupon', id: coupon.id }),
+        });
+      } catch (err) {
+        console.error('Track click error:', err);
+      }
       window.open(addUtmParams(destinationUrl), '_blank');
     }
   };
