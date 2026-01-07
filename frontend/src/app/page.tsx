@@ -173,9 +173,14 @@ export default async function HomePage() {
           <h2 className="text-xl font-semibold text-gray-800">Öne Çıkanlar</h2>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {discounts.slice(0, 6).map((discount: any) => (
-            <FeaturedDealCard key={discount.id} deal={discount} />
-          ))}
+          {discounts.slice(0, 6).map((discount: any) => {
+            const shortId = getShortId(discount.id);
+            const slug = generateSlug(discount.title);
+            const detailHref = discount.brand ? `/magaza/${discount.brand.slug}/indirim/${slug}-${shortId}` : '#';
+            return (
+              <FeaturedDealCard key={discount.id} deal={discount} detailHref={detailHref} />
+            );
+          })}
         </div>
       </section>
 
