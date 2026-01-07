@@ -216,6 +216,32 @@ export default function AdminDiscountsPage() {
                 className="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white"
               />
             </div>
+            <div>
+              <label className="block text-sm text-gray-400 mb-1">Hedef URL</label>
+              <input
+                type="url"
+                value={formData.destination_url}
+                onChange={(e) => setFormData({ ...formData, destination_url: e.target.value })}
+                placeholder="https://..."
+                className="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white"
+              />
+            </div>
+            <div>
+              <label className="block text-sm text-gray-400 mb-1">Görsel</label>
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={formData.image_url}
+                  onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
+                  placeholder="URL veya yükle"
+                  className="flex-1 px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white"
+                />
+                <label className="px-4 py-2 bg-slate-600 text-white rounded-lg cursor-pointer hover:bg-slate-500 flex items-center gap-2">
+                  {uploading ? '...' : <><Upload className="w-4 h-4" /></>}
+                  <input type="file" accept="image/*" onChange={handleImageUpload} className="hidden" disabled={uploading} />
+                </label>
+              </div>
+            </div>
             <div className="flex items-center">
               <label className="flex items-center gap-2 text-white cursor-pointer">
                 <input
