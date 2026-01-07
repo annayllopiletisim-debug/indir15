@@ -32,56 +32,32 @@ async function getCategoryData(slug: string) {
   const category = await Category.findOne({ slug }).lean();
   if (!category) return null;
   
-  // Get all brands and discounts
-  const [allBrands, allDiscounts, allCoupons] = await Promise.all([
-    Brand.find({}).lean(),
-    Discount.find({}).sort({ created_at: -1 }).lean(),
-    Coupon.find({ is_active: true }).sort({ created_at: -1 }).lean(),
-  ]);
+  const categoryId = (category as any).id;
   
-  // For now, show all data since category_ids aren't properly set up
-  // Filter based on category name/type when possible
-  const categoryName = (category as any).name.toLowerCase();
+  // Get brands that have this category in their category_ids
+  const brands = await Brand.find({ category_ids: categoryId }).lean();
+  const brandIds = brands.map((b: any) => b.id);
   
-  // Map brand names to categories (simple mapping)
-  const categoryBrandMapping: Record<string, string[]> = {
-    'spor': ['adidas', 'puma', 'nike', 'new balance', 'under armour', 'skechers', 'reebok', 'converse', 'vans'],
-    'moda': ['zara', 'bershka', 'mavi', 'koton', 'defacto', 'lacoste', 'levi\'s', 'boyner', 'vakko'],
-    'banka': ['maximum', 'worldcard', 'bonus', 'axess', 'paraf', 'cardfinans', 'miles', 'bankkart'],
-    'elektronik': ['mediamarkt', 'teknosa', 'vatan', 'apple', 'samsung'],
-    'gida': ['migros', 'carrefour', 'bim', 'a101', 'happy', 'getir', 'yemeksepeti'],
-    'ayakkabi': ['flo', 'ayakkabı dünyası', 'hotiç', 'derimod'],
-    'ev-dekorasyon': ['ikea', 'koçtaş', 'tekzen', 'madame coco', 'english home'],
-  };
+  let discounts: any[] = [];
+  let coupons: any[] = [];
   
-  const categoryBrands = categoryBrandMapping[slug] || [];
-  
-  let filteredBrands = allBrands;
-  let filteredDiscounts = allDiscounts;
-  let filteredCoupons = allCoupons;
-  
-  if (categoryBrands.length > 0) {
-    filteredBrands = allBrands.filter((b: any) => 
-      categoryBrands.some(cb => b.name.toLowerCase().includes(cb))
-    );
-    const filteredBrandIds = filteredBrands.map((b: any) => b.id);
-    filteredDiscounts = allDiscounts.filter((d: any) => filteredBrandIds.includes(d.brand_id));
-    filteredCoupons = allCoupons.filter((c: any) => filteredBrandIds.includes(c.brand_id));
+  if (brandIds.length > 0) {
+    // Get deals from these brands
+    [discounts, coupons] = await Promise.all([
+      Discount.find({ brand_id: { $in: brandIds } }).sort({ created_at: -1 }).limit(20).lean(),
+      Coupon.find({ brand_id: { $in: brandIds }, is_active: true }).sort({ created_at: -1 }).limit(20).lean(),
+    ]);
   }
   
-  // Limit results
-  filteredDiscounts = filteredDiscounts.slice(0, 20);
-  filteredCoupons = filteredCoupons.slice(0, 20);
+  const brandMap = new Map(brands.map((b: any) => [b.id, b]));
   
-  const brandMap = new Map(filteredBrands.map((b: any) => [b.id, b]));
-  
-  const enrichedDiscounts = filteredDiscounts.map((d: any) => ({
+  const enrichedDiscounts = discounts.map((d: any) => ({
     ...d,
     _id: d._id?.toString(),
     brand: brandMap.get(d.brand_id) || null,
   }));
   
-  const enrichedCoupons = filteredCoupons.map((c: any) => ({
+  const enrichedCoupons = coupons.map((c: any) => ({
     ...c,
     _id: c._id?.toString(),
     brand: brandMap.get(c.brand_id) || null,
@@ -89,7 +65,7 @@ async function getCategoryData(slug: string) {
   
   return {
     category: { ...(category as any), _id: (category as any)._id?.toString() },
-    brands: filteredBrands.map((b: any) => ({ ...b, _id: b._id?.toString() })),
+    brands: brands.map((b: any) => ({ ...b, _id: b._id?.toString() })),
     discounts: enrichedDiscounts,
     coupons: enrichedCoupons,
   };
