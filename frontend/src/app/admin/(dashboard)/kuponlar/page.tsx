@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
-import { Plus, Pencil, Trash2, Loader2, Copy, Search, X } from 'lucide-react';
+import { Plus, Pencil, Trash2, Loader2, Copy, Search, X, CheckSquare, Square } from 'lucide-react';
 
 interface Brand {
   id: string;
@@ -24,6 +24,8 @@ export default function AdminCouponsPage() {
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [deleting, setDeleting] = useState(false);
 
   // Filter states
   const [searchTerm, setSearchTerm] = useState('');
