@@ -165,7 +165,7 @@ export default async function HomePage() {
               className="flex-shrink-0 flex flex-col items-center group"
             >
               <div className="relative mb-2">
-                <div className="w-[72px] h-[72px] bg-white rounded-2xl border-2 border-gray-100 flex items-center justify-center p-3 group-hover:border-purple-400 group-hover:shadow-lg transition-all overflow-hidden">
+                <div className="w-[80px] h-[80px] bg-white rounded-full border-2 border-gray-100 flex items-center justify-center p-4 group-hover:border-purple-400 group-hover:shadow-lg transition-all overflow-hidden">
                   {brand.logo_url ? (
                     <img
                       src={getImageUrl(brand.logo_url)}
@@ -179,7 +179,7 @@ export default async function HomePage() {
                   )}
                 </div>
                 {brand.deal_count > 0 && (
-                  <span className="absolute -top-2 -right-2 min-w-[22px] h-[22px] px-1.5 flex items-center justify-center bg-purple-600 text-white text-xs font-bold rounded-full border-2 border-white shadow-md">
+                  <span className="absolute top-0 right-0 min-w-[24px] h-[24px] px-1.5 flex items-center justify-center bg-purple-600 text-white text-xs font-bold rounded-full border-2 border-white shadow-md">
                     {brand.deal_count}
                   </span>
                 )}
