@@ -424,6 +424,15 @@ export default function AdminDiscountsPage() {
         <table className="w-full">
           <thead className="bg-slate-700">
             <tr>
+              <th className="px-4 py-3 text-left">
+                <button onClick={toggleSelectAll} className="text-gray-400 hover:text-white">
+                  {selectedIds.size === filteredDiscounts.length && filteredDiscounts.length > 0 ? (
+                    <CheckSquare className="w-5 h-5 text-purple-400" />
+                  ) : (
+                    <Square className="w-5 h-5" />
+                  )}
+                </button>
+              </th>
               <th className="px-4 py-3 text-left text-sm font-medium text-gray-300">Başlık</th>
               <th className="px-4 py-3 text-left text-sm font-medium text-gray-300">Mağaza</th>
               <th className="px-4 py-3 text-left text-sm font-medium text-gray-300">İndirim</th>
@@ -433,7 +442,16 @@ export default function AdminDiscountsPage() {
           </thead>
           <tbody className="divide-y divide-slate-700">
             {filteredDiscounts.slice(0, 50).map((discount) => (
-              <tr key={discount.id} className="hover:bg-slate-700/50">
+              <tr key={discount.id} className={`hover:bg-slate-700/50 ${selectedIds.has(discount.id) ? 'bg-purple-900/20' : ''}`}>
+                <td className="px-4 py-3">
+                  <button onClick={() => toggleSelect(discount.id)} className="text-gray-400 hover:text-white">
+                    {selectedIds.has(discount.id) ? (
+                      <CheckSquare className="w-5 h-5 text-purple-400" />
+                    ) : (
+                      <Square className="w-5 h-5" />
+                    )}
+                  </button>
+                </td>
                 <td className="px-4 py-3 text-white">{discount.title}</td>
                 <td className="px-4 py-3 text-gray-400">{getBrandName(discount.brand_id)}</td>
                 <td className="px-4 py-3">
