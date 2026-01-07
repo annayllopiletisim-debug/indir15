@@ -147,19 +147,7 @@ export default async function HomePage() {
               className="flex-shrink-0 flex flex-col items-center group"
             >
               <div className="relative w-20 h-20 bg-white rounded-2xl border-2 border-gray-100 flex items-center justify-center p-2 group-hover:border-purple-300 group-hover:shadow-lg transition-all overflow-hidden">
-                {brand.logo_url ? (
-                  <img
-                    src={getImageUrl(brand.logo_url)}
-                    alt={brand.name}
-                    className="w-full h-full object-contain"
-                    onError={(e) => {
-                      const target = e.target as HTMLImageElement;
-                      target.style.display = 'none';
-                      target.nextElementSibling?.classList.remove('hidden');
-                    }}
-                  />
-                ) : null}
-                <span className={`text-2xl font-bold text-purple-400 ${brand.logo_url ? 'hidden' : ''}`}>
+                <span className="text-2xl font-bold text-purple-400">
                   {brand.name.charAt(0)}
                 </span>
                 {brand.deal_count > 0 && (
