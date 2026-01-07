@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Plus, Pencil, Trash2, Loader2 } from 'lucide-react';
+import { Plus, Pencil, Trash2, Loader2, Upload } from 'lucide-react';
 
 interface Brand {
   id: string;
@@ -10,6 +10,8 @@ interface Brand {
   description?: string;
   logo_url?: string;
   website_url?: string;
+  affiliate_url?: string;
+  is_featured?: boolean;
   deal_count?: number;
 }
 
@@ -18,12 +20,15 @@ export default function AdminBrandsPage() {
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     slug: '',
     description: '',
     logo_url: '',
     website_url: '',
+    affiliate_url: '',
+    is_featured: false,
   });
 
   useEffect(() => {
@@ -70,9 +75,41 @@ export default function AdminBrandsPage() {
       description: brand.description || '',
       logo_url: brand.logo_url || '',
       website_url: brand.website_url || '',
+      affiliate_url: brand.affiliate_url || '',
+      is_featured: brand.is_featured || false,
     });
     setEditingId(brand.id);
     setShowForm(true);
+  };
+
+  const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploading(true);
+    try {
+      const uploadFormData = new FormData();
+      uploadFormData.append('file', file);
+
+      const res = await fetch('/api/upload', {
+        method: 'POST',
+        body: uploadFormData,
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        setFormData({ ...formData, logo_url: data.url });
+      }
+    } catch (err) {
+      console.error('Upload error:', err);
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  // Helper function to check if URL is a local upload
+  const isLocalUpload = (url: string) => {
+    return url?.startsWith('/uploads/') || url?.startsWith('/api/uploads/');
   };
 
   const handleDelete = async (id: string) => {
@@ -87,7 +124,7 @@ export default function AdminBrandsPage() {
   };
 
   const resetForm = () => {
-    setFormData({ name: '', slug: '', description: '', logo_url: '', website_url: '' });
+    setFormData({ name: '', slug: '', description: '', logo_url: '', website_url: '', affiliate_url: '', is_featured: false });
     setEditingId(null);
     setShowForm(false);
   };
