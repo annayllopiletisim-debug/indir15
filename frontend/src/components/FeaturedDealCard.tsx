@@ -41,12 +41,14 @@ export default function FeaturedDealCard({ deal, detailHref }: FeaturedDealCardP
               <img
                 src={getImageUrl(deal.image_url)}
                 alt={deal.title}
+                loading="lazy"
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
               />
             ) : brand?.default_deal_image ? (
               <img
                 src={getImageUrl(brand.default_deal_image)}
                 alt={deal.title}
+                loading="lazy"
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
               />
             ) : brand?.logo_url ? (
@@ -54,6 +56,7 @@ export default function FeaturedDealCard({ deal, detailHref }: FeaturedDealCardP
                 <img
                   src={getImageUrl(brand.logo_url)}
                   alt={brand.name}
+                  loading="lazy"
                   className="max-w-full max-h-full object-contain"
                 />
               </div>
@@ -74,6 +77,7 @@ export default function FeaturedDealCard({ deal, detailHref }: FeaturedDealCardP
                     <img 
                       src={getImageUrl(brand.logo_url)} 
                       alt={brand.name} 
+                      loading="lazy"
                       className="max-w-full max-h-full object-contain" 
                     />
                   </div>
