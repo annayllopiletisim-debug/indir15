@@ -104,59 +104,14 @@ export default async function BrandPage({ params }: Props) {
       </section>
 
       <div className="container mx-auto px-4 py-8">
-        {/* Discounts */}
+        {/* Discounts with Filter */}
         {discounts.length > 0 && (
-          <section className="mb-10">
-            <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
-              <Tag className="w-5 h-5 text-purple-600" />
-              İndirimler ({discounts.length})
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {discounts.map((discount: any) => {
-                const shortId = getShortId(discount.id);
-                const dealSlug = generateSlug(discount.title);
-                const href = `/magaza/${brand.slug}/indirim/${dealSlug}-${shortId}`;
-                return (
-                  <DealCard key={discount.id} deal={discount} brand={brand} href={href} />
-                );
-              })}
-            </div>
-          </section>
-        )}
-
-        {/* Coupons */}
-        {coupons.length > 0 && (
-          <section className="mb-10">
-            <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
-              <Ticket className="w-5 h-5 text-purple-600" />
-              Kupon Kodları ({coupons.length})
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {coupons.map((coupon: any) => (
-                <CouponCard key={coupon.id} coupon={coupon} brand={brand} />
-              ))}
-            </div>
-          </section>
-        )}
-
-        {/* Giveaways */}
-        {giveaways.length > 0 && (
-          <section className="mb-10">
-            <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
-              <Gift className="w-5 h-5 text-purple-600" />
-              Çekilişler ({giveaways.length})
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {giveaways.map((giveaway: any) => {
-                const shortId = getShortId(giveaway.id);
-                const dealSlug = generateSlug(giveaway.title);
-                const href = `/magaza/${brand.slug}/cekilis/${dealSlug}-${shortId}`;
-                return (
-                  <DealCard key={giveaway.id} deal={giveaway} brand={brand} href={href} />
-                );
-              })}
-            </div>
-          </section>
+          <BrandDealsFilter 
+            discounts={discounts} 
+            coupons={coupons}
+            giveaways={giveaways}
+            brand={brand} 
+          />
         )}
 
         {totalDeals === 0 && (
