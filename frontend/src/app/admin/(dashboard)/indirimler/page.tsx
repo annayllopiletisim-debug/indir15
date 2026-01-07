@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { Plus, Pencil, Trash2, Loader2, Upload } from 'lucide-react';
+import { useState, useEffect, useMemo } from 'react';
+import { Plus, Pencil, Trash2, Loader2, Upload, Search, X } from 'lucide-react';
 
 interface Brand {
   id: string;
@@ -28,6 +28,13 @@ export default function AdminDiscountsPage() {
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
+
+  // Filter states
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterBrand, setFilterBrand] = useState<string>('all');
+  const [filterFeatured, setFilterFeatured] = useState<'all' | 'yes' | 'no'>('all');
+  const [sortBy, setSortBy] = useState<'newest' | 'oldest' | 'title'>('newest');
+
   const [formData, setFormData] = useState({
     brand_id: '',
     title: '',
@@ -42,6 +49,49 @@ export default function AdminDiscountsPage() {
   useEffect(() => {
     fetchData();
   }, []);
+
+  // Filtered and sorted discounts
+  const filteredDiscounts = useMemo(() => {
+    let result = [...discounts];
+    
+    // Search filter
+    if (searchTerm) {
+      result = result.filter(d => 
+        d.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        d.description?.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+    
+    // Brand filter
+    if (filterBrand !== 'all') {
+      result = result.filter(d => d.brand_id === filterBrand);
+    }
+    
+    // Featured filter
+    if (filterFeatured === 'yes') {
+      result = result.filter(d => d.is_featured);
+    } else if (filterFeatured === 'no') {
+      result = result.filter(d => !d.is_featured);
+    }
+    
+    // Sort
+    if (sortBy === 'newest') {
+      result.sort((a, b) => new Date(b.expiry_date || 0).getTime() - new Date(a.expiry_date || 0).getTime());
+    } else if (sortBy === 'oldest') {
+      result.sort((a, b) => new Date(a.expiry_date || 0).getTime() - new Date(b.expiry_date || 0).getTime());
+    } else if (sortBy === 'title') {
+      result.sort((a, b) => a.title.localeCompare(b.title));
+    }
+    
+    return result;
+  }, [discounts, searchTerm, filterBrand, filterFeatured, sortBy]);
+
+  const clearFilters = () => {
+    setSearchTerm('');
+    setFilterBrand('all');
+    setFilterFeatured('all');
+    setSortBy('newest');
+  };
 
   const fetchData = async () => {
     try {
@@ -148,7 +198,7 @@ export default function AdminDiscountsPage() {
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-white">İndirimler</h1>
+        <h1 className="text-2xl font-bold text-white">İndirimler ({discounts.length})</h1>
         <button
           onClick={() => setShowForm(true)}
           className="px-4 py-2 bg-purple-600 text-white rounded-lg flex items-center gap-2 hover:bg-purple-700"
@@ -156,6 +206,58 @@ export default function AdminDiscountsPage() {
           <Plus className="w-5 h-5" />
           Yeni İndirim
         </button>
+      </div>
+
+      {/* Filters */}
+      <div className="bg-slate-800 rounded-xl border border-slate-700 p-4 mb-6">
+        <div className="flex flex-wrap items-center gap-4">
+          <div className="flex-1 min-w-[200px] relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <input
+              type="text"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder="İndirim ara..."
+              className="w-full pl-10 pr-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-gray-400"
+            />
+          </div>
+          <select
+            value={filterBrand}
+            onChange={(e) => setFilterBrand(e.target.value)}
+            className="px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white"
+          >
+            <option value="all">Tüm Mağazalar</option>
+            {brands.map(brand => (
+              <option key={brand.id} value={brand.id}>{brand.name}</option>
+            ))}
+          </select>
+          <select
+            value={filterFeatured}
+            onChange={(e) => setFilterFeatured(e.target.value as any)}
+            className="px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white"
+          >
+            <option value="all">Tümü</option>
+            <option value="yes">Öne Çıkanlar</option>
+            <option value="no">Normal</option>
+          </select>
+          <select
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value as any)}
+            className="px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white"
+          >
+            <option value="newest">En Yeni</option>
+            <option value="oldest">En Eski</option>
+            <option value="title">Ada Göre</option>
+          </select>
+          {(searchTerm || filterBrand !== 'all' || filterFeatured !== 'all' || sortBy !== 'newest') && (
+            <button onClick={clearFilters} className="p-2 text-gray-400 hover:text-white">
+              <X className="w-5 h-5" />
+            </button>
+          )}
+        </div>
+        <div className="mt-2 text-sm text-gray-400">
+          {filteredDiscounts.length} sonuç gösteriliyor
+        </div>
       </div>
 
       {showForm && (
@@ -277,7 +379,7 @@ export default function AdminDiscountsPage() {
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-700">
-            {discounts.slice(0, 50).map((discount) => (
+            {filteredDiscounts.slice(0, 50).map((discount) => (
               <tr key={discount.id} className="hover:bg-slate-700/50">
                 <td className="px-4 py-3 text-white">{discount.title}</td>
                 <td className="px-4 py-3 text-gray-400">{getBrandName(discount.brand_id)}</td>
