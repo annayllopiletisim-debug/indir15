@@ -75,7 +75,7 @@ export default async function BrandPage({ params }: Props) {
           <div className="flex flex-col md:flex-row md:items-center gap-6">
             <div className="w-24 h-24 bg-white rounded-2xl border-2 border-gray-100 flex items-center justify-center p-2 shadow-sm flex-shrink-0">
               {brand.logo_url ? (
-                <img src={getImageUrl(brand.logo_url)} alt={brand.name} className="w-full h-full object-contain" />
+                <img src={getImageUrl(brand.logo_url)} alt={brand.name} loading="lazy" className="w-full h-full object-contain" />
               ) : (
                 <span className="text-4xl font-bold text-gray-300">{brand.name.charAt(0)}</span>
               )}
