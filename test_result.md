@@ -84,3 +84,13 @@
 - Password: admin123
 - Admin URL: /admin/login
 - Base API URL: http://localhost:3000/api/
+
+## Blog Module Tests - Updated
+- Blog Admin Page: PENDING
+- Blog API CRUD: PENDING  
+- Public Blog Page (SSR): PENDING
+- Blog Detail Page: PENDING
+- Sitemap Generation: PASS
+
+## Sitemap Test
+- /sitemap.xml returns valid XML with all brands, categories, and blog posts
