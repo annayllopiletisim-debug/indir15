@@ -11,7 +11,8 @@ import {
   FolderOpen, 
   FileText, 
   LogOut,
-  Settings
+  Settings,
+  Mail
 } from 'lucide-react';
 
 const menuItems = [
@@ -22,6 +23,7 @@ const menuItems = [
   { href: '/admin/cekilisler', icon: Gift, label: 'Çekilişler' },
   { href: '/admin/kategoriler', icon: FolderOpen, label: 'Kategoriler' },
   { href: '/admin/blog', icon: FileText, label: 'Blog' },
+  { href: '/admin/mesajlar', icon: Mail, label: 'Mesajlar' },
 ];
 
 export default function AdminSidebar() {
