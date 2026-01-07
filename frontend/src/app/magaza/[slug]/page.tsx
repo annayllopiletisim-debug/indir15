@@ -9,6 +9,7 @@ import { addUtmParams } from '@/lib/utm';
 import { Tag, Ticket, Gift, ExternalLink } from 'lucide-react';
 import DealCard from '@/components/DealCard';
 import CouponCard from '@/components/CouponCard';
+import BrandDealsFilter from '@/components/BrandDealsFilter';
 
 interface Props {
   params: Promise<{ slug: string }>;
