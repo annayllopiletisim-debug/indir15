@@ -1,8 +1,8 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { Tag, Ticket, Clock, TrendingUp, Sparkles } from 'lucide-react';
-import Link from 'next/link';
+import { Tag, Ticket, Clock, TrendingUp, Sparkles, Copy } from 'lucide-react';
+import FeaturedDealCard from '@/components/FeaturedDealCard';
 import { getImageUrl } from '@/lib/image';
 import { getShortId, generateSlug } from '@/lib/utils';
 
@@ -96,9 +96,16 @@ export default function CategoryDealsFilter({ discounts, coupons, category }: Ca
             İndirimler ({filteredDiscounts.length})
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {filteredDiscounts.map((discount: any) => (
-              <DealCard key={discount.id} deal={discount} type="indirim" />
-            ))}
+            {filteredDiscounts.map((discount: any) => {
+              const brand = discount.brand;
+              if (!brand) return null;
+              const shortId = getShortId(discount.id);
+              const slug = generateSlug(discount.title);
+              const href = `/magaza/${brand.slug}/indirim/${slug}-${shortId}`;
+              return (
+                <FeaturedDealCard key={discount.id} deal={discount} detailHref={href} />
+              );
+            })}
           </div>
         </section>
       )}
@@ -127,55 +134,6 @@ export default function CategoryDealsFilter({ discounts, coupons, category }: Ca
   );
 }
 
-function DealCard({ deal, type }: { deal: any; type: string }) {
-  const brand = deal.brand;
-  if (!brand) return null;
-  
-  const shortId = getShortId(deal.id);
-  const slug = generateSlug(deal.title);
-  const href = `/magaza/${brand.slug}/${type}/${slug}-${shortId}`;
-
-  return (
-    <Link href={href} className="block">
-      <article className="bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all p-4 border h-full">
-        <div className="flex gap-4">
-          <div className="w-20 h-20 rounded-xl overflow-hidden bg-violet-50 flex-shrink-0">
-            {deal.image_url || brand.default_deal_image ? (
-              <img src={getImageUrl(deal.image_url || brand.default_deal_image)} alt={deal.title} loading="lazy" className="w-full h-full object-cover" />
-            ) : brand.logo_url ? (
-              <img src={getImageUrl(brand.logo_url)} alt={brand.name} loading="lazy" className="w-full h-full object-contain p-2" />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center text-violet-300">
-                <Tag className="w-8 h-8" />
-              </div>
-            )}
-          </div>
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2 mb-1">
-              {brand.logo_url && (
-                <img src={getImageUrl(brand.logo_url)} alt={brand.name} loading="lazy" className="w-5 h-5 rounded object-contain" />
-              )}
-              <span className="text-xs font-medium truncate text-muted-foreground">{brand.name}</span>
-            </div>
-            {deal.discount_text && (
-              <span className="inline-block px-2 py-0.5 text-xs font-bold rounded-full bg-green-100 text-green-700 mb-1">
-                {deal.discount_text}
-              </span>
-            )}
-            <h3 className="font-semibold text-sm line-clamp-2">{deal.title}</h3>
-            {deal.expiry_date && (
-              <div className="flex items-center gap-1 text-xs text-muted-foreground mt-2">
-                <Clock className="w-3 h-3" />
-                {new Date(deal.expiry_date).toLocaleDateString('tr-TR')}
-              </div>
-            )}
-          </div>
-        </div>
-      </article>
-    </Link>
-  );
-}
-
 function CouponCard({ coupon }: { coupon: any }) {
   const brand = coupon.brand;
   
@@ -184,27 +142,30 @@ function CouponCard({ coupon }: { coupon: any }) {
   };
   
   return (
-    <article className="bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all p-4 border">
+    <article className="bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all p-4 border border-gray-100 group-hover:border-purple-200">
       <div className="flex items-center gap-2 mb-2">
         {brand?.logo_url && (
-          <img src={getImageUrl(brand.logo_url)} alt={brand.name || 'Marka'} loading="lazy" className="w-6 h-6 rounded object-contain" />
+          <div className="w-8 h-8 rounded-lg border border-gray-200 bg-white flex items-center justify-center p-0.5 overflow-hidden flex-shrink-0">
+            <img src={getImageUrl(brand.logo_url)} alt={brand.name || 'Marka'} loading="lazy" className="max-w-full max-h-full object-contain" />
+          </div>
         )}
-        <span className="text-sm font-medium">{brand?.name}</span>
+        <span className="text-sm font-bold text-gray-800">{brand?.name}</span>
       </div>
       {coupon.discount_text && (
         <span className="inline-block px-2 py-0.5 text-xs font-bold rounded-full bg-green-100 text-green-700 mb-2">
           {coupon.discount_text}
         </span>
       )}
-      <h3 className="font-semibold text-sm mb-3 line-clamp-2">{coupon.title}</h3>
+      <h3 className="font-medium text-gray-800 text-sm mb-3 line-clamp-2">{coupon.title}</h3>
       <div className="flex items-center gap-2">
-        <code className="flex-1 px-3 py-2 bg-violet-50 border border-dashed border-violet-300 rounded-lg text-center font-mono font-bold text-violet-700 text-sm">
+        <code className="flex-1 px-3 py-2 bg-purple-50 border border-dashed border-purple-300 rounded-lg text-center font-mono font-bold text-purple-700 text-sm">
           {coupon.code}
         </code>
         <button 
           onClick={copyCode}
-          className="px-3 py-2 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary/90"
+          className="flex items-center gap-1 px-3 py-2 bg-gradient-to-r from-purple-600 to-purple-700 text-white rounded-lg text-sm font-semibold hover:from-purple-700 hover:to-purple-800 transition-all"
         >
+          <Copy className="w-4 h-4" />
           Kopyala
         </button>
       </div>
