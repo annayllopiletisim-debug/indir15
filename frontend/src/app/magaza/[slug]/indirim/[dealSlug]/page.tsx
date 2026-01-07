@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 import connectDB from '@/lib/db';
 import { Brand, Discount } from '@/lib/models';
 import { getImageUrl } from '@/lib/image';
+import { addUtmParams } from '@/lib/utm';
 import { ExternalLink, Clock, ArrowRight, Calendar, CheckCircle } from 'lucide-react';
 
 interface Props {
