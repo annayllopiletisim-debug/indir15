@@ -148,13 +148,13 @@ export default async function HomePage() {
               href={`/magaza/${brand.slug}`}
               className="flex-shrink-0 flex flex-col items-center group"
             >
-              <div className="relative">
-                <div className="w-[72px] h-[72px] bg-white rounded-full border-2 border-gray-100 flex items-center justify-center p-3 group-hover:border-purple-400 group-hover:shadow-lg transition-all overflow-hidden">
+              <div className="relative mb-2">
+                <div className="w-[72px] h-[72px] bg-white rounded-2xl border-2 border-gray-100 flex items-center justify-center p-3 group-hover:border-purple-400 group-hover:shadow-lg transition-all overflow-hidden">
                   {brand.logo_url ? (
                     <img
                       src={getImageUrl(brand.logo_url)}
                       alt={brand.name}
-                      className="w-full h-full object-contain rounded-full"
+                      className="w-full h-full object-contain"
                     />
                   ) : (
                     <span className="text-2xl font-bold text-purple-400">
@@ -163,12 +163,12 @@ export default async function HomePage() {
                   )}
                 </div>
                 {brand.deal_count > 0 && (
-                  <span className="absolute -top-1 -right-1 min-w-[24px] h-[24px] px-1.5 flex items-center justify-center bg-purple-600 text-white text-xs font-bold rounded-full border-2 border-white shadow-md">
+                  <span className="absolute -top-2 -right-2 min-w-[22px] h-[22px] px-1.5 flex items-center justify-center bg-purple-600 text-white text-xs font-bold rounded-full border-2 border-white shadow-md">
                     {brand.deal_count}
                   </span>
                 )}
               </div>
-              <span className="text-sm font-medium text-center mt-2 max-w-[80px] truncate text-gray-700 group-hover:text-purple-600">
+              <span className="text-sm font-medium text-center max-w-[80px] truncate text-gray-700 group-hover:text-purple-600">
                 {brand.name}
               </span>
             </Link>
