@@ -76,7 +76,7 @@ async function getHomeData() {
   }));
 
   return {
-    brands: brands.map((b: any) => ({ ...b, _id: b._id?.toString() })),
+    brands: enrichedBrands,
     discounts: enrichedDiscounts,
     coupons: enrichedCoupons,
     categories: categories.map((c: any) => ({ ...c, _id: c._id?.toString() })),
