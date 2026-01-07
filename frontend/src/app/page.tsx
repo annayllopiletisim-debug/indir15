@@ -4,7 +4,8 @@ import connectDB from '@/lib/db';
 import { Brand, Discount, Coupon, Category } from '@/lib/models';
 import { getShortId, generateSlug } from '@/lib/utils';
 import { getImageUrl } from '@/lib/image';
-import { Search, ArrowRight, Calendar, Star, ChevronRight } from 'lucide-react';
+import { addUtmParams } from '@/lib/utm';
+import { Search, ArrowRight, Calendar, Star, ChevronRight, ExternalLink } from 'lucide-react';
 
 export const metadata: Metadata = {
   title: 'İndirim Keşfet - Türkiye\'nin En Güncel Kupon ve İndirim Platformu',
