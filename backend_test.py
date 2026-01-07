@@ -573,6 +573,15 @@ def main():
     tester.test_giveaways_api()
     tester.test_categories_api()
     tester.test_image_upload()
+    
+    # Test Blog module specifically
+    print("\n" + "=" * 60)
+    print("🔍 BLOG MODULE TESTING")
+    print("=" * 60)
+    tester.test_blog_crud()
+    tester.test_blog_public_pages()
+    tester.test_sitemap()
+    
     tester.test_authentication_required()
     
     # Print final results
