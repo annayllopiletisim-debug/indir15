@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { Plus, Pencil, Trash2, Loader2, Upload } from 'lucide-react';
+import { useState, useEffect, useMemo } from 'react';
+import { Plus, Pencil, Trash2, Loader2, Upload, Search, Filter, X } from 'lucide-react';
 
 interface Brand {
   id: string;
@@ -21,6 +21,12 @@ export default function AdminBrandsPage() {
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
+  
+  // Filter states
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterFeatured, setFilterFeatured] = useState<'all' | 'yes' | 'no'>('all');
+  const [sortBy, setSortBy] = useState<'name' | 'deal_count' | 'newest'>('name');
+
   const [formData, setFormData] = useState({
     name: '',
     slug: '',
@@ -34,6 +40,35 @@ export default function AdminBrandsPage() {
   useEffect(() => {
     fetchBrands();
   }, []);
+
+  // Filtered and sorted brands
+  const filteredBrands = useMemo(() => {
+    let result = [...brands];
+    
+    // Search filter
+    if (searchTerm) {
+      result = result.filter(b => 
+        b.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        b.slug.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+    
+    // Featured filter
+    if (filterFeatured === 'yes') {
+      result = result.filter(b => b.is_featured);
+    } else if (filterFeatured === 'no') {
+      result = result.filter(b => !b.is_featured);
+    }
+    
+    // Sort
+    if (sortBy === 'name') {
+      result.sort((a, b) => a.name.localeCompare(b.name));
+    } else if (sortBy === 'deal_count') {
+      result.sort((a, b) => (b.deal_count || 0) - (a.deal_count || 0));
+    }
+    
+    return result;
+  }, [brands, searchTerm, filterFeatured, sortBy]);
 
   const fetchBrands = async () => {
     try {
@@ -64,7 +99,7 @@ export default function AdminBrandsPage() {
         resetForm();
       }
     } catch (err) {
-      console.error('Error saving brand:', err);
+      console.error('Error:', err);
     }
   };
 
@@ -107,19 +142,13 @@ export default function AdminBrandsPage() {
     }
   };
 
-  // Helper function to check if URL is a local upload
-  const isLocalUpload = (url: string) => {
-    return url?.startsWith('/uploads/') || url?.startsWith('/api/uploads/');
-  };
-
   const handleDelete = async (id: string) => {
     if (!confirm('Bu mağazayı silmek istediğinizden emin misiniz?')) return;
-    
     try {
       await fetch(`/api/brands/${id}`, { method: 'DELETE' });
       fetchBrands();
     } catch (err) {
-      console.error('Error deleting brand:', err);
+      console.error('Error:', err);
     }
   };
 
@@ -130,16 +159,16 @@ export default function AdminBrandsPage() {
   };
 
   const generateSlug = (name: string) => {
-    return name
-      .toLowerCase()
-      .replace(/[ıİ]/g, 'i')
-      .replace(/[ğĞ]/g, 'g')
-      .replace(/[üÜ]/g, 'u')
-      .replace(/[şŞ]/g, 's')
-      .replace(/[öÖ]/g, 'o')
-      .replace(/[çÇ]/g, 'c')
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/^-|-$/g, '');
+    return name.toLowerCase()
+      .replace(/[ıİ]/g, 'i').replace(/[ğĞ]/g, 'g').replace(/[üÜ]/g, 'u')
+      .replace(/[şŞ]/g, 's').replace(/[öÖ]/g, 'o').replace(/[çÇ]/g, 'c')
+      .replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+  };
+
+  const clearFilters = () => {
+    setSearchTerm('');
+    setFilterFeatured('all');
+    setSortBy('name');
   };
 
   if (loading) {
@@ -153,7 +182,7 @@ export default function AdminBrandsPage() {
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-white">Mağazalar</h1>
+        <h1 className="text-2xl font-bold text-white">Mağazalar ({brands.length})</h1>
         <button
           onClick={() => setShowForm(true)}
           className="px-4 py-2 bg-purple-600 text-white rounded-lg flex items-center gap-2 hover:bg-purple-700"
@@ -163,7 +192,47 @@ export default function AdminBrandsPage() {
         </button>
       </div>
 
-      {/* Form */}
+      {/* Filters */}
+      <div className="bg-slate-800 rounded-xl border border-slate-700 p-4 mb-6">
+        <div className="flex flex-wrap items-center gap-4">
+          <div className="flex-1 min-w-[200px] relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <input
+              type="text"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder="Mağaza ara..."
+              className="w-full pl-10 pr-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-gray-400"
+            />
+          </div>
+          <select
+            value={filterFeatured}
+            onChange={(e) => setFilterFeatured(e.target.value as any)}
+            className="px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white"
+          >
+            <option value="all">Tüm Mağazalar</option>
+            <option value="yes">Öne Çıkanlar</option>
+            <option value="no">Normal</option>
+          </select>
+          <select
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value as any)}
+            className="px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white"
+          >
+            <option value="name">Ada Göre</option>
+            <option value="deal_count">Fırsat Sayısına Göre</option>
+          </select>
+          {(searchTerm || filterFeatured !== 'all' || sortBy !== 'name') && (
+            <button onClick={clearFilters} className="p-2 text-gray-400 hover:text-white">
+              <X className="w-5 h-5" />
+            </button>
+          )}
+        </div>
+        <div className="mt-2 text-sm text-gray-400">
+          {filteredBrands.length} sonuç gösteriliyor
+        </div>
+      </div>
+
       {showForm && (
         <div className="bg-slate-800 rounded-xl border border-slate-700 p-6 mb-6">
           <h2 className="text-lg font-semibold text-white mb-4">
@@ -175,13 +244,7 @@ export default function AdminBrandsPage() {
               <input
                 type="text"
                 value={formData.name}
-                onChange={(e) => {
-                  setFormData({
-                    ...formData,
-                    name: e.target.value,
-                    slug: generateSlug(e.target.value),
-                  });
-                }}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value, slug: generateSlug(e.target.value) })}
                 className="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white"
                 required
               />
@@ -215,15 +278,10 @@ export default function AdminBrandsPage() {
                   className="flex-1 px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white"
                 />
                 <label className="px-4 py-2 bg-slate-600 text-white rounded-lg cursor-pointer hover:bg-slate-500 flex items-center gap-2">
-                  {uploading ? 'Yükleniyor...' : <><Upload className="w-4 h-4" /> Yükle</>}
+                  {uploading ? '...' : <Upload className="w-4 h-4" />}
                   <input type="file" accept="image/*" onChange={handleLogoUpload} className="hidden" disabled={uploading} />
                 </label>
               </div>
-              {formData.logo_url && (
-                <div className="mt-2">
-                  <img src={formData.logo_url} alt="Logo önizleme" className="w-16 h-16 object-contain rounded bg-white p-1" />
-                </div>
-              )}
             </div>
             <div>
               <label className="block text-sm text-gray-400 mb-1">Website URL</label>
@@ -255,17 +313,10 @@ export default function AdminBrandsPage() {
               </label>
             </div>
             <div className="col-span-2 flex gap-2">
-              <button
-                type="submit"
-                className="px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
-              >
+              <button type="submit" className="px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700">
                 {editingId ? 'Güncelle' : 'Kaydet'}
               </button>
-              <button
-                type="button"
-                onClick={resetForm}
-                className="px-6 py-2 bg-slate-700 text-white rounded-lg hover:bg-slate-600"
-              >
+              <button type="button" onClick={resetForm} className="px-6 py-2 bg-slate-700 text-white rounded-lg hover:bg-slate-600">
                 İptal
               </button>
             </div>
@@ -273,7 +324,6 @@ export default function AdminBrandsPage() {
         </div>
       )}
 
-      {/* Table */}
       <div className="bg-slate-800 rounded-xl border border-slate-700 overflow-hidden">
         <table className="w-full">
           <thead className="bg-slate-700">
@@ -281,18 +331,19 @@ export default function AdminBrandsPage() {
               <th className="px-4 py-3 text-left text-sm font-medium text-gray-300">Logo</th>
               <th className="px-4 py-3 text-left text-sm font-medium text-gray-300">Ad</th>
               <th className="px-4 py-3 text-left text-sm font-medium text-gray-300">Slug</th>
-              <th className="px-4 py-3 text-left text-sm font-medium text-gray-300">Fırsat</th>
+              <th className="px-4 py-3 text-left text-sm font-medium text-gray-300">Fırsatlar</th>
+              <th className="px-4 py-3 text-left text-sm font-medium text-gray-300">Durum</th>
               <th className="px-4 py-3 text-right text-sm font-medium text-gray-300">İşlemler</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-700">
-            {brands.map((brand) => (
+            {filteredBrands.map((brand) => (
               <tr key={brand.id} className="hover:bg-slate-700/50">
                 <td className="px-4 py-3">
                   {brand.logo_url ? (
                     <img src={brand.logo_url} alt={brand.name} className="w-10 h-10 object-contain rounded" />
                   ) : (
-                    <div className="w-10 h-10 bg-slate-600 rounded flex items-center justify-center text-gray-400">
+                    <div className="w-10 h-10 bg-purple-500/20 rounded flex items-center justify-center text-purple-400 font-bold">
                       {brand.name.charAt(0)}
                     </div>
                   )}
@@ -300,21 +351,22 @@ export default function AdminBrandsPage() {
                 <td className="px-4 py-3 text-white font-medium">{brand.name}</td>
                 <td className="px-4 py-3 text-gray-400">{brand.slug}</td>
                 <td className="px-4 py-3">
-                  <span className="px-2 py-1 bg-purple-500/20 text-purple-400 rounded-full text-sm">
+                  <span className="px-2 py-1 bg-purple-500/20 text-purple-400 rounded text-sm font-medium">
                     {brand.deal_count || 0}
                   </span>
                 </td>
+                <td className="px-4 py-3">
+                  {brand.is_featured ? (
+                    <span className="px-2 py-1 bg-yellow-500/20 text-yellow-400 rounded text-sm">⭐ Öne Çıkan</span>
+                  ) : (
+                    <span className="text-gray-500 text-sm">Normal</span>
+                  )}
+                </td>
                 <td className="px-4 py-3 text-right">
-                  <button
-                    onClick={() => handleEdit(brand)}
-                    className="p-2 text-gray-400 hover:text-white"
-                  >
+                  <button onClick={() => handleEdit(brand)} className="p-2 text-gray-400 hover:text-white">
                     <Pencil className="w-4 h-4" />
                   </button>
-                  <button
-                    onClick={() => handleDelete(brand.id)}
-                    className="p-2 text-gray-400 hover:text-red-400"
-                  >
+                  <button onClick={() => handleDelete(brand.id)} className="p-2 text-gray-400 hover:text-red-400">
                     <Trash2 className="w-4 h-4" />
                   </button>
                 </td>
