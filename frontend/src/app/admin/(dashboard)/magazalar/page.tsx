@@ -232,6 +232,7 @@ export default function AdminBrandsPage() {
   const clearFilters = () => {
     setSearchTerm('');
     setFilterFeatured('all');
+    setFilterCategory('all');
     setSortBy('name');
   };
 
@@ -270,6 +271,16 @@ export default function AdminBrandsPage() {
             />
           </div>
           <select
+            value={filterCategory}
+            onChange={(e) => setFilterCategory(e.target.value)}
+            className="px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white"
+          >
+            <option value="all">Tüm Kategoriler</option>
+            {categories.map(cat => (
+              <option key={cat.id} value={cat.id}>{cat.name}</option>
+            ))}
+          </select>
+          <select
             value={filterFeatured}
             onChange={(e) => setFilterFeatured(e.target.value as any)}
             className="px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white"
@@ -286,7 +297,7 @@ export default function AdminBrandsPage() {
             <option value="name">Ada Göre</option>
             <option value="deal_count">Fırsat Sayısına Göre</option>
           </select>
-          {(searchTerm || filterFeatured !== 'all' || sortBy !== 'name') && (
+          {(searchTerm || filterFeatured !== 'all' || filterCategory !== 'all' || sortBy !== 'name') && (
             <button onClick={clearFilters} className="p-2 text-gray-400 hover:text-white">
               <X className="w-5 h-5" />
             </button>
@@ -331,6 +342,28 @@ export default function AdminBrandsPage() {
                 rows={2}
               />
             </div>
+
+            {/* Categories */}
+            <div className="col-span-2">
+              <label className="block text-sm text-gray-400 mb-2">Kategoriler</label>
+              <div className="flex flex-wrap gap-2">
+                {categories.map(category => (
+                  <button
+                    key={category.id}
+                    type="button"
+                    onClick={() => handleCategoryToggle(category.id)}
+                    className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
+                      formData.category_ids.includes(category.id)
+                        ? 'bg-purple-600 text-white'
+                        : 'bg-slate-700 text-gray-300 hover:bg-slate-600'
+                    }`}
+                  >
+                    {category.name}
+                  </button>
+                ))}
+              </div>
+            </div>
+
             <div>
               <label className="block text-sm text-gray-400 mb-1">Logo</label>
               <div className="flex gap-2">
@@ -346,6 +379,29 @@ export default function AdminBrandsPage() {
                   <input type="file" accept="image/*" onChange={handleLogoUpload} className="hidden" disabled={uploading} />
                 </label>
               </div>
+              {formData.logo_url && (
+                <img src={formData.logo_url} alt="Logo önizleme" className="mt-2 w-16 h-16 object-contain rounded bg-white p-1" />
+              )}
+            </div>
+            <div>
+              <label className="block text-sm text-gray-400 mb-1">Varsayılan İndirim Görseli</label>
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={formData.default_deal_image}
+                  onChange={(e) => setFormData({ ...formData, default_deal_image: e.target.value })}
+                  placeholder="URL veya yükle"
+                  className="flex-1 px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white"
+                />
+                <label className="px-4 py-2 bg-slate-600 text-white rounded-lg cursor-pointer hover:bg-slate-500 flex items-center gap-2">
+                  {uploadingDealImage ? '...' : <Image className="w-4 h-4" />}
+                  <input type="file" accept="image/*" onChange={handleDealImageUpload} className="hidden" disabled={uploadingDealImage} />
+                </label>
+              </div>
+              {formData.default_deal_image && (
+                <img src={formData.default_deal_image} alt="Görsel önizleme" className="mt-2 w-24 h-16 object-cover rounded" />
+              )}
+              <p className="text-xs text-gray-500 mt-1">İndirim kartlarında özel görsel yoksa bu görsel kullanılır</p>
             </div>
             <div>
               <label className="block text-sm text-gray-400 mb-1">Website URL</label>
@@ -394,7 +450,7 @@ export default function AdminBrandsPage() {
             <tr>
               <th className="px-4 py-3 text-left text-sm font-medium text-gray-300">Logo</th>
               <th className="px-4 py-3 text-left text-sm font-medium text-gray-300">Ad</th>
-              <th className="px-4 py-3 text-left text-sm font-medium text-gray-300">Slug</th>
+              <th className="px-4 py-3 text-left text-sm font-medium text-gray-300">Kategoriler</th>
               <th className="px-4 py-3 text-left text-sm font-medium text-gray-300">Fırsatlar</th>
               <th className="px-4 py-3 text-left text-sm font-medium text-gray-300">Durum</th>
               <th className="px-4 py-3 text-right text-sm font-medium text-gray-300">İşlemler</th>
@@ -404,16 +460,21 @@ export default function AdminBrandsPage() {
             {filteredBrands.map((brand) => (
               <tr key={brand.id} className="hover:bg-slate-700/50">
                 <td className="px-4 py-3">
-                  {brand.logo_url ? (
-                    <img src={brand.logo_url} alt={brand.name} className="w-10 h-10 object-contain rounded" />
-                  ) : (
-                    <div className="w-10 h-10 bg-purple-500/20 rounded flex items-center justify-center text-purple-400 font-bold">
-                      {brand.name.charAt(0)}
-                    </div>
-                  )}
+                  <div className="flex items-center gap-2">
+                    {brand.logo_url ? (
+                      <img src={brand.logo_url} alt={brand.name} className="w-10 h-10 object-contain rounded" />
+                    ) : (
+                      <div className="w-10 h-10 bg-purple-500/20 rounded flex items-center justify-center text-purple-400 font-bold">
+                        {brand.name.charAt(0)}
+                      </div>
+                    )}
+                    {brand.default_deal_image && (
+                      <img src={brand.default_deal_image} alt="Varsayılan" className="w-10 h-10 object-cover rounded opacity-60" title="Varsayılan indirim görseli" />
+                    )}
+                  </div>
                 </td>
                 <td className="px-4 py-3 text-white font-medium">{brand.name}</td>
-                <td className="px-4 py-3 text-gray-400">{brand.slug}</td>
+                <td className="px-4 py-3 text-gray-400 text-sm">{getCategoryNames(brand.category_ids)}</td>
                 <td className="px-4 py-3">
                   <span className="px-2 py-1 bg-purple-500/20 text-purple-400 rounded text-sm font-medium">
                     {brand.deal_count || 0}
