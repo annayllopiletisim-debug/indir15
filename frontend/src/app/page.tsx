@@ -197,88 +197,104 @@ function FeaturedDealCard({ deal }: { deal: any }) {
   const brand = deal.brand;
   const shortId = getShortId(deal.id);
   const slug = generateSlug(deal.title);
-  const href = brand ? `/magaza/${brand.slug}/indirim/${slug}-${shortId}` : '#';
+  const detailHref = brand ? `/magaza/${brand.slug}/indirim/${slug}-${shortId}` : '#';
+  const destinationUrl = deal.destination_url || brand?.affiliate_url || brand?.website_url;
 
   return (
-    <Link href={href} className="block group">
-      <article className="bg-white rounded-3xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100">
-        <div className="flex">
-          {/* Left Image */}
-          <div className="w-40 h-48 flex-shrink-0 bg-gradient-to-br from-purple-100 to-pink-100 overflow-hidden">
-            {deal.image_url ? (
+    <article className="bg-white rounded-3xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100">
+      <div className="flex">
+        {/* Left Image */}
+        <Link href={detailHref} className="w-40 h-48 flex-shrink-0 bg-gradient-to-br from-purple-100 to-pink-100 overflow-hidden group">
+          {deal.image_url ? (
+            <img
+              src={getImageUrl(deal.image_url)}
+              alt={deal.title}
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+            />
+          ) : brand?.logo_url ? (
+            <div className="w-full h-full flex items-center justify-center p-6">
               <img
-                src={getImageUrl(deal.image_url)}
-                alt={deal.title}
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                src={getImageUrl(brand.logo_url)}
+                alt={brand.name}
+                className="max-w-full max-h-full object-contain"
               />
-            ) : brand?.logo_url ? (
-              <div className="w-full h-full flex items-center justify-center p-6">
-                <img
-                  src={getImageUrl(brand.logo_url)}
-                  alt={brand.name}
-                  className="max-w-full max-h-full object-contain"
-                />
-              </div>
-            ) : (
-              <div className="w-full h-full flex items-center justify-center">
-                <span className="text-5xl text-purple-300">🏷️</span>
-              </div>
-            )}
-          </div>
+            </div>
+          ) : (
+            <div className="w-full h-full flex items-center justify-center">
+              <span className="text-5xl text-purple-300">🏷️</span>
+            </div>
+          )}
+        </Link>
 
-          {/* Right Content */}
-          <div className="flex-1 p-5 flex flex-col">
-            {/* Brand Info */}
-            {brand && (
-              <div className="flex items-center gap-3 mb-3">
-                {brand.logo_url && (
-                  <div className="w-12 h-12 rounded-xl border border-gray-200 bg-white flex items-center justify-center p-1 overflow-hidden">
-                    <img 
-                      src={getImageUrl(brand.logo_url)} 
-                      alt={brand.name} 
-                      className="max-w-full max-h-full object-contain" 
-                    />
-                  </div>
-                )}
-                <span className="text-lg font-bold text-gray-800">{brand.name}</span>
-              </div>
-            )}
+        {/* Right Content */}
+        <div className="flex-1 p-5 flex flex-col">
+          {/* Brand Info */}
+          {brand && (
+            <div className="flex items-center gap-3 mb-3">
+              {brand.logo_url && (
+                <div className="w-12 h-12 rounded-xl border border-gray-200 bg-white flex items-center justify-center p-1 overflow-hidden">
+                  <img 
+                    src={getImageUrl(brand.logo_url)} 
+                    alt={brand.name} 
+                    className="max-w-full max-h-full object-contain" 
+                  />
+                </div>
+              )}
+              <span className="text-lg font-bold text-gray-800">{brand.name}</span>
+            </div>
+          )}
 
-            {/* Discount Badge */}
-            {deal.discount_text && (
-              <span className="inline-flex self-start px-3 py-1 text-sm font-bold rounded-full bg-green-100 text-green-700 mb-3">
-                {deal.discount_text}
-              </span>
-            )}
+          {/* Discount Badge */}
+          {deal.discount_text && (
+            <span className="inline-flex self-start px-3 py-1 text-sm font-bold rounded-full bg-green-100 text-green-700 mb-3">
+              {deal.discount_text}
+            </span>
+          )}
 
-            {/* Title */}
-            <h3 className="font-bold text-gray-800 line-clamp-2 mb-auto text-base">
+          {/* Title */}
+          <Link href={detailHref}>
+            <h3 className="font-bold text-gray-800 line-clamp-2 mb-auto text-base hover:text-purple-600 transition-colors">
               {deal.title}
             </h3>
+          </Link>
 
-            {/* Footer */}
-            <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-100">
-              {deal.expiry_date ? (
-                <div className="flex items-center gap-2 text-sm text-gray-500">
-                  <Calendar className="w-4 h-4" />
-                  <span>BİTİŞ TARİHİ</span>
-                  <span className="font-semibold text-gray-700">
-                    {new Date(deal.expiry_date).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' })}
-                  </span>
-                </div>
-              ) : (
-                <span className="text-sm text-gray-400">Süresiz</span>
-              )}
-              
-              <button className="flex items-center gap-1 px-5 py-2.5 bg-purple-600 text-white rounded-full font-semibold hover:bg-purple-700 transition-colors text-sm">
-                Kodu Göster
+          {/* Footer */}
+          <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-100">
+            {deal.expiry_date ? (
+              <div className="flex items-center gap-2 text-sm text-gray-500">
+                <Calendar className="w-4 h-4" />
+                <span className="hidden sm:inline">BİTİŞ</span>
+                <span className="font-semibold text-gray-700">
+                  {new Date(deal.expiry_date).toLocaleDateString('tr-TR', { day: 'numeric', month: 'short' })}
+                </span>
+              </div>
+            ) : (
+              <span className="text-sm text-gray-400">Süresiz</span>
+            )}
+            
+            {destinationUrl ? (
+              <a 
+                href={destinationUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-1 px-5 py-2.5 bg-purple-600 text-white rounded-full font-semibold hover:bg-purple-700 transition-colors text-sm"
+              >
+                Mağazaya Git
                 <ChevronRight className="w-4 h-4" />
-              </button>
-            </div>
+              </a>
+            ) : (
+              <Link 
+                href={detailHref}
+                className="flex items-center gap-1 px-5 py-2.5 bg-purple-600 text-white rounded-full font-semibold hover:bg-purple-700 transition-colors text-sm"
+              >
+                Detaylar
+                <ChevronRight className="w-4 h-4" />
+              </Link>
+            )}
           </div>
         </div>
-      </article>
-    </Link>
+      </div>
+    </article>
   );
 }
 
