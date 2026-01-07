@@ -87,6 +87,45 @@ export default function AdminCouponsPage() {
     setSortBy('newest');
   };
 
+  // Selection handlers
+  const toggleSelect = (id: string) => {
+    const newSet = new Set(selectedIds);
+    if (newSet.has(id)) {
+      newSet.delete(id);
+    } else {
+      newSet.add(id);
+    }
+    setSelectedIds(newSet);
+  };
+
+  const toggleSelectAll = () => {
+    if (selectedIds.size === filteredCoupons.length) {
+      setSelectedIds(new Set());
+    } else {
+      setSelectedIds(new Set(filteredCoupons.map(c => c.id)));
+    }
+  };
+
+  const handleBulkDelete = async () => {
+    if (selectedIds.size === 0) return;
+    if (!confirm(`${selectedIds.size} kuponu silmek istediğinizden emin misiniz?`)) return;
+    
+    setDeleting(true);
+    try {
+      await Promise.all(
+        Array.from(selectedIds).map(id => 
+          fetch(`/api/coupons/${id}`, { method: 'DELETE' })
+        )
+      );
+      setSelectedIds(new Set());
+      fetchData();
+    } catch (err) {
+      console.error('Bulk delete error:', err);
+    } finally {
+      setDeleting(false);
+    }
+  };
+
   const fetchData = async () => {
     try {
       const [couponsRes, brandsRes] = await Promise.all([
@@ -166,13 +205,25 @@ export default function AdminCouponsPage() {
     <div>
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold text-white">Kuponlar ({coupons.length})</h1>
-        <button
-          onClick={() => setShowForm(true)}
-          className="px-4 py-2 bg-purple-600 text-white rounded-lg flex items-center gap-2 hover:bg-purple-700"
-        >
-          <Plus className="w-5 h-5" />
-          Yeni Kupon
-        </button>
+        <div className="flex gap-2">
+          {selectedIds.size > 0 && (
+            <button
+              onClick={handleBulkDelete}
+              disabled={deleting}
+              className="px-4 py-2 bg-red-600 text-white rounded-lg flex items-center gap-2 hover:bg-red-700 disabled:opacity-50"
+            >
+              <Trash2 className="w-5 h-5" />
+              {deleting ? 'Siliniyor...' : `${selectedIds.size} Seçili Sil`}
+            </button>
+          )}
+          <button
+            onClick={() => setShowForm(true)}
+            className="px-4 py-2 bg-purple-600 text-white rounded-lg flex items-center gap-2 hover:bg-purple-700"
+          >
+            <Plus className="w-5 h-5" />
+            Yeni Kupon
+          </button>
+        </div>
       </div>
 
       {/* Filters */}
@@ -302,6 +353,15 @@ export default function AdminCouponsPage() {
         <table className="w-full">
           <thead className="bg-slate-700">
             <tr>
+              <th className="px-4 py-3 text-left">
+                <button onClick={toggleSelectAll} className="text-gray-400 hover:text-white">
+                  {selectedIds.size === filteredCoupons.length && filteredCoupons.length > 0 ? (
+                    <CheckSquare className="w-5 h-5 text-purple-400" />
+                  ) : (
+                    <Square className="w-5 h-5" />
+                  )}
+                </button>
+              </th>
               <th className="px-4 py-3 text-left text-sm font-medium text-gray-300">Başlık</th>
               <th className="px-4 py-3 text-left text-sm font-medium text-gray-300">Mağaza</th>
               <th className="px-4 py-3 text-left text-sm font-medium text-gray-300">Kod</th>
@@ -312,7 +372,16 @@ export default function AdminCouponsPage() {
           </thead>
           <tbody className="divide-y divide-slate-700">
             {filteredCoupons.map((coupon) => (
-              <tr key={coupon.id} className="hover:bg-slate-700/50">
+              <tr key={coupon.id} className={`hover:bg-slate-700/50 ${selectedIds.has(coupon.id) ? 'bg-purple-900/20' : ''}`}>
+                <td className="px-4 py-3">
+                  <button onClick={() => toggleSelect(coupon.id)} className="text-gray-400 hover:text-white">
+                    {selectedIds.has(coupon.id) ? (
+                      <CheckSquare className="w-5 h-5 text-purple-400" />
+                    ) : (
+                      <Square className="w-5 h-5" />
+                    )}
+                  </button>
+                </td>
                 <td className="px-4 py-3 text-white">{coupon.title}</td>
                 <td className="px-4 py-3 text-gray-400">{getBrandName(coupon.brand_id)}</td>
                 <td className="px-4 py-3">
