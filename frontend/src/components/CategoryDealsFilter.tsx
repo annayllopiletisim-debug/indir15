@@ -141,9 +141,9 @@ function DealCard({ deal, type }: { deal: any; type: string }) {
         <div className="flex gap-4">
           <div className="w-20 h-20 rounded-xl overflow-hidden bg-violet-50 flex-shrink-0">
             {deal.image_url || brand.default_deal_image ? (
-              <img src={getImageUrl(deal.image_url || brand.default_deal_image)} alt={deal.title} className="w-full h-full object-cover" />
+              <img src={getImageUrl(deal.image_url || brand.default_deal_image)} alt={deal.title} loading="lazy" className="w-full h-full object-cover" />
             ) : brand.logo_url ? (
-              <img src={getImageUrl(brand.logo_url)} alt={brand.name} className="w-full h-full object-contain p-2" />
+              <img src={getImageUrl(brand.logo_url)} alt={brand.name} loading="lazy" className="w-full h-full object-contain p-2" />
             ) : (
               <div className="w-full h-full flex items-center justify-center text-violet-300">
                 <Tag className="w-8 h-8" />
@@ -153,7 +153,7 @@ function DealCard({ deal, type }: { deal: any; type: string }) {
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-1">
               {brand.logo_url && (
-                <img src={getImageUrl(brand.logo_url)} alt={brand.name} className="w-5 h-5 rounded object-contain" />
+                <img src={getImageUrl(brand.logo_url)} alt={brand.name} loading="lazy" className="w-5 h-5 rounded object-contain" />
               )}
               <span className="text-xs font-medium truncate text-muted-foreground">{brand.name}</span>
             </div>
@@ -187,7 +187,7 @@ function CouponCard({ coupon }: { coupon: any }) {
     <article className="bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all p-4 border">
       <div className="flex items-center gap-2 mb-2">
         {brand?.logo_url && (
-          <img src={getImageUrl(brand.logo_url)} alt={brand.name} className="w-6 h-6 rounded object-contain" />
+          <img src={getImageUrl(brand.logo_url)} alt={brand.name || 'Marka'} loading="lazy" className="w-6 h-6 rounded object-contain" />
         )}
         <span className="text-sm font-medium">{brand?.name}</span>
       </div>
