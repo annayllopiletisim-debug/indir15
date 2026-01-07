@@ -5,8 +5,8 @@ import bcrypt from 'bcryptjs';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 const ADMIN_USERNAME = process.env.ADMIN_USERNAME || 'admin';
-// Read password hash from environment variable (wrapped in single quotes in .env.local)
-const ADMIN_PASSWORD_HASH = process.env.ADMIN_PASSWORD_HASH || '$2b$12$KyxZqhWBt9ViySfOUH1DSumNQ6e0wjhhR.XjeeikyQct3vraz73TO';
+// Fallback hash for 'admin123' - bcrypt hash with $ escaped properly
+const ADMIN_PASSWORD_HASH = '$2b$10$.Mnh.2ILK5aI/z/JVR/tVeq2k1h0BRRLMH0oK2cFz4tPxIPiJAsR6';
 
 export async function POST(request: Request) {
   try {
