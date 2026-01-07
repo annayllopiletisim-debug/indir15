@@ -182,8 +182,8 @@ export default async function HomePage() {
           <Star className="w-6 h-6 text-yellow-500 fill-yellow-500" />
           <h2 className="text-xl font-semibold text-gray-800">Öne Çıkanlar</h2>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {discounts.slice(0, 6).map((discount: any) => {
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {discounts.slice(0, 9).map((discount: any) => {
             const shortId = getShortId(discount.id);
             const slug = generateSlug(discount.title);
             const detailHref = discount.brand ? `/magaza/${discount.brand.slug}/indirim/${slug}-${shortId}` : '#';
