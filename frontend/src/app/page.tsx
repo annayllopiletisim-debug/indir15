@@ -4,27 +4,37 @@ import connectDB from '@/lib/db';
 import { Brand, Discount, Coupon, Category } from '@/lib/models';
 import { getShortId, generateSlug } from '@/lib/utils';
 import { getImageUrl } from '@/lib/image';
-import { Flame, Tag, Gift, ArrowRight, Clock } from 'lucide-react';
+import { Search, ArrowRight, Calendar, Star, ChevronRight } from 'lucide-react';
 
 export const metadata: Metadata = {
   title: 'İndirim Keşfet - Türkiye\'nin En Güncel Kupon ve İndirim Platformu',
   description: 'Binlerce mağazadan en güncel indirimler, kupon kodları ve çekilişler. İndirim Keşfet ile tasarruf etmeye başlayın!',
 };
 
-// SSR - Her istekte veritabanından taze veri çek
-export const revalidate = 60; // 60 saniyede bir yenile
+export const revalidate = 60;
+
+// Category icons and colors
+const categoryConfig: Record<string, { icon: string; color: string }> = {
+  'spor': { icon: '⚽', color: 'text-green-600' },
+  'moda': { icon: '👗', color: 'text-pink-600' },
+  'elektronik': { icon: '📱', color: 'text-blue-600' },
+  'gida': { icon: '🍴', color: 'text-orange-600' },
+  'banka': { icon: '🏛️', color: 'text-purple-600' },
+  'saglik': { icon: '💊', color: 'text-red-600' },
+  'egitim': { icon: '📚', color: 'text-yellow-600' },
+  'seyahat': { icon: '✈️', color: 'text-cyan-600' },
+};
 
 async function getHomeData() {
   await connectDB();
   
   const [brands, discounts, coupons, categories] = await Promise.all([
     Brand.find({}).sort({ deal_count: -1 }).limit(30).lean(),
-    Discount.find({}).sort({ created_at: -1 }).limit(12).lean(),
+    Discount.find({ is_featured: true }).sort({ created_at: -1 }).limit(12).lean(),
     Coupon.find({ is_active: true }).sort({ created_at: -1 }).limit(6).lean(),
     Category.find({}).sort({ order: 1 }).lean(),
   ]);
 
-  // Brand bilgilerini discount'lara ekle
   const brandMap = new Map(brands.map((b: any) => [b.id, b]));
   
   const enrichedDiscounts = discounts.map((d: any) => ({
@@ -51,51 +61,66 @@ export default async function HomePage() {
   const { brands, discounts, coupons, categories } = await getHomeData();
 
   return (
-    <div className="min-h-screen">
-      {/* Hero Section */}
-      <section className="bg-gradient-to-br from-violet-50 via-purple-50 to-pink-50 py-8">
+    <div className="min-h-screen bg-gray-50">
+      {/* Search Section */}
+      <section className="bg-white py-6 border-b">
         <div className="container mx-auto px-4">
-          <h1 className="text-3xl md:text-4xl font-bold text-center mb-2">
-            Türkiye'nin En Güncel{' '}
-            <span className="bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">
-              İndirim Platformu
-            </span>
-          </h1>
-          <p className="text-center text-muted-foreground mb-6">
-            Binlerce mağazadan en iyi fırsatları keşfedin
-          </p>
-          
-          {/* Category Pills */}
+          <div className="relative max-w-2xl mx-auto">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+            <input
+              type="text"
+              placeholder="Marka ve kampanya ara..."
+              className="w-full pl-12 pr-4 py-4 border border-gray-200 rounded-2xl text-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent shadow-sm"
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* Category Pills */}
+      <section className="bg-white py-4 border-b">
+        <div className="container mx-auto px-4">
           <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
-            {categories.slice(0, 8).map((category: any) => (
-              <Link
-                key={category.id}
-                href={`/kategori/${category.slug}`}
-                className="flex-shrink-0 px-4 py-2 rounded-full bg-white border border-border hover:border-primary/50 hover:shadow-md transition-all text-sm font-medium"
-              >
-                {category.icon} {category.name}
-              </Link>
-            ))}
+            <Link
+              href="/"
+              className="flex-shrink-0 flex items-center gap-2 px-5 py-2.5 rounded-full bg-purple-600 text-white font-medium"
+            >
+              <span className="text-lg">📦</span>
+              Tümü
+            </Link>
+            {categories.slice(0, 8).map((category: any) => {
+              const config = categoryConfig[category.slug] || { icon: '📁', color: 'text-gray-600' };
+              return (
+                <Link
+                  key={category.id}
+                  href={`/kategori/${category.slug}`}
+                  className="flex-shrink-0 flex items-center gap-2 px-5 py-2.5 rounded-full bg-white border border-gray-200 hover:border-purple-300 hover:shadow-md transition-all font-medium"
+                >
+                  <span className={`text-lg ${config.color}`}>{config.icon}</span>
+                  <span>{category.name}</span>
+                  <span className="text-gray-400 text-sm">({category.deal_count || 0})</span>
+                </Link>
+              );
+            })}
           </div>
         </div>
       </section>
 
       {/* Popüler Mağazalar */}
-      <section className="container mx-auto px-4 py-6">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold">Popüler Mağazalar</h2>
-          <Link href="/magazalar" className="text-sm text-muted-foreground hover:text-primary flex items-center gap-1">
+      <section className="container mx-auto px-4 py-8">
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-xl font-semibold text-gray-800">Popüler Mağazalar</h2>
+          <Link href="/magazalar" className="text-gray-500 hover:text-purple-600 flex items-center gap-1 font-medium">
             Tümü <ArrowRight className="w-4 h-4" />
           </Link>
         </div>
-        <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
+        <div className="flex gap-5 overflow-x-auto pb-4 scrollbar-hide">
           {brands.map((brand: any) => (
             <Link
               key={brand.id}
               href={`/magaza/${brand.slug}`}
               className="flex-shrink-0 flex flex-col items-center group"
             >
-              <div className="w-[72px] h-[72px] bg-white rounded-xl border border-gray-200 flex items-center justify-center p-1.5 group-hover:border-primary/50 group-hover:shadow-lg transition-all overflow-hidden relative">
+              <div className="relative w-20 h-20 bg-white rounded-2xl border-2 border-gray-100 flex items-center justify-center p-2 group-hover:border-purple-300 group-hover:shadow-lg transition-all overflow-hidden">
                 {brand.logo_url ? (
                   <img
                     src={getImageUrl(brand.logo_url)}
@@ -103,17 +128,17 @@ export default async function HomePage() {
                     className="w-full h-full object-contain"
                   />
                 ) : (
-                  <span className="text-2xl font-bold text-gray-400">
+                  <span className="text-2xl font-bold text-gray-300">
                     {brand.name.charAt(0)}
                   </span>
                 )}
                 {brand.deal_count > 0 && (
-                  <span className="absolute -top-1.5 -right-1.5 min-w-[20px] h-[20px] px-1 flex items-center justify-center bg-primary text-white text-xs font-bold rounded-full border-2 border-white shadow-sm">
+                  <span className="absolute -top-2 -right-2 min-w-[24px] h-[24px] px-1.5 flex items-center justify-center bg-purple-600 text-white text-xs font-bold rounded-full border-2 border-white shadow">
                     {brand.deal_count}
                   </span>
                 )}
               </div>
-              <span className="text-xs font-medium text-center mt-1.5 max-w-[72px] truncate">
+              <span className="text-sm font-medium text-center mt-2 max-w-[80px] truncate text-gray-700 group-hover:text-purple-600">
                 {brand.name}
               </span>
             </Link>
@@ -121,33 +146,25 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* İndirimler */}
-      <section className="container mx-auto px-4 py-6">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold flex items-center gap-2">
-            <Tag className="w-5 h-5 text-primary" />
-            Güncel İndirimler
-          </h2>
-          <Link href="/indirimler" className="text-sm text-muted-foreground hover:text-primary flex items-center gap-1">
-            Tümü <ArrowRight className="w-4 h-4" />
-          </Link>
+      {/* Öne Çıkanlar */}
+      <section className="container mx-auto px-4 py-8">
+        <div className="flex items-center gap-2 mb-6">
+          <Star className="w-6 h-6 text-yellow-500 fill-yellow-500" />
+          <h2 className="text-xl font-semibold text-gray-800">Öne Çıkanlar</h2>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {discounts.map((discount: any) => (
-            <DealCard key={discount.id} deal={discount} type="indirim" />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {discounts.slice(0, 6).map((discount: any) => (
+            <FeaturedDealCard key={discount.id} deal={discount} />
           ))}
         </div>
       </section>
 
       {/* Kupon Kodları */}
-      <section className="container mx-auto px-4 py-6 bg-gradient-to-r from-violet-50 to-purple-50 -mx-4 px-4">
-        <div className="container mx-auto">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold flex items-center gap-2">
-              <Gift className="w-5 h-5 text-primary" />
-              Kupon Kodları
-            </h2>
-            <Link href="/kuponlar" className="text-sm text-muted-foreground hover:text-primary flex items-center gap-1">
+      <section className="bg-gradient-to-r from-purple-50 to-pink-50 py-10">
+        <div className="container mx-auto px-4">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-xl font-semibold text-gray-800">🎁 Kupon Kodları</h2>
+            <Link href="/kuponlar" className="text-gray-500 hover:text-purple-600 flex items-center gap-1 font-medium">
               Tümü <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
@@ -161,9 +178,9 @@ export default async function HomePage() {
 
       {/* SEO Content */}
       <section className="container mx-auto px-4 py-12">
-        <div className="prose prose-violet max-w-none">
+        <div className="prose prose-purple max-w-none">
           <h2 className="text-2xl font-bold mb-4">İndirim Keşfet ile Tasarruf Edin</h2>
-          <p className="text-muted-foreground">
+          <p className="text-gray-600">
             İndirim Keşfet, Türkiye'nin en kapsamlı indirim ve kupon platformudur. 
             Yüzlerce mağazadan güncel kampanyaları, özel kupon kodlarını ve çekilişleri 
             tek bir yerde bulabilirsiniz. Her gün güncellenen içeriklerimizle alışveriş 
@@ -175,60 +192,89 @@ export default async function HomePage() {
   );
 }
 
-// Deal Card Component
-function DealCard({ deal, type }: { deal: any; type: string }) {
+// Featured Deal Card - Eski tasarımdaki büyük kartlar
+function FeaturedDealCard({ deal }: { deal: any }) {
   const brand = deal.brand;
   const shortId = getShortId(deal.id);
   const slug = generateSlug(deal.title);
-  const href = `/magaza/${brand?.slug}/${type}/${slug}-${shortId}`;
+  const href = brand ? `/magaza/${brand.slug}/indirim/${slug}-${shortId}` : '#';
 
   return (
-    <Link href={href} className="block">
-      <article className="bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all duration-200 overflow-hidden border border-border p-4">
-        <div className="flex gap-4">
-          {/* Image */}
-          <div className="w-24 h-24 rounded-xl overflow-hidden bg-violet-100 flex-shrink-0">
-            {deal.image_url || brand?.default_deal_image ? (
+    <Link href={href} className="block group">
+      <article className="bg-white rounded-3xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100">
+        <div className="flex">
+          {/* Left Image */}
+          <div className="w-40 h-48 flex-shrink-0 bg-gradient-to-br from-purple-100 to-pink-100 overflow-hidden">
+            {deal.image_url ? (
               <img
-                src={getImageUrl(deal.image_url || brand?.default_deal_image)}
+                src={getImageUrl(deal.image_url)}
                 alt={deal.title}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
               />
             ) : brand?.logo_url ? (
-              <img
-                src={getImageUrl(brand.logo_url)}
-                alt={brand.name}
-                className="w-full h-full object-contain p-2"
-              />
+              <div className="w-full h-full flex items-center justify-center p-6">
+                <img
+                  src={getImageUrl(brand.logo_url)}
+                  alt={brand.name}
+                  className="max-w-full max-h-full object-contain"
+                />
+              </div>
             ) : (
-              <div className="w-full h-full flex items-center justify-center text-violet-400">
-                <Tag className="w-8 h-8" />
+              <div className="w-full h-full flex items-center justify-center">
+                <span className="text-5xl text-purple-300">🏷️</span>
               </div>
             )}
           </div>
 
-          {/* Content */}
-          <div className="flex-1 min-w-0">
+          {/* Right Content */}
+          <div className="flex-1 p-5 flex flex-col">
+            {/* Brand Info */}
             {brand && (
-              <div className="flex items-center gap-2 mb-1">
+              <div className="flex items-center gap-3 mb-3">
                 {brand.logo_url && (
-                  <img src={getImageUrl(brand.logo_url)} alt={brand.name} className="w-6 h-6 rounded object-contain" />
+                  <div className="w-12 h-12 rounded-xl border border-gray-200 bg-white flex items-center justify-center p-1 overflow-hidden">
+                    <img 
+                      src={getImageUrl(brand.logo_url)} 
+                      alt={brand.name} 
+                      className="max-w-full max-h-full object-contain" 
+                    />
+                  </div>
                 )}
-                <span className="text-sm font-medium truncate">{brand.name}</span>
+                <span className="text-lg font-bold text-gray-800">{brand.name}</span>
               </div>
             )}
+
+            {/* Discount Badge */}
             {deal.discount_text && (
-              <span className="inline-block px-2 py-0.5 text-xs font-bold rounded-full bg-green-100 text-green-700 mb-1">
+              <span className="inline-flex self-start px-3 py-1 text-sm font-bold rounded-full bg-green-100 text-green-700 mb-3">
                 {deal.discount_text}
               </span>
             )}
-            <h3 className="font-semibold text-sm line-clamp-2">{deal.title}</h3>
-            {deal.expiry_date && (
-              <div className="flex items-center gap-1 text-xs text-muted-foreground mt-2">
-                <Clock className="w-3 h-3" />
-                {new Date(deal.expiry_date).toLocaleDateString('tr-TR')}
-              </div>
-            )}
+
+            {/* Title */}
+            <h3 className="font-bold text-gray-800 line-clamp-2 mb-auto text-base">
+              {deal.title}
+            </h3>
+
+            {/* Footer */}
+            <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-100">
+              {deal.expiry_date ? (
+                <div className="flex items-center gap-2 text-sm text-gray-500">
+                  <Calendar className="w-4 h-4" />
+                  <span>BİTİŞ TARİHİ</span>
+                  <span className="font-semibold text-gray-700">
+                    {new Date(deal.expiry_date).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' })}
+                  </span>
+                </div>
+              ) : (
+                <span className="text-sm text-gray-400">Süresiz</span>
+              )}
+              
+              <button className="flex items-center gap-1 px-5 py-2.5 bg-purple-600 text-white rounded-full font-semibold hover:bg-purple-700 transition-colors text-sm">
+                Kodu Göster
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            </div>
           </div>
         </div>
       </article>
@@ -241,24 +287,26 @@ function CouponCard({ coupon }: { coupon: any }) {
   const brand = coupon.brand;
 
   return (
-    <article className="bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all duration-200 overflow-hidden border border-border p-4">
-      <div className="flex items-center gap-3 mb-3">
+    <article className="bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all duration-200 overflow-hidden border border-gray-100 p-5">
+      <div className="flex items-center gap-3 mb-4">
         {brand?.logo_url && (
-          <img src={getImageUrl(brand.logo_url)} alt={brand.name} className="w-10 h-10 rounded-lg object-contain border" />
+          <div className="w-12 h-12 rounded-xl border border-gray-200 bg-white flex items-center justify-center p-1 overflow-hidden">
+            <img src={getImageUrl(brand.logo_url)} alt={brand.name} className="max-w-full max-h-full object-contain" />
+          </div>
         )}
         <div>
-          <span className="font-medium">{brand?.name}</span>
+          <span className="font-bold text-gray-800">{brand?.name}</span>
           {coupon.discount_text && (
-            <span className="block text-xs text-green-600 font-semibold">{coupon.discount_text}</span>
+            <span className="block text-sm text-green-600 font-semibold">{coupon.discount_text}</span>
           )}
         </div>
       </div>
-      <h3 className="font-semibold text-sm mb-3 line-clamp-2">{coupon.title}</h3>
+      <h3 className="font-semibold text-gray-700 mb-4 line-clamp-2">{coupon.title}</h3>
       <div className="flex items-center gap-2">
-        <code className="flex-1 px-3 py-2 bg-violet-50 border border-dashed border-violet-300 rounded-lg text-center font-mono font-bold text-violet-700">
+        <code className="flex-1 px-4 py-3 bg-purple-50 border-2 border-dashed border-purple-300 rounded-xl text-center font-mono font-bold text-purple-700">
           {coupon.code}
         </code>
-        <button className="px-4 py-2 bg-primary text-white rounded-lg font-medium hover:bg-primary/90 transition-colors">
+        <button className="px-5 py-3 bg-purple-600 text-white rounded-xl font-semibold hover:bg-purple-700 transition-colors">
           Kopyala
         </button>
       </div>
