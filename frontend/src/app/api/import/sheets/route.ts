@@ -18,6 +18,43 @@ function generateSlug(text: string): string {
     .replace(/^-|-$/g, '');
 }
 
+// Helper to parse various date formats
+function parseDate(dateStr: string): Date | null {
+  if (!dateStr || dateStr.trim() === '') return null;
+  
+  const cleaned = dateStr.trim();
+  
+  // Try DD.MM.YYYY or DD/MM/YYYY (Turkish format)
+  const turkishMatch = cleaned.match(/^(\d{1,2})[.\/](\d{1,2})[.\/](\d{4})$/);
+  if (turkishMatch) {
+    const [, day, month, year] = turkishMatch;
+    const date = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+    if (!isNaN(date.getTime())) return date;
+  }
+  
+  // Try YYYY-MM-DD (ISO format)
+  const isoMatch = cleaned.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
+  if (isoMatch) {
+    const [, year, month, day] = isoMatch;
+    const date = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+    if (!isNaN(date.getTime())) return date;
+  }
+  
+  // Try MM/DD/YYYY (US format)
+  const usMatch = cleaned.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+  if (usMatch) {
+    const [, month, day, year] = usMatch;
+    const date = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+    if (!isNaN(date.getTime())) return date;
+  }
+  
+  // Try native Date parsing as fallback
+  const parsed = new Date(cleaned);
+  if (!isNaN(parsed.getTime())) return parsed;
+  
+  return null;
+}
+
 // Extract Google Sheets ID from URL
 function extractSheetId(url: string): string | null {
   const match = url.match(/\/spreadsheets\/d\/([a-zA-Z0-9-_]+)/);
@@ -107,6 +144,10 @@ export async function POST(request: Request) {
           brandCache.set(brandName.toLowerCase(), brandId);
         }
 
+        // Parse expiry date with multiple format support
+        const rawDate = data['expiry_date'] || data['bitis'] || data['bitiş'] || data['bitis_tarihi'] || data['bitiş_tarihi'] || '';
+        const expiryDate = parseDate(rawDate);
+
         // Create discount
         const discount = new Discount({
           id: uuidv4(),
@@ -116,7 +157,7 @@ export async function POST(request: Request) {
           discount_text: data['discount_text'] || data['indirim'] || '',
           destination_url: data['destination_url'] || data['url'] || data['link'] || '',
           image_url: data['image_url'] || data['gorsel'] || data['görsel'] || '',
-          expiry_date: data['expiry_date'] || data['bitis'] || data['bitiş'] ? new Date(data['expiry_date'] || data['bitis'] || data['bitiş']) : null,
+          expiry_date: expiryDate,
           is_featured: false,
           created_at: new Date(),
         });
