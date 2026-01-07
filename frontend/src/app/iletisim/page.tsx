@@ -1,12 +1,65 @@
-import { Metadata } from 'next';
-import { Mail, MessageSquare, MapPin, Phone } from 'lucide-react';
+'use client';
 
-export const metadata: Metadata = {
-  title: 'İletişim | İndirim Keşfet',
-  description: 'Bizimle iletişime geçin. Sorularınız, önerileriniz veya iş birliği teklifleriniz için bize ulaşın.',
-};
+import { useState } from 'react';
+import { Mail, MessageSquare, Send, CheckCircle } from 'lucide-react';
 
 export default function ContactPage() {
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    subject: 'Genel Soru',
+    message: '',
+  });
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
+  const [error, setError] = useState('');
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
+
+    try {
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
+
+      if (res.ok) {
+        setSuccess(true);
+        setFormData({ name: '', email: '', subject: 'Genel Soru', message: '' });
+      } else {
+        const data = await res.json();
+        setError(data.error || 'Bir hata oluştu');
+      }
+    } catch (err) {
+      setError('Mesaj gönderilemedi. Lütfen tekrar deneyin.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (success) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="bg-white rounded-2xl shadow-sm p-12 text-center max-w-md">
+          <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+            <CheckCircle className="w-8 h-8 text-green-600" />
+          </div>
+          <h2 className="text-2xl font-bold text-gray-800 mb-2">Mesajınız Alındı!</h2>
+          <p className="text-gray-600 mb-6">En kısa sürede size dönüş yapacağız.</p>
+          <button
+            onClick={() => setSuccess(false)}
+            className="px-6 py-3 bg-purple-600 text-white rounded-xl font-semibold hover:bg-purple-700 transition-colors"
+          >
+            Yeni Mesaj Gönder
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto px-4 py-12">
@@ -20,26 +73,43 @@ export default function ContactPage() {
             {/* Contact Form */}
             <div className="bg-white rounded-2xl shadow-sm p-8">
               <h2 className="text-xl font-bold text-gray-800 mb-6">Mesaj Gönderin</h2>
-              <form className="space-y-4">
+              
+              {error && (
+                <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-xl text-red-600">
+                  {error}
+                </div>
+              )}
+
+              <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Adınız</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Adınız *</label>
                   <input
                     type="text"
+                    value={formData.name}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                     placeholder="Adınızı girin"
+                    required
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">E-posta</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">E-posta *</label>
                   <input
                     type="email"
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                     className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                     placeholder="E-posta adresiniz"
+                    required
                   />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Konu</label>
-                  <select className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                  <select 
+                    value={formData.subject}
+                    onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
+                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  >
                     <option>Genel Soru</option>
                     <option>İş Birliği Teklifi</option>
                     <option>Hata Bildirimi</option>
@@ -47,18 +117,29 @@ export default function ContactPage() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Mesajınız</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Mesajınız *</label>
                   <textarea
                     rows={5}
+                    value={formData.message}
+                    onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                     className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none"
                     placeholder="Mesajınızı yazın..."
+                    required
                   ></textarea>
                 </div>
                 <button
                   type="submit"
-                  className="w-full px-6 py-3 bg-purple-600 text-white rounded-xl font-semibold hover:bg-purple-700 transition-colors"
+                  disabled={loading}
+                  className="w-full px-6 py-3 bg-purple-600 text-white rounded-xl font-semibold hover:bg-purple-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                 >
-                  Gönder
+                  {loading ? (
+                    'Gönderiliyor...'
+                  ) : (
+                    <>
+                      <Send className="w-4 h-4" />
+                      Gönder
+                    </>
+                  )}
                 </button>
               </form>
             </div>
