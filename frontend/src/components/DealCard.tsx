@@ -39,9 +39,9 @@ export default function DealCard({ deal, brand, href }: DealCardProps) {
           {/* Square image - 16x16 (64px) */}
           <div className="w-16 h-16 rounded-xl overflow-hidden bg-purple-50 flex-shrink-0">
             {deal.image_url || brand?.default_deal_image ? (
-              <img src={getImageUrl(deal.image_url || brand?.default_deal_image)} alt={deal.title} className="w-full h-full object-cover" />
+              <img src={getImageUrl(deal.image_url || brand?.default_deal_image)} alt={deal.title} loading="lazy" className="w-full h-full object-cover" />
             ) : brand?.logo_url ? (
-              <img src={getImageUrl(brand.logo_url)} alt={brand.name} className="w-full h-full object-contain p-1.5" />
+              <img src={getImageUrl(brand.logo_url)} alt={brand.name} loading="lazy" className="w-full h-full object-contain p-1.5" />
             ) : (
               <div className="w-full h-full flex items-center justify-center text-purple-300">
                 <Tag className="w-6 h-6" />
@@ -52,7 +52,7 @@ export default function DealCard({ deal, brand, href }: DealCardProps) {
             {/* Brand info - bigger logo and name */}
             <div className="flex items-center gap-2 mb-1">
               {brand?.logo_url && (
-                <img src={getImageUrl(brand.logo_url)} alt={brand.name} className="w-6 h-6 rounded-md object-contain bg-gray-50" />
+                <img src={getImageUrl(brand.logo_url)} alt={brand.name} loading="lazy" className="w-6 h-6 rounded-md object-contain bg-gray-50" />
               )}
               <span className="text-sm font-medium text-gray-700 truncate">{brand?.name}</span>
             </div>
