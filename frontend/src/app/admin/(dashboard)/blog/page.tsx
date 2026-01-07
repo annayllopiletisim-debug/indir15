@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { Plus, Pencil, Trash2, Loader2, Eye, EyeOff, FileText, Upload } from 'lucide-react';
+import { useState, useEffect, useMemo } from 'react';
+import { Plus, Pencil, Trash2, Loader2, Eye, EyeOff, FileText, Upload, Search, X, CheckSquare, Square } from 'lucide-react';
 
 interface BlogPost {
   id: string;
@@ -27,6 +27,14 @@ export default function AdminBlogPage() {
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [deleting, setDeleting] = useState(false);
+
+  // Filter states
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterStatus, setFilterStatus] = useState<'all' | 'published' | 'draft'>('all');
+  const [sortBy, setSortBy] = useState<'newest' | 'oldest' | 'title' | 'views'>('newest');
+
   const [formData, setFormData] = useState({
     title: '',
     slug: '',
@@ -44,6 +52,85 @@ export default function AdminBlogPage() {
   useEffect(() => {
     fetchPosts();
   }, []);
+
+  // Filtered and sorted posts
+  const filteredPosts = useMemo(() => {
+    let result = [...posts];
+    
+    // Search filter
+    if (searchTerm) {
+      result = result.filter(p => 
+        p.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        p.excerpt?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        p.category?.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+    
+    // Status filter
+    if (filterStatus === 'published') {
+      result = result.filter(p => p.is_published);
+    } else if (filterStatus === 'draft') {
+      result = result.filter(p => !p.is_published);
+    }
+    
+    // Sort
+    if (sortBy === 'newest') {
+      result.sort((a, b) => new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime());
+    } else if (sortBy === 'oldest') {
+      result.sort((a, b) => new Date(a.created_at || 0).getTime() - new Date(b.created_at || 0).getTime());
+    } else if (sortBy === 'title') {
+      result.sort((a, b) => a.title.localeCompare(b.title));
+    } else if (sortBy === 'views') {
+      result.sort((a, b) => (b.view_count || 0) - (a.view_count || 0));
+    }
+    
+    return result;
+  }, [posts, searchTerm, filterStatus, sortBy]);
+
+  const clearFilters = () => {
+    setSearchTerm('');
+    setFilterStatus('all');
+    setSortBy('newest');
+  };
+
+  // Selection handlers
+  const toggleSelect = (id: string) => {
+    const newSet = new Set(selectedIds);
+    if (newSet.has(id)) {
+      newSet.delete(id);
+    } else {
+      newSet.add(id);
+    }
+    setSelectedIds(newSet);
+  };
+
+  const toggleSelectAll = () => {
+    if (selectedIds.size === filteredPosts.length) {
+      setSelectedIds(new Set());
+    } else {
+      setSelectedIds(new Set(filteredPosts.map(p => p.id)));
+    }
+  };
+
+  const handleBulkDelete = async () => {
+    if (selectedIds.size === 0) return;
+    if (!confirm(`${selectedIds.size} blog yazısını silmek istediğinizden emin misiniz?`)) return;
+    
+    setDeleting(true);
+    try {
+      await Promise.all(
+        Array.from(selectedIds).map(id => 
+          fetch(`/api/blog/${id}`, { method: 'DELETE' })
+        )
+      );
+      setSelectedIds(new Set());
+      fetchPosts();
+    } catch (err) {
+      console.error('Bulk delete error:', err);
+    } finally {
+      setDeleting(false);
+    }
+  };
 
   const fetchPosts = async () => {
     try {
@@ -191,14 +278,69 @@ export default function AdminBlogPage() {
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-white">Blog Yazıları</h1>
-        <button
-          onClick={() => setShowForm(true)}
-          className="px-4 py-2 bg-purple-600 text-white rounded-lg flex items-center gap-2 hover:bg-purple-700"
-        >
-          <Plus className="w-5 h-5" />
-          Yeni Yazı
-        </button>
+        <h1 className="text-2xl font-bold text-white">Blog Yazıları ({posts.length})</h1>
+        <div className="flex gap-2">
+          {selectedIds.size > 0 && (
+            <button
+              onClick={handleBulkDelete}
+              disabled={deleting}
+              className="px-4 py-2 bg-red-600 text-white rounded-lg flex items-center gap-2 hover:bg-red-700 disabled:opacity-50"
+            >
+              <Trash2 className="w-5 h-5" />
+              {deleting ? 'Siliniyor...' : `${selectedIds.size} Seçili Sil`}
+            </button>
+          )}
+          <button
+            onClick={() => setShowForm(true)}
+            className="px-4 py-2 bg-purple-600 text-white rounded-lg flex items-center gap-2 hover:bg-purple-700"
+          >
+            <Plus className="w-5 h-5" />
+            Yeni Yazı
+          </button>
+        </div>
+      </div>
+
+      {/* Filters */}
+      <div className="bg-slate-800 rounded-xl border border-slate-700 p-4 mb-6">
+        <div className="flex flex-wrap items-center gap-4">
+          <div className="flex-1 min-w-[200px] relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <input
+              type="text"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder="Blog yazısı ara..."
+              className="w-full pl-10 pr-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-gray-400"
+            />
+          </div>
+          <select
+            value={filterStatus}
+            onChange={(e) => setFilterStatus(e.target.value as any)}
+            className="px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white"
+          >
+            <option value="all">Tüm Durumlar</option>
+            <option value="published">Yayında</option>
+            <option value="draft">Taslak</option>
+          </select>
+          <select
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value as any)}
+            className="px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white"
+          >
+            <option value="newest">En Yeni</option>
+            <option value="oldest">En Eski</option>
+            <option value="title">Ada Göre</option>
+            <option value="views">Görüntülenmeye Göre</option>
+          </select>
+          {(searchTerm || filterStatus !== 'all' || sortBy !== 'newest') && (
+            <button onClick={clearFilters} className="p-2 text-gray-400 hover:text-white">
+              <X className="w-5 h-5" />
+            </button>
+          )}
+        </div>
+        <div className="mt-2 text-sm text-gray-400">
+          {filteredPosts.length} sonuç gösteriliyor
+        </div>
       </div>
 
       {showForm && (
@@ -363,6 +505,15 @@ export default function AdminBlogPage() {
         <table className="w-full">
           <thead className="bg-slate-700">
             <tr>
+              <th className="px-4 py-3 text-left">
+                <button onClick={toggleSelectAll} className="text-gray-400 hover:text-white">
+                  {selectedIds.size === filteredPosts.length && filteredPosts.length > 0 ? (
+                    <CheckSquare className="w-5 h-5 text-purple-400" />
+                  ) : (
+                    <Square className="w-5 h-5" />
+                  )}
+                </button>
+              </th>
               <th className="px-4 py-3 text-left text-sm font-medium text-gray-300">Görsel</th>
               <th className="px-4 py-3 text-left text-sm font-medium text-gray-300">Başlık</th>
               <th className="px-4 py-3 text-left text-sm font-medium text-gray-300">Kategori</th>
@@ -372,8 +523,17 @@ export default function AdminBlogPage() {
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-700">
-            {posts.map((post) => (
-              <tr key={post.id} className="hover:bg-slate-700/50">
+            {filteredPosts.map((post) => (
+              <tr key={post.id} className={`hover:bg-slate-700/50 ${selectedIds.has(post.id) ? 'bg-purple-900/20' : ''}`}>
+                <td className="px-4 py-3">
+                  <button onClick={() => toggleSelect(post.id)} className="text-gray-400 hover:text-white">
+                    {selectedIds.has(post.id) ? (
+                      <CheckSquare className="w-5 h-5 text-purple-400" />
+                    ) : (
+                      <Square className="w-5 h-5" />
+                    )}
+                  </button>
+                </td>
                 <td className="px-4 py-3">
                   {post.featured_image ? (
                     <img src={post.featured_image} alt={post.title} className="w-16 h-10 object-cover rounded" />
@@ -412,10 +572,10 @@ export default function AdminBlogPage() {
                 </td>
               </tr>
             ))}
-            {posts.length === 0 && (
+            {filteredPosts.length === 0 && (
               <tr>
-                <td colSpan={6} className="px-4 py-8 text-center text-gray-400">
-                  Henüz blog yazısı yok. İlk yazınızı ekleyin!
+                <td colSpan={7} className="px-4 py-8 text-center text-gray-400">
+                  {posts.length === 0 ? 'Henüz blog yazısı yok. İlk yazınızı ekleyin!' : 'Filtreye uygun yazı bulunamadı.'}
                 </td>
               </tr>
             )}
