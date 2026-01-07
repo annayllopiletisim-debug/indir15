@@ -225,3 +225,21 @@
 - **Click Tracking**: API working correctly with real data ✅
 - **Issues Found**: None - all features working as expected
 - **Recommendation**: New features are ready for production use
+
+## BULK ACTIONS & CATEGORY FILTERS TESTING - TO TEST
+
+### Admin Panel Bulk Selection/Deletion
+- **İndirimler Page**: Checkbox column for bulk selection, "Seçili Sil" button
+- **Kuponlar Page**: Checkbox column for bulk selection, "Seçili Sil" button
+- **Çekilişler Page**: Checkbox column for bulk selection, "Seçili Sil" button
+- **Blog Page**: Checkbox column for bulk selection, "Seçili Sil" button
+
+### Kategori Page Filters
+- **Page URL**: /kategori/{slug}
+- **Filter Options**: Tümü, Yeni Eklenen, Bitmek Üzere, Popüler
+- **Expected Behavior**: Discounts and coupons should filter correctly
+
+### Bitmek Üzere Page
+- **Page URL**: /bitmek-uzere
+- **Expected Behavior**: Only shows deals expiring within 7 days
+
