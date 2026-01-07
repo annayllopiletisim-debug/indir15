@@ -80,9 +80,30 @@ const NewsletterSchema = new Schema({
   subscribed_at: { type: Date, default: Date.now },
 }, { collection: 'newsletter_subscribers' });
 
+// Blog Post Schema
+const BlogPostSchema = new Schema({
+  id: { type: String, required: true, unique: true },
+  title: { type: String, required: true },
+  slug: { type: String, required: true, unique: true },
+  excerpt: String,
+  content: { type: String, required: true },
+  featured_image: String,
+  author: { type: String, default: 'Admin' },
+  category: String,
+  tags: [String],
+  is_published: { type: Boolean, default: false },
+  view_count: { type: Number, default: 0 },
+  meta_title: String,
+  meta_description: String,
+  published_at: Date,
+  created_at: { type: Date, default: Date.now },
+  updated_at: { type: Date, default: Date.now },
+}, { collection: 'blog_posts' });
+
 export const Brand = models.Brand || mongoose.model('Brand', BrandSchema);
 export const Discount = models.Discount || mongoose.model('Discount', DiscountSchema);
 export const Coupon = models.Coupon || mongoose.model('Coupon', CouponSchema);
 export const Giveaway = models.Giveaway || mongoose.model('Giveaway', GiveawaySchema);
 export const Category = models.Category || mongoose.model('Category', CategorySchema);
 export const Newsletter = models.Newsletter || mongoose.model('Newsletter', NewsletterSchema);
+export const BlogPost = models.BlogPost || mongoose.model('BlogPost', BlogPostSchema);
