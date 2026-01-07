@@ -148,12 +148,22 @@ export default async function HomePage() {
               href={`/magaza/${brand.slug}`}
               className="flex-shrink-0 flex flex-col items-center group"
             >
-              <div className="relative w-20 h-20 bg-white rounded-2xl border-2 border-gray-100 flex items-center justify-center p-2 group-hover:border-purple-300 group-hover:shadow-lg transition-all overflow-visible">
-                <span className="text-2xl font-bold text-purple-400">
-                  {brand.name.charAt(0)}
-                </span>
+              <div className="relative">
+                <div className="w-[72px] h-[72px] bg-white rounded-full border-2 border-gray-100 flex items-center justify-center p-3 group-hover:border-purple-400 group-hover:shadow-lg transition-all overflow-hidden">
+                  {brand.logo_url ? (
+                    <img
+                      src={getImageUrl(brand.logo_url)}
+                      alt={brand.name}
+                      className="w-full h-full object-contain rounded-full"
+                    />
+                  ) : (
+                    <span className="text-2xl font-bold text-purple-400">
+                      {brand.name.charAt(0)}
+                    </span>
+                  )}
+                </div>
                 {brand.deal_count > 0 && (
-                  <span className="absolute -top-2 -right-2 min-w-[26px] h-[26px] px-1.5 flex items-center justify-center bg-purple-600 text-white text-xs font-bold rounded-full border-2 border-white shadow-md z-10">
+                  <span className="absolute -top-1 -right-1 min-w-[24px] h-[24px] px-1.5 flex items-center justify-center bg-purple-600 text-white text-xs font-bold rounded-full border-2 border-white shadow-md">
                     {brand.deal_count}
                   </span>
                 )}
