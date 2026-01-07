@@ -5,7 +5,7 @@ import bcrypt from 'bcryptjs';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 const ADMIN_USERNAME = process.env.ADMIN_USERNAME || 'admin';
-const ADMIN_PASSWORD_HASH = process.env.ADMIN_PASSWORD_HASH || '$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/X4.VTtYR/qN.pLe/6'; // admin123
+const ADMIN_PASSWORD_HASH = process.env.ADMIN_PASSWORD_HASH || '$2b$12$KyxZqhWBt9ViySfOUH1DSumNQ6e0wjhhR.XjeeikyQct3vraz73TO'; // admin123
 
 export async function POST(request: Request) {
   try {
