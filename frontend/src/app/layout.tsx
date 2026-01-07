@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import CategoryBarWrapper from "@/components/CategoryBarWrapper";
 
 export const metadata: Metadata = {
   title: {
@@ -52,6 +53,7 @@ export default function RootLayout({
           />
         </noscript>
         <Header />
+        <CategoryBarWrapper />
         <main className="min-h-[calc(100vh-200px)]">
           {children}
         </main>
