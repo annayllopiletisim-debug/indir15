@@ -1,5 +1,6 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
+import Image from 'next/image';
 import connectDB from '@/lib/db';
 import { Brand, Discount, Category } from '@/lib/models';
 import { getShortId, generateSlug } from '@/lib/utils';
@@ -141,13 +142,14 @@ export default async function HomePage() {
               className="flex-shrink-0 flex flex-col items-center group"
             >
               <div className="relative mb-2">
-                <div className="w-[80px] h-[80px] bg-white rounded-full border-2 border-gray-100 flex items-center justify-center p-4 group-hover:border-purple-400 group-hover:shadow-lg transition-all overflow-hidden">
+                <div className="w-[80px] h-[80px] bg-white rounded-full border-2 border-gray-100 flex items-center justify-center p-4 group-hover:border-purple-400 group-hover:shadow-lg transition-all overflow-hidden relative">
                   {brand.logo_url ? (
-                    <img
+                    <Image
                       src={getImageUrl(brand.logo_url)}
                       alt={brand.name}
-                      loading="lazy"
-                      className="w-full h-full object-contain"
+                      fill
+                      sizes="80px"
+                      className="object-contain p-3"
                     />
                   ) : (
                     <span className="text-2xl font-bold text-purple-400">
