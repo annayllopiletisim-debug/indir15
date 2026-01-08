@@ -169,22 +169,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* Kupon Kodları */}
-      <section className="bg-gradient-to-r from-purple-50 to-pink-50 py-10">
-        <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-semibold text-gray-800">🎁 Kupon Kodları</h2>
-            <Link href="/kuponlar" className="text-gray-500 hover:text-purple-600 flex items-center gap-1 font-medium">
-              Tümü <ArrowRight className="w-4 h-4" />
-            </Link>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {coupons.map((coupon: any) => (
-              <CouponCard key={coupon.id} coupon={coupon} />
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* Kupon Kodları - REMOVED */}
 
       {/* SEO Content */}
       <section className="container mx-auto px-4 py-12">
