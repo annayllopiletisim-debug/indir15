@@ -3,6 +3,9 @@ import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import CategoryBarWrapper from "@/components/CategoryBarWrapper";
+import { OrganizationSchema, WebSiteSchema } from "@/components/StructuredData";
+
+const siteUrl = "https://indirimkesfet.com";
 
 export const metadata: Metadata = {
   title: {
@@ -12,15 +15,46 @@ export const metadata: Metadata = {
   description: "İndirim Keşfet - Türkiye'nin en güncel kupon kodları ve indirim fırsatları. Binlerce mağazadan kampanyaları keşfedin!",
   keywords: ["indirim", "kupon", "kampanya", "fırsat", "alışveriş", "indirim kodu"],
   authors: [{ name: "İndirim Keşfet" }],
+  metadataBase: new URL(siteUrl),
+  alternates: {
+    canonical: "/",
+  },
   openGraph: {
     type: "website",
     locale: "tr_TR",
     siteName: "İndirim Keşfet",
+    url: siteUrl,
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "İndirim Keşfet - Türkiye'nin En Güncel İndirim Platformu",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    site: "@indirimkesfetcom",
+    images: ["/og-image.png"],
   },
   robots: {
     index: true,
     follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
   },
+  icons: {
+    icon: "/favicon.ico",
+    shortcut: "/favicon-16x16.png",
+    apple: "/apple-touch-icon.png",
+  },
+  manifest: "/manifest.json",
 };
 
 export default function RootLayout({
@@ -31,6 +65,9 @@ export default function RootLayout({
   return (
     <html lang="tr">
       <head>
+        {/* JSON-LD Structured Data */}
+        <OrganizationSchema />
+        <WebSiteSchema />
         {/* Google Tag Manager */}
         <script
           dangerouslySetInnerHTML={{
