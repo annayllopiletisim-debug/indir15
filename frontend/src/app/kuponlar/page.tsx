@@ -1,5 +1,6 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
+import Image from 'next/image';
 import connectDB from '@/lib/db';
 import { Brand, Coupon } from '@/lib/models';
 import { getImageUrl } from '@/lib/image';
@@ -77,8 +78,14 @@ function CouponCard({ coupon }: { coupon: any }) {
     <article className="bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all duration-200 overflow-hidden border border-gray-100 p-6">
       <div className="flex items-center gap-4 mb-4">
         {brand?.logo_url ? (
-          <div className="w-14 h-14 rounded-xl border border-gray-200 bg-white flex items-center justify-center p-2 overflow-hidden">
-            <img src={getImageUrl(brand.logo_url)} alt={brand.name} loading="lazy" className="max-w-full max-h-full object-contain" />
+          <div className="w-14 h-14 rounded-xl border border-gray-200 bg-white flex items-center justify-center p-2 overflow-hidden relative">
+            <Image 
+              src={getImageUrl(brand.logo_url)} 
+              alt={brand.name} 
+              width={48}
+              height={48}
+              className="object-contain" 
+            />
           </div>
         ) : (
           <div className="w-14 h-14 rounded-xl bg-purple-100 flex items-center justify-center">
