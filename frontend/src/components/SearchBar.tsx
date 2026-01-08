@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { Search, X, Tag, Store, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 import { getImageUrl } from '@/lib/image';
@@ -132,9 +133,15 @@ export default function SearchBar({ compact = false }: { compact?: boolean }) {
                     onClick={() => setIsOpen(false)}
                     className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-100 transition-colors"
                   >
-                    <div className="w-8 h-8 rounded-lg border bg-white flex items-center justify-center p-1 overflow-hidden">
+                    <div className="w-8 h-8 rounded-lg border bg-white flex items-center justify-center p-1 overflow-hidden relative">
                       {brand.logo_url ? (
-                        <img src={getImageUrl(brand.logo_url)} alt={brand.name} className="max-w-full max-h-full object-contain" />
+                        <Image 
+                          src={getImageUrl(brand.logo_url)} 
+                          alt={brand.name} 
+                          width={24}
+                          height={24}
+                          className="object-contain" 
+                        />
                       ) : (
                         <span className="text-sm font-bold text-gray-400">{brand.name.charAt(0)}</span>
                       )}

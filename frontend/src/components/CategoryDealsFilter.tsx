@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
+import Image from 'next/image';
 import { Tag, Ticket, Clock, TrendingUp, Sparkles, Copy } from 'lucide-react';
 import FeaturedDealCard from '@/components/FeaturedDealCard';
 import { getImageUrl } from '@/lib/image';
@@ -145,8 +146,14 @@ function CouponCard({ coupon }: { coupon: any }) {
     <article className="bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all p-4 border border-gray-100 group-hover:border-purple-200">
       <div className="flex items-center gap-2 mb-2">
         {brand?.logo_url && (
-          <div className="w-8 h-8 rounded-lg border border-gray-200 bg-white flex items-center justify-center p-0.5 overflow-hidden flex-shrink-0">
-            <img src={getImageUrl(brand.logo_url)} alt={brand.name || 'Marka'} loading="lazy" className="max-w-full max-h-full object-contain" />
+          <div className="w-8 h-8 rounded-lg border border-gray-200 bg-white flex items-center justify-center p-0.5 overflow-hidden flex-shrink-0 relative">
+            <Image 
+              src={getImageUrl(brand.logo_url)} 
+              alt={brand.name || 'Marka'} 
+              width={28}
+              height={28}
+              className="object-contain" 
+            />
           </div>
         )}
         <span className="text-sm font-bold text-gray-800">{brand?.name}</span>
