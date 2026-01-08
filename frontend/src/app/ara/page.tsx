@@ -1,5 +1,6 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
+import Image from 'next/image';
 import connectDB from '@/lib/db';
 import { Brand, Discount, Coupon } from '@/lib/models';
 import { getImageUrl } from '@/lib/image';
@@ -112,9 +113,15 @@ export default async function SearchPage({ searchParams }: Props) {
                   {brand.deal_count > 0 && (
                     <span className="absolute top-2 right-2 min-w-[24px] h-[24px] px-1.5 flex items-center justify-center bg-purple-600 text-white text-xs font-bold rounded-full">{brand.deal_count}</span>
                   )}
-                  <div className="w-full aspect-square bg-white rounded-lg border border-gray-100 flex items-center justify-center p-3 mb-3">
+                  <div className="w-full aspect-square bg-white rounded-lg border border-gray-100 flex items-center justify-center p-3 mb-3 relative">
                     {brand.logo_url ? (
-                      <img src={getImageUrl(brand.logo_url)} alt={brand.name} loading="lazy" className="w-full h-full object-contain" />
+                      <Image 
+                        src={getImageUrl(brand.logo_url)} 
+                        alt={brand.name} 
+                        fill
+                        sizes="(max-width: 640px) 33vw, 160px"
+                        className="object-contain p-2" 
+                      />
                     ) : (
                       <span className="text-3xl font-bold text-gray-300">{brand.name.charAt(0)}</span>
                     )}
@@ -154,8 +161,14 @@ export default async function SearchPage({ searchParams }: Props) {
                   <article key={coupon.id} className="bg-white rounded-2xl shadow-sm p-4 border border-gray-100">
                     <div className="flex items-center gap-2 mb-2">
                       {brand?.logo_url && (
-                        <div className="w-8 h-8 rounded-lg border border-gray-200 bg-white flex items-center justify-center p-0.5 overflow-hidden">
-                          <img src={getImageUrl(brand.logo_url)} alt={brand.name} loading="lazy" className="max-w-full max-h-full object-contain" />
+                        <div className="w-8 h-8 rounded-lg border border-gray-200 bg-white flex items-center justify-center p-0.5 overflow-hidden relative">
+                          <Image 
+                            src={getImageUrl(brand.logo_url)} 
+                            alt={brand.name} 
+                            width={28}
+                            height={28}
+                            className="object-contain" 
+                          />
                         </div>
                       )}
                       <span className="text-sm font-bold text-gray-800">{brand?.name}</span>
