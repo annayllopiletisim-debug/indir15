@@ -7,6 +7,9 @@ import { FileText, Calendar, Eye, ArrowRight } from 'lucide-react';
 export const metadata: Metadata = {
   title: 'Blog - İndirim ve Tasarruf Rehberi',
   description: 'Alışveriş ipuçları, tasarruf rehberleri ve en güncel kampanya haberleri.',
+  alternates: {
+    canonical: '/blog',
+  },
 };
 
 export const revalidate = 60;

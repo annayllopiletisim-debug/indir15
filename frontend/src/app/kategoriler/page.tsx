@@ -7,25 +7,44 @@ import { LayoutGrid } from 'lucide-react';
 export const metadata: Metadata = {
   title: 'Tüm Kategoriler - İndirim ve Kuponlar',
   description: 'Tüm kategorilerdeki indirimler, kupon kodları ve kampanyalar. Moda, elektronik, gıda ve daha fazlası.',
+  alternates: {
+    canonical: '/kategoriler',
+  },
 };
 
 export const revalidate = 60;
 
 async function getCategoriesWithStats() {
   await connectDB();
+  const now = new Date();
   
   const categories = await Category.find({}).sort({ order: 1 }).lean();
   const brands = await Brand.find({}).lean();
   
-  // Calculate deal counts per category
+  // Calculate deal counts per category (only active deals)
   const categoryStats = await Promise.all(
     categories.map(async (cat: any) => {
       const categoryBrands = brands.filter((b: any) => b.category_ids?.includes(cat.id));
       const brandIds = categoryBrands.map((b: any) => b.id);
       
       const [discountCount, couponCount] = await Promise.all([
-        Discount.countDocuments({ brand_id: { $in: brandIds } }),
-        Coupon.countDocuments({ brand_id: { $in: brandIds }, is_active: true }),
+        Discount.countDocuments({ 
+          brand_id: { $in: brandIds },
+          $or: [
+            { expiry_date: { $gte: now } },
+            { expiry_date: null },
+            { expiry_date: { $exists: false } }
+          ]
+        }),
+        Coupon.countDocuments({ 
+          brand_id: { $in: brandIds }, 
+          is_active: true,
+          $or: [
+            { expiry_date: { $gte: now } },
+            { expiry_date: null },
+            { expiry_date: { $exists: false } }
+          ]
+        }),
       ]);
       
       return {
