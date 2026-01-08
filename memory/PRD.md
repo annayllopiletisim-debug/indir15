@@ -69,10 +69,6 @@
 
 ## Bekleyen Görevler
 
-### P1 - Yüksek Öncelik
-- [ ] Pagination - Listeleme sayfalarına sayfalama ekleme
-- [ ] Kategori/Marka Veri Tutarlılığı - Migration script
-
 ### P2 - Orta Öncelik
 - [ ] Brevo Email Entegrasyonu
 - [ ] Admin Aboneler Sayfası
@@ -131,3 +127,6 @@
 - 404 sayfası
 - robots.txt, sitemap.xml, manifest.json
 - **`<img>` → Next.js `<Image>` dönüşümü tamamlandı** (Performans iyileştirmesi)
+- **Pagination eklendi:** /kuponlar, /indirimler sayfalarında sayfalama mevcut
+- **Yeni sayfa:** /indirimler - Tüm indirimler sayfası
+- **Kategori/Marka Migration:** Admin panelinde otomatik kategori atama aracı eklendi
