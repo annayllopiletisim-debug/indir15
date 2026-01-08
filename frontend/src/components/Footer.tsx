@@ -2,6 +2,32 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { ChevronDown, ChevronRight, Shield, Award, Users, Tag, Store, Gift, Mail, CheckCircle } from 'lucide-react';
+
+interface AccordionProps {
+  title: string;
+  children: React.ReactNode;
+  defaultOpen?: boolean;
+}
+
+function Accordion({ title, children, defaultOpen = false }: AccordionProps) {
+  const [isOpen, setIsOpen] = useState(defaultOpen);
+  
+  return (
+    <div className="border-b border-gray-200 last:border-b-0">
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-full flex items-center justify-between py-4 text-left font-semibold text-gray-800 hover:text-purple-600 transition-colors"
+      >
+        <span>{title}</span>
+        <ChevronDown className={`w-5 h-5 text-gray-400 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+      </button>
+      <div className={`overflow-hidden transition-all duration-300 ${isOpen ? 'max-h-96 pb-4' : 'max-h-0'}`}>
+        {children}
+      </div>
+    </div>
+  );
+}
 
 export default function Footer() {
   const [email, setEmail] = useState('');
@@ -34,89 +60,269 @@ export default function Footer() {
       setMessage('Bir hata oluştu');
     }
     
-    // Reset status after 3 seconds
     setTimeout(() => {
       setStatus('idle');
       setMessage('');
     }, 3000);
   };
 
+  const categories = [
+    { name: 'Market Kuponları', count: 86, slug: 'market' },
+    { name: 'Giyim İndirimleri', count: 54, slug: 'moda' },
+    { name: 'Elektronik', count: 32, slug: 'elektronik' },
+    { name: 'Kozmetik', count: 28, slug: 'kozmetik' },
+  ];
+
+  const popularBrands = [
+    { name: 'Trendyol', slug: 'trendyol' },
+    { name: 'Hepsiburada', slug: 'hepsiburada' },
+    { name: 'Migros', slug: 'migros' },
+    { name: 'Karaca', slug: 'karaca' },
+    { name: 'LC Waikiki', slug: 'lc-waikiki' },
+  ];
+
+  const campaignTypes = [
+    { name: 'Kupon Kodları', href: '/kuponlar' },
+    { name: 'Ücretsiz Kargo', href: '/ucretsiz-kargo' },
+    { name: 'İndirimler', href: '/indirimler' },
+    { name: 'Çekilişler', href: '/cekilisler' },
+    { name: 'Bitmek Üzere', href: '/bitmek-uzere' },
+  ];
+
+  const corporateLinks = [
+    { name: 'Hakkımızda', href: '/hakkimizda' },
+    { name: 'İletişim', href: '/iletisim' },
+    { name: 'Blog', href: '/blog' },
+    { name: 'Reklam Ver', href: '/reklam' },
+    { name: 'Basın', href: '/basin' },
+  ];
+
+  const tags = ['kupon kodları', 'indirim kodları', 'migros kupon', 'trendyol indirim', 'hepsiburada kupon', 'ücretsiz kargo', 'kampanya'];
+
   return (
-    <footer className="bg-gradient-to-br from-violet-900 via-purple-900 to-violet-950 text-white">
-      <div className="container mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          {/* Brand */}
+    <footer className="bg-white border-t border-gray-200">
+      {/* Stats Section */}
+      <div className="bg-gradient-to-r from-gray-50 to-gray-100 border-b border-gray-200">
+        <div className="container mx-auto px-4 py-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="flex items-center gap-4 bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
+              <div className="w-14 h-14 rounded-xl bg-green-100 flex items-center justify-center">
+                <Tag className="w-7 h-7 text-green-600" />
+              </div>
+              <div>
+                <div className="text-2xl font-bold text-gray-800">500+</div>
+                <div className="text-gray-500 text-sm">Aktif Kupon</div>
+              </div>
+            </div>
+            <div className="flex items-center gap-4 bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
+              <div className="w-14 h-14 rounded-xl bg-purple-100 flex items-center justify-center">
+                <Store className="w-7 h-7 text-purple-600" />
+              </div>
+              <div>
+                <div className="text-2xl font-bold text-gray-800">120+</div>
+                <div className="text-gray-500 text-sm">Marka</div>
+              </div>
+            </div>
+            <div className="flex items-center gap-4 bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
+              <div className="w-14 h-14 rounded-xl bg-blue-100 flex items-center justify-center">
+                <Users className="w-7 h-7 text-blue-600" />
+              </div>
+              <div>
+                <div className="text-2xl font-bold text-gray-800">50K+</div>
+                <div className="text-gray-500 text-sm">Kullanıcı</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Footer Content */}
+      <div className="container mx-auto px-4 py-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          {/* Categories Accordion */}
           <div>
-            <h3 className="text-xl font-bold mb-4">İndirim Keşfet</h3>
-            <p className="text-violet-200 text-sm">
-              Türkiye'nin en güncel indirim ve kupon platformu. 
-              Binlerce mağazadan en iyi fırsatları keşfedin.
-            </p>
+            <Accordion title="Kategoriler" defaultOpen={true}>
+              <ul className="space-y-2">
+                {categories.map((cat) => (
+                  <li key={cat.slug}>
+                    <Link 
+                      href={`/kategori/${cat.slug}`}
+                      className="flex items-center justify-between text-gray-600 hover:text-purple-600 transition-colors py-1"
+                    >
+                      <span>{cat.name}</span>
+                      <span className="text-xs bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full">{cat.count}</span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+              <Link 
+                href="/kategoriler" 
+                className="inline-flex items-center gap-1 text-purple-600 font-medium mt-3 hover:gap-2 transition-all"
+              >
+                Tüm Kategoriler <ChevronRight className="w-4 h-4" />
+              </Link>
+            </Accordion>
           </div>
 
-          {/* Quick Links */}
+          {/* Popular Brands Accordion */}
           <div>
-            <h4 className="font-semibold mb-4">Hızlı Linkler</h4>
-            <ul className="space-y-2 text-violet-200">
-              <li><Link href="/magazalar" className="hover:text-white transition-colors">Mağazalar</Link></li>
-              <li><Link href="/kategoriler" className="hover:text-white transition-colors">Kategoriler</Link></li>
-              <li><Link href="/blog" className="hover:text-white transition-colors">Blog</Link></li>
-              <li><Link href="/iletisim" className="hover:text-white transition-colors">İletişim</Link></li>
-            </ul>
+            <Accordion title="Popüler Markalar">
+              <ul className="space-y-2">
+                {popularBrands.map((brand) => (
+                  <li key={brand.slug}>
+                    <Link 
+                      href={`/magaza/${brand.slug}`}
+                      className="text-gray-600 hover:text-purple-600 transition-colors py-1 block"
+                    >
+                      {brand.name}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+              <Link 
+                href="/magazalar" 
+                className="inline-flex items-center gap-1 text-purple-600 font-medium mt-3 hover:gap-2 transition-all"
+              >
+                Tüm Mağazalar <ChevronRight className="w-4 h-4" />
+              </Link>
+            </Accordion>
           </div>
 
-          {/* Categories */}
+          {/* Campaign Types Accordion */}
           <div>
-            <h4 className="font-semibold mb-4">Kategoriler</h4>
-            <ul className="space-y-2 text-violet-200">
-              <li><Link href="/kategori/moda" className="hover:text-white transition-colors">Moda</Link></li>
-              <li><Link href="/kategori/elektronik" className="hover:text-white transition-colors">Elektronik</Link></li>
-              <li><Link href="/kategori/ev-yasam" className="hover:text-white transition-colors">Ev & Yaşam</Link></li>
-              <li><Link href="/kategori/spor" className="hover:text-white transition-colors">Spor</Link></li>
-            </ul>
+            <Accordion title="Kampanya Türleri">
+              <ul className="space-y-2">
+                {campaignTypes.map((type) => (
+                  <li key={type.href}>
+                    <Link 
+                      href={type.href}
+                      className="text-gray-600 hover:text-purple-600 transition-colors py-1 block"
+                    >
+                      {type.name}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </Accordion>
+            
+            <Accordion title="Kurumsal">
+              <ul className="space-y-2">
+                {corporateLinks.map((link) => (
+                  <li key={link.href}>
+                    <Link 
+                      href={link.href}
+                      className="text-gray-600 hover:text-purple-600 transition-colors py-1 block"
+                    >
+                      {link.name}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </Accordion>
           </div>
 
-          {/* Newsletter */}
+          {/* Newsletter & Trust */}
           <div>
-            <h4 className="font-semibold mb-4">E-Bülten</h4>
-            <p className="text-violet-200 text-sm mb-4">
-              En güncel fırsatlardan haberdar olun.
-            </p>
-            <form onSubmit={handleSubscribe} className="space-y-2">
-              <div className="flex gap-2">
+            <div className="mb-6">
+              <h4 className="font-semibold text-gray-800 mb-3">E-Bülten</h4>
+              <p className="text-gray-500 text-sm mb-4">
+                En güncel kupon ve indirimleri kaçırmayın!
+              </p>
+              <form onSubmit={handleSubscribe} className="space-y-2">
                 <input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="E-posta adresiniz"
-                  className="flex-1 px-3 py-2 rounded-lg bg-white/10 border border-white/20 text-white placeholder-violet-300 focus:outline-none focus:ring-2 focus:ring-primary"
+                  className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                   disabled={status === 'loading'}
                 />
                 <button
                   type="submit"
                   disabled={status === 'loading'}
-                  className="px-4 py-2 bg-primary hover:bg-primary/90 rounded-lg font-medium transition-colors disabled:opacity-50"
+                  className="w-full px-4 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-xl font-semibold transition-colors disabled:opacity-50"
                 >
-                  {status === 'loading' ? '...' : 'Abone Ol'}
+                  {status === 'loading' ? 'Gönderiliyor...' : 'Abone Ol'}
                 </button>
+                {message && (
+                  <p className={`text-sm ${status === 'success' ? 'text-green-600' : 'text-red-500'}`}>
+                    {message}
+                  </p>
+                )}
+              </form>
+            </div>
+
+            {/* Trust Badges */}
+            <div className="bg-green-50 rounded-xl p-4 border border-green-100">
+              <div className="flex items-center gap-2 text-green-700 font-medium mb-2">
+                <Shield className="w-5 h-5" />
+                <span>Güvenli Alışveriş</span>
               </div>
-              {message && (
-                <p className={`text-sm ${status === 'success' ? 'text-green-400' : 'text-red-400'}`}>
-                  {message}
-                </p>
-              )}
-            </form>
+              <ul className="space-y-1.5 text-sm text-green-600">
+                <li className="flex items-center gap-2">
+                  <CheckCircle className="w-4 h-4" />
+                  <span>%100 Doğrulanmış Kuponlar</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <CheckCircle className="w-4 h-4" />
+                  <span>Günlük Güncelleme</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <CheckCircle className="w-4 h-4" />
+                  <span>Ücretsiz Kullanım</span>
+                </li>
+              </ul>
+            </div>
           </div>
         </div>
+      </div>
 
-        {/* Bottom */}
-        <div className="mt-12 pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="text-violet-300 text-sm">
-            © {new Date().getFullYear()} İndirim Keşfet. Tüm hakları saklıdır.
+      {/* SEO Section */}
+      <div className="bg-gray-50 border-t border-gray-200">
+        <div className="container mx-auto px-4 py-8">
+          <h2 className="text-lg font-bold text-gray-800 mb-3">Kupon ve İndirim Kodları</h2>
+          <p className="text-gray-600 text-sm mb-4 max-w-3xl">
+            İndirim Keşfet, Türkiye'nin en kapsamlı kupon ve indirim platformudur. Yüzlerce mağazadan 
+            güncel kampanyaları, özel kupon kodlarını ve çekilişleri tek bir yerde bulabilirsiniz. 
+            Her gün güncellenen içeriklerimizle alışveriş yaparken tasarruf etmenize yardımcı oluyoruz.
+            Trendyol, Hepsiburada, Migros, LC Waikiki ve daha birçok markadan en güncel fırsatları takip edin.
           </p>
-          <div className="flex gap-6 text-violet-300 text-sm">
-            <Link href="/gizlilik" className="hover:text-white transition-colors">Gizlilik Politikası</Link>
-            <Link href="/kullanim-kosullari" className="hover:text-white transition-colors">Kullanım Koşulları</Link>
+          <div className="flex flex-wrap gap-2">
+            {tags.map((tag) => (
+              <span 
+                key={tag}
+                className="px-3 py-1.5 bg-white border border-gray-200 rounded-full text-xs text-gray-600 hover:border-purple-300 hover:text-purple-600 transition-colors cursor-pointer"
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Bottom Bar */}
+      <div className="bg-white border-t border-gray-200">
+        <div className="container mx-auto px-4 py-5">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+            <div className="flex items-center gap-2">
+              <span className="text-xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+                İndirim Keşfet
+              </span>
+            </div>
+            
+            <div className="flex flex-wrap justify-center gap-4 text-sm text-gray-500">
+              <Link href="/gizlilik" className="hover:text-purple-600 transition-colors">Gizlilik</Link>
+              <span className="text-gray-300">|</span>
+              <Link href="/kullanim-kosullari" className="hover:text-purple-600 transition-colors">Şartlar</Link>
+              <span className="text-gray-300">|</span>
+              <Link href="/kvkk" className="hover:text-purple-600 transition-colors">KVKK</Link>
+              <span className="text-gray-300">|</span>
+              <Link href="/site-haritasi" className="hover:text-purple-600 transition-colors">Site Haritası</Link>
+            </div>
+            
+            <p className="text-gray-400 text-sm">
+              © {new Date().getFullYear()} İndirim Keşfet. Tüm hakları saklıdır.
+            </p>
           </div>
         </div>
       </div>
