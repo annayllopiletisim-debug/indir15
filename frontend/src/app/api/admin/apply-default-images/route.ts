@@ -12,7 +12,7 @@ export async function POST() {
     
     // Get all brands with default_deal_image
     const brands = await Brand.find({ 
-      default_deal_image: { $exists: true, $ne: '', $ne: null } 
+      default_deal_image: { $exists: true, $nin: ['', null] } 
     }).lean();
     
     for (const b of brands) {
@@ -47,7 +47,7 @@ export async function POST() {
       // Also check for discounts with broken image paths (file doesn't exist)
       const allDiscounts = await Discount.find({ 
         brand_id: brand.id,
-        image_url: { $exists: true, $ne: '', $ne: null }
+        image_url: { $exists: true, $nin: ['', null] }
       }).lean();
       
       for (const d of allDiscounts) {
