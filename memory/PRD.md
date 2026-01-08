@@ -36,7 +36,7 @@
 - ✅ İletişim Mesajları
 - ✅ Google Sheets Import
 
-### 3. SEO & Performance (YENİ - 8 Ocak 2026)
+### 3. SEO & Performance (8 Ocak 2026)
 - ✅ **JSON-LD Structured Data:**
   - Organization schema (site geneli)
   - WebSite schema (arama özelliği)
@@ -53,7 +53,10 @@
   - Ana sayfa, kuponlar, kategori, mağaza sayfalarında
   - Sadece aktif ve süresi dolmamış fırsatlar gösterilir
 - ✅ **Gzip/Brotli Compression:** Enabled
-- ✅ **Lazy Loading:** Tüm görsellerde `loading="lazy"`
+- ✅ **Next.js Image Component:** Tüm public sayfalarda `<img>` → `<Image>` dönüşümü tamamlandı
+  - Otomatik WebP/AVIF optimizasyonu
+  - Lazy loading
+  - Responsive srcset
 
 ### 4. UI/UX
 - ✅ Global Arama (Header'da açık search bar)
@@ -67,7 +70,6 @@
 ## Bekleyen Görevler
 
 ### P1 - Yüksek Öncelik
-- [ ] `<img>` → `<Image>` dönüşümü (Next.js Image component)
 - [ ] Pagination - Listeleme sayfalarına sayfalama ekleme
 - [ ] Kategori/Marka Veri Tutarlılığı - Migration script
 
@@ -128,3 +130,4 @@
 - Geçmiş İndirimler sayfası
 - 404 sayfası
 - robots.txt, sitemap.xml, manifest.json
+- **`<img>` → Next.js `<Image>` dönüşümü tamamlandı** (Performans iyileştirmesi)
