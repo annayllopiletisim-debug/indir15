@@ -9,7 +9,7 @@ import DealCard from '@/components/DealCard';
 import CouponCard from '@/components/CouponCard';
 
 export const metadata: Metadata = {
-  title: 'Bitmek Üzere Olan İndirimler | İndirim Keşfet',
+  title: 'Bitmek Üzere Olan İndirimler',
   description: 'Son 7 gün içinde bitecek indirim ve kupon fırsatları. Kaçırmadan yakalayın!',
   alternates: {
     canonical: '/bitmek-uzere',

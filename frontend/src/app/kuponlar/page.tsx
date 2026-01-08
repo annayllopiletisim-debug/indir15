@@ -6,7 +6,7 @@ import { getImageUrl } from '@/lib/image';
 import { Gift, Copy, ExternalLink } from 'lucide-react';
 
 export const metadata: Metadata = {
-  title: 'Kupon Kodları | İndirim Keşfet',
+  title: 'Kupon Kodları',
   description: 'En güncel kupon kodları ve indirim fırsatları. Alışverişlerinizde tasarruf edin!',
   alternates: {
     canonical: '/kuponlar',

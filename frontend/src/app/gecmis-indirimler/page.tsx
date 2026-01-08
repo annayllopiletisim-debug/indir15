@@ -8,7 +8,7 @@ import { History, Tag, Ticket, Clock } from 'lucide-react';
 import FeaturedDealCard from '@/components/FeaturedDealCard';
 
 export const metadata: Metadata = {
-  title: 'Geçmiş İndirimler ve Süresi Dolan Kuponlar | İndirim Keşfet',
+  title: 'Geçmiş İndirimler ve Süresi Dolan Kuponlar',
   description: 'Süresi dolmuş indirim kampanyaları ve kupon kodları. Geçmiş fırsatları inceleyin, benzer kampanyalar için takipte kalın!',
   alternates: {
     canonical: '/gecmis-indirimler',
