@@ -63,6 +63,8 @@ export async function GET(request: Request) {
     Coupon.find({ is_active: true }).limit(100).lean(),
   ]);
   
+  console.log('Found brands:', allBrands.length, 'discounts:', allDiscounts.length, 'coupons:', allCoupons.length);
+  
   // Count deals per brand
   const brandDealCount: Record<string, number> = {};
   allDiscounts.forEach((d: any) => {
