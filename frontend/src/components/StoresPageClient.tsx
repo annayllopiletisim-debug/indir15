@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Search, Filter, X } from 'lucide-react';
 import { getImageUrl } from '@/lib/image';
 
@@ -147,9 +148,15 @@ export default function StoresPageClient({ brands, categories }: StoresPageClien
                   )}
                   
                   {/* Logo with white background */}
-                  <div className="w-full aspect-square bg-white rounded-lg border border-gray-100 flex items-center justify-center p-3 mb-3 group-hover:border-purple-200 transition-colors">
+                  <div className="w-full aspect-square bg-white rounded-lg border border-gray-100 flex items-center justify-center p-3 mb-3 group-hover:border-purple-200 transition-colors relative">
                     {brand.logo_url ? (
-                      <img src={getImageUrl(brand.logo_url)} alt={brand.name} loading="lazy" className="w-full h-full object-contain" />
+                      <Image 
+                        src={getImageUrl(brand.logo_url)} 
+                        alt={brand.name} 
+                        fill
+                        sizes="(max-width: 640px) 33vw, (max-width: 1024px) 20vw, 160px"
+                        className="object-contain p-2" 
+                      />
                     ) : (
                       <span className="text-3xl font-bold text-gray-300">{brand.name.charAt(0)}</span>
                     )}
