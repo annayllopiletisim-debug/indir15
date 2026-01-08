@@ -6,6 +6,7 @@ import { Brand, Discount, Coupon } from '@/lib/models';
 import { getImageUrl } from '@/lib/image';
 import { addUtmParams } from '@/lib/utm';
 import { ExternalLink, Clock, ArrowRight, Calendar, CheckCircle } from 'lucide-react';
+import { BreadcrumbSchema, OfferSchema } from '@/components/StructuredData';
 
 interface Props {
   params: Promise<{ slug: string; dealSlug: string }>;
@@ -17,26 +18,36 @@ function extractIdFromSlug(slug: string): string {
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { dealSlug } = await params;
+  const { slug, dealSlug } = await params;
   const shortId = extractIdFromSlug(dealSlug);
   
   await connectDB();
   
-  // Parallel queries for discount and brand
   const discount = await Discount.findOne({ id: { $regex: `^${shortId}` } }).lean();
   if (!discount) return { title: 'İndirim Bulunamadı' };
   
   const brand = await Brand.findOne({ id: (discount as any).brand_id }).lean();
+  const discountData = discount as any;
+  const brandData = brand as any;
   
   return {
-    title: `${(discount as any).title} - ${(brand as any)?.name || ''} İndirimi`,
-    description: (discount as any).description || `${(brand as any)?.name} mağazasından ${(discount as any).title} fırsatı`,
+    title: `${discountData.title} - ${brandData?.name || ''} İndirimi`,
+    description: discountData.description || `${brandData?.name} mağazasından ${discountData.title} fırsatı`,
+    alternates: {
+      canonical: `/magaza/${slug}/indirim/${dealSlug}`,
+    },
+    openGraph: {
+      title: `${discountData.title} | ${brandData?.name || 'İndirim Keşfet'}`,
+      description: discountData.description || `${brandData?.name} - ${discountData.discount_text || 'Özel Fırsat'}`,
+      images: discountData.image_url ? [getImageUrl(discountData.image_url)] : brandData?.logo_url ? [getImageUrl(brandData.logo_url)] : [],
+      type: 'website',
+    },
   };
 }
 
 export const revalidate = 60;
 
-async function getDealData(dealSlug: string) {
+async function getDealData(dealSlug: string, brandSlug: string) {
   const shortId = extractIdFromSlug(dealSlug);
   
   await connectDB();
@@ -46,37 +57,83 @@ async function getDealData(dealSlug: string) {
   if (!discount) return null;
   
   // Parallel queries for brand, related discounts, and deal counts
+  const now = new Date();
   const [brand, relatedDiscounts, allDiscounts, allCoupons] = await Promise.all([
     Brand.findOne({ id: (discount as any).brand_id }).lean(),
     Discount.find({
       brand_id: (discount as any).brand_id,
-      id: { $ne: (discount as any).id }
+      id: { $ne: (discount as any).id },
+      $or: [
+        { expiry_date: { $gte: now } },
+        { expiry_date: null },
+        { expiry_date: { $exists: false } }
+      ]
     }).limit(4).lean(),
-    Discount.countDocuments({ brand_id: (discount as any).brand_id }),
-    Coupon.countDocuments({ brand_id: (discount as any).brand_id, is_active: true })
+    Discount.countDocuments({ 
+      brand_id: (discount as any).brand_id,
+      $or: [
+        { expiry_date: { $gte: now } },
+        { expiry_date: null },
+        { expiry_date: { $exists: false } }
+      ]
+    }),
+    Coupon.countDocuments({ 
+      brand_id: (discount as any).brand_id, 
+      is_active: true,
+      $or: [
+        { expiry_date: { $gte: now } },
+        { expiry_date: null },
+        { expiry_date: { $exists: false } }
+      ]
+    })
   ]);
   
   const dealCount = allDiscounts + allCoupons;
+  const discountData = discount as any;
+  const brandData = brand as any;
   
   return {
-    discount: { ...(discount as any), _id: (discount as any)._id?.toString() },
-    brand: brand ? { ...(brand as any), _id: (brand as any)._id?.toString(), deal_count: dealCount } : null,
+    discount: { ...discountData, _id: discountData._id?.toString() },
+    brand: brandData ? { ...brandData, _id: brandData._id?.toString(), deal_count: dealCount } : null,
     relatedDiscounts: relatedDiscounts.map((d: any) => ({ ...d, _id: d._id?.toString() })),
+    brandSlug,
   };
 }
 
 export default async function DiscountDetailPage({ params }: Props) {
-  const { dealSlug } = await params;
-  const data = await getDealData(dealSlug);
+  const { slug, dealSlug } = await params;
+  const data = await getDealData(dealSlug, slug);
   
   if (!data) notFound();
   
   const { discount, brand, relatedDiscounts } = data;
   const isExpired = discount.expiry_date && new Date(discount.expiry_date) < new Date();
   const destinationUrl = discount.destination_url || brand?.affiliate_url || brand?.website_url;
+  
+  // Prepare breadcrumb data
+  const breadcrumbItems = [
+    { name: 'Ana Sayfa', url: 'https://indirimkesfet.com' },
+    ...(brand ? [{ name: brand.name, url: `https://indirimkesfet.com/magaza/${brand.slug}` }] : []),
+    { name: discount.title, url: `https://indirimkesfet.com/magaza/${slug}/indirim/${dealSlug}` },
+  ];
+  
+  // Prepare offer data for structured data
+  const offerData = {
+    name: discount.title,
+    description: discount.description,
+    url: `https://indirimkesfet.com/magaza/${slug}/indirim/${dealSlug}`,
+    image: discount.image_url ? getImageUrl(discount.image_url) : undefined,
+    brand: brand?.name,
+    discount: discount.discount_text,
+    validThrough: discount.expiry_date,
+    seller: brand?.name,
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* JSON-LD Structured Data */}
+      <BreadcrumbSchema items={breadcrumbItems} />
+      <OfferSchema offer={offerData} />
       {/* Breadcrumb */}
       <div className="bg-white border-b">
         <div className="container mx-auto px-4 py-3">
