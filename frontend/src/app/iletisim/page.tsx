@@ -155,8 +155,8 @@ export default function ContactPage() {
                     </div>
                     <div>
                       <h3 className="font-semibold text-gray-800">E-posta</h3>
-                      <a href="mailto:info@indirimkesfet.com" className="text-purple-600 hover:underline">
-                        info@indirimkesfet.com
+                      <a href="mailto:hello@indirimkesfet.com" className="text-purple-600 hover:underline">
+                        hello@indirimkesfet.com
                       </a>
                     </div>
                   </div>
