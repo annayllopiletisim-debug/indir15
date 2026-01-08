@@ -84,9 +84,11 @@ export async function GET(request: Request) {
   
   allBrands.forEach((brand: any) => {
     const normalizedName = normalizeText(brand.name);
+    console.log('Checking brand:', brand.name, 'normalized:', normalizedName);
     
     // Exact or partial match
     if (normalizedName.includes(normalizedQuery) || normalizedQuery.includes(normalizedName)) {
+      console.log('Match found:', brand.name);
       brandMatches.push({
         ...brand,
         _id: undefined,
