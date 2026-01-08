@@ -166,7 +166,7 @@ export default function ContactPage() {
                     </div>
                     <div>
                       <h3 className="font-semibold text-gray-800">Sosyal Medya</h3>
-                      <p className="text-gray-600">@indirimkesfet</p>
+                      <p className="text-gray-600">@indirimkesfetcom</p>
                     </div>
                   </div>
                 </div>
