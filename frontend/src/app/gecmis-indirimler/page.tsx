@@ -1,5 +1,6 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
+import Image from 'next/image';
 import connectDB from '@/lib/db';
 import { Brand, Discount, Coupon } from '@/lib/models';
 import { getImageUrl } from '@/lib/image';
@@ -175,13 +176,14 @@ export default async function ExpiredDealsPage() {
                     </div>
                     <article className="bg-white rounded-2xl shadow-sm overflow-hidden border border-gray-100 p-4">
                       <div className="flex gap-3">
-                        <div className="w-16 h-16 flex-shrink-0 bg-gray-100 overflow-hidden rounded-xl flex items-center justify-center p-2">
+                        <div className="w-16 h-16 flex-shrink-0 bg-gray-100 overflow-hidden rounded-xl flex items-center justify-center p-2 relative">
                           {brand.logo_url ? (
-                            <img
+                            <Image
                               src={getImageUrl(brand.logo_url)}
                               alt={brand.name}
-                              loading="lazy"
-                              className="max-w-full max-h-full object-contain"
+                              width={56}
+                              height={56}
+                              className="object-contain"
                             />
                           ) : (
                             <span className="text-xl text-gray-400">{brand.name.charAt(0)}</span>
