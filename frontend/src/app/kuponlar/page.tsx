@@ -5,6 +5,9 @@ import connectDB from '@/lib/db';
 import { Brand, Coupon } from '@/lib/models';
 import { getImageUrl } from '@/lib/image';
 import { Gift, Copy, ExternalLink } from 'lucide-react';
+import Pagination from '@/components/Pagination';
+
+const ITEMS_PER_PAGE = 12;
 
 export const metadata: Metadata = {
   title: 'Kupon Kodları',
@@ -16,41 +19,63 @@ export const metadata: Metadata = {
 
 export const revalidate = 60;
 
-async function getCoupons() {
+interface Props {
+  searchParams: Promise<{ sayfa?: string }>;
+}
+
+async function getCoupons(page: number) {
   await connectDB();
   const now = new Date();
+  const skip = (page - 1) * ITEMS_PER_PAGE;
   
-  // Filter: is_active=true AND (expiry_date >= now OR expiry_date is null)
-  const [coupons, brands] = await Promise.all([
-    Coupon.find({ 
-      is_active: true,
-      $or: [
-        { expiry_date: { $gte: now } },
-        { expiry_date: null },
-        { expiry_date: { $exists: false } }
-      ]
-    }).sort({ created_at: -1 }).lean(),
+  const filter = { 
+    is_active: true,
+    $or: [
+      { expiry_date: { $gte: now } },
+      { expiry_date: null },
+      { expiry_date: { $exists: false } }
+    ]
+  };
+  
+  const [coupons, totalCount, brands] = await Promise.all([
+    Coupon.find(filter)
+      .sort({ created_at: -1 })
+      .skip(skip)
+      .limit(ITEMS_PER_PAGE)
+      .lean(),
+    Coupon.countDocuments(filter),
     Brand.find({}).lean(),
   ]);
   
   const brandMap = new Map(brands.map((b: any) => [b.id, b]));
   
-  return coupons.map((c: any) => ({
-    ...c,
-    _id: c._id?.toString(),
-    brand: brandMap.get(c.brand_id) || null,
-  }));
+  return {
+    coupons: coupons.map((c: any) => ({
+      ...c,
+      _id: c._id?.toString(),
+      brand: brandMap.get(c.brand_id) || null,
+    })),
+    totalCount,
+    totalPages: Math.ceil(totalCount / ITEMS_PER_PAGE),
+  };
 }
 
-export default async function CouponsPage() {
-  const coupons = await getCoupons();
+export default async function CouponsPage({ searchParams }: Props) {
+  const params = await searchParams;
+  const currentPage = Math.max(1, parseInt(params.sayfa || '1', 10));
+  const { coupons, totalCount, totalPages } = await getCoupons(currentPage);
 
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto px-4 py-8">
-        <div className="flex items-center gap-3 mb-8">
-          <Gift className="w-8 h-8 text-purple-600" />
-          <h1 className="text-3xl font-bold text-gray-800">Kupon Kodları</h1>
+        <div className="flex items-center justify-between mb-8">
+          <div className="flex items-center gap-3">
+            <Gift className="w-8 h-8 text-purple-600" />
+            <h1 className="text-3xl font-bold text-gray-800">Kupon Kodları</h1>
+          </div>
+          <span className="bg-purple-100 text-purple-700 px-4 py-2 rounded-full text-sm font-medium">
+            {totalCount} Kupon
+          </span>
         </div>
 
         {coupons.length === 0 ? (
@@ -59,11 +84,21 @@ export default async function CouponsPage() {
             <p className="text-gray-500 text-lg">Henüz aktif kupon kodu bulunmuyor.</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {coupons.map((coupon: any) => (
-              <CouponCard key={coupon.id} coupon={coupon} />
-            ))}
-          </div>
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {coupons.map((coupon: any) => (
+                <CouponCard key={coupon.id} coupon={coupon} />
+              ))}
+            </div>
+            
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              totalItems={totalCount}
+              itemsPerPage={ITEMS_PER_PAGE}
+              basePath="/kuponlar"
+            />
+          </>
         )}
       </div>
     </div>
