@@ -5,7 +5,8 @@ import { Brand } from '@/lib/models';
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
-    const query = searchParams.get('q')?.trim() || '';
+    const query = searchParams.get('q') || '';
+    const trimmedQuery = query.trim();
     
     await connectDB();
     
@@ -14,11 +15,13 @@ export async function GET(request: Request) {
     
     // Simple search
     const matches = allBrands.filter((brand: any) => {
-      return brand.name.toLowerCase().includes(query.toLowerCase());
+      return brand.name.toLowerCase().includes(trimmedQuery.toLowerCase());
     });
     
     return NextResponse.json({
-      query,
+      rawQuery: query,
+      trimmedQuery: trimmedQuery,
+      queryLength: trimmedQuery.length,
       totalBrands: allBrands.length,
       matches: matches.map((b: any) => ({ id: b.id, name: b.name }))
     });
