@@ -60,8 +60,19 @@ export async function GET(request: Request) {
     
     query = query.trim();
     
+    // Return debug info if no query
     if (query.length < 2) {
-      return NextResponse.json({ brands: [], discounts: [], suggestions: [] });
+      return NextResponse.json({ 
+        brands: [], 
+        discounts: [], 
+        suggestions: [],
+        debug: {
+          originalUrl: request.url,
+          parsedQuery: query,
+          queryLength: query.length,
+          searchParams: Object.fromEntries(url.searchParams.entries())
+        }
+      });
     }
     
     await connectDB();
@@ -142,7 +153,15 @@ export async function GET(request: Request) {
     return NextResponse.json({
       brands: brandMatches.slice(0, 5),
       discounts: discountMatches.slice(0, 5),
-      suggestions: brandMatches.length === 0 ? suggestions : []
+      suggestions: brandMatches.length === 0 ? suggestions : [],
+      debug: {
+        originalUrl: request.url,
+        parsedQuery: query,
+        normalizedQuery,
+        totalBrands: allBrands.length,
+        totalDiscounts: allDiscounts.length,
+        brandMatchesCount: brandMatches.length
+      }
     });
   } catch (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
