@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { Tag, Clock, ExternalLink } from 'lucide-react';
 import { getImageUrl } from '@/lib/image';
 import { addUtmParams } from '@/lib/utm';
@@ -37,11 +38,23 @@ export default function DealCard({ deal, brand, href }: DealCardProps) {
       <article className="bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all p-4 border border-gray-100 h-full group-hover:border-purple-200 flex flex-col">
         <div className="flex gap-3">
           {/* Square image - 16x16 (64px) */}
-          <div className="w-16 h-16 rounded-xl overflow-hidden bg-purple-50 flex-shrink-0">
+          <div className="w-16 h-16 rounded-xl overflow-hidden bg-purple-50 flex-shrink-0 relative">
             {deal.image_url || brand?.default_deal_image ? (
-              <img src={getImageUrl(deal.image_url || brand?.default_deal_image)} alt={deal.title} loading="lazy" className="w-full h-full object-cover" />
+              <Image 
+                src={getImageUrl(deal.image_url || brand?.default_deal_image)} 
+                alt={deal.title} 
+                fill
+                sizes="64px"
+                className="object-cover" 
+              />
             ) : brand?.logo_url ? (
-              <img src={getImageUrl(brand.logo_url)} alt={brand.name} loading="lazy" className="w-full h-full object-contain p-1.5" />
+              <Image 
+                src={getImageUrl(brand.logo_url)} 
+                alt={brand.name} 
+                fill
+                sizes="64px"
+                className="object-contain p-1.5" 
+              />
             ) : (
               <div className="w-full h-full flex items-center justify-center text-purple-300">
                 <Tag className="w-6 h-6" />
@@ -52,7 +65,15 @@ export default function DealCard({ deal, brand, href }: DealCardProps) {
             {/* Brand info - bigger logo and name */}
             <div className="flex items-center gap-2 mb-1">
               {brand?.logo_url && (
-                <img src={getImageUrl(brand.logo_url)} alt={brand.name} loading="lazy" className="w-6 h-6 rounded-md object-contain bg-gray-50" />
+                <div className="w-6 h-6 relative flex-shrink-0">
+                  <Image 
+                    src={getImageUrl(brand.logo_url)} 
+                    alt={brand.name} 
+                    width={24}
+                    height={24}
+                    className="rounded-md object-contain bg-gray-50" 
+                  />
+                </div>
               )}
               <span className="text-sm font-medium text-gray-700 truncate">{brand?.name}</span>
             </div>
