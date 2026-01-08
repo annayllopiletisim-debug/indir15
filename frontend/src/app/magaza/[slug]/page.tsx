@@ -1,5 +1,6 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
+import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import connectDB from '@/lib/db';
 import { Brand, Discount, Coupon, Giveaway } from '@/lib/models';
@@ -100,9 +101,15 @@ export default async function BrandPage({ params }: Props) {
       <section className="bg-white border-b">
         <div className="container mx-auto px-4 py-8">
           <div className="flex flex-col md:flex-row md:items-center gap-6">
-            <div className="w-24 h-24 bg-white rounded-2xl border-2 border-gray-100 flex items-center justify-center p-2 shadow-sm flex-shrink-0">
+            <div className="w-24 h-24 bg-white rounded-2xl border-2 border-gray-100 flex items-center justify-center p-2 shadow-sm flex-shrink-0 relative">
               {brand.logo_url ? (
-                <img src={getImageUrl(brand.logo_url)} alt={brand.name} loading="lazy" className="w-full h-full object-contain" />
+                <Image 
+                  src={getImageUrl(brand.logo_url)} 
+                  alt={brand.name} 
+                  fill
+                  sizes="96px"
+                  className="object-contain p-2" 
+                />
               ) : (
                 <span className="text-4xl font-bold text-gray-300">{brand.name.charAt(0)}</span>
               )}
