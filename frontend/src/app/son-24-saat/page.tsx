@@ -7,8 +7,11 @@ import { getShortId, generateSlug } from '@/lib/utils';
 import { Flame, Clock, ExternalLink, Calendar } from 'lucide-react';
 
 export const metadata: Metadata = {
-  title: 'Son 24 Saat | İndirim Keşfet',
+  title: 'Son 24 Saat',
   description: 'Son 24 saat içinde eklenen en yeni indirimler ve kuponlar.',
+  alternates: {
+    canonical: '/son-24-saat',
+  },
 };
 
 export const revalidate = 60;

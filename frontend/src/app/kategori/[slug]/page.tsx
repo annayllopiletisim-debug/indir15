@@ -25,7 +25,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       canonical: `/kategori/${slug}`,
     },
     openGraph: {
-      title: `${(category as any).name} İndirimleri | İndirim Keşfet`,
+      title: `${(category as any).name} İndirimleri`,
       description: `${(category as any).name} kategorisindeki en güncel fırsatları keşfedin!`,
     },
   };

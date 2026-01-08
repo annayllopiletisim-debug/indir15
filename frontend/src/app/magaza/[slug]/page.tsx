@@ -29,7 +29,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       canonical: `/magaza/${slug}`,
     },
     openGraph: {
-      title: `${(brand as any).name} İndirim ve Kuponları | İndirim Keşfet`,
+      title: `${(brand as any).name} İndirim ve Kuponları`,
       description: `${(brand as any).name} - En güncel fırsatları kaçırmayın!`,
       images: (brand as any).logo_url ? [getImageUrl((brand as any).logo_url)] : [],
     },

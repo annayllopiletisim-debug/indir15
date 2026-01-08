@@ -32,7 +32,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   const postData = post as any;
   return {
-    title: postData.meta_title || `${postData.title} | İndirim Keşfet Blog`,
+    title: postData.meta_title || `${postData.title} - Blog`,
     description: postData.meta_description || postData.excerpt || postData.title,
     alternates: {
       canonical: `/blog/${slug}`,
