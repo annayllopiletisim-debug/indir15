@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { Metadata } from 'next';
 import connectDB from '@/lib/db';
 import { BlogPost } from '@/lib/models';
@@ -66,11 +67,12 @@ export default async function BlogPage() {
                   {/* Image */}
                   {post.featured_image ? (
                     <div className="aspect-video relative overflow-hidden">
-                      <img
+                      <Image
                         src={post.featured_image}
                         alt={post.title}
-                        loading="lazy"
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        fill
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                        className="object-cover group-hover:scale-105 transition-transform duration-300"
                       />
                     </div>
                   ) : (
