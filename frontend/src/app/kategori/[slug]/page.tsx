@@ -49,23 +49,53 @@ async function getCategoryData(slug: string) {
     ]);
   }
   
-  const brandMap = new Map(brands.map((b: any) => [b.id, b]));
+  // Serialize brands properly
+  const serializedBrands = brands.map((b: any) => ({
+    id: b.id,
+    name: b.name,
+    slug: b.slug,
+    logo_url: b.logo_url || null,
+    default_deal_image: b.default_deal_image || null,
+  }));
+  
+  const brandMap = new Map(serializedBrands.map((b: any) => [b.id, b]));
   
   const enrichedDiscounts = discounts.map((d: any) => ({
-    ...d,
-    _id: d._id?.toString(),
+    id: d.id,
+    title: d.title,
+    description: d.description || null,
+    discount_text: d.discount_text || null,
+    image_url: d.image_url || null,
+    expiry_date: d.expiry_date ? d.expiry_date.toISOString() : null,
+    destination_url: d.destination_url || null,
+    brand_id: d.brand_id,
+    created_at: d.created_at ? d.created_at.toISOString() : null,
+    click_count: d.click_count || 0,
     brand: brandMap.get(d.brand_id) || null,
   }));
   
   const enrichedCoupons = coupons.map((c: any) => ({
-    ...c,
-    _id: c._id?.toString(),
+    id: c.id,
+    title: c.title,
+    code: c.code,
+    description: c.description || null,
+    discount_text: c.discount_text || null,
+    expiry_date: c.expiry_date ? c.expiry_date.toISOString() : null,
+    brand_id: c.brand_id,
+    created_at: c.created_at ? c.created_at.toISOString() : null,
+    click_count: c.click_count || 0,
     brand: brandMap.get(c.brand_id) || null,
   }));
   
   return {
-    category: { ...(category as any), _id: (category as any)._id?.toString() },
-    brands: brands.map((b: any) => ({ ...b, _id: b._id?.toString() })),
+    category: {
+      id: (category as any).id,
+      name: (category as any).name,
+      slug: (category as any).slug,
+      description: (category as any).description || null,
+      icon: (category as any).icon || null,
+    },
+    brands: serializedBrands,
     discounts: enrichedDiscounts,
     coupons: enrichedCoupons,
   };
