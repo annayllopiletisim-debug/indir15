@@ -1,6 +1,46 @@
+'use client';
+
+import { useState } from 'react';
 import Link from 'next/link';
 
 export default function Footer() {
+  const [email, setEmail] = useState('');
+  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const [message, setMessage] = useState('');
+
+  const handleSubscribe = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email) return;
+    
+    setStatus('loading');
+    try {
+      const res = await fetch('/api/newsletter', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email })
+      });
+      const data = await res.json();
+      
+      if (res.ok) {
+        setStatus('success');
+        setMessage(data.message);
+        setEmail('');
+      } else {
+        setStatus('error');
+        setMessage(data.error || 'Bir hata oluştu');
+      }
+    } catch {
+      setStatus('error');
+      setMessage('Bir hata oluştu');
+    }
+    
+    // Reset status after 3 seconds
+    setTimeout(() => {
+      setStatus('idle');
+      setMessage('');
+    }, 3000);
+  };
+
   return (
     <footer className="bg-gradient-to-br from-violet-900 via-purple-900 to-violet-950 text-white">
       <div className="container mx-auto px-4 py-12">
@@ -38,22 +78,33 @@ export default function Footer() {
 
           {/* Newsletter */}
           <div>
-            <h4 className="font-semibold mb-4">Bülten</h4>
+            <h4 className="font-semibold mb-4">E-Bülten</h4>
             <p className="text-violet-200 text-sm mb-4">
               En güncel fırsatlardan haberdar olun.
             </p>
-            <form className="flex gap-2">
-              <input
-                type="email"
-                placeholder="E-posta adresiniz"
-                className="flex-1 px-3 py-2 rounded-lg bg-white/10 border border-white/20 text-white placeholder-violet-300 focus:outline-none focus:ring-2 focus:ring-primary"
-              />
-              <button
-                type="submit"
-                className="px-4 py-2 bg-primary hover:bg-primary/90 rounded-lg font-medium transition-colors"
-              >
-                Abone Ol
-              </button>
+            <form onSubmit={handleSubscribe} className="space-y-2">
+              <div className="flex gap-2">
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="E-posta adresiniz"
+                  className="flex-1 px-3 py-2 rounded-lg bg-white/10 border border-white/20 text-white placeholder-violet-300 focus:outline-none focus:ring-2 focus:ring-primary"
+                  disabled={status === 'loading'}
+                />
+                <button
+                  type="submit"
+                  disabled={status === 'loading'}
+                  className="px-4 py-2 bg-primary hover:bg-primary/90 rounded-lg font-medium transition-colors disabled:opacity-50"
+                >
+                  {status === 'loading' ? '...' : 'Abone Ol'}
+                </button>
+              </div>
+              {message && (
+                <p className={`text-sm ${status === 'success' ? 'text-green-400' : 'text-red-400'}`}>
+                  {message}
+                </p>
+              )}
             </form>
           </div>
         </div>
