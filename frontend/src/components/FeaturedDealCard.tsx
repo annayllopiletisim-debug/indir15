@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { Calendar, ChevronRight } from 'lucide-react';
 import { getImageUrl } from '@/lib/image';
 import { addUtmParams } from '@/lib/utm';
@@ -37,28 +38,31 @@ export default function FeaturedDealCard({ deal, detailHref, type = 'discount' }
       <article className="bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden border border-gray-100 group-hover:border-purple-200 p-4">
         <div className="flex gap-3">
           {/* Left - Square Image */}
-          <div className="w-24 h-24 flex-shrink-0 bg-gradient-to-br from-purple-50 to-pink-50 overflow-hidden rounded-xl">
+          <div className="w-24 h-24 flex-shrink-0 bg-gradient-to-br from-purple-50 to-pink-50 overflow-hidden rounded-xl relative">
             {deal.image_url ? (
-              <img
+              <Image
                 src={getImageUrl(deal.image_url)}
                 alt={deal.title}
-                loading="lazy"
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                fill
+                sizes="96px"
+                className="object-cover group-hover:scale-105 transition-transform duration-300"
               />
             ) : brand?.default_deal_image ? (
-              <img
+              <Image
                 src={getImageUrl(brand.default_deal_image)}
                 alt={deal.title}
-                loading="lazy"
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                fill
+                sizes="96px"
+                className="object-cover group-hover:scale-105 transition-transform duration-300"
               />
             ) : brand?.logo_url ? (
               <div className="w-full h-full flex items-center justify-center p-2">
-                <img
+                <Image
                   src={getImageUrl(brand.logo_url)}
                   alt={brand.name}
-                  loading="lazy"
-                  className="max-w-full max-h-full object-contain"
+                  width={80}
+                  height={80}
+                  className="object-contain"
                 />
               </div>
             ) : (
@@ -74,12 +78,13 @@ export default function FeaturedDealCard({ deal, detailHref, type = 'discount' }
             {brand && (
               <div className="flex items-center gap-2 mb-1.5">
                 {brand.logo_url && (
-                  <div className="w-8 h-8 rounded-lg border border-gray-200 bg-white flex items-center justify-center p-0.5 overflow-hidden flex-shrink-0">
-                    <img 
+                  <div className="w-8 h-8 rounded-lg border border-gray-200 bg-white flex items-center justify-center p-0.5 overflow-hidden flex-shrink-0 relative">
+                    <Image 
                       src={getImageUrl(brand.logo_url)} 
                       alt={brand.name} 
-                      loading="lazy"
-                      className="max-w-full max-h-full object-contain" 
+                      width={28}
+                      height={28}
+                      className="object-contain" 
                     />
                   </div>
                 )}
