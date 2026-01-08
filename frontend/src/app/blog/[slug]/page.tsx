@@ -1,6 +1,7 @@
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import connectDB from '@/lib/db';
 import { BlogPost } from '@/lib/models';
 import { Calendar, User, Eye, ArrowLeft, Tag } from 'lucide-react';
@@ -87,11 +88,14 @@ export default async function BlogPostPage({ params }: Props) {
         </Link>
 
         {post.featured_image && (
-          <div className="aspect-video rounded-xl overflow-hidden mb-8">
-            <img
+          <div className="aspect-video rounded-xl overflow-hidden mb-8 relative">
+            <Image
               src={post.featured_image}
               alt={post.title}
-              className="w-full h-full object-cover"
+              fill
+              sizes="(max-width: 768px) 100vw, 800px"
+              className="object-cover"
+              priority
             />
           </div>
         )}
