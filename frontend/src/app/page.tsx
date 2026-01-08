@@ -16,11 +16,25 @@ export const revalidate = 60;
 
 async function getHomeData() {
   await connectDB();
+  const now = new Date();
   
-  // Get all discounts and coupons to count per brand
+  // Get all active discounts and coupons to count per brand
   const [allDiscounts, allCoupons] = await Promise.all([
-    Discount.find({}).lean(),
-    (await import('@/lib/models')).Coupon.find({ is_active: true }).lean(),
+    Discount.find({
+      $or: [
+        { expiry_date: { $gte: now } },
+        { expiry_date: null },
+        { expiry_date: { $exists: false } }
+      ]
+    }).lean(),
+    (await import('@/lib/models')).Coupon.find({ 
+      is_active: true,
+      $or: [
+        { expiry_date: { $gte: now } },
+        { expiry_date: null },
+        { expiry_date: { $exists: false } }
+      ]
+    }).lean(),
   ]);
   
   // Count discounts per brand
@@ -71,13 +85,26 @@ async function getHomeData() {
 
   const brandMap = new Map(enrichedBrands.map((b: any) => [b.id, b]));
   
-  // Get featured discounts
-  const discounts = await Discount.find({ is_featured: true }).sort({ created_at: -1 }).limit(12).lean();
+  // Get featured discounts (only active ones)
+  const discounts = await Discount.find({ 
+    is_featured: true,
+    $or: [
+      { expiry_date: { $gte: now } },
+      { expiry_date: null },
+      { expiry_date: { $exists: false } }
+    ]
+  }).sort({ created_at: -1 }).limit(12).lean();
   
-  // If not enough featured, get latest ones
+  // If not enough featured, get latest active ones
   let finalDiscounts = discounts;
   if (discounts.length < 6) {
-    finalDiscounts = await Discount.find({}).sort({ created_at: -1 }).limit(12).lean();
+    finalDiscounts = await Discount.find({
+      $or: [
+        { expiry_date: { $gte: now } },
+        { expiry_date: null },
+        { expiry_date: { $exists: false } }
+      ]
+    }).sort({ created_at: -1 }).limit(12).lean();
   }
   
   const enrichedDiscounts = finalDiscounts.map((d: any) => ({
