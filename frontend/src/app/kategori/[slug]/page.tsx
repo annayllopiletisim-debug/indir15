@@ -1,5 +1,6 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
+import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import connectDB from '@/lib/db';
 import { Category, Brand, Discount, Coupon } from '@/lib/models';
@@ -165,9 +166,15 @@ export default async function CategoryPage({ params }: Props) {
                   href={`/magaza/${brand.slug}`}
                   className="flex-shrink-0 flex flex-col items-center group"
                 >
-                  <div className="w-16 h-16 bg-white rounded-xl border flex items-center justify-center p-1.5 group-hover:border-primary/50 group-hover:shadow-lg transition-all">
+                  <div className="w-16 h-16 bg-white rounded-xl border flex items-center justify-center p-1.5 group-hover:border-primary/50 group-hover:shadow-lg transition-all relative">
                     {brand.logo_url ? (
-                      <img src={getImageUrl(brand.logo_url)} alt={brand.name} loading="lazy" className="w-full h-full object-contain" />
+                      <Image 
+                        src={getImageUrl(brand.logo_url)} 
+                        alt={brand.name} 
+                        fill
+                        sizes="64px"
+                        className="object-contain p-1" 
+                      />
                     ) : (
                       <span className="text-xl font-bold text-gray-400">{brand.name.charAt(0)}</span>
                     )}
