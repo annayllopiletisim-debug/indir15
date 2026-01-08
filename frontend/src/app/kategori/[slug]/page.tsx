@@ -111,16 +111,18 @@ export default async function CategoryPage({ params }: Props) {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Category Header */}
+      {/* Category Header - Compact */}
       <section className="bg-gradient-to-r from-violet-600 to-purple-600 text-white">
-        <div className="container mx-auto px-4 py-10">
-          <h1 className="text-3xl font-bold mb-2">
-            {category.icon} {category.name}
-          </h1>
-          <p className="text-violet-100">{category.description}</p>
-          <div className="mt-4 flex gap-4 text-sm">
-            <span className="bg-white/20 px-3 py-1 rounded-full">{brands.length} Mağaza</span>
-            <span className="bg-white/20 px-3 py-1 rounded-full">{discounts.length + coupons.length} Fırsat</span>
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center justify-between flex-wrap gap-2">
+            <h1 className="text-xl md:text-2xl font-bold flex items-center gap-2">
+              <span>{category.icon}</span>
+              <span>{category.name}</span>
+            </h1>
+            <div className="flex gap-2 text-sm">
+              <span className="bg-white/20 px-3 py-1 rounded-full">{brands.length} Mağaza</span>
+              <span className="bg-white/20 px-3 py-1 rounded-full">{discounts.length + coupons.length} Fırsat</span>
+            </div>
           </div>
         </div>
       </section>
