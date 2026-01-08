@@ -1,12 +1,11 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
 import connectDB from '@/lib/db';
-import { Brand, Discount, Coupon, Category } from '@/lib/models';
+import { Brand, Discount, Category } from '@/lib/models';
 import { getShortId, generateSlug } from '@/lib/utils';
 import { getImageUrl } from '@/lib/image';
-import { ArrowRight, Star, Gift, Copy, ExternalLink } from 'lucide-react';
+import { ArrowRight, Star } from 'lucide-react';
 import FeaturedDealCard from '@/components/FeaturedDealCard';
-import { addUtmParams } from '@/lib/utm';
 
 export const metadata: Metadata = {
   title: 'İndirim Keşfet - Türkiye\'nin En Güncel Kupon ve İndirim Platformu',
