@@ -24,7 +24,7 @@ export async function POST() {
       // Find a discount with an image for this brand
       const discountWithImage = await Discount.findOne({
         brand_id: brandData.id,
-        image_url: { $exists: true, $ne: '', $ne: null }
+        image_url: { $exists: true, $nin: ['', null] }
       }).lean();
       
       if (discountWithImage) {
