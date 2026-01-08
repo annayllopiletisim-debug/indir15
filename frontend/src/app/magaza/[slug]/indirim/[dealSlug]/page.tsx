@@ -45,18 +45,22 @@ async function getDealData(dealSlug: string) {
   const discount = await Discount.findOne({ id: { $regex: `^${shortId}` } }).lean();
   if (!discount) return null;
   
-  // Parallel queries for brand and related discounts
-  const [brand, relatedDiscounts] = await Promise.all([
+  // Parallel queries for brand, related discounts, and deal counts
+  const [brand, relatedDiscounts, allDiscounts, allCoupons] = await Promise.all([
     Brand.findOne({ id: (discount as any).brand_id }).lean(),
     Discount.find({
       brand_id: (discount as any).brand_id,
       id: { $ne: (discount as any).id }
-    }).limit(4).lean()
+    }).limit(4).lean(),
+    Discount.countDocuments({ brand_id: (discount as any).brand_id }),
+    Coupon.countDocuments({ brand_id: (discount as any).brand_id, is_active: true })
   ]);
+  
+  const dealCount = allDiscounts + allCoupons;
   
   return {
     discount: { ...(discount as any), _id: (discount as any)._id?.toString() },
-    brand: brand ? { ...(brand as any), _id: (brand as any)._id?.toString() } : null,
+    brand: brand ? { ...(brand as any), _id: (brand as any)._id?.toString(), deal_count: dealCount } : null,
     relatedDiscounts: relatedDiscounts.map((d: any) => ({ ...d, _id: d._id?.toString() })),
   };
 }
