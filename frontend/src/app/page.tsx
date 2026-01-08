@@ -177,47 +177,6 @@ export default async function HomePage() {
     </div>
   );
 }
-
-// Coupon Card Component
-function CouponCard({ coupon }: { coupon: any }) {
-  const brand = coupon.brand;
-  const destinationUrl = coupon.destination_url || brand?.affiliate_url || brand?.website_url;
-
-  return (
-    <article className="bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all duration-200 overflow-hidden border border-gray-100 p-5">
-      <div className="flex items-center gap-3 mb-4">
-        {brand?.logo_url && (
-          <div className="w-12 h-12 rounded-xl border border-gray-200 bg-white flex items-center justify-center p-1 overflow-hidden">
-            <img src={getImageUrl(brand.logo_url)} alt={brand.name} loading="lazy" className="max-w-full max-h-full object-contain" />
-          </div>
-        )}
-        <div>
-          <span className="font-bold text-gray-800">{brand?.name}</span>
-          {coupon.discount_text && (
-            <span className="block text-sm text-green-600 font-semibold">{coupon.discount_text}</span>
-          )}
-        </div>
-      </div>
-      <h3 className="font-semibold text-gray-700 mb-4 line-clamp-2">{coupon.title}</h3>
-      <div className="flex items-center gap-2 mb-3">
-        <code className="flex-1 px-4 py-3 bg-purple-50 border-2 border-dashed border-purple-300 rounded-xl text-center font-mono font-bold text-purple-700">
-          {coupon.code}
-        </code>
-        <button className="p-3 bg-purple-100 text-purple-600 rounded-xl hover:bg-purple-200 transition-colors" title="Kopyala">
-          <Copy className="w-5 h-5" />
-        </button>
-      </div>
-      {destinationUrl && (
-        <a 
-          href={addUtmParams(destinationUrl)}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-purple-600 text-white rounded-xl font-semibold hover:bg-purple-700 transition-colors text-sm"
-        >
-          Mağazaya Git
-          <ExternalLink className="w-4 h-4" />
-        </a>
-      )}
     </article>
   );
 }
