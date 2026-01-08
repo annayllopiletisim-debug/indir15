@@ -1,5 +1,6 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
+import Image from 'next/image';
 import connectDB from '@/lib/db';
 import { Brand, Discount, Coupon } from '@/lib/models';
 import { getImageUrl } from '@/lib/image';
@@ -97,8 +98,14 @@ function DealCard({ deal }: { deal: any }) {
     <article className="bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all p-5 border border-gray-100">
       <div className="flex items-start gap-4">
         {brand?.logo_url && (
-          <div className="w-14 h-14 rounded-xl border border-gray-200 bg-white flex items-center justify-center p-2 overflow-hidden flex-shrink-0">
-            <img src={getImageUrl(brand.logo_url)} alt={brand.name} loading="lazy" className="max-w-full max-h-full object-contain" />
+          <div className="w-14 h-14 rounded-xl border border-gray-200 bg-white flex items-center justify-center p-2 overflow-hidden flex-shrink-0 relative">
+            <Image 
+              src={getImageUrl(brand.logo_url)} 
+              alt={brand.name} 
+              width={48}
+              height={48}
+              className="object-contain" 
+            />
           </div>
         )}
         <div className="flex-1">
@@ -137,8 +144,14 @@ function CouponCard({ coupon }: { coupon: any }) {
     <article className="bg-white rounded-2xl shadow-sm p-5 border border-gray-100">
       <div className="flex items-center gap-3 mb-3">
         {brand?.logo_url && (
-          <div className="w-10 h-10 rounded-lg border border-gray-200 bg-white flex items-center justify-center p-1 overflow-hidden">
-            <img src={getImageUrl(brand.logo_url)} alt={brand.name} loading="lazy" className="max-w-full max-h-full object-contain" />
+          <div className="w-10 h-10 rounded-lg border border-gray-200 bg-white flex items-center justify-center p-1 overflow-hidden relative">
+            <Image 
+              src={getImageUrl(brand.logo_url)} 
+              alt={brand.name} 
+              width={36}
+              height={36}
+              className="object-contain" 
+            />
           </div>
         )}
         <span className="font-bold text-gray-800">{brand?.name}</span>
