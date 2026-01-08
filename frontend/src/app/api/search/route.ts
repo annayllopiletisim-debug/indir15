@@ -54,6 +54,7 @@ export async function GET(request: Request) {
   await connectDB();
   
   const normalizedQuery = normalizeText(query);
+  console.log('Search query:', query, 'normalized:', normalizedQuery);
   
   // Get all brands and discounts for searching
   const [allBrands, allDiscounts, allCoupons] = await Promise.all([
