@@ -256,3 +256,48 @@
 - **Issues Found**: None - all features working as expected
 - **Recommendation**: New bulk selection and filtering features are ready for production use
 
+## SEARCH BAR FUNCTIONALITY TESTING - CRITICAL ISSUE FOUND ❌
+
+### Search Bar Component Testing (FAIL ❌)
+- **Page URL**: https://dealfinder-299.preview.emergentagent.com
+- **Search Input**: ✅ Found search input with placeholder "Mağaza veya kampanya ara..."
+- **Search API**: ❌ CRITICAL ISSUE - Query parameters are being stripped from API requests
+
+### Search API Issue Analysis
+- **API Endpoint**: /api/search
+- **Issue**: Query parameters (e.g., ?q=kara) are not reaching the API route
+- **Root Cause**: External URL `https://dealfinder-299.preview.emergentagent.com/api/search?q=kara` is being transformed to `https://localhost:3000/api/search` without query parameters
+- **Impact**: Search functionality is completely broken - no search results are returned for any query
+
+### Technical Details
+- **Database**: ✅ Karaca brand exists in database and is accessible via /api/brands
+- **Search Logic**: ✅ Search normalization and matching logic is correct (tested separately)
+- **API Route**: ✅ Search route exists and responds with 200 status
+- **Query Parameter Parsing**: ❌ Query parameters are stripped at proxy/ingress level
+
+### Debug Information
+```json
+{
+  "originalUrl": "https://localhost:3000/api/search",
+  "parsedQuery": "",
+  "queryLength": 0,
+  "searchParams": {}
+}
+```
+
+### Testing Agent Communication - SEARCH FUNCTIONALITY
+- **Testing Agent**: SEARCH BAR functionality testing completed
+- **Status**: CRITICAL ISSUE FOUND - Search functionality is broken
+- **Root Cause**: Query parameters are being stripped from API requests at the proxy/ingress level
+- **Impact**: Users cannot search for brands or discounts - search always returns empty results
+- **Recommendation**: URGENT - Fix proxy/ingress configuration to preserve query parameters for API routes
+
+### Search Functionality Test Results
+- **Search Input Visibility**: ✅ PASS
+- **Search Input Placeholder**: ✅ PASS ("Mağaza veya kampanya ara...")
+- **Search API Endpoint**: ✅ PASS (responds with 200)
+- **Query Parameter Handling**: ❌ FAIL (parameters stripped)
+- **Search Results for "kara"**: ❌ FAIL (should show Karaca brand)
+- **Search Results for "xyz123"**: ❌ FAIL (should show "sonuç bulunamadı")
+- **Overall Search Functionality**: ❌ CRITICAL FAILURE
+
