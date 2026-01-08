@@ -97,7 +97,7 @@ export default function SearchBar({ compact = false }: { compact?: boolean }) {
       </form>
 
       {/* Search Results Dropdown */}
-      {isOpen && results && (
+      {isOpen && results && !loading && (
         <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-xl shadow-xl border border-gray-200 overflow-hidden z-50 max-h-[70vh] overflow-y-auto">
           {/* Did you mean suggestions */}
           {results.suggestions && results.suggestions.length > 0 && (
@@ -154,7 +154,7 @@ export default function SearchBar({ compact = false }: { compact?: boolean }) {
 
           {/* Discounts */}
           {results.discounts && results.discounts.length > 0 && (
-            <div className="p-3 border-t">
+            <div className={`p-3 ${results.brands && results.brands.length > 0 ? 'border-t' : ''}`}>
               <h3 className="text-xs font-semibold text-gray-500 uppercase mb-2 flex items-center gap-1">
                 <Tag className="w-3 h-3" />
                 İndirimler
@@ -182,8 +182,8 @@ export default function SearchBar({ compact = false }: { compact?: boolean }) {
             </div>
           )}
 
-          {/* No results */}
-          {results.brands?.length === 0 && results.discounts?.length === 0 && (
+          {/* No results - only show if both are empty */}
+          {(!results.brands || results.brands.length === 0) && (!results.discounts || results.discounts.length === 0) && (!results.suggestions || results.suggestions.length === 0) && (
             <div className="p-6 text-center text-gray-500">
               <p>"{query}" için sonuç bulunamadı.</p>
               <p className="text-sm mt-1">Farklı bir kelime deneyin.</p>
@@ -191,7 +191,7 @@ export default function SearchBar({ compact = false }: { compact?: boolean }) {
           )}
 
           {/* View all results */}
-          {(results.brands?.length > 0 || results.discounts?.length > 0) && (
+          {((results.brands && results.brands.length > 0) || (results.discounts && results.discounts.length > 0)) && (
             <div className="p-3 bg-gray-50 border-t">
               <Link
                 href={`/ara?q=${encodeURIComponent(query)}`}
@@ -207,8 +207,8 @@ export default function SearchBar({ compact = false }: { compact?: boolean }) {
       )}
 
       {/* Loading state */}
-      {loading && (
-        <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-xl shadow-xl border border-gray-200 p-4 text-center">
+      {loading && query.length >= 2 && (
+        <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-xl shadow-xl border border-gray-200 p-4 text-center z-50">
           <div className="animate-spin w-5 h-5 border-2 border-purple-600 border-t-transparent rounded-full mx-auto"></div>
         </div>
       )}
