@@ -8,14 +8,27 @@ import { Gift, Copy, ExternalLink } from 'lucide-react';
 export const metadata: Metadata = {
   title: 'Kupon Kodları | İndirim Keşfet',
   description: 'En güncel kupon kodları ve indirim fırsatları. Alışverişlerinizde tasarruf edin!',
+  alternates: {
+    canonical: '/kuponlar',
+  },
 };
 
 export const revalidate = 60;
 
 async function getCoupons() {
   await connectDB();
+  const now = new Date();
+  
+  // Filter: is_active=true AND (expiry_date >= now OR expiry_date is null)
   const [coupons, brands] = await Promise.all([
-    Coupon.find({ is_active: true }).sort({ created_at: -1 }).lean(),
+    Coupon.find({ 
+      is_active: true,
+      $or: [
+        { expiry_date: { $gte: now } },
+        { expiry_date: null },
+        { expiry_date: { $exists: false } }
+      ]
+    }).sort({ created_at: -1 }).lean(),
     Brand.find({}).lean(),
   ]);
   

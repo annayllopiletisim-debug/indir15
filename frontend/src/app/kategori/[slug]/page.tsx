@@ -21,6 +21,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: `${(category as any).name} İndirimleri ve Kuponları`,
     description: `${(category as any).name} kategorisindeki en güncel indirimler, kupon kodları ve kampanyalar. ${(category as any).description || ''}`,
+    alternates: {
+      canonical: `/kategori/${slug}`,
+    },
+    openGraph: {
+      title: `${(category as any).name} İndirimleri | İndirim Keşfet`,
+      description: `${(category as any).name} kategorisindeki en güncel fırsatları keşfedin!`,
+    },
   };
 }
 
@@ -40,12 +47,28 @@ async function getCategoryData(slug: string) {
   
   let discounts: any[] = [];
   let coupons: any[] = [];
+  const now = new Date();
   
   if (brandIds.length > 0) {
-    // Get deals from these brands
+    // Get active deals from these brands (filter expired)
     [discounts, coupons] = await Promise.all([
-      Discount.find({ brand_id: { $in: brandIds } }).sort({ created_at: -1 }).limit(20).lean(),
-      Coupon.find({ brand_id: { $in: brandIds }, is_active: true }).sort({ created_at: -1 }).limit(20).lean(),
+      Discount.find({ 
+        brand_id: { $in: brandIds },
+        $or: [
+          { expiry_date: { $gte: now } },
+          { expiry_date: null },
+          { expiry_date: { $exists: false } }
+        ]
+      }).sort({ created_at: -1 }).limit(20).lean(),
+      Coupon.find({ 
+        brand_id: { $in: brandIds }, 
+        is_active: true,
+        $or: [
+          { expiry_date: { $gte: now } },
+          { expiry_date: null },
+          { expiry_date: { $exists: false } }
+        ]
+      }).sort({ created_at: -1 }).limit(20).lean(),
     ]);
   }
   
