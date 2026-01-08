@@ -131,6 +131,8 @@ export async function GET(request: Request) {
       };
     });
   
+  console.log('Final results - brands:', brandMatches.length, 'discounts:', discountMatches.length, 'suggestions:', suggestions.length);
+  
   return NextResponse.json({
     brands: brandMatches.slice(0, 5),
     discounts: discountMatches.slice(0, 5),
