@@ -8,9 +8,10 @@ import { addUtmParams } from '@/lib/utm';
 interface FeaturedDealCardProps {
   deal: any;
   detailHref: string;
+  type?: 'discount' | 'coupon';
 }
 
-export default function FeaturedDealCard({ deal, detailHref }: FeaturedDealCardProps) {
+export default function FeaturedDealCard({ deal, detailHref, type = 'discount' }: FeaturedDealCardProps) {
   const brand = deal.brand;
   const destinationUrl = deal.destination_url || brand?.affiliate_url || brand?.website_url;
 
@@ -119,7 +120,7 @@ export default function FeaturedDealCard({ deal, detailHref }: FeaturedDealCardP
               onClick={handleCtaClick}
               className="flex items-center gap-1 px-3 py-1.5 bg-gradient-to-r from-purple-600 to-purple-700 text-white rounded-lg font-semibold hover:from-purple-700 hover:to-purple-800 transition-all text-xs z-10 relative"
             >
-              Kodu Göster
+              {type === 'coupon' ? 'Kodu Göster' : 'Mağazaya Git'}
               <ChevronRight className="w-3.5 h-3.5" />
             </button>
           )}
