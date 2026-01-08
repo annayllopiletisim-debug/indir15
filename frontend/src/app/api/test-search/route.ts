@@ -4,8 +4,8 @@ import { Brand } from '@/lib/models';
 
 export async function GET(request: Request) {
   try {
-    const { searchParams } = new URL(request.url);
-    const query = searchParams.get('q') || '';
+    const url = new URL(request.url);
+    const query = url.searchParams.get('q') || '';
     const trimmedQuery = query.trim();
     
     await connectDB();
@@ -19,6 +19,8 @@ export async function GET(request: Request) {
     });
     
     return NextResponse.json({
+      fullUrl: request.url,
+      searchParams: Object.fromEntries(url.searchParams.entries()),
       rawQuery: query,
       trimmedQuery: trimmedQuery,
       queryLength: trimmedQuery.length,
