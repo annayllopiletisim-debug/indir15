@@ -86,22 +86,15 @@ async function getHomeData() {
     brand: brandMap.get(d.brand_id) || null,
   }));
 
-  const enrichedCoupons = coupons.map((c: any) => ({
-    ...c,
-    _id: c._id?.toString(),
-    brand: brandMap.get(c.brand_id) || null,
-  }));
-
   return {
     brands: enrichedBrands,
     discounts: enrichedDiscounts,
-    coupons: enrichedCoupons,
     categories: enrichedCategories,
   };
 }
 
 export default async function HomePage() {
-  const { brands, discounts, coupons, categories } = await getHomeData();
+  const { brands, discounts, categories } = await getHomeData();
 
   return (
     <div className="min-h-screen bg-gray-50">
