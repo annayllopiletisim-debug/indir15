@@ -11,6 +11,9 @@ import CouponCard from '@/components/CouponCard';
 export const metadata: Metadata = {
   title: 'Bitmek Üzere Olan İndirimler | İndirim Keşfet',
   description: 'Son 7 gün içinde bitecek indirim ve kupon fırsatları. Kaçırmadan yakalayın!',
+  alternates: {
+    canonical: '/bitmek-uzere',
+  },
 };
 
 export const revalidate = 60;

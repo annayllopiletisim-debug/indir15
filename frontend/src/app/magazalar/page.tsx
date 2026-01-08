@@ -8,23 +8,41 @@ import StoresPageClient from '@/components/StoresPageClient';
 export const metadata: Metadata = {
   title: 'Tüm Mağazalar - İndirim ve Kupon Kodları',
   description: 'Tüm mağazaların indirim kampanyaları, kupon kodları ve çekiliş fırsatları. Yüzlerce markadan en iyi fırsatlar.',
+  alternates: {
+    canonical: '/magazalar',
+  },
 };
 
 export const revalidate = 60;
 
 async function getAllBrands() {
   await connectDB();
+  const now = new Date();
   
   // Get all brands
   const brands = await Brand.find({}).sort({ name: 1 }).lean();
   
-  // Get deal counts per brand
+  // Get deal counts per brand (only active deals)
   const [discountCounts, couponCounts] = await Promise.all([
     Discount.aggregate([
+      { $match: {
+        $or: [
+          { expiry_date: { $gte: now } },
+          { expiry_date: null },
+          { expiry_date: { $exists: false } }
+        ]
+      }},
       { $group: { _id: '$brand_id', count: { $sum: 1 } } }
     ]),
     Coupon.aggregate([
-      { $match: { is_active: true } },
+      { $match: { 
+        is_active: true,
+        $or: [
+          { expiry_date: { $gte: now } },
+          { expiry_date: null },
+          { expiry_date: { $exists: false } }
+        ]
+      }},
       { $group: { _id: '$brand_id', count: { $sum: 1 } } }
     ])
   ]);
