@@ -1,5 +1,6 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
+import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import connectDB from '@/lib/db';
 import { Brand, Discount, Coupon } from '@/lib/models';
@@ -160,9 +161,15 @@ export default async function DiscountDetailPage({ params }: Props) {
                 {/* Brand Header */}
                 {brand && (
                   <div className="flex items-center gap-4 mb-6 pb-6 border-b">
-                    <div className="w-16 h-16 bg-white rounded-xl border-2 border-gray-100 flex items-center justify-center p-2 overflow-hidden">
+                    <div className="w-16 h-16 bg-white rounded-xl border-2 border-gray-100 flex items-center justify-center p-2 overflow-hidden relative">
                       {brand.logo_url ? (
-                        <img src={getImageUrl(brand.logo_url)} alt={brand.name} loading="lazy" className="max-w-full max-h-full object-contain" />
+                        <Image 
+                          src={getImageUrl(brand.logo_url)} 
+                          alt={brand.name} 
+                          width={56}
+                          height={56}
+                          className="object-contain" 
+                        />
                       ) : (
                         <span className="text-2xl font-bold text-gray-400">{brand.name.charAt(0)}</span>
                       )}
@@ -256,9 +263,15 @@ export default async function DiscountDetailPage({ params }: Props) {
             {brand && (
               <div className="bg-white rounded-2xl shadow-sm p-6">
                 <div className="text-center mb-4">
-                  <div className="w-20 h-20 mx-auto bg-white rounded-2xl border-2 border-gray-100 flex items-center justify-center p-3 mb-3 overflow-hidden">
+                  <div className="w-20 h-20 mx-auto bg-white rounded-2xl border-2 border-gray-100 flex items-center justify-center p-3 mb-3 overflow-hidden relative">
                     {brand.logo_url ? (
-                      <img src={getImageUrl(brand.logo_url)} alt={brand.name} loading="lazy" className="max-w-full max-h-full object-contain" />
+                      <Image 
+                        src={getImageUrl(brand.logo_url)} 
+                        alt={brand.name} 
+                        width={68}
+                        height={68}
+                        className="object-contain" 
+                      />
                     ) : (
                       <span className="text-3xl font-bold text-gray-400">{brand.name.charAt(0)}</span>
                     )}
