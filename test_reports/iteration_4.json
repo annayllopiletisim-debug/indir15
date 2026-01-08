@@ -1,0 +1,75 @@
+{
+  "summary": "SEO and deploy preparation testing completed. All SEO features working correctly: JSON-LD schemas (Organization, WebSite), canonical URLs on all pages, /gecmis-indirimler page, 404 page, robots.txt, manifest.json, sitemap.xml, and expired content filtering.",
+  
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {
+        "screen": "/bitmek-uzere page title",
+        "issues": ["Page title has duplicate suffix: 'Bitmek Üzere Olan İndirimler | İndirim Keşfet | İndirim Keşfet'"]
+      },
+      {
+        "screen": "/gecmis-indirimler page title",
+        "issues": ["Page title has duplicate suffix: 'Geçmiş İndirimler ve Süresi Dolan Kuponlar | İndirim Keşfet | İndirim Keşfet'"]
+      },
+      {
+        "screen": "/kuponlar page title",
+        "issues": ["Page title has duplicate suffix: 'Kupon Kodları | İndirim Keşfet | İndirim Keşfet'"]
+      }
+    ]
+  },
+  
+  "passed_tests": [
+    "Homepage JSON-LD Organization schema present",
+    "Homepage JSON-LD WebSite schema present",
+    "Homepage canonical URL: https://indirimkesfet.com/",
+    "/kuponlar canonical URL: https://indirimkesfet.com/kuponlar",
+    "/magazalar canonical URL: https://indirimkesfet.com/magazalar",
+    "/kategoriler canonical URL: https://indirimkesfet.com/kategoriler",
+    "/bitmek-uzere canonical URL: https://indirimkesfet.com/bitmek-uzere",
+    "/blog canonical URL: https://indirimkesfet.com/blog",
+    "/gecmis-indirimler canonical URL: https://indirimkesfet.com/gecmis-indirimler",
+    "/gecmis-indirimler page loads with expired deals (14 expired discounts found)",
+    "/gecmis-indirimler shows warning banner about expired content",
+    "404 page displays correctly with '404' and 'Sayfa Bulunamadı' text",
+    "404 page has home button with data-testid='not-found-home-btn'",
+    "404 page has search button with data-testid='not-found-search-btn'",
+    "robots.txt accessible and properly configured",
+    "manifest.json accessible with correct PWA configuration",
+    "sitemap.xml accessible with all important pages (/kuponlar, /gecmis-indirimler, /magazalar, /kategoriler, /bitmek-uzere, /blog)",
+    "Footer contains 'Geçmiş İndirimler' link under 'Kampanya Türleri' accordion",
+    "/kuponlar page shows only active coupons (expired content filtered)",
+    "Homepage shows only active deals (no expired content visible)"
+  ],
+  
+  "test_report_links": [],
+  
+  "action_items": [
+    "MINOR: Fix duplicate page title suffix on /bitmek-uzere, /gecmis-indirimler, /kuponlar pages (shows '| İndirim Keşfet | İndirim Keşfet' instead of single suffix)"
+  ],
+  
+  "critical_code_review_comments": [
+    "Page title template in layout.tsx adds '| İndirim Keşfet' but some pages already include it in their metadata title, causing duplication"
+  ],
+  
+  "updated_files": [],
+  
+  "success_rate": {
+    "backend": "N/A (frontend only testing)",
+    "frontend": "95%"
+  },
+  
+  "seed_data_creation": "None",
+  
+  "retest_needed": false,
+  
+  "should_main_agent_self_test": true,
+  
+  "context_for_next_testing_agent": "SEO features fully tested and working. Minor issue with duplicate page title suffixes on some pages. All JSON-LD schemas, canonical URLs, sitemap.xml, robots.txt, manifest.json working correctly. /gecmis-indirimler page shows 14 expired discounts with proper warning banner. 404 page has proper data-testid attributes for testing."
+}
