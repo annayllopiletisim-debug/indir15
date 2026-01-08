@@ -20,7 +20,7 @@ async function getHomeData() {
   // Get all discounts and coupons to count per brand
   const [allDiscounts, allCoupons] = await Promise.all([
     Discount.find({}).lean(),
-    Coupon.find({ is_active: true }).lean(),
+    (await import('@/lib/models')).Coupon.find({ is_active: true }).lean(),
   ]);
   
   // Count discounts per brand
@@ -36,9 +36,8 @@ async function getHomeData() {
     }
   });
 
-  const [brands, coupons, categories] = await Promise.all([
+  const [brands, categories] = await Promise.all([
     Brand.find({}).limit(30).lean(),
-    Coupon.find({ is_active: true }).sort({ created_at: -1 }).limit(6).lean(),
     Category.find({}).sort({ order: 1 }).lean(),
   ]);
 
