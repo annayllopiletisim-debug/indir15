@@ -87,6 +87,7 @@ export default function Footer() {
     { name: 'İndirimler', href: '/indirimler' },
     { name: 'Çekilişler', href: '/cekilisler' },
     { name: 'Bitmek Üzere', href: '/bitmek-uzere' },
+    { name: 'Geçmiş İndirimler', href: '/gecmis-indirimler' },
   ];
 
   const corporateLinks = [
