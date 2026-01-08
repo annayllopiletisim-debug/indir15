@@ -1,0 +1,18 @@
+# İndirim Keşfet - robots.txt
+# https://indirimkesfet.com
+
+User-agent: *
+Allow: /
+
+# Admin paneli engelle
+Disallow: /admin/
+Disallow: /api/
+
+# Arama sonuçları (duplicate content önleme)
+Disallow: /ara?*
+
+# Sitemap
+Sitemap: https://indirimkesfet.com/sitemap.xml
+
+# Crawl-delay (sunucu yükü için)
+Crawl-delay: 1
