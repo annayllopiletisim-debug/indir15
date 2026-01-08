@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
-import { Plus, Pencil, Trash2, Loader2, Upload, Search, Filter, X, Image } from 'lucide-react';
+import { Plus, Pencil, Trash2, Loader2, Upload, Search, Filter, X, Image, RefreshCw } from 'lucide-react';
 
 interface Category {
   id: string;
@@ -50,9 +50,43 @@ export default function AdminBrandsPage() {
     is_featured: false,
   });
 
+  const [migrationStatus, setMigrationStatus] = useState<{ brandsWithoutCategories: number; totalBrands: number } | null>(null);
+  const [migrating, setMigrating] = useState(false);
+
   useEffect(() => {
     fetchData();
+    fetchMigrationStatus();
   }, []);
+
+  const fetchMigrationStatus = async () => {
+    try {
+      const res = await fetch('/api/admin/migrate-brand-categories');
+      const data = await res.json();
+      setMigrationStatus(data);
+    } catch (err) {
+      console.error('Error fetching migration status:', err);
+    }
+  };
+
+  const runMigration = async () => {
+    if (!confirm('Kategorisi olmayan mağazaları otomatik olarak kategorilere atamak istiyor musunuz?')) return;
+    setMigrating(true);
+    try {
+      const res = await fetch('/api/admin/migrate-brand-categories', {
+        method: 'POST',
+        headers: { 'Authorization': 'Bearer admin' },
+      });
+      const data = await res.json();
+      alert(`Migration tamamlandı: ${data.results?.brandsUpdated || 0} mağaza güncellendi`);
+      fetchData();
+      fetchMigrationStatus();
+    } catch (err) {
+      console.error('Migration error:', err);
+      alert('Migration hatası oluştu');
+    } finally {
+      setMigrating(false);
+    }
+  };
 
   // Filtered and sorted brands
   const filteredBrands = useMemo(() => {
@@ -248,13 +282,26 @@ export default function AdminBrandsPage() {
     <div>
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold text-white">Mağazalar ({brands.length})</h1>
-        <button
-          onClick={() => setShowForm(true)}
-          className="px-4 py-2 bg-purple-600 text-white rounded-lg flex items-center gap-2 hover:bg-purple-700"
-        >
-          <Plus className="w-5 h-5" />
-          Yeni Mağaza
-        </button>
+        <div className="flex items-center gap-3">
+          {migrationStatus && migrationStatus.brandsWithoutCategories > 0 && (
+            <button
+              onClick={runMigration}
+              disabled={migrating}
+              className="px-4 py-2 bg-amber-600 text-white rounded-lg flex items-center gap-2 hover:bg-amber-700 disabled:opacity-50"
+              title={`${migrationStatus.brandsWithoutCategories} mağaza kategorisiz`}
+            >
+              {migrating ? <Loader2 className="w-5 h-5 animate-spin" /> : <RefreshCw className="w-5 h-5" />}
+              Kategori Ata ({migrationStatus.brandsWithoutCategories})
+            </button>
+          )}
+          <button
+            onClick={() => setShowForm(true)}
+            className="px-4 py-2 bg-purple-600 text-white rounded-lg flex items-center gap-2 hover:bg-purple-700"
+          >
+            <Plus className="w-5 h-5" />
+            Yeni Mağaza
+          </button>
+        </div>
       </div>
 
       {/* Filters */}
