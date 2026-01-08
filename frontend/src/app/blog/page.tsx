@@ -2,89 +2,121 @@ import Link from 'next/link';
 import { Metadata } from 'next';
 import connectDB from '@/lib/db';
 import { BlogPost } from '@/lib/models';
-import { Calendar, User, Eye, ArrowRight } from 'lucide-react';
+import { FileText, Calendar, Eye, ArrowRight } from 'lucide-react';
 
 export const metadata: Metadata = {
-  title: 'Blog | İndirim Keşfet',
-  description: 'En güncel indirim haberleri, alışveriş ipuçları ve kampanya duyuruları.',
+  title: 'Blog - İndirim ve Tasarruf Rehberi',
+  description: 'Alışveriş ipuçları, tasarruf rehberleri ve en güncel kampanya haberleri.',
 };
+
+export const revalidate = 60;
 
 async function getBlogPosts() {
   await connectDB();
   const posts = await BlogPost.find({ is_published: true })
-    .sort({ published_at: -1 })
+    .sort({ published_at: -1, created_at: -1 })
     .lean();
-  return posts.map((p: any) => ({ ...p, _id: undefined }));
+  
+  return posts.map((p: any) => ({
+    id: p.id,
+    title: p.title,
+    slug: p.slug,
+    excerpt: p.excerpt,
+    featured_image: p.featured_image,
+    category: p.category,
+    author: p.author,
+    view_count: p.view_count || 0,
+    published_at: p.published_at ? (typeof p.published_at === 'string' ? p.published_at : p.published_at.toISOString()) : null,
+    created_at: p.created_at ? (typeof p.created_at === 'string' ? p.created_at : p.created_at.toISOString()) : null,
+  }));
 }
 
 export default async function BlogPage() {
   const posts = await getBlogPosts();
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-800">
-      <div className="max-w-6xl mx-auto px-4 py-12">
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-white mb-4">Blog</h1>
-          <p className="text-gray-400 text-lg">En güncel indirim haberleri ve alışveriş ipuçları</p>
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <section className="bg-gradient-to-r from-violet-600 to-purple-600 text-white">
+        <div className="container mx-auto px-4 py-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-2xl md:text-3xl font-bold">Blog</h1>
+              <p className="text-violet-200 mt-1">Alışveriş ipuçları ve tasarruf rehberleri</p>
+            </div>
+            <span className="bg-white/20 px-4 py-1.5 rounded-full text-sm">{posts.length} Yazı</span>
+          </div>
         </div>
+      </section>
 
+      <div className="container mx-auto px-4 py-8">
         {posts.length === 0 ? (
-          <div className="text-center py-20">
-            <p className="text-gray-400 text-lg">Henüz blog yazısı yayınlanmadı.</p>
+          <div className="text-center py-16 bg-white rounded-2xl">
+            <FileText className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+            <p className="text-gray-500 text-lg">Henüz blog yazısı yok.</p>
           </div>
         ) : (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {posts.map((post: any) => (
-              <Link
-                key={post.id}
-                href={`/blog/${post.slug}`}
-                className="bg-slate-800/50 rounded-xl overflow-hidden border border-slate-700 hover:border-purple-500 transition-all hover:shadow-lg hover:shadow-purple-500/10 group"
-              >
-                {post.featured_image ? (
-                  <div className="aspect-video relative overflow-hidden">
-                    <img
-                      src={post.featured_image}
-                      alt={post.title}
-                      loading="lazy"
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                    />
-                  </div>
-                ) : (
-                  <div className="aspect-video bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center">
-                    <span className="text-6xl">📰</span>
-                  </div>
-                )}
-                <div className="p-5">
-                  {post.category && (
-                    <span className="text-xs px-2 py-1 bg-purple-500/20 text-purple-400 rounded-full">
-                      {post.category}
-                    </span>
+              <Link key={post.id} href={`/blog/${post.slug}`} className="group">
+                <article className="bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all overflow-hidden border border-gray-100 group-hover:border-purple-200 h-full flex flex-col">
+                  {/* Image */}
+                  {post.featured_image ? (
+                    <div className="aspect-video relative overflow-hidden">
+                      <img
+                        src={post.featured_image}
+                        alt={post.title}
+                        loading="lazy"
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      />
+                    </div>
+                  ) : (
+                    <div className="aspect-video bg-gradient-to-br from-purple-100 to-pink-100 flex items-center justify-center">
+                      <FileText className="w-12 h-12 text-purple-300" />
+                    </div>
                   )}
-                  <h2 className="text-xl font-semibold text-white mt-3 mb-2 line-clamp-2 group-hover:text-purple-400 transition-colors">
-                    {post.title}
-                  </h2>
-                  {post.excerpt && (
-                    <p className="text-gray-400 text-sm line-clamp-2 mb-4">{post.excerpt}</p>
-                  )}
-                  <div className="flex items-center justify-between text-xs text-gray-500">
-                    <div className="flex items-center gap-4">
-                      <span className="flex items-center gap-1">
-                        <User className="w-3 h-3" />
-                        {post.author || 'Admin'}
+                  
+                  {/* Content */}
+                  <div className="p-5 flex flex-col flex-1">
+                    {/* Category */}
+                    {post.category && (
+                      <span className="inline-block self-start px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-xs font-medium mb-3">
+                        {post.category}
                       </span>
-                      <span className="flex items-center gap-1">
-                        <Calendar className="w-3 h-3" />
-                        {post.published_at
-                          ? new Date(post.published_at).toLocaleDateString('tr-TR')
-                          : '-'}
+                    )}
+                    
+                    {/* Title */}
+                    <h2 className="font-bold text-lg text-gray-800 mb-2 line-clamp-2 group-hover:text-purple-600 transition-colors">
+                      {post.title}
+                    </h2>
+                    
+                    {/* Excerpt */}
+                    {post.excerpt && (
+                      <p className="text-gray-600 text-sm line-clamp-2 mb-4 flex-1">
+                        {post.excerpt}
+                      </p>
+                    )}
+                    
+                    {/* Meta */}
+                    <div className="flex items-center justify-between text-xs text-gray-500 pt-3 border-t">
+                      <div className="flex items-center gap-3">
+                        <span className="flex items-center gap-1">
+                          <Calendar className="w-3.5 h-3.5" />
+                          {post.published_at || post.created_at
+                            ? new Date(post.published_at || post.created_at).toLocaleDateString('tr-TR', { day: 'numeric', month: 'short', year: 'numeric' })
+                            : '-'}
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <Eye className="w-3.5 h-3.5" />
+                          {post.view_count}
+                        </span>
+                      </div>
+                      <span className="flex items-center gap-1 text-purple-600 font-medium group-hover:gap-2 transition-all">
+                        Oku <ArrowRight className="w-3.5 h-3.5" />
                       </span>
                     </div>
-                    <span className="flex items-center gap-1">
-                      <Eye className="w-3 h-3" />
-                      {post.view_count || 0}
-                    </span>
                   </div>
-                </div>
+                </article>
               </Link>
             ))}
           </div>
