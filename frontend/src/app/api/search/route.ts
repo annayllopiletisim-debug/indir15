@@ -44,126 +44,91 @@ function levenshtein(a: string, b: string): number {
 }
 
 export async function GET(request: Request) {
-  try {
-    // Try different ways to get the query parameter
-    const url = new URL(request.url);
-    let query = url.searchParams.get('q') || '';
-    
-    // If that doesn't work, try parsing from the URL directly
-    if (!query) {
-      const urlString = request.url;
-      const match = urlString.match(/[?&]q=([^&]*)/);
-      if (match) {
-        query = decodeURIComponent(match[1]);
-      }
-    }
-    
-    query = query.trim();
-    
-    // Return debug info if no query
-    if (query.length < 2) {
-      return NextResponse.json({ 
-        brands: [], 
-        discounts: [], 
-        suggestions: [],
-        debug: {
-          originalUrl: request.url,
-          parsedQuery: query,
-          queryLength: query.length,
-          searchParams: Object.fromEntries(url.searchParams.entries())
-        }
-      });
-    }
-    
-    await connectDB();
-    
-    const normalizedQuery = normalizeText(query);
-    
-    // Get all brands and discounts for searching
-    const [allBrands, allDiscounts, allCoupons] = await Promise.all([
-      Brand.find({}).lean(),
-      Discount.find({}).limit(100).lean(),
-      Coupon.find({ is_active: true }).limit(100).lean(),
-    ]);
-    
-    // Count deals per brand
-    const brandDealCount: Record<string, number> = {};
-    allDiscounts.forEach((d: any) => {
-      if (d.brand_id) {
-        brandDealCount[d.brand_id] = (brandDealCount[d.brand_id] || 0) + 1;
-      }
-    });
-    allCoupons.forEach((c: any) => {
-      if (c.brand_id) {
-        brandDealCount[c.brand_id] = (brandDealCount[c.brand_id] || 0) + 1;
-      }
-    });
-    
-    // Search brands with fuzzy matching
-    const brandMatches: any[] = [];
-    const suggestions: string[] = [];
-    
-    allBrands.forEach((brand: any) => {
-      const normalizedName = normalizeText(brand.name);
-      
-      // Exact or partial match
-      if (normalizedName.includes(normalizedQuery) || normalizedQuery.includes(normalizedName)) {
-        brandMatches.push({
-          ...brand,
-          _id: undefined,
-          deal_count: brandDealCount[brand.id] || 0,
-          relevance: normalizedName.startsWith(normalizedQuery) ? 2 : 1
-        });
-      }
-      // Fuzzy match - check if close enough
-      else if (query.length >= 3) {
-        const distance = levenshtein(normalizedQuery, normalizedName.substring(0, normalizedQuery.length + 2));
-        if (distance <= 2) {
-          // This is a potential "did you mean" suggestion
-          if (suggestions.length < 3 && !suggestions.includes(brand.name)) {
-            suggestions.push(brand.name);
-          }
-        }
-      }
-    });
-    
-    // Sort brands by relevance
-    brandMatches.sort((a, b) => {
-      if (b.relevance !== a.relevance) return b.relevance - a.relevance;
-      return (b.deal_count || 0) - (a.deal_count || 0);
-    });
-    
-    // Search discounts
-    const discountMatches = allDiscounts
-      .filter((d: any) => {
-        const normalizedTitle = normalizeText(d.title);
-        return normalizedTitle.includes(normalizedQuery);
-      })
-      .slice(0, 10)
-      .map((d: any) => {
-        const brand = allBrands.find((b: any) => b.id === d.brand_id);
-        return {
-          id: d.id,
-          title: d.title,
-          discount_text: d.discount_text,
-          brand: brand ? { name: brand.name, slug: brand.slug } : null
-        };
-      });
-    
-    return NextResponse.json({
-      brands: brandMatches.slice(0, 5),
-      discounts: discountMatches.slice(0, 5),
-      suggestions: brandMatches.length === 0 ? suggestions : [],
-      debug: {
-        originalUrl: request.url,
-        parsedQuery: query,
-        normalizedQuery,
-        totalBrands: allBrands.length,
-        totalDiscounts: allDiscounts.length,
-        brandMatchesCount: brandMatches.length
-      }
-    });
-  } catch (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+  const { searchParams } = new URL(request.url);
+  const query = searchParams.get('q')?.trim() || '';
+  
+  if (query.length < 2) {
+    return NextResponse.json({ brands: [], discounts: [], suggestions: [] });
   }
+  
+  await connectDB();
+  
+  const normalizedQuery = normalizeText(query);
+  
+  // Get all brands and discounts for searching
+  const [allBrands, allDiscounts, allCoupons] = await Promise.all([
+    Brand.find({}).lean(),
+    Discount.find({}).limit(100).lean(),
+    Coupon.find({ is_active: true }).limit(100).lean(),
+  ]);
+  
+  // Count deals per brand
+  const brandDealCount: Record<string, number> = {};
+  allDiscounts.forEach((d: any) => {
+    if (d.brand_id) {
+      brandDealCount[d.brand_id] = (brandDealCount[d.brand_id] || 0) + 1;
+    }
+  });
+  allCoupons.forEach((c: any) => {
+    if (c.brand_id) {
+      brandDealCount[c.brand_id] = (brandDealCount[c.brand_id] || 0) + 1;
+    }
+  });
+  
+  // Search brands with fuzzy matching
+  const brandMatches: any[] = [];
+  const suggestions: string[] = [];
+  
+  allBrands.forEach((brand: any) => {
+    const normalizedName = normalizeText(brand.name);
+    
+    // Exact or partial match
+    if (normalizedName.includes(normalizedQuery) || normalizedQuery.includes(normalizedName)) {
+      brandMatches.push({
+        ...brand,
+        _id: undefined,
+        deal_count: brandDealCount[brand.id] || 0,
+        relevance: normalizedName.startsWith(normalizedQuery) ? 2 : 1
+      });
+    }
+    // Fuzzy match - check if close enough
+    else if (query.length >= 3) {
+      const distance = levenshtein(normalizedQuery, normalizedName.substring(0, normalizedQuery.length + 2));
+      if (distance <= 2) {
+        // This is a potential "did you mean" suggestion
+        if (suggestions.length < 3 && !suggestions.includes(brand.name)) {
+          suggestions.push(brand.name);
+        }
+      }
+    }
+  });
+  
+  // Sort brands by relevance
+  brandMatches.sort((a, b) => {
+    if (b.relevance !== a.relevance) return b.relevance - a.relevance;
+    return (b.deal_count || 0) - (a.deal_count || 0);
+  });
+  
+  // Search discounts
+  const discountMatches = allDiscounts
+    .filter((d: any) => {
+      const normalizedTitle = normalizeText(d.title);
+      return normalizedTitle.includes(normalizedQuery);
+    })
+    .slice(0, 10)
+    .map((d: any) => {
+      const brand = allBrands.find((b: any) => b.id === d.brand_id);
+      return {
+        id: d.id,
+        title: d.title,
+        discount_text: d.discount_text,
+        brand: brand ? { name: brand.name, slug: brand.slug } : null
+      };
+    });
+  
+  return NextResponse.json({
+    brands: brandMatches.slice(0, 5),
+    discounts: discountMatches.slice(0, 5),
+    suggestions: brandMatches.length === 0 ? suggestions : []
+  });
 }
