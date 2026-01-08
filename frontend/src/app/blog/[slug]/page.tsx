@@ -4,6 +4,7 @@ import Link from 'next/link';
 import connectDB from '@/lib/db';
 import { BlogPost } from '@/lib/models';
 import { Calendar, User, Eye, ArrowLeft, Tag } from 'lucide-react';
+import { ArticleSchema, BreadcrumbSchema } from '@/components/StructuredData';
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -33,10 +34,17 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: postData.meta_title || `${postData.title} | İndirim Keşfet Blog`,
     description: postData.meta_description || postData.excerpt || postData.title,
+    alternates: {
+      canonical: `/blog/${slug}`,
+    },
     openGraph: {
       title: postData.title,
       description: postData.excerpt || postData.title,
+      type: 'article',
       images: postData.featured_image ? [postData.featured_image] : [],
+      publishedTime: postData.published_at,
+      modifiedTime: postData.updated_at,
+      authors: [postData.author || 'İndirim Keşfet'],
     },
   };
 }
@@ -48,9 +56,27 @@ export default async function BlogPostPage({ params }: Props) {
   if (!post) {
     notFound();
   }
+  
+  // Breadcrumb data
+  const breadcrumbItems = [
+    { name: 'Ana Sayfa', url: 'https://indirimkesfet.com' },
+    { name: 'Blog', url: 'https://indirimkesfet.com/blog' },
+    { name: post.title, url: `https://indirimkesfet.com/blog/${slug}` },
+  ];
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-800">
+      {/* JSON-LD Structured Data */}
+      <BreadcrumbSchema items={breadcrumbItems} />
+      <ArticleSchema
+        title={post.title}
+        description={post.excerpt}
+        url={`https://indirimkesfet.com/blog/${slug}`}
+        image={post.featured_image}
+        datePublished={post.published_at}
+        dateModified={post.updated_at}
+        author={post.author}
+      />
       <article className="max-w-4xl mx-auto px-4 py-12">
         <Link
           href="/blog"
