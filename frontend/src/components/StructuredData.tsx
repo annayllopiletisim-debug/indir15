@@ -1,5 +1,8 @@
 // JSON-LD Structured Data Components for SEO
 
+// Helper to get site URL from environment
+const getSiteUrl = () => process.env.NEXT_PUBLIC_SITE_URL || "https://indirimkesfet.com";
+
 export interface BreadcrumbItem {
   name: string;
   url: string;
@@ -19,12 +22,13 @@ export interface ProductOffer {
 
 // Organization Schema - Site geneli için
 export function OrganizationSchema() {
+  const siteUrl = getSiteUrl();
   const schema = {
     "@context": "https://schema.org",
     "@type": "Organization",
     "name": "İndirim Keşfet",
-    "url": "https://indirimkesfet.com",
-    "logo": "https://indirimkesfet.com/logo.png",
+    "url": siteUrl,
+    "logo": `${siteUrl}/logo.png`,
     "description": "Türkiye'nin en kapsamlı kupon ve indirim platformu",
     "foundingDate": "2024",
     "sameAs": [
@@ -50,16 +54,17 @@ export function OrganizationSchema() {
 
 // WebSite Schema - Arama özelliği için
 export function WebSiteSchema() {
+  const siteUrl = getSiteUrl();
   const schema = {
     "@context": "https://schema.org",
     "@type": "WebSite",
     "name": "İndirim Keşfet",
-    "url": "https://indirimkesfet.com",
+    "url": siteUrl,
     "potentialAction": {
       "@type": "SearchAction",
       "target": {
         "@type": "EntryPoint",
-        "urlTemplate": "https://indirimkesfet.com/ara?q={search_term_string}"
+        "urlTemplate": `${siteUrl}/ara?q={search_term_string}`
       },
       "query-input": "required name=search_term_string"
     }
@@ -176,6 +181,7 @@ export function ArticleSchema({
   dateModified?: string;
   author?: string;
 }) {
+  const siteUrl = getSiteUrl();
   const schema = {
     "@context": "https://schema.org",
     "@type": "Article",
@@ -194,7 +200,7 @@ export function ArticleSchema({
       "name": "İndirim Keşfet",
       "logo": {
         "@type": "ImageObject",
-        "url": "https://indirimkesfet.com/logo.png"
+        "url": `${siteUrl}/logo.png`
       }
     }
   };
