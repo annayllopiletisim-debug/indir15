@@ -121,7 +121,10 @@
 └── next.config.ts
 ```
 
-## Son Güncelleme: 8 Ocak 2026
+## Son Güncelleme: 9 Ocak 2026
+- **Admin login düzeltildi:** bcrypt hash escape sorunu giderildi (.env.local'da `$` karakteri escape edildi)
+- **Admin form validasyonu test edildi:** `/uploads/` path'li görseller sorunsuz kaydediliyor - bug kapalı
+- **Build başarılı:** Tüm sayfa tipleri doğru render ediliyor (Static/Dynamic)
 - SEO ve deploy hazırlık görevleri tamamlandı
 - JSON-LD structured data entegrasyonu
 - Canonical URL'ler
