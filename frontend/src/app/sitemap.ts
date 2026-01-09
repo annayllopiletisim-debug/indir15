@@ -108,6 +108,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: 'yearly' as const,
       priority: 0.3,
     },
+    {
+      url: `${SITE_URL}/site-haritasi`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly' as const,
+      priority: 0.4,
+    },
   ];
 
   return [...staticPages, ...brandUrls, ...categoryUrls, ...blogUrls];
