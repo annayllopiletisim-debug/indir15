@@ -13,18 +13,24 @@ if (!JWT_SECRET || !ADMIN_USERNAME || !ADMIN_PASSWORD_HASH) {
 
 export async function POST(request: Request) {
   try {
-    if (!JWT_SECRET || !ADMIN_USERNAME || !ADMIN_PASSWORD_HASH) {
+    // Read env vars at runtime for each request
+    const jwtSecret = process.env.JWT_SECRET;
+    const adminUsername = process.env.ADMIN_USERNAME;
+    const adminPasswordHash = process.env.ADMIN_PASSWORD_HASH;
+
+    if (!jwtSecret || !adminUsername || !adminPasswordHash) {
+      console.error('Missing env vars:', { jwtSecret: !!jwtSecret, adminUsername: !!adminUsername, adminPasswordHash: !!adminPasswordHash });
       return NextResponse.json({ error: 'Sunucu yapılandırma hatası' }, { status: 500 });
     }
 
     const { username, password } = await request.json();
 
     // Validate credentials
-    if (username !== ADMIN_USERNAME) {
+    if (username !== adminUsername) {
       return NextResponse.json({ error: 'Geçersiz kullanıcı adı veya şifre' }, { status: 401 });
     }
 
-    const isValidPassword = bcrypt.compareSync(password, ADMIN_PASSWORD_HASH);
+    const isValidPassword = bcrypt.compareSync(password, adminPasswordHash);
     if (!isValidPassword) {
       return NextResponse.json({ error: 'Geçersiz kullanıcı adı veya şifre' }, { status: 401 });
     }
