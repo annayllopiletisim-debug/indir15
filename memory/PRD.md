@@ -69,15 +69,18 @@
 
 ## Bekleyen Görevler
 
+### P1 - Yüksek Öncelik
+- [ ] Open Graph (og:image) dinamik görsel ekleme
+- [ ] Google Sheets Import uçtan uca test
+
 ### P2 - Orta Öncelik
 - [ ] Brevo Email Entegrasyonu
 - [ ] Admin Aboneler Sayfası
 - [ ] Çerez Onay Bildirimi
-- [ ] Admin Form Resim Doğrulama (Zod schema güncelleme)
 
 ### P3 - Düşük Öncelik
-- [ ] One-off script'lerin temizlenmesi
-- [ ] Google Sheets Import tam test
+- [ ] One-off script'lerin temizlenmesi (migration API'leri)
+- [ ] Google AdSense entegrasyonu
 
 ## API Endpoints
 
