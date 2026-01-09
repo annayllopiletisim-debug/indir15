@@ -1,5 +1,7 @@
 'use client';
 
+export const dynamic = 'force-dynamic';
+
 import { useState } from 'react';
 import { FileSpreadsheet, Upload, Loader2, CheckCircle, AlertCircle } from 'lucide-react';
 

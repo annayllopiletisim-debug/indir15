@@ -1,5 +1,7 @@
 'use client';
 
+export const dynamic = 'force-dynamic';
+
 import { useState, useEffect } from 'react';
 import { Loader2, Mail, Trash2, Eye, EyeOff } from 'lucide-react';
 
