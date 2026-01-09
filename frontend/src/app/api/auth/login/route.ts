@@ -3,13 +3,20 @@ import { cookies } from 'next/headers';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
-const ADMIN_USERNAME = process.env.ADMIN_USERNAME || 'admin';
-// Fallback hash for 'admin123' - bcrypt hash with $ escaped properly
-const ADMIN_PASSWORD_HASH = '$2b$10$.Mnh.2ILK5aI/z/JVR/tVeq2k1h0BRRLMH0oK2cFz4tPxIPiJAsR6';
+const JWT_SECRET = process.env.JWT_SECRET;
+const ADMIN_USERNAME = process.env.ADMIN_USERNAME;
+const ADMIN_PASSWORD_HASH = process.env.ADMIN_PASSWORD_HASH;
+
+if (!JWT_SECRET || !ADMIN_USERNAME || !ADMIN_PASSWORD_HASH) {
+  console.error('Missing required environment variables: JWT_SECRET, ADMIN_USERNAME, or ADMIN_PASSWORD_HASH');
+}
 
 export async function POST(request: Request) {
   try {
+    if (!JWT_SECRET || !ADMIN_USERNAME || !ADMIN_PASSWORD_HASH) {
+      return NextResponse.json({ error: 'Sunucu yapılandırma hatası' }, { status: 500 });
+    }
+
     const { username, password } = await request.json();
 
     // Validate credentials
