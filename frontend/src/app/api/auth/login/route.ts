@@ -3,14 +3,6 @@ import { cookies } from 'next/headers';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 
-const JWT_SECRET = process.env.JWT_SECRET;
-const ADMIN_USERNAME = process.env.ADMIN_USERNAME;
-const ADMIN_PASSWORD_HASH = process.env.ADMIN_PASSWORD_HASH;
-
-if (!JWT_SECRET || !ADMIN_USERNAME || !ADMIN_PASSWORD_HASH) {
-  console.error('Missing required environment variables: JWT_SECRET, ADMIN_USERNAME, or ADMIN_PASSWORD_HASH');
-}
-
 export async function POST(request: Request) {
   try {
     // Read env vars at runtime for each request
