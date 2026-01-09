@@ -91,11 +91,9 @@ export default function Footer() {
   ];
 
   const corporateLinks = [
-    { name: 'Hakkımızda', href: '/hakkimizda' },
     { name: 'İletişim', href: '/iletisim' },
     { name: 'Blog', href: '/blog' },
     { name: 'Reklam Ver', href: '/reklam' },
-    { name: 'Basın', href: '/basin' },
   ];
 
   const tags = ['kupon kodları', 'indirim kodları', 'migros kupon', 'trendyol indirim', 'hepsiburada kupon', 'ücretsiz kargo', 'kampanya'];
@@ -314,7 +312,7 @@ export default function Footer() {
             <div className="flex flex-wrap justify-center gap-4 text-sm text-gray-500">
               <Link href="/gizlilik" className="hover:text-purple-600 transition-colors">Gizlilik</Link>
               <span className="text-gray-300">|</span>
-              <Link href="/kullanim-kosullari" className="hover:text-purple-600 transition-colors">Şartlar</Link>
+              <Link href="/kullanim-kosullari" className="hover:text-purple-600 transition-colors">Kullanım Koşulları</Link>
               <span className="text-gray-300">|</span>
               <Link href="/kvkk" className="hover:text-purple-600 transition-colors">KVKK</Link>
               <span className="text-gray-300">|</span>
