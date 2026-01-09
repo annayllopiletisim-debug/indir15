@@ -2,7 +2,7 @@
 export function getImageUrl(url: string | undefined | null): string {
   if (!url) return '';
   
-  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'https://firsat-finder.preview.emergentagent.com';
+  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'https://indirimci-2.preview.emergentagent.com';
   
   // Already absolute URL
   if (url.startsWith('http')) {
