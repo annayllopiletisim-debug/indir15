@@ -1,50 +1,31 @@
 # Dependencies
 node_modules/
-/.pnp
-.pnp.js
-.yarn/install-state.gz
 
-# Testing
-/coverage
-
-# Next.js
+# Build outputs
 /.next/
 /out/
-next-env.d.ts
-*.tsbuildinfo
-
-# Production builds
-/build
 dist/
 
 # Logs
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-.pnpm-debug.log*
+*.log
 
 # System files
 .DS_Store
-*.pem
-
-# Python
-__pycache__/
-*.pyc
-venv/
-.venv/
 
 # IDE
 .idea/
 .vscode/
 
-# Deployment
-.vercel
-
-# Backups
-frontend-react-backup/
-
-# Disabled backend proxy
+# Development files (not for deployment)
+_dev_files/
 _backend_proxy_disabled/
+.ruff_cache/
+
+# Memory/temp
+memory/
+
+# Local uploads (handled separately in production)
+uploads/
 frontend/.next/dev/cache/turbopack/d1bd5b58/00003788.sst
 frontend/.next/dev/cache/turbopack/d1bd5b58/00003789.sst
 frontend/node_modules/@next/swc-linux-arm64-gnu/next-swc.linux-arm64-gnu.node
