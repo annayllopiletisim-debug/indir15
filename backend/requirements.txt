@@ -1,0 +1,1 @@
+# No Python dependencies - Next.js only app
