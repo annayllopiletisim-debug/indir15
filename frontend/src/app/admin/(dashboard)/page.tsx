@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import connectDB from '@/lib/db';
 import { Brand, Discount, Coupon, Giveaway, Category, BlogPost, ContactMessage } from '@/lib/models';
 import { Store, Tag, Ticket, Gift, FolderOpen, TrendingUp, Eye, MousePointer, FileText, MessageSquare } from 'lucide-react';
