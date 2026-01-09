@@ -5,7 +5,7 @@ import Footer from "@/components/Footer";
 import CategoryBarWrapper from "@/components/CategoryBarWrapper";
 import { OrganizationSchema, WebSiteSchema } from "@/components/StructuredData";
 
-const siteUrl = "https://indirimkesfet.com";
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://indirimkesfet.com";
 
 export const metadata: Metadata = {
   title: {
