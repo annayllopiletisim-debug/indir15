@@ -7,7 +7,7 @@ import { verifyAuth } from '@/lib/auth';
 export async function GET() {
   try {
     await connectDB();
-    const categories = await Category.find({}).sort({ order: 1 }).lean();
+    const categories = await Category.find({}).sort({ order: 1 }).limit(100).lean();
     const sanitized = categories.map((c: any) => ({ ...c, _id: undefined }));
     return NextResponse.json(sanitized);
   } catch (error) {
