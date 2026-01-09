@@ -2,22 +2,21 @@
 export function getImageUrl(url: string | undefined | null): string {
   if (!url) return '';
   
-  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'https://indirimci-2.preview.emergentagent.com';
-  
+  // For server-side and client-side compatibility, use relative URLs when possible
   // Already absolute URL
   if (url.startsWith('http')) {
     return url;
   }
   
-  // Local upload path
+  // Local upload path - use relative URL (works both in preview and production)
   if (url.startsWith('/api/uploads/')) {
-    return `${backendUrl}${url}`;
+    return url;
   }
   
   if (url.startsWith('/uploads/')) {
-    return `${backendUrl}/api${url}`;
+    return `/api${url}`;
   }
   
-  // Default - prepend backend URL with /api/uploads
-  return `${backendUrl}/api/uploads/${url}`;
+  // Default - prepend /api/uploads
+  return `/api/uploads/${url}`;
 }
