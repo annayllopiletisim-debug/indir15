@@ -1,20 +1,8 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-
-# IDE and editors
-.idea/
-.vscode/
-
 # Dependencies
 node_modules/
-/node_modules
 /.pnp
 .pnp.js
 .yarn/install-state.gz
-.yarn/*
-!.yarn/patches
-!.yarn/plugins
-!.yarn/releases
-!.yarn/versions
 
 # Testing
 /coverage
@@ -28,19 +16,12 @@ next-env.d.ts
 # Production builds
 /build
 dist/
-dist
 
-# Environment files (comprehensive coverage)
-
-*token.json*
-*credentials.json*
-
-# Logs and debug files
+# Logs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
-dump.rdb
 
 # System files
 .DS_Store
@@ -48,110 +29,20 @@ dump.rdb
 
 # Python
 __pycache__/
-*pyc*
+*.pyc
 venv/
 .venv/
 
-# Development tools
-chainlit.md
-.chainlit
-.ipynb_checkpoints/
-.ac
+# IDE
+.idea/
+.vscode/
 
 # Deployment
 .vercel
 
-# Data and databases
-agenthub/agents/youtube/db
-
-# Archive files and large assets
-**/*.zip
-**/*.tar.gz
-**/*.tar
-**/*.tgz
-*.pack
-*.deb
-*.dylib
-
-# Build caches
-.cache/
-
-# Mobile development
-android-sdk/ -e 
-# Environment files
-*.env
-*.env.*
-frontend/node_modules/.cache/default-development/0.pack
--e 
-# Environment files
-*.env
-*.env.*
--e 
-# Environment files
-*.env
-*.env.*
--e 
-# Environment files
-*.env
-*.env.*
--e 
-# Environment files
-*.env
-*.env.*
--e 
-# Environment files
-*.env
-*.env.*
--e 
-# Environment files
-*.env
-*.env.*
--e 
-# Environment files
-*.env
-*.env.*
--e 
-# Environment files
-*.env
-*.env.*
-frontend/node_modules/@next/swc-linux-arm64-gnu/next-swc.linux-arm64-gnu.node
-frontend/node_modules/@next/swc-linux-arm64-musl/next-swc.linux-arm64-musl.node
--e 
-# Environment files
-*.env
-*.env.*
--e 
-# Environment files
-*.env
-*.env.*
--e 
-# Environment files
-*.env
-*.env.*
-frontend/.next/dev/cache/turbopack/d1bd5b58/00002016.sst
-frontend/.next/dev/cache/turbopack/d1bd5b58/00002446.sst
-frontend/.next/dev/cache/turbopack/d1bd5b58/00002540.sst
-frontend/.next/dev/cache/turbopack/d1bd5b58/00002649.sst
--e 
-# Environment files
-*.env
-*.env.*
-frontend/.next/dev/cache/turbopack/d1bd5b58/00002763.sst
-frontend/.next/dev/cache/turbopack/d1bd5b58/00002819.sst
-frontend/.next/dev/cache/turbopack/d1bd5b58/00002926.sst
-frontend/.next/dev/cache/turbopack/d1bd5b58/00002992.sst
-frontend/.next/dev/cache/turbopack/d1bd5b58/00002993.sst
-frontend/.next/dev/cache/turbopack/d1bd5b58/00003118.sst
-frontend/.next/dev/cache/turbopack/d1bd5b58/00003184.sst
-frontend/.next/dev/cache/turbopack/d1bd5b58/00003286.sst
-frontend/.next/dev/cache/turbopack/d1bd5b58/00003345.sst
-frontend/.next/dev/cache/turbopack/d1bd5b58/00003347.sst
-frontend/.next/dev/cache/turbopack/d1bd5b58/00003493.sst
-frontend/.next/dev/cache/turbopack/d1bd5b58/00003583.sst
-frontend/.next/dev/cache/turbopack/d1bd5b58/00003584.sst
--e 
-# Environment files
-*.env
-*.env.*
+# Backups
+frontend-react-backup/
 frontend/.next/dev/cache/turbopack/d1bd5b58/00003788.sst
 frontend/.next/dev/cache/turbopack/d1bd5b58/00003789.sst
+frontend/node_modules/@next/swc-linux-arm64-gnu/next-swc.linux-arm64-gnu.node
+frontend/node_modules/@next/swc-linux-arm64-musl/next-swc.linux-arm64-musl.node
