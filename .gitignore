@@ -149,3 +149,7 @@ frontend/.next/dev/cache/turbopack/d1bd5b58/00003347.sst
 frontend/.next/dev/cache/turbopack/d1bd5b58/00003493.sst
 frontend/.next/dev/cache/turbopack/d1bd5b58/00003583.sst
 frontend/.next/dev/cache/turbopack/d1bd5b58/00003584.sst
+-e 
+# Environment files
+*.env
+*.env.*
