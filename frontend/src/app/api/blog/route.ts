@@ -15,7 +15,7 @@ export async function GET(request: Request) {
       query.is_published = true;
     }
     
-    const posts = await BlogPost.find(query).sort({ created_at: -1 }).lean();
+    const posts = await BlogPost.find(query).sort({ created_at: -1 }).limit(100).lean();
     const sanitized = posts.map((p: any) => ({ ...p, _id: undefined }));
     return NextResponse.json(sanitized);
   } catch (error) {

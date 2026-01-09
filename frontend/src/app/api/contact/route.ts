@@ -41,7 +41,7 @@ export async function GET() {
     }
 
     await connectDB();
-    const messages = await ContactMessage.find({}).sort({ created_at: -1 }).lean();
+    const messages = await ContactMessage.find({}).sort({ created_at: -1 }).limit(200).lean();
     const sanitized = messages.map((m: any) => ({ ...m, _id: undefined }));
     return NextResponse.json(sanitized);
   } catch (error) {

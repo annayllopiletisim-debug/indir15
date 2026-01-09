@@ -57,7 +57,7 @@ export async function GET(request: Request) {
   
   // Get all brands and discounts for searching
   const [allBrands, allDiscounts, allCoupons] = await Promise.all([
-    Brand.find({}).lean(),
+    Brand.find({}).limit(300).lean(),
     Discount.find({}).limit(100).lean(),
     Coupon.find({ is_active: true }).limit(100).lean(),
   ]);
