@@ -11,8 +11,8 @@ Disallow: /api/
 # Arama sonuçları (duplicate content önleme)
 Disallow: /ara?*
 
-# Sitemap
-Sitemap: https://indirimkesfet.com/sitemap.xml
+# Sitemap Index (tüm sitemap'leri içerir)
+Sitemap: https://indirimkesfet.com/sitemap_index.xml
 
 # Crawl-delay (sunucu yükü için)
 Crawl-delay: 1
