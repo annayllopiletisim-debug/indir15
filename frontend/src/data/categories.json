@@ -1,0 +1,91 @@
+[
+  {
+    "id": "602bc1b2-f774-43c5-8bad-e88ccdb95236",
+    "name": "Spor",
+    "slug": "spor",
+    "icon_url": null,
+    "parent_id": null,
+    "order": 0,
+    "is_popular": true,
+    "created_at": "2025-12-22T16:11:47.831438+00:00"
+  },
+  {
+    "id": "67eaf176-61ca-447f-ad48-2e8ae9d06f2e",
+    "name": "Moda",
+    "slug": "moda",
+    "icon_url": null,
+    "parent_id": null,
+    "order": 1,
+    "is_popular": true,
+    "created_at": "2025-12-22T16:11:47.831453+00:00"
+  },
+  {
+    "id": "37200835-96b0-4255-bc8a-1868e0a0d956",
+    "name": "Elektronik",
+    "slug": "elektronik",
+    "icon_url": null,
+    "parent_id": null,
+    "order": 2,
+    "is_popular": true,
+    "created_at": "2025-12-22T16:11:47.831462+00:00"
+  },
+  {
+    "id": "3c893869-f16e-4d52-a998-d16a1f7fec9a",
+    "name": "Gıda",
+    "slug": "gida",
+    "icon_url": null,
+    "parent_id": null,
+    "order": 3,
+    "is_popular": true,
+    "created_at": "2025-12-22T16:11:47.831467+00:00"
+  },
+  {
+    "id": "6e4d9c7d-4021-4d63-84c8-e534cbf9c7fd",
+    "name": "Banka",
+    "slug": "banka",
+    "icon_url": "",
+    "parent_id": null,
+    "order": 0,
+    "is_popular": true,
+    "created_at": "2025-12-22T16:21:06.348834+00:00"
+  },
+  {
+    "id": "0d4db213-621f-422f-b695-e15c1152c98c",
+    "name": "Ev- Dekorasyon",
+    "slug": "ev-dekorasyon",
+    "icon_url": "",
+    "parent_id": null,
+    "order": 0,
+    "is_popular": true,
+    "created_at": "2026-01-05T20:35:27.294075+00:00"
+  },
+  {
+    "id": "10a54675-307d-4d56-8560-25e0b805b622",
+    "name": "İç Giyim",
+    "slug": "i-c-giyim",
+    "icon_url": "",
+    "parent_id": null,
+    "order": 0,
+    "is_popular": true,
+    "created_at": "2026-01-05T20:35:38.423556+00:00"
+  },
+  {
+    "id": "a8d61835-d0ab-4918-a45e-b038750cf98f",
+    "name": "Ayakkabı",
+    "slug": "ayakkabi",
+    "icon_url": "",
+    "parent_id": null,
+    "order": 0,
+    "is_popular": true,
+    "created_at": "2026-01-05T20:36:22.453289+00:00"
+  },
+  {
+    "id": "6f7a7a89-623c-444f-b9db-f392cbb79cda",
+    "name": "Test Kategori",
+    "slug": "test-kategori",
+    "description": "Test kategori açıklaması",
+    "order": 999,
+    "created_at": "2026-01-07T08:18:04.953Z",
+    "__v": 0
+  }
+]
