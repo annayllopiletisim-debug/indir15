@@ -1,9 +1,10 @@
 import mongoose from 'mongoose';
 
-const MONGODB_URI = process.env.MONGODB_URI || '';
+// Try MONGO_URL first (Emergent's Atlas), then fall back to MONGODB_URI
+const MONGODB_URI = process.env.MONGO_URL || process.env.MONGODB_URI || '';
 
 if (!MONGODB_URI) {
-  console.error('Please define the MONGODB_URI environment variable');
+  console.error('Please define MONGO_URL or MONGODB_URI environment variable');
 }
 
 interface MongooseCache {
