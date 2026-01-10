@@ -20,7 +20,7 @@ async function getAllBrands() {
   const now = new Date();
   
   // Get all brands
-  const brands = await Brand.find({}).sort({ name: 1 }).limit(500).lean();
+  const brands = await Brand.find({}).select('id name slug logo_url category_ids').sort({ name: 1 }).limit(500).lean();
   
   // Get deal counts per brand (only active deals)
   const [discountCounts, couponCounts] = await Promise.all([
