@@ -1,10 +1,18 @@
 import mongoose from 'mongoose';
 
 // Connection string from environment
-const MONGODB_URI = process.env.MONGO_URL || process.env.MONGODB_URI || '';
+let MONGODB_URI = process.env.MONGO_URL || process.env.MONGODB_URI || '';
 
 if (!MONGODB_URI) {
   console.error('Please define MONGO_URL or MONGODB_URI environment variable');
+}
+
+// For production, append database name to connection string if not present
+const isProduction = MONGODB_URI.includes('mongodb.net');
+if (isProduction && !MONGODB_URI.includes('mongodb.net/indirimci-2-savvy_saver_db')) {
+  // Insert database name into the connection string
+  MONGODB_URI = MONGODB_URI.replace('mongodb.net/', 'mongodb.net/indirimci-2-savvy_saver_db');
+  MONGODB_URI = MONGODB_URI.replace('mongodb.net?', 'mongodb.net/indirimci-2-savvy_saver_db?');
 }
 
 interface MongooseCache {
@@ -28,15 +36,8 @@ export async function connectDB() {
   }
 
   if (!cached.promise) {
-    // Determine database name based on environment
-    // Production uses: indirimci-2-savvy_saver_db
-    // Local uses: savvy_saver_db
-    const isProduction = MONGODB_URI.includes('mongodb.net');
-    const dbName = isProduction ? 'indirimci-2-savvy_saver_db' : 'savvy_saver_db';
-    
     const opts = {
       bufferCommands: false,
-      dbName: dbName,
     };
 
     cached.promise = mongoose.connect(MONGODB_URI, opts).then((mongoose) => {
