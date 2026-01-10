@@ -29,13 +29,10 @@ export async function connectDB() {
 
   if (!cached.promise) {
     // Determine database name based on environment
-    // For Emergent production (MONGO_URL), use 'indirimci-2'
-    // For local development (MONGODB_URI with localhost), use 'savvy_saver_db'
+    // Production uses: indirimci-2-savvy_saver_db
+    // Local uses: savvy_saver_db
     const isProduction = MONGODB_URI.includes('mongodb.net');
-    const dbName = isProduction ? 'indirimci-2' : 'savvy_saver_db';
-    
-    console.log('Connecting to MongoDB:', isProduction ? 'Production (Atlas)' : 'Local');
-    console.log('Database name:', dbName);
+    const dbName = isProduction ? 'indirimci-2-savvy_saver_db' : 'savvy_saver_db';
     
     const opts = {
       bufferCommands: false,
@@ -43,7 +40,6 @@ export async function connectDB() {
     };
 
     cached.promise = mongoose.connect(MONGODB_URI, opts).then((mongoose) => {
-      console.log('MongoDB connected successfully to:', dbName);
       return mongoose;
     });
   }
