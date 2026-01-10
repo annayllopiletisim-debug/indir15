@@ -1,10 +1,7 @@
-import mongoose from 'mongoose';
+// Dynamic import to avoid build-time bundling issues
+let mongoose: typeof import('mongoose') | null = null;
 
 const MONGODB_URI = process.env.MONGODB_URI || '';
-
-if (!MONGODB_URI) {
-  console.error('Please define the MONGODB_URI environment variable');
-}
 
 interface MongooseCache {
   conn: typeof mongoose | null;
@@ -12,28 +9,37 @@ interface MongooseCache {
 }
 
 declare global {
-  var mongoose: MongooseCache | undefined;
+  var mongooseCache: MongooseCache | undefined;
 }
 
-let cached: MongooseCache = global.mongoose || { conn: null, promise: null };
+let cached: MongooseCache = global.mongooseCache || { conn: null, promise: null };
 
-if (!global.mongoose) {
-  global.mongoose = cached;
+if (!global.mongooseCache) {
+  global.mongooseCache = cached;
 }
 
 export async function connectDB() {
+  if (!MONGODB_URI) {
+    throw new Error('Please define the MONGODB_URI environment variable');
+  }
+
   if (cached.conn) {
     return cached.conn;
   }
 
   if (!cached.promise) {
-    const opts = {
-      bufferCommands: false,
-    };
+    cached.promise = (async () => {
+      // Dynamic import
+      const mongooseModule = await import('mongoose');
+      mongoose = mongooseModule.default || mongooseModule;
+      
+      const opts = {
+        bufferCommands: false,
+      };
 
-    cached.promise = mongoose.connect(MONGODB_URI, opts).then((mongoose) => {
+      await mongoose.connect(MONGODB_URI, opts);
       return mongoose;
-    });
+    })();
   }
 
   try {
