@@ -104,7 +104,7 @@ export default async function SiteMapPage() {
     { name: 'Mağazalar', url: 'https://indirimkesfet.com/magazalar' },
     { name: 'Kategoriler', url: 'https://indirimkesfet.com/kategoriler' },
     { name: 'Blog', url: 'https://indirimkesfet.com/blog' },
-    ...categories.map(c => ({ name: c.name, url: `https://indirimkesfet.com/kategori/${c.slug}` })),
+    ...categories.map((c: any) => ({ name: c.name, url: `https://indirimkesfet.com/kategori/${c.slug}` })),
   ];
 
   // Alfabetik marka grupları
