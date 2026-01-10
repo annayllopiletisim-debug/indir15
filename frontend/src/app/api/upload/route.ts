@@ -5,7 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { verifyAuth } from '@/lib/auth';
 import { existsSync } from 'fs';
 
-const UPLOAD_DIR = '/app/uploads';
+const UPLOAD_DIR = process.env.UPLOAD_DIR || '/app/uploads';
 
 export async function POST(request: Request) {
   try {

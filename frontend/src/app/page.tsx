@@ -52,7 +52,7 @@ async function getHomeData() {
   });
 
   const [brands, categories] = await Promise.all([
-    Brand.find({}).limit(30).lean(),
+    Brand.find({}).select('id name slug logo_url category_ids deal_count default_deal_image').limit(30).lean(),
     Category.find({}).sort({ order: 1 }).lean(),
   ]);
 

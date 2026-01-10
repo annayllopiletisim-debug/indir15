@@ -43,7 +43,7 @@ async function getDiscounts(page: number) {
       .limit(ITEMS_PER_PAGE)
       .lean(),
     Discount.countDocuments(filter),
-    Brand.find({}).lean(),
+    Brand.find({}).select('id name slug logo_url default_deal_image').limit(500).lean(),
   ]);
   
   const brandMap = new Map(brands.map((b: any) => [b.id, {
