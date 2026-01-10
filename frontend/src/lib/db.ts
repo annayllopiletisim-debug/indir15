@@ -1,10 +1,7 @@
 import mongoose from 'mongoose';
 
-// Try MONGO_URL first (Emergent's Atlas), then fall back to MONGODB_URI
+// Connection string from environment
 const MONGODB_URI = process.env.MONGO_URL || process.env.MONGODB_URI || '';
-
-// Database name - use the app name for Emergent Atlas
-const DB_NAME = process.env.DB_NAME || 'indirimci-2';
 
 if (!MONGODB_URI) {
   console.error('Please define MONGO_URL or MONGODB_URI environment variable');
@@ -31,12 +28,22 @@ export async function connectDB() {
   }
 
   if (!cached.promise) {
+    // Determine database name based on environment
+    // For Emergent production (MONGO_URL), use 'indirimci-2'
+    // For local development (MONGODB_URI with localhost), use 'savvy_saver_db'
+    const isProduction = MONGODB_URI.includes('mongodb.net');
+    const dbName = isProduction ? 'indirimci-2' : 'savvy_saver_db';
+    
+    console.log('Connecting to MongoDB:', isProduction ? 'Production (Atlas)' : 'Local');
+    console.log('Database name:', dbName);
+    
     const opts = {
       bufferCommands: false,
-      dbName: DB_NAME,
+      dbName: dbName,
     };
 
     cached.promise = mongoose.connect(MONGODB_URI, opts).then((mongoose) => {
+      console.log('MongoDB connected successfully to:', dbName);
       return mongoose;
     });
   }
