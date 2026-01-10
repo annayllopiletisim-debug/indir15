@@ -1,5 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Enable standalone output for production
+  output: 'standalone',
+  
   // Enable Gzip/Brotli compression
   compress: true,
   
@@ -21,7 +24,15 @@ const nextConfig = {
   // Server external packages - critical for mongoose to work
   serverExternalPackages: ['mongoose', 'bcryptjs', 'jsonwebtoken'],
   
-  // Allow external images
+  // Webpack configuration for external packages
+  webpack: (config, { isServer }) => {
+    if (isServer) {
+      config.externals = [...(config.externals || []), 'mongoose', 'bcryptjs', 'jsonwebtoken'];
+    }
+    return config;
+  },
+  
+  // Experimental settings
   experimental: {
     serverActions: {
       bodySizeLimit: '10mb',
