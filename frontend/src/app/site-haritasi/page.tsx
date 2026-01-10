@@ -108,7 +108,7 @@ export default async function SiteMapPage() {
   ];
 
   // Alfabetik marka grupları
-  const brandsByLetter = brands.reduce((acc: Record<string, typeof brands>, brand) => {
+  const brandsByLetter = brands.reduce((acc: Record<string, typeof brands>, brand: any) => {
     const letter = brand.name.charAt(0).toUpperCase();
     if (!acc[letter]) acc[letter] = [];
     acc[letter].push(brand);
