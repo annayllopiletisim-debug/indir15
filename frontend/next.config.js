@@ -1,8 +1,5 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Enable standalone output for production
-  output: 'standalone',
-  
   // Enable Gzip/Brotli compression
   compress: true,
   
@@ -21,16 +18,11 @@ const nextConfig = {
     formats: ['image/avif', 'image/webp'],
   },
   
-  // Server external packages - critical for mongoose to work
-  serverExternalPackages: ['mongoose', 'bcryptjs', 'jsonwebtoken'],
+  // Transpile these packages
+  transpilePackages: ['mongoose'],
   
-  // Webpack configuration for external packages
-  webpack: (config, { isServer }) => {
-    if (isServer) {
-      config.externals = [...(config.externals || []), 'mongoose', 'bcryptjs', 'jsonwebtoken'];
-    }
-    return config;
-  },
+  // Empty turbopack config to use default behavior
+  turbopack: {},
   
   // Experimental settings
   experimental: {
