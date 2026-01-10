@@ -25,24 +25,37 @@ export async function POST(request: Request) {
     
     const results: Record<string, any> = {};
     
+    // Check if data already exists
+    const existingCategories = await Category.countDocuments();
+    const existingBrands = await Brand.countDocuments();
+    const existingDiscounts = await Discount.countDocuments();
+    
+    if (existingCategories > 0 || existingBrands > 0 || existingDiscounts > 0) {
+      return NextResponse.json({ 
+        message: 'Data already exists in database',
+        existing: {
+          categories: existingCategories,
+          brands: existingBrands,
+          discounts: existingDiscounts
+        }
+      });
+    }
+    
     // Migrate categories first (brands depend on them)
     console.log('Migrating categories...');
-    await Category.deleteMany({});
-    const categoryResult = await Category.insertMany(categoriesData);
+    const categoryResult = await Category.insertMany(categoriesData, { ordered: false });
     results.categories = { inserted: categoryResult.length };
     console.log(`Inserted ${categoryResult.length} categories`);
     
     // Migrate brands
     console.log('Migrating brands...');
-    await Brand.deleteMany({});
-    const brandResult = await Brand.insertMany(brandsData);
+    const brandResult = await Brand.insertMany(brandsData, { ordered: false });
     results.brands = { inserted: brandResult.length };
     console.log(`Inserted ${brandResult.length} brands`);
     
     // Migrate discounts
     console.log('Migrating discounts...');
-    await Discount.deleteMany({});
-    const discountResult = await Discount.insertMany(discountsData);
+    const discountResult = await Discount.insertMany(discountsData, { ordered: false });
     results.discounts = { inserted: discountResult.length };
     console.log(`Inserted ${discountResult.length} discounts`);
     
