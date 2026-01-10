@@ -18,12 +18,6 @@ const nextConfig = {
     formats: ['image/avif', 'image/webp'],
   },
   
-  // Transpile these packages
-  transpilePackages: ['mongoose'],
-  
-  // Empty turbopack config to use default behavior
-  turbopack: {},
-  
   // Experimental settings
   experimental: {
     serverActions: {
