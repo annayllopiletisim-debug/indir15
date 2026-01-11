@@ -19,7 +19,7 @@ export const metadata: Metadata = {
   },
 };
 
-export const revalidate = 3600; // Her saat başı yenile
+export const dynamic = 'force-dynamic'; // Her saat başı yenile
 
 async function getSiteMapData() {
   await connectDB();

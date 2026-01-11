@@ -16,7 +16,7 @@ export const metadata: Metadata = {
   },
 };
 
-export const revalidate = 300; // 5 dakikada bir revalidate
+export const dynamic = 'force-dynamic'; // 5 dakikada bir revalidate
 
 async function getExpiredDeals() {
   await connectDB();

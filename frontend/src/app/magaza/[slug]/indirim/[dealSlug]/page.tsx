@@ -46,7 +46,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export const revalidate = 60;
+export const dynamic = 'force-dynamic';
 
 async function getDealData(dealSlug: string, brandSlug: string) {
   const shortId = extractIdFromSlug(dealSlug);
