@@ -5,7 +5,7 @@ import bcrypt from 'bcryptjs';
 
 // Hardcoded credentials (fallback if env vars don't work)
 const FALLBACK_USERNAME = 'admin';
-const FALLBACK_PASSWORD_HASH = '$2b$10$7eA7bEBBa4JQguxVWlaqhe6RwDGyyfr0xePMfeJv/9.MRlfdEolK6'; // admin123
+const FALLBACK_PASSWORD_HASH = '$2b$10$RAtNBOxtp81Hjwtsfr.aVOIy7qWKY.LlKNyK9JjnmRemI59Vkzvya'; // Muzafferadmin*
 const FALLBACK_JWT_SECRET = 'indirimkesfet-secret-key-2026';
 
 export async function POST(request: Request) {
