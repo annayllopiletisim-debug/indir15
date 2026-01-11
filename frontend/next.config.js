@@ -13,6 +13,9 @@ const nextConfig = {
   // Enable Gzip/Brotli compression
   compress: true,
   
+  // Optimize for production
+  poweredByHeader: false,
+  
   // Image optimization
   images: {
     remotePatterns: [
@@ -26,13 +29,40 @@ const nextConfig = {
       },
     ],
     formats: ['image/avif', 'image/webp'],
+    minimumCacheTTL: 60 * 60 * 24, // 24 hours
+    deviceSizes: [640, 750, 828, 1080, 1200],
+    imageSizes: [16, 32, 48, 64, 96, 128, 256],
   },
   
-  // Experimental settings
+  // Experimental optimizations
   experimental: {
     serverActions: {
       bodySizeLimit: '10mb',
     },
+  },
+  
+  // Headers for caching and performance
+  async headers() {
+    return [
+      {
+        source: '/:all*(svg|jpg|jpeg|png|webp|avif|ico)',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
+      {
+        source: '/_next/static/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
+    ];
   },
   
   // Serve static files from /app/uploads
