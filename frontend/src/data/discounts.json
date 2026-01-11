@@ -117,10 +117,10 @@
     "long_description": "İkinci üründen itibaren sepetinize eklediğiniz her ürüne ekstra %10 indirim",
     "terms_conditions": null,
     "discount_text": "İndirim",
-    "expiry_date": "2025-12-31T23:59:59.000Z",
+    "expiry_date": "2025-12-31T23:59:59",
     "utm_template": "utm_source=indirimkesset&utm_medium=discount",
     "destination_url": "https://www.happyscarfs.com/cok-al-az-ode",
-    "created_at": "2025-12-27T14:09:36.571Z"
+    "created_at": "2025-12-27T14:09:36.571000"
   },
   {
     "id": "45f8a934-001b-4bbb-b03a-75cd44dcdedf",
@@ -148,7 +148,7 @@
     "expiry_date": null,
     "utm_template": "utm_source=indirimkesset&utm_medium=discount",
     "destination_url": "https://www.migros.com.tr/kampanyalar",
-    "created_at": "2025-12-29T19:09:30.094Z"
+    "created_at": "2025-12-29T19:09:30.094000"
   },
   {
     "id": "b4a453db-78b9-4456-a514-d040d78278d5",
@@ -161,7 +161,7 @@
     "expiry_date": null,
     "utm_template": "utm_source=indirimkesset&utm_medium=discount",
     "destination_url": "https://www.migros.com.tr/kampanyalar",
-    "created_at": "2025-12-29T19:09:30.095Z"
+    "created_at": "2025-12-29T19:09:30.095000"
   },
   {
     "id": "87ac083e-10ee-45c1-88ca-41a7ea96c059",
@@ -174,7 +174,7 @@
     "expiry_date": null,
     "utm_template": "utm_source=indirimkesset&utm_medium=discount",
     "destination_url": "https://www.migros.com.tr/kampanyalar",
-    "created_at": "2025-12-29T19:09:30.096Z"
+    "created_at": "2025-12-29T19:09:30.096000"
   },
   {
     "id": "5e054323-5e0d-4cba-8f85-f9ff3ee0270c",
@@ -187,7 +187,7 @@
     "expiry_date": null,
     "utm_template": "utm_source=indirimkesset&utm_medium=discount",
     "destination_url": "https://www.migros.com.tr/kampanyalar",
-    "created_at": "2025-12-29T19:09:30.096Z"
+    "created_at": "2025-12-29T19:09:30.096000"
   },
   {
     "id": "828d7b50-cb89-4ec0-8283-bdbd0399002b",
@@ -200,7 +200,7 @@
     "expiry_date": null,
     "utm_template": "utm_source=indirimkesset&utm_medium=discount",
     "destination_url": "https://www.migros.com.tr/kampanyalar",
-    "created_at": "2025-12-29T19:09:30.097Z"
+    "created_at": "2025-12-29T19:09:30.097000"
   },
   {
     "id": "1fce98ec-e684-4c98-bd63-a59cd2a2d40a",
@@ -213,7 +213,7 @@
     "expiry_date": null,
     "utm_template": "utm_source=indirimkesset&utm_medium=discount",
     "destination_url": "https://www.migros.com.tr/kampanyalar",
-    "created_at": "2025-12-29T19:09:30.098Z"
+    "created_at": "2025-12-29T19:09:30.098000"
   },
   {
     "id": "406d503f-9656-430e-9ed0-1a7fbf751270",
@@ -226,7 +226,7 @@
     "expiry_date": null,
     "utm_template": "utm_source=indirimkesset&utm_medium=discount",
     "destination_url": "https://www.migros.com.tr/kampanyalar",
-    "created_at": "2025-12-29T19:09:30.099Z"
+    "created_at": "2025-12-29T19:09:30.099000"
   },
   {
     "id": "08a05200-c628-4236-b23f-40ed7e87f3b1",
@@ -239,7 +239,7 @@
     "expiry_date": null,
     "utm_template": "utm_source=indirimkesset&utm_medium=discount",
     "destination_url": "https://www.migros.com.tr/kampanyalar",
-    "created_at": "2025-12-29T19:09:30.100Z"
+    "created_at": "2025-12-29T19:09:30.100000"
   },
   {
     "id": "5d99f475-5257-4459-af67-dff06055e173",
@@ -252,7 +252,7 @@
     "expiry_date": null,
     "utm_template": "utm_source=indirimkesset&utm_medium=discount",
     "destination_url": "https://www.migros.com.tr/kampanyalar",
-    "created_at": "2025-12-29T19:09:30.101Z"
+    "created_at": "2025-12-29T19:09:30.101000"
   },
   {
     "id": "6c3d48d2-97c4-44f0-a955-0c440872ff69",
@@ -265,7 +265,7 @@
     "expiry_date": null,
     "utm_template": "utm_source=indirimkesset&utm_medium=discount",
     "destination_url": "https://www.migros.com.tr/kampanyalar",
-    "created_at": "2025-12-29T19:09:30.102Z"
+    "created_at": "2025-12-29T19:09:30.102000"
   },
   {
     "id": "9847a4ec-7a97-4dd3-9182-3429e54e58b1",
@@ -278,7 +278,7 @@
     "expiry_date": null,
     "utm_template": "utm_source=indirimkesset&utm_medium=discount",
     "destination_url": "https://www.migros.com.tr/kampanyalar",
-    "created_at": "2025-12-29T19:09:30.103Z"
+    "created_at": "2025-12-29T19:09:30.103000"
   },
   {
     "id": "563b497c-f2a2-415e-bf75-91e6f28154fd",
@@ -291,7 +291,7 @@
     "expiry_date": null,
     "utm_template": "utm_source=indirimkesset&utm_medium=discount",
     "destination_url": "https://www.migros.com.tr/kampanyalar",
-    "created_at": "2025-12-29T19:09:30.104Z"
+    "created_at": "2025-12-29T19:09:30.104000"
   },
   {
     "id": "acde1891-2823-4cf2-a12c-1ebe1f287528",
@@ -579,12 +579,12 @@
     "title": "Masterpass’a kayıtlı Mastercard logolu Yapı Kredi kart sahiplerine özel Ikea’da yapacakları alışverişlerde 1.000 TL indirim fırsatı!",
     "description": "14 Kasım 2025 – 5 Ocak 2026 tarihleri arasında Masterpass’e kayıtlı Mastercard logolu Yapı Kredi banka kartı, ön ödemeli kart ve kredi kartı sahiplerine özel Ikea’da yapacakları 6.000 TL ve üzeri alışverişlerde 1.000 TL indirim fırsatı!",
     "discount_text": "1.000 TL indirim",
-    "expiry_date": "2026-05-01T00:00:00.000Z",
+    "expiry_date": "2026-05-01T00:00:00",
     "is_featured": false,
     "destination_url": "https://www.worldcard.com.tr/kampanyalar/masterpassa-kayitli-mastercard-logolu-yapi-kredi-kart-sahiplerine-ozel-ikeada-yapacaklari-alisverisl",
     "image_url": "",
     "click_count": 0,
-    "created_at": "2026-01-07T16:08:36.085Z",
+    "created_at": "2026-01-07T16:08:36.085000",
     "__v": 0
   },
   {
@@ -593,12 +593,12 @@
     "title": "Mastercard sahiplerine özel Enuygun’da 6.000 TL ve üzeri uçak biletlerinde 1.000 TL indirim!",
     "description": "Mastercard logolu Yapı kredi banka kartı ve kredi kartı sahiplerine Enuygun’da 6.000 TL ve üzeri uçak biletlerinde 1.000 TL indirim!",
     "discount_text": "1.000 TL indirim",
-    "expiry_date": "2026-05-01T00:00:00.000Z",
+    "expiry_date": "2026-05-01T00:00:00",
     "is_featured": false,
     "destination_url": "https://www.worldcard.com.tr/kampanyalar/mastercard-sahiplerine-ozel-enuygunda-6000-tl-ve-uzeri-ucak-biletlerinde-1000-tl-indirim",
     "image_url": "",
     "click_count": 0,
-    "created_at": "2026-01-07T16:08:36.089Z",
+    "created_at": "2026-01-07T16:08:36.089000",
     "__v": 0
   },
   {
@@ -607,12 +607,12 @@
     "title": "Masterpass’a kayıtlı Mastercard logolu Yapı Kredi kart sahiplerine özel FashFed mobil uygulaması ya da fashfed.com’da 5.000 TL üzeri alışverişlerde 1.000 TL indirim!",
     "description": "17 Aralık 2025 – 10 Ocak 2026 tarihleri arasında Masterpass’e kayıtlı Mastercard logolu Yapı Kredi banka kartı, ön ödemeli kart ve kredi kartı sahiplerine özel FashFed mobil uygulaması ya da fashfed.com’da 5.000 TL üzeri alışverişlerde 1.000 TL indirim!",
     "discount_text": "1.000 TL indirim!",
-    "expiry_date": "2026-10-01T00:00:00.000Z",
+    "expiry_date": "2026-10-01T00:00:00",
     "is_featured": false,
     "destination_url": "https://www.worldcard.com.tr/kampanyalar/masterpassa-kayitli-mastercard-logolu-yapi-kredi-kart-sahiplerine-ozel-fashfed-mobil-uygulamasi-ya-d",
     "image_url": "",
     "click_count": 0,
-    "created_at": "2026-01-07T16:08:36.097Z",
+    "created_at": "2026-01-07T16:08:36.097000",
     "__v": 0
   },
   {
@@ -621,12 +621,12 @@
     "title": "Masterpass’a kayıtlı Mastercard logolu Yapı Kredi kart sahiplerine özel Ikea’da yapacakları alışverişlerde 1.000 TL indirim fırsatı!",
     "description": "14 Kasım 2025 – 5 Ocak 2026 tarihleri arasında Masterpass’e kayıtlı Mastercard logolu Yapı Kredi banka kartı, ön ödemeli kart ve kredi kartı sahiplerine özel Ikea’da yapacakları 6.000 TL ve üzeri alışverişlerde 1.000 TL indirim fırsatı!",
     "discount_text": "1.000 TL indirim",
-    "expiry_date": "2026-01-05T00:00:00.000Z",
+    "expiry_date": "2026-01-05T00:00:00",
     "is_featured": false,
     "destination_url": "https://www.worldcard.com.tr/kampanyalar/masterpassa-kayitli-mastercard-logolu-yapi-kredi-kart-sahiplerine-ozel-ikeada-yapacaklari-alisverisl",
     "image_url": "",
     "click_count": 0,
-    "created_at": "2026-01-07T16:13:20.816Z",
+    "created_at": "2026-01-07T16:13:20.816000",
     "__v": 0
   },
   {
@@ -635,12 +635,12 @@
     "title": "Silver logolu Mastercard’ınıza özel Raffles İstanbul’da %15 indirim & Spa’da %20 indirim fırsatı!",
     "description": "Silver logolu Mastercard sahipleri Raffles İstanbul’da %15 indirim & Spa’da %20 indirim kazanıyor!",
     "discount_text": "%20 indirim",
-    "expiry_date": "2026-05-25T00:00:00.000Z",
+    "expiry_date": "2026-05-25T00:00:00",
     "is_featured": false,
     "destination_url": "https://www.worldcard.com.tr/kampanyalar/silver-logolu-mastercardiniza-ozel-raffles-istanbulda-15-indirim-and-spada-20-indirim-firsati",
     "image_url": "",
     "click_count": 0,
-    "created_at": "2026-01-07T16:13:20.819Z",
+    "created_at": "2026-01-07T16:13:20.819000",
     "__v": 0
   },
   {
@@ -649,12 +649,12 @@
     "title": "Mastercard sahiplerine özel Enuygun’da 6.000 TL ve üzeri uçak biletlerinde 1.000 TL indirim!",
     "description": "Mastercard logolu Yapı kredi banka kartı ve kredi kartı sahiplerine Enuygun’da 6.000 TL ve üzeri uçak biletlerinde 1.000 TL indirim!",
     "discount_text": "1.000 TL indirim",
-    "expiry_date": "2026-01-05T00:00:00.000Z",
+    "expiry_date": "2026-01-05T00:00:00",
     "is_featured": false,
     "destination_url": "https://www.worldcard.com.tr/kampanyalar/mastercard-sahiplerine-ozel-enuygunda-6000-tl-ve-uzeri-ucak-biletlerinde-1000-tl-indirim",
     "image_url": "",
     "click_count": 0,
-    "created_at": "2026-01-07T16:13:20.822Z",
+    "created_at": "2026-01-07T16:13:20.822000",
     "__v": 0
   },
   {
@@ -663,12 +663,12 @@
     "title": "Silver Logolu Mastercard'ınıza özel İGA Pass satış noktalarından aldığınız “İGA pass Mastercard” paketinde 50% indirim!",
     "description": "Silver logolu Mastercard sahipleri İstanbul Havalimanı içerisinde bulunan İGA Pass satış noktalarından aldığı “İGA Pass Mastercard” paketinden 50% indirim ile yararlanabiliyor!",
     "discount_text": "50% indirim!",
-    "expiry_date": "2026-03-31T00:00:00.000Z",
+    "expiry_date": "2026-03-31T00:00:00",
     "is_featured": false,
     "destination_url": "https://www.worldcard.com.tr/kampanyalar/silver-logolu-mastercardiniza-ozel-iga-pass-satis-noktalarindan-aldiginiz-iga-pass-mastercard",
     "image_url": "",
     "click_count": 0,
-    "created_at": "2026-01-07T16:13:20.825Z",
+    "created_at": "2026-01-07T16:13:20.825000",
     "__v": 0
   },
   {
@@ -677,12 +677,12 @@
     "title": "Mastercard sahiplerine özel Google Play harcamalarında %50 indirim fırsatı!",
     "description": "Mastercard logolu Yapı Kredi banka kartı ve kredi kartı sahipleri Google Play harcamalarında %50 indirim kazanıyor!",
     "discount_text": "%50 indirim",
-    "expiry_date": "2026-01-15T00:00:00.000Z",
+    "expiry_date": "2026-01-15T00:00:00",
     "is_featured": false,
     "destination_url": "https://www.worldcard.com.tr/kampanyalar/mastercard-sahiplerine-ozel-google-play-harcamalarinda-50-indirim-firsati",
     "image_url": "",
     "click_count": 0,
-    "created_at": "2026-01-07T16:13:20.827Z",
+    "created_at": "2026-01-07T16:13:20.827000",
     "__v": 0
   },
   {
@@ -691,12 +691,12 @@
     "title": "Silver logolu Mastercard’ınıza özel Galataport’ta otopark 1 TL!",
     "description": "Masterpass hesabına kayıtlı Silver logolu Mastercard kredi kartı ile Galataport’ta yapacağınız otopark harcamanız 1 TL!",
     "discount_text": "Sadece 1 TL!",
-    "expiry_date": "2025-12-31T00:00:00.000Z",
+    "expiry_date": "2025-12-31T00:00:00",
     "is_featured": false,
     "destination_url": "https://www.worldcard.com.tr/kampanyalar/silver-logolu-mastercardiniza-ozel-galataportta-otopark-1-tl",
     "image_url": "",
     "click_count": 0,
-    "created_at": "2026-01-07T16:13:20.829Z",
+    "created_at": "2026-01-07T16:13:20.829000",
     "__v": 0
   },
   {
@@ -705,12 +705,12 @@
     "title": "UTTS’li aracınızla 31 Ocak 2026’ya kadar yapacağınız her akaryakıt alımına %5 indirim!",
     "description": "20 Ağustos 2025-31 Ocak 2026 tarihleri arasında UTTS’li aracınızla Opet istasyonlarında yapacağınız her akaryakıt alımına %5 indirim!",
     "discount_text": "%5 indirim!",
-    "expiry_date": "2026-01-31T00:00:00.000Z",
+    "expiry_date": "2026-01-31T00:00:00",
     "is_featured": false,
     "destination_url": "https://www.worldcard.com.tr/kampanyalar/uttsli-aracinizla-31-ocak-2025ya-kadar-yapacaginiz-her-akaryakit-alimina-5-indirim",
     "image_url": "",
     "click_count": 0,
-    "created_at": "2026-01-07T16:13:20.831Z",
+    "created_at": "2026-01-07T16:13:20.831000",
     "__v": 0
   },
   {
@@ -719,12 +719,12 @@
     "title": "BoB ile havalimanı transferlerinizde geçerli %25 indirim!",
     "description": "bob.com.tr’de geçerli havalimanı gidiş-dönüş transferlerinizde %25 indirim fırsatı!",
     "discount_text": "%25 indirim!",
-    "expiry_date": "2025-12-31T00:00:00.000Z",
+    "expiry_date": "2025-12-31T00:00:00",
     "is_featured": false,
     "destination_url": "https://www.worldcard.com.tr/kampanyalar/bob-ile-havalimani-transferlerinizde-gecerli-25-indirim",
     "image_url": "",
     "click_count": 0,
-    "created_at": "2026-01-07T16:13:20.833Z",
+    "created_at": "2026-01-07T16:13:20.833000",
     "__v": 0
   },
   {
@@ -733,12 +733,12 @@
     "title": "Mastercard logolu Yapı Kredi kart sahiplerine ENUYGUN.com mobil uygulamasından yapacakları ilk otobüs bileti alımına 150 TL indirim!",
     "description": "16 Ekim – 31 Aralık 2025 tarihleri arasında Masterpass’e kayıtlı Mastercard logolu Yapı Kredi banka kartı, ön ödemeli kart ve kredi kartı sahiplerine ENUYGUN.com mobil uygulamasından yapacakları ilk otobüs bileti alımına 150 TL indirim!",
     "discount_text": "150 TL indirim",
-    "expiry_date": "2025-12-31T00:00:00.000Z",
+    "expiry_date": "2025-12-31T00:00:00",
     "is_featured": false,
     "destination_url": "https://www.worldcard.com.tr/kampanyalar/mastercard-logolu-yapi-kredi-kart-sahiplerine-enuyguncom-mobil-uygulamasindan-yapacaklari-ilk-otobus",
     "image_url": "",
     "click_count": 0,
-    "created_at": "2026-01-07T16:13:20.836Z",
+    "created_at": "2026-01-07T16:13:20.836000",
     "__v": 0
   },
   {
@@ -747,12 +747,12 @@
     "title": "Silver logolu Mastercard’ınıza özel yurt dışı restoran ve kafe ödemelerinde %15 indirim!",
     "description": "Silver logolu Mastercard sahiplerine 150 Euro / 150 USD ve üzeri yurt dışı restoran ve kafe ödemelerinde % 15 indirim fırsatı!",
     "discount_text": "%15 indirim!",
-    "expiry_date": "2026-03-31T00:00:00.000Z",
+    "expiry_date": "2026-03-31T00:00:00",
     "is_featured": false,
     "destination_url": "https://www.worldcard.com.tr/kampanyalar/silver-logolu-mastercardiniza-ozel-yurt-disi-restoran-ve-kafe-odemelerinde-15-indirim",
     "image_url": "",
     "click_count": 0,
-    "created_at": "2026-01-07T16:13:20.838Z",
+    "created_at": "2026-01-07T16:13:20.838000",
     "__v": 0
   },
   {
@@ -761,12 +761,12 @@
     "title": "Silver Logolu Mastercard'ınıza özel ZUBİZU anlaşmalı restoranlarda %20'ye varan indirim fırsatı!",
     "description": "Silver logolu Mastercard sahipleri ZUBİZU anlaşmalı restoranlarda yapılan harcamalarda 3000 TL ve üzeri olan işlemlerde %20’ye varan indirim kazanıyor!",
     "discount_text": "%20'ye varan indirim",
-    "expiry_date": "2025-12-31T00:00:00.000Z",
+    "expiry_date": "2025-12-31T00:00:00",
     "is_featured": false,
     "destination_url": "https://www.worldcard.com.tr/kampanyalar/silver-logolu-mastercardiniza-ozel-zubizu-anlasmali-restoranlarda-20ye-varan-indirim-firsati-2025",
     "image_url": "",
     "click_count": 0,
-    "created_at": "2026-01-07T16:13:20.840Z",
+    "created_at": "2026-01-07T16:13:20.840000",
     "__v": 0
   },
   {
@@ -775,12 +775,12 @@
     "title": "Silver Logolu Mastercard'ınıza özel Yurt Dışı Duty Free’lerde %15 indirim fırsatı!",
     "description": "Silver logolu Mastercard sahiplerine 150€/ 150$ ve üzeri yurt dışı Duty Free harcamalarında % 15 indirim!",
     "discount_text": "%15 indirim",
-    "expiry_date": "2026-03-31T00:00:00.000Z",
+    "expiry_date": "2026-03-31T00:00:00",
     "is_featured": false,
     "destination_url": "https://www.worldcard.com.tr/kampanyalar/silver-logolu-mastercardiniza-ozel-yurt-disi-duty-freelerde-15-indirim-firsati",
     "image_url": "",
     "click_count": 0,
-    "created_at": "2026-01-07T16:13:20.842Z",
+    "created_at": "2026-01-07T16:13:20.842000",
     "__v": 0
   },
   {
@@ -789,12 +789,12 @@
     "title": "Fenerbahçe Worldcard ile lacivert tur, sarı tur ve müze turunda %20, toplamda 100 TL’ye varan indirim!",
     "description": "Fenerbahçe Worldcard ile 1 Kasım – 31 Aralık 2025 tarihleri arasında lacivert tur, sarı tur ve müze turunda yapacağınız harcamalarda %20, toplamda 100 TL’ye varan indirim fırsatını kaçırmayın!",
     "discount_text": "100 TL’ye varan indirim!",
-    "expiry_date": "2025-12-31T00:00:00.000Z",
+    "expiry_date": "2025-12-31T00:00:00",
     "is_featured": false,
     "destination_url": "https://www.worldcard.com.tr/kampanyalar/fenerbahce-worldcard-ile-lacivert-tur-sari-tur-ve-muze-turunda-20-toplamda-100-tlye-varan-indirim-ka",
     "image_url": "",
     "click_count": 0,
-    "created_at": "2026-01-07T16:13:20.844Z",
+    "created_at": "2026-01-07T16:13:20.844000",
     "__v": 0
   },
   {
@@ -803,12 +803,12 @@
     "title": "World Cinezone sinema biletlerinde %10 indirim!",
     "description": "World Cinezone’da vizyondaki filmlerin keyfini çıkarırken, gişelerde yapacağınız sinema biletlerinde %10 indirim.",
     "discount_text": "%10 indirim!",
-    "expiry_date": "2025-12-31T00:00:00.000Z",
+    "expiry_date": "2025-12-31T00:00:00",
     "is_featured": false,
     "destination_url": "https://www.worldcard.com.tr/kampanyalar/world-cinezone-sinema-biletlerinde-10-indirim-aralik",
     "image_url": "",
     "click_count": 0,
-    "created_at": "2026-01-07T16:13:20.846Z",
+    "created_at": "2026-01-07T16:13:20.846000",
     "__v": 0
   },
   {
@@ -817,12 +817,12 @@
     "title": "Masterpass’a kayıtlı Mastercard logolu Yapı Kredi kart sahiplerine özel FashFed mobil uygulaması ya da fashfed.com’da 5.000 TL üzeri alışverişlerde 1.000 TL indirim!",
     "description": "17 Aralık 2025 – 10 Ocak 2026 tarihleri arasında Masterpass’e kayıtlı Mastercard logolu Yapı Kredi banka kartı, ön ödemeli kart ve kredi kartı sahiplerine özel FashFed mobil uygulaması ya da fashfed.com’da 5.000 TL üzeri alışverişlerde 1.000 TL indirim!",
     "discount_text": "1.000 TL indirim!",
-    "expiry_date": "2026-01-10T00:00:00.000Z",
+    "expiry_date": "2026-01-10T00:00:00",
     "is_featured": false,
     "destination_url": "https://www.worldcard.com.tr/kampanyalar/masterpassa-kayitli-mastercard-logolu-yapi-kredi-kart-sahiplerine-ozel-fashfed-mobil-uygulamasi-ya-d",
     "image_url": "",
     "click_count": 0,
-    "created_at": "2026-01-07T16:13:20.848Z",
+    "created_at": "2026-01-07T16:13:20.848000",
     "__v": 0
   },
   {
@@ -831,12 +831,12 @@
     "title": "Masterpass’a kayıtlı Mastercard logolu Yapı Kredi kart sahiplerine özel Tıkla Gelsin Mobil Uygulaması üzerinden Sana Gelsin kanalından verilen 400 TL ve üzeri siparişlerinde 150 TL indirim!",
     "description": "10 Aralık 2025 – 31 Ocak 2026 tarihleri arasında Masterpass’e kayıtlı Mastercard logolu Yapı Kredi banka kartı, ön ödemeli kart ve kredi kartı sahiplerine özel https://masterpassplus.com web sitesinden alacakları kupon koduyla Tıkla Gelsin Mobil Uygulaması üzerinden Sana Gelsin kanalından verilen 400 TL ve üzeri siparişlerinde 150 TL indirim!",
     "discount_text": "150 TL indirim!",
-    "expiry_date": "2026-01-31T00:00:00.000Z",
+    "expiry_date": "2026-01-31T00:00:00",
     "is_featured": false,
     "destination_url": "https://www.worldcard.com.tr/kampanyalar/masterpassa-kayitli-mastercard-logolu-yapi-kredi-kart-sahiplerine-ozel-tikla-gelsin-mobil-aralik",
     "image_url": "",
     "click_count": 0,
-    "created_at": "2026-01-07T16:13:20.850Z",
+    "created_at": "2026-01-07T16:13:20.850000",
     "__v": 0
   },
   {
@@ -845,12 +845,12 @@
     "title": "Troy logolu Yapı Kredi kart sahiplerine özel Türk Hava Yolları’nda geçerli yurt içi veya Türkiye çıkışlı yurt dışı biletlerinde her bilet için 500 TL indirim fırsatı!",
     "description": "Troy logolu Yapı Kredi banka kartı, ön ödemeli kart veya kredi kartı ile Türk Hava Yolları web sitesi veya mobil uygulaması üzerinden indirim kodu ile yapılacak yurt içi veya Türkiye çıkışlı yurt dışı bileti ödemelerinde her bir bilet için 500 TL indirim!",
     "discount_text": "500 TL indirim",
-    "expiry_date": "2026-01-31T00:00:00.000Z",
+    "expiry_date": "2026-01-31T00:00:00",
     "is_featured": false,
     "destination_url": "https://www.worldcard.com.tr/kampanyalar/troy-logolu-yapi-kredi-kart-sahiplerine-ozel-turk-hava-yollarinda-gecerli-yurt-ici-veya-turkiye-ciki",
     "image_url": "",
     "click_count": 0,
-    "created_at": "2026-01-07T16:13:20.852Z",
+    "created_at": "2026-01-07T16:13:20.852000",
     "__v": 0
   },
   {
@@ -859,12 +859,12 @@
     "title": "Apple ve Microsoft Platformlarından yapacağınız harcamalara toplamda 300 TL’ye varan indirim!",
     "description": "16 Aralık 2025 – 15 Ocak 2026 tarihleri arasında Apple ve Microsoft Platformları ödemelerinizde harcadığınız kadar, toplamda 300 TL’ye varan indirim kazanma fırsatını kaçırmayın!",
     "discount_text": "300 TL’ye varan indirim!",
-    "expiry_date": "2026-01-15T00:00:00.000Z",
+    "expiry_date": "2026-01-15T00:00:00",
     "is_featured": false,
     "destination_url": "https://www.worldcard.com.tr/kampanyalar/apple-ve-microsoft-platformlarindan-yapacaginiz-harcamalara-toplamda-300-tlye-varan-indirim",
     "image_url": "",
     "click_count": 0,
-    "created_at": "2026-01-07T16:13:20.854Z",
+    "created_at": "2026-01-07T16:13:20.854000",
     "__v": 0
   },
   {
@@ -873,12 +873,12 @@
     "title": "Çevrimiçi müzik, oyun ve video platformlarından yapacağınız harcamalara toplamda 300 TL’ye varan indirim!",
     "description": "16 Aralık 2025 – 15 Ocak 2026 tarihleri arasında seçili çevrimiçi müzik, oyun ve video platformları ödemelerinizde harcadığınız kadar, toplamda 300 TL’ye varan indirim kazanma fırsatını kaçırmayın!",
     "discount_text": "300 TL’ye varan indirim!",
-    "expiry_date": "2026-01-15T00:00:00.000Z",
+    "expiry_date": "2026-01-15T00:00:00",
     "is_featured": false,
     "destination_url": "https://www.worldcard.com.tr/kampanyalar/cevrimici-muzik-oyun-ve-video-platformlarindan-yapacaginiz-harcamalara-toplamda-300-tlye-varan-indir",
     "image_url": "",
     "click_count": 0,
-    "created_at": "2026-01-07T16:13:20.856Z",
+    "created_at": "2026-01-07T16:13:20.856000",
     "__v": 0
   },
   {
@@ -887,12 +887,12 @@
     "title": "Yabancı Dizi ve Film Platformlarından yapacağınız harcamalara %50 indirim!",
     "description": "16 Aralık 2025 – 15 Ocak 2026 tarihleri arasında Yabancı Dizi ve Film Platformları harcamalarınızda işlem başı %50, toplamda 150 TL’ye varan indirim kazanma fırsatını kaçırmayın!",
     "discount_text": "%50 indirim!",
-    "expiry_date": "2026-01-15T00:00:00.000Z",
+    "expiry_date": "2026-01-15T00:00:00",
     "is_featured": false,
     "destination_url": "https://www.worldcard.com.tr/kampanyalar/yabanci-dizi-ve-film-platformlarindan-yapacaginiz-harcamalara-50-indirim",
     "image_url": "",
     "click_count": 0,
-    "created_at": "2026-01-07T16:13:20.858Z",
+    "created_at": "2026-01-07T16:13:20.858000",
     "__v": 0
   },
   {
@@ -901,12 +901,12 @@
     "title": "Seçili Network mağazalarına özel  Sonbahar/Kış 2025-2026 sezonu ürünlerinde %50 indirim!",
     "description": "17-31 Aralık 2025 tarihleri arasında seçili Network mağazalarına özel %50 indirim fırsatı!",
     "discount_text": "%50 indirim!",
-    "expiry_date": "2025-12-31T00:00:00.000Z",
+    "expiry_date": "2025-12-31T00:00:00",
     "is_featured": false,
     "destination_url": "https://www.worldcard.com.tr/kampanyalar/secili-network-magazalarina-ozel-sonbaharkis-2025-2026-sezonu-urunlerinde-50-indirim-aralik",
     "image_url": "",
     "click_count": 0,
-    "created_at": "2026-01-07T16:13:20.861Z",
+    "created_at": "2026-01-07T16:13:20.861000",
     "__v": 0
   },
   {
@@ -915,12 +915,12 @@
     "title": "World Platinum ile USLA’da gerçekleşecek Workshop’larda %10 indirim.",
     "description": "World Platinum ile USLA’nın dünya standartlarında eğitmenlerle birbirinden lezzetli yemeklerin yapım aşamalarında yer alırken, gastronomi dünyasını deneyimleyebileceğiniz workshoplarda %10 indirim.",
     "discount_text": "%10 indirim.",
-    "expiry_date": "2025-12-31T00:00:00.000Z",
+    "expiry_date": "2025-12-31T00:00:00",
     "is_featured": false,
     "destination_url": "https://www.worldcard.com.tr/kampanyalar/world-platinum-ile-uslada-gerceklesecek-workshoplarda-10-indirim",
     "image_url": "",
     "click_count": 0,
-    "created_at": "2026-01-07T16:13:20.863Z",
+    "created_at": "2026-01-07T16:13:20.863000",
     "__v": 0
   },
   {
@@ -929,12 +929,12 @@
     "title": "Mastercard logolu Yapı Kredi kart sahiplerine sahiplerine Galataport İstanbul Deniz Dolmuşlarında %50 indirim!",
     "description": "Mastercard logolu Yapı Kredi banka kartı, ön ödemeli kart ve kredi kartı sahiplerine Galataport İstanbul Deniz Dolmuşlarında %50 indirim!",
     "discount_text": "%50 indirim!",
-    "expiry_date": "2025-12-31T00:00:00.000Z",
+    "expiry_date": "2025-12-31T00:00:00",
     "is_featured": false,
     "destination_url": "https://www.worldcard.com.tr/kampanyalar/mastercard-logolu-yapi-kredi-kart-sahiplerine-sahiplerine-galataport-istanbul-deniz-dolmuslarinda-50",
     "image_url": "",
     "click_count": 0,
-    "created_at": "2026-01-07T16:13:20.865Z",
+    "created_at": "2026-01-07T16:13:20.865000",
     "__v": 0
   },
   {
@@ -943,12 +943,12 @@
     "title": "World Cinezone sinema büfelerindeki yeme-içme harcamalarında %10 indirim!",
     "description": "World Cinezone’da sinemanın keyfini çıkarırken, yapacağınız tüm büfe harcamalarında %10 indirim.",
     "discount_text": "%10 indirim!",
-    "expiry_date": "2025-12-31T00:00:00.000Z",
+    "expiry_date": "2025-12-31T00:00:00",
     "is_featured": false,
     "destination_url": "https://www.worldcard.com.tr/kampanyalar/world-cinezone-sinema-bufelerindeki-yeme-icme-harcamalarinda-10-indirim",
     "image_url": "",
     "click_count": 0,
-    "created_at": "2026-01-07T16:13:20.867Z",
+    "created_at": "2026-01-07T16:13:20.867000",
     "__v": 0
   },
   {
@@ -957,12 +957,12 @@
     "title": "Fenerbahçe Worldcard ile Fenerium mağazalarında %10 indirime ek %10, tek seferde 500 TL, toplamda 1000 TL’ye varan indirim!",
     "description": "Fenerbahçe Worldcard ile Fenerium mağazalarında %10 indirime ek %10, tek seferde 500 TL, toplamda 1000 TL’ye varan indirim fırsatını kaçırmayın.",
     "discount_text": "1000 TL’ye varan indirim!",
-    "expiry_date": "2025-12-31T00:00:00.000Z",
+    "expiry_date": "2025-12-31T00:00:00",
     "is_featured": false,
     "destination_url": "https://www.worldcard.com.tr/kampanyalar/fenerbahce-worldcard-ile-fenerium-magazalarinda-10-indirime-ek-10-tek-seferde-500-tl-toplamda-1000-t",
     "image_url": "",
     "click_count": 0,
-    "created_at": "2026-01-07T16:13:20.868Z",
+    "created_at": "2026-01-07T16:13:20.868000",
     "__v": 0
   },
   {
@@ -971,12 +971,12 @@
     "title": "World Platinum ile Reztoran’da %10 indirim!",
     "description": "Reztoran’da birbirinden farklı restoranlar tek ödeme ve ortak sepet özelliği ile kapınızda. World Platinum ile Reztoran uygulamasından yapacağınız harcamalarda %10 indirim.",
     "discount_text": "%10 indirim!",
-    "expiry_date": "2026-12-31T00:00:00.000Z",
+    "expiry_date": "2026-12-31T00:00:00",
     "is_featured": false,
     "destination_url": "https://www.worldcard.com.tr/kampanyalar/world-platinum-ile-restoranda-10-indirim",
     "image_url": "",
     "click_count": 0,
-    "created_at": "2026-01-07T16:13:20.870Z",
+    "created_at": "2026-01-07T16:13:20.870000",
     "__v": 0
   },
   {
@@ -985,12 +985,12 @@
     "title": "Biletix’te her Salı %25 indirim!",
     "description": "biletix.com‘da her Salı %25 indirim sizleri bekliyor!",
     "discount_text": "%25 indirim!",
-    "expiry_date": "2026-12-31T00:00:00.000Z",
+    "expiry_date": "2026-12-31T00:00:00",
     "is_featured": false,
     "destination_url": "https://www.worldcard.com.tr/kampanyalar/biletixte-her-sali-25-indirim",
     "image_url": "",
     "click_count": 0,
-    "created_at": "2026-01-07T16:13:20.872Z",
+    "created_at": "2026-01-07T16:13:20.872000",
     "__v": 0
   },
   {
@@ -1004,7 +1004,7 @@
     "destination_url": "https://www.mediamarkt.com.tr/tr/promo-list/PFF_7O_KHV_4AL3ODE_070126",
     "image_url": "",
     "click_count": 0,
-    "created_at": "2026-01-08T19:42:02.458Z",
+    "created_at": "2026-01-08T19:42:02.458000",
     "__v": 0
   },
   {
@@ -1018,7 +1018,7 @@
     "destination_url": "https://www.mediamarkt.com.tr/tr/promo-list/PFF_06O_ANKSTR_TKST_060126",
     "image_url": "",
     "click_count": 0,
-    "created_at": "2026-01-08T19:42:02.475Z",
+    "created_at": "2026-01-08T19:42:02.475000",
     "__v": 0
   },
   {
@@ -1032,7 +1032,7 @@
     "destination_url": "https://www.mediamarkt.com.tr/tr/promo-list/PFF_06O_MDA_TKST_060126",
     "image_url": "",
     "click_count": 0,
-    "created_at": "2026-01-08T19:42:02.478Z",
+    "created_at": "2026-01-08T19:42:02.478000",
     "__v": 0
   },
   {
@@ -1046,7 +1046,7 @@
     "destination_url": "https://www.mediamarkt.com.tr/tr/promo-list/PFF_06O_FC_TKST_060126",
     "image_url": "",
     "click_count": 0,
-    "created_at": "2026-01-08T19:42:02.481Z",
+    "created_at": "2026-01-08T19:42:02.481000",
     "__v": 0
   },
   {
@@ -1060,7 +1060,7 @@
     "destination_url": "https://www.mediamarkt.com.tr/tr/promo-list/PFF_06O_SDA_TKST_060126",
     "image_url": "",
     "click_count": 0,
-    "created_at": "2026-01-08T19:42:02.484Z",
+    "created_at": "2026-01-08T19:42:02.484000",
     "__v": 0
   },
   {
@@ -1074,7 +1074,7 @@
     "destination_url": "https://www.mediamarkt.com.tr/tr/promo-list/PFF_06O_KHV_TKST_060126",
     "image_url": "",
     "click_count": 0,
-    "created_at": "2026-01-08T19:42:02.488Z",
+    "created_at": "2026-01-08T19:42:02.488000",
     "__v": 0
   },
   {
@@ -1088,7 +1088,7 @@
     "destination_url": "https://www.mediamarkt.com.tr/tr/promo-list/PFF_06O_SHRK_TKST_060126",
     "image_url": "",
     "click_count": 0,
-    "created_at": "2026-01-08T19:42:02.491Z",
+    "created_at": "2026-01-08T19:42:02.491000",
     "__v": 0
   },
   {
@@ -1102,7 +1102,7 @@
     "destination_url": "https://www.mediamarkt.com.tr/tr/promo-list/PFF_06O_KLMA_TKST_060126",
     "image_url": "",
     "click_count": 0,
-    "created_at": "2026-01-08T19:42:02.494Z",
+    "created_at": "2026-01-08T19:42:02.494000",
     "__v": 0
   },
   {
@@ -1116,7 +1116,7 @@
     "destination_url": "https://www.mediamarkt.com.tr/tr/promo-list/PFF_06O_YNLNMS_TKST_060126",
     "image_url": "",
     "click_count": 0,
-    "created_at": "2026-01-08T19:42:02.497Z",
+    "created_at": "2026-01-08T19:42:02.497000",
     "__v": 0
   },
   {
@@ -1130,7 +1130,7 @@
     "destination_url": "https://www.mediamarkt.com.tr/tr/promo-list/PFF_06O_TBLT_TKST_060126",
     "image_url": "",
     "click_count": 0,
-    "created_at": "2026-01-08T19:42:02.500Z",
+    "created_at": "2026-01-08T19:42:02.500000",
     "__v": 0
   }
 ]
