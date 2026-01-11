@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -6,6 +6,12 @@ import CategoryBarWrapper from "@/components/CategoryBarWrapper";
 import { OrganizationSchema, WebSiteSchema } from "@/components/StructuredData";
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://indirimkesfet.com";
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  themeColor: '#6366f1',
+};
 
 export const metadata: Metadata = {
   title: {
@@ -50,9 +56,7 @@ export const metadata: Metadata = {
     },
   },
   icons: {
-    icon: "/favicon.ico",
-    shortcut: "/favicon-16x16.png",
-    apple: "/apple-touch-icon.png",
+    icon: "/icon.svg",
   },
   manifest: "/manifest.json",
 };
@@ -65,10 +69,16 @@ export default function RootLayout({
   return (
     <html lang="tr">
       <head>
+        {/* Preconnect to external domains for faster loading */}
+        <link rel="preconnect" href="https://www.googletagmanager.com" />
+        <link rel="preconnect" href="https://www.google-analytics.com" />
+        <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
+        
         {/* JSON-LD Structured Data */}
         <OrganizationSchema />
         <WebSiteSchema />
-        {/* Google Tag Manager */}
+        
+        {/* Google Tag Manager - loaded async */}
         <script
           dangerouslySetInnerHTML={{
             __html: `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
