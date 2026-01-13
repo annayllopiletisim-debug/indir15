@@ -18,7 +18,11 @@ export const revalidate = 300;
 
 async function getHomeData() {
   try {
-    await connectDB();
+    const conn = await connectDB();
+    // If connection is null (build phase), return empty data
+    if (!conn) {
+      return { brands: [], discounts: [], categories: [] };
+    }
     const now = new Date();
     
     // Count deals per brand using aggregation (optimized)
