@@ -4,7 +4,7 @@ import mongoose from 'mongoose';
 const MONGODB_URI = process.env.MONGO_URL || process.env.MONGODB_URI || '';
 
 if (!MONGODB_URI) {
-  console.error('Please define MONGO_URL or MONGODB_URI environment variable');
+  console.error('WARNING: MONGO_URL or MONGODB_URI environment variable not defined');
 }
 
 interface MongooseCache {
@@ -23,6 +23,12 @@ if (!global.mongoose) {
 }
 
 export async function connectDB() {
+  // Return early if no URI configured
+  if (!MONGODB_URI) {
+    console.error('Database connection failed: No MONGODB_URI configured');
+    throw new Error('Database not configured');
+  }
+
   if (cached.conn) {
     return cached.conn;
   }
@@ -30,10 +36,18 @@ export async function connectDB() {
   if (!cached.promise) {
     const opts = {
       bufferCommands: false,
+      serverSelectionTimeoutMS: 10000, // 10 second timeout
+      connectTimeoutMS: 10000,
     };
 
+    console.log('Connecting to MongoDB...');
     cached.promise = mongoose.connect(MONGODB_URI, opts).then((mongoose) => {
+      console.log('MongoDB connected successfully');
       return mongoose;
+    }).catch((err) => {
+      console.error('MongoDB connection error:', err.message);
+      cached.promise = null;
+      throw err;
     });
   }
 
