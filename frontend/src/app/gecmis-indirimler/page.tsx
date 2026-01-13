@@ -19,60 +19,66 @@ export const metadata: Metadata = {
 export const dynamic = 'force-dynamic'; // 5 dakikada bir revalidate
 
 async function getExpiredDeals() {
-  await connectDB();
-  
-  const now = new Date();
-  
-  const [discounts, coupons, brands] = await Promise.all([
-    Discount.find({
-      expiry_date: { $lt: now }
-    }).sort({ expiry_date: -1 }).limit(50).lean(),
-    Coupon.find({
-      $or: [
-        { expiry_date: { $lt: now } },
-        { is_active: false }
-      ]
-    }).sort({ expiry_date: -1 }).limit(50).lean(),
-    Brand.find({}).lean(),
-  ]);
-  
-  const brandMap = new Map(brands.map((b: any) => [b.id, { 
-    id: b.id,
-    name: b.name,
-    slug: b.slug,
-    logo_url: b.logo_url || null,
-    default_deal_image: b.default_deal_image || null,
-  }]));
-  
-  const enrichedDiscounts = discounts.map((d: any) => ({
-    id: d.id,
-    title: d.title,
-    description: d.description || null,
-    discount_text: d.discount_text || null,
-    image_url: d.image_url || null,
-    expiry_date: d.expiry_date ? (typeof d.expiry_date === 'string' ? d.expiry_date : d.expiry_date.toISOString()) : null,
-    destination_url: d.destination_url || null,
-    brand_id: d.brand_id,
-    created_at: d.created_at ? (typeof d.created_at === 'string' ? d.created_at : d.created_at.toISOString()) : null,
-    brand: brandMap.get(d.brand_id) || null,
-  }));
-  
-  const enrichedCoupons = coupons.map((c: any) => ({
-    id: c.id,
-    title: c.title,
-    code: c.code,
-    description: c.description || null,
-    discount_text: c.discount_text || null,
-    expiry_date: c.expiry_date ? (typeof c.expiry_date === 'string' ? c.expiry_date : c.expiry_date.toISOString()) : null,
-    brand_id: c.brand_id,
-    is_active: c.is_active,
-    brand: brandMap.get(c.brand_id) || null,
-  }));
-  
-  return {
-    discounts: enrichedDiscounts,
-    coupons: enrichedCoupons,
-  };
+  try {
+    const conn = await connectDB();
+    if (!conn) return { discounts: [], coupons: [] }; // Build phase
+    
+    const now = new Date();
+    
+    const [discounts, coupons, brands] = await Promise.all([
+      Discount.find({
+        expiry_date: { $lt: now }
+      }).sort({ expiry_date: -1 }).limit(50).lean(),
+      Coupon.find({
+        $or: [
+          { expiry_date: { $lt: now } },
+          { is_active: false }
+        ]
+      }).sort({ expiry_date: -1 }).limit(50).lean(),
+      Brand.find({}).lean(),
+    ]);
+    
+    const brandMap = new Map(brands.map((b: any) => [b.id, { 
+      id: b.id,
+      name: b.name,
+      slug: b.slug,
+      logo_url: b.logo_url || null,
+      default_deal_image: b.default_deal_image || null,
+    }]));
+    
+    const enrichedDiscounts = discounts.map((d: any) => ({
+      id: d.id,
+      title: d.title,
+      description: d.description || null,
+      discount_text: d.discount_text || null,
+      image_url: d.image_url || null,
+      expiry_date: d.expiry_date ? (typeof d.expiry_date === 'string' ? d.expiry_date : d.expiry_date.toISOString()) : null,
+      destination_url: d.destination_url || null,
+      brand_id: d.brand_id,
+      created_at: d.created_at ? (typeof d.created_at === 'string' ? d.created_at : d.created_at.toISOString()) : null,
+      brand: brandMap.get(d.brand_id) || null,
+    }));
+    
+    const enrichedCoupons = coupons.map((c: any) => ({
+      id: c.id,
+      title: c.title,
+      code: c.code,
+      description: c.description || null,
+      discount_text: c.discount_text || null,
+      expiry_date: c.expiry_date ? (typeof c.expiry_date === 'string' ? c.expiry_date : c.expiry_date.toISOString()) : null,
+      brand_id: c.brand_id,
+      is_active: c.is_active,
+      brand: brandMap.get(c.brand_id) || null,
+    }));
+    
+    return {
+      discounts: enrichedDiscounts,
+      coupons: enrichedCoupons,
+    };
+  } catch (error) {
+    console.error('Failed to fetch expired deals:', error);
+    return { discounts: [], coupons: [] };
+  }
 }
 
 function formatExpiredDate(dateStr: string | null): string {
