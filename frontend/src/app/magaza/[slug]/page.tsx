@@ -3,14 +3,15 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import connectDB from '@/lib/db';
-import { Brand, Discount, Coupon, Giveaway } from '@/lib/models';
+import { Brand, Discount, Coupon, Giveaway, Category } from '@/lib/models';
 import { getImageUrl } from '@/lib/image';
 import { getShortId, generateSlug } from '@/lib/utils';
 import { addUtmParams } from '@/lib/utm';
-import { Tag, Ticket, Gift, ExternalLink } from 'lucide-react';
+import { Tag, Ticket, Gift, ExternalLink, TrendingUp } from 'lucide-react';
 import DealCard from '@/components/DealCard';
 import CouponCard from '@/components/CouponCard';
 import BrandDealsFilter from '@/components/BrandDealsFilter';
+import FeaturedDealCard from '@/components/FeaturedDealCard';
 
 interface Props {
   params: Promise<{ slug: string }>;
