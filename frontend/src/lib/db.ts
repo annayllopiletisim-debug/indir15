@@ -65,15 +65,18 @@ export async function connectDB() {
     return cached.conn;
   }
 
+  // Get db name at runtime to handle preview vs production correctly
+  const dbName = getDbName();
+
   if (!cached.promise) {
     const opts = {
       bufferCommands: false,
       serverSelectionTimeoutMS: 10000,
       connectTimeoutMS: 10000,
-      dbName: DB_NAME,
+      dbName: dbName,
     };
 
-    console.log(`Connecting to MongoDB (database: ${DB_NAME})...`);
+    console.log(`Connecting to MongoDB (database: ${dbName})...`);
     cached.promise = mongoose.connect(MONGODB_URI, opts).then((mongoose) => {
       console.log('MongoDB connected successfully');
       return mongoose;
