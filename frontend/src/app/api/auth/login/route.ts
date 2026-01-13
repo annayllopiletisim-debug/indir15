@@ -5,7 +5,7 @@ import bcrypt from 'bcryptjs';
 
 // Hardcoded fallback credentials (if env vars don't work)
 const FALLBACK_USERNAME = 'admin';
-const FALLBACK_PASSWORD = 'Admin2026';
+const FALLBACK_PASSWORD = 'Admin2026!Secure';
 const FALLBACK_JWT_SECRET = 'indirimkesfet-jwt-secret-2026-secure';
 
 export async function POST(request: Request) {
