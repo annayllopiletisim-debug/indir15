@@ -17,8 +17,10 @@ export const metadata: Metadata = {
 export const revalidate = 600;
 
 async function getAllBrands() {
-  await connectDB();
-  const now = new Date();
+  try {
+    const conn = await connectDB();
+    if (!conn) return { brands: [], categories: [] }; // Build phase
+    const now = new Date();
   
   // Get all brands
   const brands = await Brand.find({}).select('id name slug logo_url category_ids').sort({ name: 1 }).limit(500).lean();
