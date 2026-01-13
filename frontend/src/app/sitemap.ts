@@ -1,9 +1,19 @@
 import { MetadataRoute } from 'next';
+import { getAllCampaignSlugs } from '@/data/campaigns';
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://indirimkesfet.com';
 
 // Static pages sitemap
 export default function sitemap(): MetadataRoute.Sitemap {
+  // Campaign pages
+  const campaignSlugs = getAllCampaignSlugs();
+  const campaignPages = campaignSlugs.map(slug => ({
+    url: `${SITE_URL}/kampanyalar/${slug}`,
+    lastModified: new Date(),
+    changeFrequency: 'weekly' as const,
+    priority: 0.8,
+  }));
+
   return [
     {
       url: SITE_URL,
@@ -36,13 +46,26 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.8,
     },
     {
+      url: `${SITE_URL}/kampanyalar`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.8,
+    },
+    ...campaignPages,
+    {
       url: `${SITE_URL}/bitmek-uzere`,
       lastModified: new Date(),
       changeFrequency: 'daily',
       priority: 0.9,
     },
     {
-      url: `${SITE_URL}/son-24-saat`,
+      url: `${SITE_URL}/yeni-eklenen`,
+      lastModified: new Date(),
+      changeFrequency: 'daily',
+      priority: 0.9,
+    },
+    {
+      url: `${SITE_URL}/en-cok-tiklanan`,
       lastModified: new Date(),
       changeFrequency: 'daily',
       priority: 0.9,
