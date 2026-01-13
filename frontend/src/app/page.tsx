@@ -17,95 +17,84 @@ export const metadata: Metadata = {
 export const revalidate = 300;
 
 async function getHomeData() {
-  await connectDB();
-  const now = new Date();
-  
-  // Count deals per brand using aggregation (optimized)
-  const [discountCounts, couponCounts] = await Promise.all([
-    Discount.aggregate([
-      { $match: {
-        $or: [
-          { expiry_date: { $gte: now } },
-          { expiry_date: null },
-          { expiry_date: { $exists: false } },
-          { expiry_date: '' }
-        ]
-      }},
-      { $group: { _id: '$brand_id', count: { $sum: 1 } } }
-    ]),
-    (await import('@/lib/models')).Coupon.aggregate([
-      { $match: { 
-        is_active: true,
-        $or: [
-          { expiry_date: { $gte: now } },
-          { expiry_date: null },
-          { expiry_date: { $exists: false } },
-          { expiry_date: '' }
-        ]
-      }},
-      { $group: { _id: '$brand_id', count: { $sum: 1 } } }
-    ]),
-  ]);
-  
-  // Build count map from aggregation results
-  const brandDiscountCount: Record<string, number> = {};
-  discountCounts.forEach((d: any) => {
-    if (d._id) brandDiscountCount[d._id] = (brandDiscountCount[d._id] || 0) + d.count;
-  });
-  couponCounts.forEach((c: any) => {
-    if (c._id) brandDiscountCount[c._id] = (brandDiscountCount[c._id] || 0) + c.count;
-  });
+  try {
+    await connectDB();
+    const now = new Date();
+    
+    // Count deals per brand using aggregation (optimized)
+    const [discountCounts, couponCounts] = await Promise.all([
+      Discount.aggregate([
+        { $match: {
+          $or: [
+            { expiry_date: { $gte: now } },
+            { expiry_date: null },
+            { expiry_date: { $exists: false } },
+            { expiry_date: '' }
+          ]
+        }},
+        { $group: { _id: '$brand_id', count: { $sum: 1 } } }
+      ]),
+      (await import('@/lib/models')).Coupon.aggregate([
+        { $match: { 
+          is_active: true,
+          $or: [
+            { expiry_date: { $gte: now } },
+            { expiry_date: null },
+            { expiry_date: { $exists: false } },
+            { expiry_date: '' }
+          ]
+        }},
+        { $group: { _id: '$brand_id', count: { $sum: 1 } } }
+      ]),
+    ]);
+    
+    // Build count map from aggregation results
+    const brandDiscountCount: Record<string, number> = {};
+    discountCounts.forEach((d: any) => {
+      if (d._id) brandDiscountCount[d._id] = (brandDiscountCount[d._id] || 0) + d.count;
+    });
+    couponCounts.forEach((c: any) => {
+      if (c._id) brandDiscountCount[c._id] = (brandDiscountCount[c._id] || 0) + c.count;
+    });
 
-  const [brands, categories] = await Promise.all([
-    Brand.find({}).select('id name slug logo_url category_ids deal_count default_deal_image').limit(30).lean(),
-    Category.find({}).sort({ order: 1 }).lean(),
-  ]);
+    const [brands, categories] = await Promise.all([
+      Brand.find({}).select('id name slug logo_url category_ids deal_count default_deal_image').limit(30).lean(),
+      Category.find({}).sort({ order: 1 }).lean(),
+    ]);
 
-  // Enrich brands with actual discount count and sort by it
-  const enrichedBrands = brands.map((b: any) => ({
-    ...b,
-    _id: b._id?.toString(),
-    deal_count: brandDiscountCount[b.id] || 0,
-  })).sort((a: any, b: any) => b.deal_count - a.deal_count);
+    // Enrich brands with actual discount count and sort by it
+    const enrichedBrands = brands.map((b: any) => ({
+      ...b,
+      _id: b._id?.toString(),
+      deal_count: brandDiscountCount[b.id] || 0,
+    })).sort((a: any, b: any) => b.deal_count - a.deal_count);
 
-  // Count deals per category based on brand's category_ids
-  const categoryDealCount: Record<string, number> = {};
-  const categoryBrandCount: Record<string, number> = {};
-  
-  enrichedBrands.forEach((brand: any) => {
-    if (brand.category_ids && Array.isArray(brand.category_ids)) {
-      brand.category_ids.forEach((catId: string) => {
-        categoryDealCount[catId] = (categoryDealCount[catId] || 0) + (brand.deal_count || 0);
-        categoryBrandCount[catId] = (categoryBrandCount[catId] || 0) + 1;
-      });
-    }
-  });
-  
-  // Enrich categories with actual deal count from database
-  const enrichedCategories = categories.map((c: any) => ({
-    ...c,
-    _id: c._id?.toString(),
-    deal_count: categoryDealCount[c.id] || 0,
-    brand_count: categoryBrandCount[c.id] || 0,
-  })).filter((c: any) => c.name !== 'Test Kategori');
+    // Count deals per category based on brand's category_ids
+    const categoryDealCount: Record<string, number> = {};
+    const categoryBrandCount: Record<string, number> = {};
+    
+    enrichedBrands.forEach((brand: any) => {
+      if (brand.category_ids && Array.isArray(brand.category_ids)) {
+        brand.category_ids.forEach((catId: string) => {
+          categoryDealCount[catId] = (categoryDealCount[catId] || 0) + (brand.deal_count || 0);
+          categoryBrandCount[catId] = (categoryBrandCount[catId] || 0) + 1;
+        });
+      }
+    });
+    
+    // Enrich categories with actual deal count from database
+    const enrichedCategories = categories.map((c: any) => ({
+      ...c,
+      _id: c._id?.toString(),
+      deal_count: categoryDealCount[c.id] || 0,
+      brand_count: categoryBrandCount[c.id] || 0,
+    })).filter((c: any) => c.name !== 'Test Kategori');
 
-  const brandMap = new Map(enrichedBrands.map((b: any) => [b.id, b]));
-  
-  // Get featured discounts (only active ones)
-  const discounts = await Discount.find({ 
-    is_featured: true,
-    $or: [
-      { expiry_date: { $gte: now } },
-      { expiry_date: null },
-      { expiry_date: { $exists: false } },
-      { expiry_date: '' }
-    ]
-  }).sort({ created_at: -1 }).limit(12).lean();
-  
-  // If not enough featured, get latest active ones
-  let finalDiscounts = discounts;
-  if (discounts.length < 6) {
-    finalDiscounts = await Discount.find({
+    const brandMap = new Map(enrichedBrands.map((b: any) => [b.id, b]));
+    
+    // Get featured discounts (only active ones)
+    const discounts = await Discount.find({ 
+      is_featured: true,
       $or: [
         { expiry_date: { $gte: now } },
         { expiry_date: null },
@@ -113,19 +102,40 @@ async function getHomeData() {
         { expiry_date: '' }
       ]
     }).sort({ created_at: -1 }).limit(12).lean();
-  }
-  
-  const enrichedDiscounts = finalDiscounts.map((d: any) => ({
-    ...d,
-    _id: d._id?.toString(),
-    brand: brandMap.get(d.brand_id) || null,
-  }));
+    
+    // If not enough featured, get latest active ones
+    let finalDiscounts = discounts;
+    if (discounts.length < 6) {
+      finalDiscounts = await Discount.find({
+        $or: [
+          { expiry_date: { $gte: now } },
+          { expiry_date: null },
+          { expiry_date: { $exists: false } },
+          { expiry_date: '' }
+        ]
+      }).sort({ created_at: -1 }).limit(12).lean();
+    }
+    
+    const enrichedDiscounts = finalDiscounts.map((d: any) => ({
+      ...d,
+      _id: d._id?.toString(),
+      brand: brandMap.get(d.brand_id) || null,
+    }));
 
-  return {
-    brands: enrichedBrands,
-    discounts: enrichedDiscounts,
-    categories: enrichedCategories,
-  };
+    return {
+      brands: enrichedBrands,
+      discounts: enrichedDiscounts,
+      categories: enrichedCategories,
+    };
+  } catch (error) {
+    // Return empty data if DB is not available (during build)
+    console.error('Failed to fetch home data:', error);
+    return {
+      brands: [],
+      discounts: [],
+      categories: [],
+    };
+  }
 }
 
 export default async function HomePage() {
