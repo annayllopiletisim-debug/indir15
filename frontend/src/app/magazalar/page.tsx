@@ -13,7 +13,8 @@ export const metadata: Metadata = {
   },
 };
 
-export const dynamic = 'force-dynamic';
+// Cache for 10 minutes, revalidated on-demand when admin makes changes
+export const revalidate = 600;
 
 async function getAllBrands() {
   await connectDB();
