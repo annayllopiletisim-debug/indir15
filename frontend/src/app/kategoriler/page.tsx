@@ -81,6 +81,10 @@ async function getCategoriesWithStats() {
     brandCount: categoryBrandCount[cat.id] || 0,
     dealCount: categoryDealCount[cat.id] || 0,
   }));
+  } catch (error) {
+    console.error('Failed to fetch categories:', error);
+    return [];
+  }
 }
 
 export default async function CategoriesPage() {
