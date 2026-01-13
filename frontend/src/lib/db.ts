@@ -7,12 +7,9 @@ const MONGODB_URI = process.env.MONGO_URL || process.env.MONGODB_URI || '';
 // Database name - use from env or extract from connection string
 const DB_NAME = process.env.DB_NAME || 'indirimci-2-savvy_saver_db';
 
-// Check if we're in build phase (no DB available)
-const IS_BUILD_PHASE = process.env.NODE_ENV === 'production' && !MONGODB_URI;
-
-if (!MONGODB_URI && !IS_BUILD_PHASE) {
-  console.error('WARNING: MONGO_URL environment variable not defined');
-}
+// Detect build phase using Next.js internal variable
+// NEXT_PHASE is 'phase-production-build' during build
+const IS_BUILD_PHASE = process.env.NEXT_PHASE === 'phase-production-build';
 
 interface MongooseCache {
   conn: typeof mongoose | null;
@@ -30,7 +27,13 @@ if (!global.mongoose) {
 }
 
 export async function connectDB() {
-  // Return early if no URI configured (build phase or missing config)
+  // During build phase, skip database connection entirely
+  if (IS_BUILD_PHASE) {
+    console.log('[BUILD] Skipping database connection during build phase');
+    return null as any;
+  }
+  
+  // Return early if no URI configured
   if (!MONGODB_URI) {
     const errorMsg = 'Database connection failed: No MONGODB_URI configured';
     console.error(errorMsg);
@@ -44,9 +47,9 @@ export async function connectDB() {
   if (!cached.promise) {
     const opts = {
       bufferCommands: false,
-      serverSelectionTimeoutMS: 5000, // Reduced timeout for faster failure during build
-      connectTimeoutMS: 5000,
-      dbName: DB_NAME, // Explicitly specify database name
+      serverSelectionTimeoutMS: 10000,
+      connectTimeoutMS: 10000,
+      dbName: DB_NAME,
     };
 
     console.log(`Connecting to MongoDB (database: ${DB_NAME})...`);
