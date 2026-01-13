@@ -25,41 +25,47 @@ interface Props {
 }
 
 async function getCoupons(page: number) {
-  await connectDB();
-  const now = new Date();
-  const skip = (page - 1) * ITEMS_PER_PAGE;
-  
-  const filter = { 
-    is_active: true,
-    $or: [
-      { expiry_date: { $gte: now } },
-      { expiry_date: null },
-      { expiry_date: { $exists: false } },
-      { expiry_date: '' }
-    ]
-  };
-  
-  const [coupons, totalCount, brands] = await Promise.all([
-    Coupon.find(filter)
-      .sort({ created_at: -1 })
-      .skip(skip)
-      .limit(ITEMS_PER_PAGE)
-      .lean(),
-    Coupon.countDocuments(filter),
-    Brand.find({}).lean(),
-  ]);
-  
-  const brandMap = new Map(brands.map((b: any) => [b.id, b]));
-  
-  return {
-    coupons: coupons.map((c: any) => ({
-      ...c,
-      _id: c._id?.toString(),
-      brand: brandMap.get(c.brand_id) || null,
-    })),
-    totalCount,
-    totalPages: Math.ceil(totalCount / ITEMS_PER_PAGE),
-  };
+  try {
+    const conn = await connectDB();
+    if (!conn) return { coupons: [], totalCount: 0, totalPages: 0 }; // Build phase
+    const now = new Date();
+    const skip = (page - 1) * ITEMS_PER_PAGE;
+    
+    const filter = { 
+      is_active: true,
+      $or: [
+        { expiry_date: { $gte: now } },
+        { expiry_date: null },
+        { expiry_date: { $exists: false } },
+        { expiry_date: '' }
+      ]
+    };
+    
+    const [coupons, totalCount, brands] = await Promise.all([
+      Coupon.find(filter)
+        .sort({ created_at: -1 })
+        .skip(skip)
+        .limit(ITEMS_PER_PAGE)
+        .lean(),
+      Coupon.countDocuments(filter),
+      Brand.find({}).lean(),
+    ]);
+    
+    const brandMap = new Map(brands.map((b: any) => [b.id, b]));
+    
+    return {
+      coupons: coupons.map((c: any) => ({
+        ...c,
+        _id: c._id?.toString(),
+        brand: brandMap.get(c.brand_id) || null,
+      })),
+      totalCount,
+      totalPages: Math.ceil(totalCount / ITEMS_PER_PAGE),
+    };
+  } catch (error) {
+    console.error('Failed to fetch coupons:', error);
+    return { coupons: [], totalCount: 0, totalPages: 0 };
+  }
 }
 
 export default async function CouponsPage({ searchParams }: Props) {
