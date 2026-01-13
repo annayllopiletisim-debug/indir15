@@ -170,6 +170,10 @@ export default async function CategoryPage({ params }: Props) {
   if (!data) notFound();
   
   const { category, brands, discounts, coupons } = data;
+  const hasDeals = discounts.length > 0 || coupons.length > 0;
+  
+  // Get popular deals if no deals in this category
+  const popularDeals = hasDeals ? [] : await getPopularDealsForCategory();
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -225,7 +229,7 @@ export default async function CategoryPage({ params }: Props) {
         )}
 
         {/* Deals with Filter */}
-        {(discounts.length > 0 || coupons.length > 0) && (
+        {hasDeals && (
           <CategoryDealsFilter 
             discounts={discounts} 
             coupons={coupons}
@@ -233,9 +237,51 @@ export default async function CategoryPage({ params }: Props) {
           />
         )}
 
-        {discounts.length === 0 && coupons.length === 0 && (
-          <div className="text-center py-12 bg-white rounded-2xl">
-            <p className="text-gray-500">Bu kategoride henüz fırsat bulunmuyor.</p>
+        {!hasDeals && (
+          <div className="space-y-8">
+            {/* No deals message */}
+            <div className="text-center py-8 bg-white rounded-2xl border border-gray-100">
+              <p className="text-gray-600 text-lg">
+                Şu an <strong>{category.name}</strong> kategorisinde aktif indirim bulunmuyor.
+              </p>
+              <p className="text-gray-500 mt-2">Popüler indirimleri inceleyin.</p>
+            </div>
+
+            {/* Popular deals */}
+            {popularDeals.length > 0 && (
+              <section>
+                <div className="flex items-center gap-3 mb-6">
+                  <TrendingUp className="w-6 h-6 text-purple-600" />
+                  <h2 className="text-xl font-bold text-gray-800">Popüler İndirimler</h2>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                  {popularDeals.map((deal: any) => (
+                    <FeaturedDealCard
+                      key={deal.id}
+                      id={deal.id}
+                      title={deal.title}
+                      description={deal.description}
+                      discountText={deal.discount_text}
+                      imageUrl={deal.image_url || deal.brand?.default_deal_image}
+                      brandName={deal.brand?.name}
+                      brandSlug={deal.brand?.slug}
+                      brandLogo={deal.brand?.logo_url}
+                      expiryDate={deal.expiry_date}
+                      destinationUrl={deal.destination_url}
+                    />
+                  ))}
+                </div>
+                <div className="text-center mt-6">
+                  <Link
+                    href="/en-cok-tiklanan"
+                    className="inline-flex items-center gap-2 text-purple-600 hover:text-purple-700 font-medium"
+                  >
+                    Tüm Popüler İndirimleri Gör
+                    <ExternalLink className="w-4 h-4" />
+                  </Link>
+                </div>
+              </section>
+            )}
           </div>
         )}
       </div>
