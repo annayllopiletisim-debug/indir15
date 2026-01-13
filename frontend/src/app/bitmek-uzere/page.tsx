@@ -19,6 +19,9 @@ export const metadata: Metadata = {
 export const dynamic = 'force-dynamic';
 
 async function getExpiringDeals() {
+  try {
+    const conn = await connectDB();
+    if (!conn) return { discounts: [], coupons: [] }; // Build phase
   await connectDB();
   
   const now = new Date();
