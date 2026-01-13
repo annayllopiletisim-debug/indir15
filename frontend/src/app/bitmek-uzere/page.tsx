@@ -21,16 +21,16 @@ export const dynamic = 'force-dynamic';
 async function getExpiringDeals() {
   await connectDB();
   
-  const now = new Date();
-  const weekLater = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+  const nowISO = new Date().toISOString();
+  const weekLaterISO = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
   
   const [discounts, coupons, brands] = await Promise.all([
     Discount.find({
-      expiry_date: { $gte: now, $lte: weekLater }
+      expiry_date: { $gte: nowISO, $lte: weekLaterISO }
     }).sort({ expiry_date: 1 }).lean(),
     Coupon.find({
       is_active: true,
-      expiry_date: { $gte: now, $lte: weekLater }
+      expiry_date: { $gte: nowISO, $lte: weekLaterISO }
     }).sort({ expiry_date: 1 }).lean(),
     Brand.find({}).lean(),
   ]);
