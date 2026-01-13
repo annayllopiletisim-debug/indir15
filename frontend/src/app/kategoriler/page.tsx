@@ -16,52 +16,53 @@ export const metadata: Metadata = {
 export const revalidate = 900;
 
 async function getCategoriesWithStats() {
-  await connectDB();
-  const now = new Date();
-  
-  // Fetch all data in parallel with single queries
-  const [categories, brands, discountCounts, couponCounts] = await Promise.all([
-    Category.find({}).sort({ order: 1 }).lean(),
-    Brand.find({}).select('id category_ids').lean(),
-    // Single aggregation for all discounts
-    Discount.aggregate([
-      { $match: {
-        $or: [
-          { expiry_date: { $gte: now } },
-          { expiry_date: null },
-          { expiry_date: { $exists: false } },
-          { expiry_date: '' }
-        ]
-      }},
-      { $group: { _id: '$brand_id', count: { $sum: 1 } } }
-    ]),
-    // Single aggregation for all coupons
-    Coupon.aggregate([
-      { $match: { 
-        is_active: true,
-        $or: [
-          { expiry_date: { $gte: now } },
-          { expiry_date: null },
-          { expiry_date: { $exists: false } },
-          { expiry_date: '' }
-        ]
-      }},
-      { $group: { _id: '$brand_id', count: { $sum: 1 } } }
-    ])
-  ]);
-  
-  // Build brand deal count map
-  const brandDealCount: Record<string, number> = {};
-  discountCounts.forEach((d: any) => {
-    if (d._id) brandDealCount[d._id] = (brandDealCount[d._id] || 0) + d.count;
-  });
-  couponCounts.forEach((c: any) => {
-    if (c._id) brandDealCount[c._id] = (brandDealCount[c._id] || 0) + c.count;
-  });
-  
-  // Build category stats from brand data
-  const categoryBrandCount: Record<string, number> = {};
-  const categoryDealCount: Record<string, number> = {};
+  try {
+    await connectDB();
+    const now = new Date();
+    
+    // Fetch all data in parallel with single queries
+    const [categories, brands, discountCounts, couponCounts] = await Promise.all([
+      Category.find({}).sort({ order: 1 }).lean(),
+      Brand.find({}).select('id category_ids').lean(),
+      // Single aggregation for all discounts
+      Discount.aggregate([
+        { $match: {
+          $or: [
+            { expiry_date: { $gte: now } },
+            { expiry_date: null },
+            { expiry_date: { $exists: false } },
+            { expiry_date: '' }
+          ]
+        }},
+        { $group: { _id: '$brand_id', count: { $sum: 1 } } }
+      ]),
+      // Single aggregation for all coupons
+      Coupon.aggregate([
+        { $match: { 
+          is_active: true,
+          $or: [
+            { expiry_date: { $gte: now } },
+            { expiry_date: null },
+            { expiry_date: { $exists: false } },
+            { expiry_date: '' }
+          ]
+        }},
+        { $group: { _id: '$brand_id', count: { $sum: 1 } } }
+      ])
+    ]);
+    
+    // Build brand deal count map
+    const brandDealCount: Record<string, number> = {};
+    discountCounts.forEach((d: any) => {
+      if (d._id) brandDealCount[d._id] = (brandDealCount[d._id] || 0) + d.count;
+    });
+    couponCounts.forEach((c: any) => {
+      if (c._id) brandDealCount[c._id] = (brandDealCount[c._id] || 0) + c.count;
+    });
+    
+    // Build category stats from brand data
+    const categoryBrandCount: Record<string, number> = {};
+    const categoryDealCount: Record<string, number> = {};
   
   brands.forEach((brand: any) => {
     if (brand.category_ids && Array.isArray(brand.category_ids)) {
