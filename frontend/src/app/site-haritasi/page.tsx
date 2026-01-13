@@ -23,7 +23,7 @@ export const dynamic = 'force-dynamic'; // Her saat başı yenile
 
 async function getSiteMapData() {
   await connectDB();
-  const now = new Date();
+  const nowISO = new Date().toISOString();
   
   const [categories, brands, blogPosts, discountCount, couponCount] = await Promise.all([
     Category.find({}).sort({ order: 1, name: 1 }).lean(),
@@ -31,17 +31,19 @@ async function getSiteMapData() {
     BlogPost.find({ is_published: true }).sort({ published_at: -1 }).select('title slug').lean(),
     Discount.countDocuments({
       $or: [
-        { expiry_date: { $gte: now } },
+        { expiry_date: { $gte: nowISO } },
         { expiry_date: null },
-        { expiry_date: { $exists: false } }
+        { expiry_date: { $exists: false } },
+        { expiry_date: '' }
       ]
     }),
     Coupon.countDocuments({ 
       is_active: true,
       $or: [
-        { expiry_date: { $gte: now } },
+        { expiry_date: { $gte: nowISO } },
         { expiry_date: null },
-        { expiry_date: { $exists: false } }
+        { expiry_date: { $exists: false } },
+        { expiry_date: '' }
       ]
     }),
   ]);
