@@ -128,6 +128,41 @@ async function getCategoryData(slug: string) {
   };
 }
 
+// Get popular deals for empty category pages
+async function getPopularDealsForCategory() {
+  try {
+    const conn = await connectDB();
+    if (!conn) return [];
+    
+    const now = new Date();
+    
+    const [popularDiscounts, brands] = await Promise.all([
+      Discount.find({
+        $or: [
+          { expiry_date: { $gte: now } },
+          { expiry_date: null },
+          { expiry_date: { $exists: false } },
+        ],
+      })
+      .sort({ click_count: -1, created_at: -1 })
+      .limit(8)
+      .lean(),
+      Brand.find({}).lean(),
+    ]);
+    
+    const brandMap = new Map(brands.map((b: any) => [b.id, b]));
+    
+    return popularDiscounts.map((d: any) => ({
+      ...d,
+      _id: d._id?.toString(),
+      brand: brandMap.get(d.brand_id) || null,
+    }));
+  } catch (error) {
+    console.error('Failed to fetch popular deals:', error);
+    return [];
+  }
+}
+
 export default async function CategoryPage({ params }: Props) {
   const { slug } = await params;
   const data = await getCategoryData(slug);
