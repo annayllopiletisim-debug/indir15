@@ -17,23 +17,30 @@ export const metadata: Metadata = {
 export const revalidate = 1800;
 
 async function getBlogPosts() {
-  await connectDB();
-  const posts = await BlogPost.find({ is_published: true })
-    .sort({ published_at: -1, created_at: -1 })
-    .lean();
-  
-  return posts.map((p: any) => ({
-    id: p.id,
-    title: p.title,
-    slug: p.slug,
-    excerpt: p.excerpt,
-    featured_image: p.featured_image,
-    category: p.category,
-    author: p.author,
-    view_count: p.view_count || 0,
-    published_at: p.published_at ? (typeof p.published_at === 'string' ? p.published_at : p.published_at.toISOString()) : null,
-    created_at: p.created_at ? (typeof p.created_at === 'string' ? p.created_at : p.created_at.toISOString()) : null,
-  }));
+  try {
+    const conn = await connectDB();
+    if (!conn) return []; // Build phase
+    
+    const posts = await BlogPost.find({ is_published: true })
+      .sort({ published_at: -1, created_at: -1 })
+      .lean();
+    
+    return posts.map((p: any) => ({
+      id: p.id,
+      title: p.title,
+      slug: p.slug,
+      excerpt: p.excerpt,
+      featured_image: p.featured_image,
+      category: p.category,
+      author: p.author,
+      view_count: p.view_count || 0,
+      published_at: p.published_at ? (typeof p.published_at === 'string' ? p.published_at : p.published_at.toISOString()) : null,
+      created_at: p.created_at ? (typeof p.created_at === 'string' ? p.created_at : p.created_at.toISOString()) : null,
+    }));
+  } catch (error) {
+    console.error('Failed to fetch blog posts:', error);
+    return [];
+  }
 }
 
 export default async function BlogPage() {
