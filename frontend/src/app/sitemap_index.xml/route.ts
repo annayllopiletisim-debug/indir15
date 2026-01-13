@@ -1,13 +1,8 @@
+export const dynamic = 'force-dynamic';
+
 import { NextResponse } from 'next/server';
-import connectDB from '@/lib/db';
-import { Brand, Category, BlogPost, Discount } from '@/lib/models';
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://indirimkesfet.com';
-
-function formatDate(date: Date | string | null): string {
-  if (!date) return new Date().toISOString();
-  return new Date(date).toISOString();
-}
 
 export async function GET() {
   const now = new Date();
