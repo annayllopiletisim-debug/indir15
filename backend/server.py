@@ -2,6 +2,7 @@ from fastapi import FastAPI, Request
 from fastapi.responses import Response
 from fastapi.middleware.cors import CORSMiddleware
 import httpx
+import os
 
 app = FastAPI()
 
@@ -13,7 +14,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-FRONTEND_URL = "http://localhost:3000"
+# Get frontend URL from environment variable
+FRONTEND_URL = os.getenv('FRONTEND_URL', 'http://localhost:3000')
 
 @app.api_route("/{path:path}", methods=["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS", "HEAD"])
 async def proxy(request: Request, path: str):

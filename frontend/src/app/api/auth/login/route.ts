@@ -3,17 +3,18 @@ import { cookies } from 'next/headers';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 
-// Hardcoded credentials (fallback if env vars don't work)
-const FALLBACK_USERNAME = 'admin';
-const FALLBACK_PASSWORD_HASH = '$2b$10$RAtNBOxtp81Hjwtsfr.aVOIy7qWKY.LlKNyK9JjnmRemI59Vkzvya'; // Muzafferadmin*
-const FALLBACK_JWT_SECRET = 'indirimkesfet-secret-key-2026';
-
 export async function POST(request: Request) {
   try {
-    // Use env vars if available, otherwise use fallbacks
-    const jwtSecret = process.env.JWT_SECRET || FALLBACK_JWT_SECRET;
-    const adminUsername = process.env.ADMIN_USERNAME || FALLBACK_USERNAME;
-    const adminPasswordHash = process.env.ADMIN_PASSWORD_HASH || FALLBACK_PASSWORD_HASH;
+    // Get credentials from environment variables (required)
+    const jwtSecret = process.env.JWT_SECRET;
+    const adminUsername = process.env.ADMIN_USERNAME;
+    const adminPasswordHash = process.env.ADMIN_PASSWORD_HASH;
+
+    // Validate that all required env vars are set
+    if (!jwtSecret || !adminUsername || !adminPasswordHash) {
+      console.error('Missing required environment variables: JWT_SECRET, ADMIN_USERNAME, or ADMIN_PASSWORD_HASH');
+      return NextResponse.json({ error: 'Sunucu yapılandırma hatası' }, { status: 500 });
+    }
 
     const { username, password } = await request.json();
 
@@ -22,13 +23,8 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Geçersiz kullanıcı adı veya şifre' }, { status: 401 });
     }
 
-    // Try with env hash first, then fallback
-    let isValidPassword = bcrypt.compareSync(password, adminPasswordHash);
-    
-    // If env hash fails, try fallback hash
-    if (!isValidPassword && adminPasswordHash !== FALLBACK_PASSWORD_HASH) {
-      isValidPassword = bcrypt.compareSync(password, FALLBACK_PASSWORD_HASH);
-    }
+    // Check password
+    const isValidPassword = bcrypt.compareSync(password, adminPasswordHash);
     
     if (!isValidPassword) {
       return NextResponse.json({ error: 'Geçersiz kullanıcı adı veya şifre' }, { status: 401 });
