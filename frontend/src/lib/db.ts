@@ -5,21 +5,13 @@ const MONGODB_URI = process.env.MONGO_URL || process.env.MONGODB_URI || '';
 
 // Get database name - called at runtime each time
 function getDbName(): string {
-  console.log('[DB] Checking env vars:', {
-    MONGO_URL: process.env.MONGO_URL ? 'SET' : 'NOT_SET',
-    MONGODB_URI: process.env.MONGODB_URI ? 'SET' : 'NOT_SET',
-    DB_NAME: process.env.DB_NAME || 'NOT_SET'
-  });
-  
   // Explicit DB_NAME always wins
   if (process.env.DB_NAME) {
-    console.log('[DB] Using DB_NAME from env:', process.env.DB_NAME);
     return process.env.DB_NAME;
   }
   
   // If MONGO_URL is set, we're in production - use production db name
   if (process.env.MONGO_URL) {
-    console.log('[DB] Production mode (MONGO_URL set): using indirimci-2-savvy_saver_db');
     return 'indirimci-2-savvy_saver_db';
   }
   
@@ -29,12 +21,10 @@ function getDbName(): string {
     // Extract database name from mongodb://host:port/dbname
     const match = localUri.match(/\/([^/?]+)(\?|$)/);
     if (match && match[1]) {
-      console.log('[DB] Local mode: extracted db name from URI:', match[1]);
       return match[1];
     }
   }
   
-  console.log('[DB] Default: using savvy_saver_db');
   return 'savvy_saver_db';
 }
 
