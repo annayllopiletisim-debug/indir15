@@ -47,14 +47,13 @@ async function getBrandData(slug: string) {
   
   const brandId = (brand as any).id;
   
-  // Use ISO string for comparison since expiry_date might be stored as string
-  const nowISO = new Date().toISOString();
+  const now = new Date();
   
   const [discounts, coupons, giveaways] = await Promise.all([
     Discount.find({ 
       brand_id: brandId,
       $or: [
-        { expiry_date: { $gte: nowISO } },
+        { expiry_date: { $gte: now } },
         { expiry_date: null },
         { expiry_date: { $exists: false } },
         { expiry_date: '' }
@@ -64,7 +63,7 @@ async function getBrandData(slug: string) {
       brand_id: brandId, 
       is_active: true,
       $or: [
-        { expiry_date: { $gte: nowISO } },
+        { expiry_date: { $gte: now } },
         { expiry_date: null },
         { expiry_date: { $exists: false } },
         { expiry_date: '' }
@@ -73,7 +72,7 @@ async function getBrandData(slug: string) {
     Giveaway.find({ 
       brand_id: brandId,
       $or: [
-        { expiry_date: { $gte: nowISO } },
+        { expiry_date: { $gte: now } },
         { expiry_date: null },
         { expiry_date: { $exists: false } },
         { expiry_date: '' }
