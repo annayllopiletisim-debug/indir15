@@ -196,6 +196,7 @@ export default function AdminDiscountsPage() {
       is_featured: discount.is_featured || false,
       destination_url: discount.destination_url || '',
       image_url: discount.image_url || '',
+      tags: discount.tags || [],
     });
     setEditingId(discount.id);
     setShowForm(true);
