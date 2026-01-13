@@ -7,10 +7,6 @@ const MONGODB_URI = process.env.MONGO_URL || process.env.MONGODB_URI || '';
 // Database name - use from env or extract from connection string
 const DB_NAME = process.env.DB_NAME || 'indirimci-2-savvy_saver_db';
 
-// Detect build phase using Next.js internal variable
-// NEXT_PHASE is 'phase-production-build' during build
-const IS_BUILD_PHASE = process.env.NEXT_PHASE === 'phase-production-build';
-
 interface MongooseCache {
   conn: typeof mongoose | null;
   promise: Promise<typeof mongoose> | null;
@@ -27,8 +23,11 @@ if (!global.mongoose) {
 }
 
 export async function connectDB() {
+  // Check build phase at runtime (not module load time)
+  const isBuildPhase = process.env.NEXT_PHASE === 'phase-production-build';
+  
   // During build phase, skip database connection entirely
-  if (IS_BUILD_PHASE) {
+  if (isBuildPhase) {
     console.log('[BUILD] Skipping database connection during build phase');
     return null as any;
   }
