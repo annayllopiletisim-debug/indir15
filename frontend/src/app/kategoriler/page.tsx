@@ -12,7 +12,8 @@ export const metadata: Metadata = {
   },
 };
 
-export const dynamic = 'force-dynamic';
+// Cache for 15 minutes, revalidated on-demand when admin makes changes
+export const revalidate = 900;
 
 async function getCategoriesWithStats() {
   await connectDB();

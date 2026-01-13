@@ -13,7 +13,8 @@ export const metadata: Metadata = {
   description: 'Binlerce mağazadan en güncel indirimler, kupon kodları ve çekilişler. İndirim Keşfet ile tasarruf etmeye başlayın!',
 };
 
-export const dynamic = 'force-dynamic';
+// Cache for 5 minutes, revalidated on-demand when admin makes changes
+export const revalidate = 300;
 
 async function getHomeData() {
   await connectDB();
