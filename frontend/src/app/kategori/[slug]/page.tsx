@@ -5,8 +5,9 @@ import { notFound } from 'next/navigation';
 import connectDB from '@/lib/db';
 import { Category, Brand, Discount, Coupon } from '@/lib/models';
 import { getImageUrl } from '@/lib/image';
-import { Store } from 'lucide-react';
+import { Store, TrendingUp, ExternalLink } from 'lucide-react';
 import CategoryDealsFilter from '@/components/CategoryDealsFilter';
+import FeaturedDealCard from '@/components/FeaturedDealCard';
 
 interface Props {
   params: Promise<{ slug: string }>;
