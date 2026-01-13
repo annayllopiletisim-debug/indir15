@@ -21,7 +21,20 @@ interface Discount {
   is_featured?: boolean;
   destination_url?: string;
   image_url?: string;
+  tags?: string[];
 }
+
+// Kampanya etiketleri listesi
+const CAMPAIGN_TAGS = [
+  { value: 'black-friday', label: 'Black Friday' },
+  { value: 'cyber-monday', label: 'Cyber Monday' },
+  { value: '11-11', label: '11.11 Bekarlar Günü' },
+  { value: 'yilbasi', label: 'Yılbaşı' },
+  { value: 'sevgililer-gunu', label: 'Sevgililer Günü' },
+  { value: 'anneler-gunu', label: 'Anneler Günü' },
+  { value: 'babalar-gunu', label: 'Babalar Günü' },
+  { value: 'ramazan', label: 'Ramazan' },
+];
 
 export default function AdminDiscountsPage() {
   const [discounts, setDiscounts] = useState<Discount[]>([]);
@@ -48,6 +61,7 @@ export default function AdminDiscountsPage() {
     is_featured: false,
     destination_url: '',
     image_url: '',
+    tags: [] as string[],
   });
 
   useEffect(() => {
