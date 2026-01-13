@@ -1,7 +1,8 @@
 import mongoose from 'mongoose';
 
-// Use ONLY MONGO_URL provided by Emergent - ignore MONGODB_URI completely
-const MONGODB_URI = process.env.MONGO_URL || '';
+// Use MONGO_URL (Emergent production) first, then MONGODB_URI (local/preview) as fallback
+// In production, ONLY MONGO_URL will be available
+const MONGODB_URI = process.env.MONGO_URL || process.env.MONGODB_URI || '';
 
 // Database name
 const DB_NAME = process.env.DB_NAME || 'indirimci-2-savvy_saver_db';
