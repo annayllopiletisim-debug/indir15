@@ -4,10 +4,13 @@ import mongoose from 'mongoose';
 // In production, ONLY MONGO_URL will be available
 const MONGODB_URI = process.env.MONGO_URL || process.env.MONGODB_URI || '';
 
-// Database name
+// Database name - use from env or extract from connection string
 const DB_NAME = process.env.DB_NAME || 'indirimci-2-savvy_saver_db';
 
-if (!MONGODB_URI) {
+// Check if we're in build phase (no DB available)
+const IS_BUILD_PHASE = process.env.NODE_ENV === 'production' && !MONGODB_URI;
+
+if (!MONGODB_URI && !IS_BUILD_PHASE) {
   console.error('WARNING: MONGO_URL environment variable not defined');
 }
 
@@ -27,10 +30,11 @@ if (!global.mongoose) {
 }
 
 export async function connectDB() {
-  // Return early if no URI configured
+  // Return early if no URI configured (build phase or missing config)
   if (!MONGODB_URI) {
-    console.error('Database connection failed: No MONGODB_URI configured');
-    throw new Error('Database not configured');
+    const errorMsg = 'Database connection failed: No MONGODB_URI configured';
+    console.error(errorMsg);
+    throw new Error(errorMsg);
   }
 
   if (cached.conn) {
@@ -40,8 +44,8 @@ export async function connectDB() {
   if (!cached.promise) {
     const opts = {
       bufferCommands: false,
-      serverSelectionTimeoutMS: 10000,
-      connectTimeoutMS: 10000,
+      serverSelectionTimeoutMS: 5000, // Reduced timeout for faster failure during build
+      connectTimeoutMS: 5000,
       dbName: DB_NAME, // Explicitly specify database name
     };
 
