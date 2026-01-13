@@ -18,7 +18,20 @@ interface Coupon {
   discount_text?: string;
   expiry_date?: string;
   is_active?: boolean;
+  tags?: string[];
 }
+
+// Kampanya etiketleri listesi
+const CAMPAIGN_TAGS = [
+  { value: 'black-friday', label: 'Black Friday' },
+  { value: 'cyber-monday', label: 'Cyber Monday' },
+  { value: '11-11', label: '11.11 Bekarlar Günü' },
+  { value: 'yilbasi', label: 'Yılbaşı' },
+  { value: 'sevgililer-gunu', label: 'Sevgililer Günü' },
+  { value: 'anneler-gunu', label: 'Anneler Günü' },
+  { value: 'babalar-gunu', label: 'Babalar Günü' },
+  { value: 'ramazan', label: 'Ramazan' },
+];
 
 export default function AdminCouponsPage() {
   const [coupons, setCoupons] = useState<Coupon[]>([]);
@@ -42,6 +55,7 @@ export default function AdminCouponsPage() {
     discount_text: '',
     expiry_date: '',
     is_active: true,
+    tags: [] as string[],
   });
 
   useEffect(() => {
