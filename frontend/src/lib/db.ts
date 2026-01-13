@@ -4,7 +4,7 @@ import mongoose from 'mongoose';
 const MONGODB_URI = process.env.MONGO_URL || process.env.MONGODB_URI || '';
 
 // Database name - extract from URI or use default
-const DB_NAME = process.env.DB_NAME || 'savvy_saver_db';
+const DB_NAME = process.env.DB_NAME || 'indirimci-2-savvy_saver_db';
 
 if (!MONGODB_URI) {
   console.error('WARNING: MONGO_URL or MONGODB_URI environment variable not defined');
