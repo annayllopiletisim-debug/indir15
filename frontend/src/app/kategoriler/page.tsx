@@ -17,7 +17,8 @@ export const revalidate = 900;
 
 async function getCategoriesWithStats() {
   try {
-    await connectDB();
+    const conn = await connectDB();
+    if (!conn) return []; // Build phase
     const now = new Date();
     
     // Fetch all data in parallel with single queries
