@@ -1,3 +1,6 @@
+// Force dynamic rendering to avoid build-time DB connections
+export const dynamic = 'force-dynamic';
+
 import Link from 'next/link';
 import { Home, Search, ArrowLeft } from 'lucide-react';
 
