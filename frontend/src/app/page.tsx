@@ -92,9 +92,10 @@ async function getHomeData() {
   const discounts = await Discount.find({ 
     is_featured: true,
     $or: [
-      { expiry_date: { $gte: now } },
+      { expiry_date: { $gte: nowISO } },
       { expiry_date: null },
-      { expiry_date: { $exists: false } }
+      { expiry_date: { $exists: false } },
+      { expiry_date: '' }
     ]
   }).sort({ created_at: -1 }).limit(12).lean();
   
@@ -103,9 +104,10 @@ async function getHomeData() {
   if (discounts.length < 6) {
     finalDiscounts = await Discount.find({
       $or: [
-        { expiry_date: { $gte: now } },
+        { expiry_date: { $gte: nowISO } },
         { expiry_date: null },
-        { expiry_date: { $exists: false } }
+        { expiry_date: { $exists: false } },
+        { expiry_date: '' }
       ]
     }).sort({ created_at: -1 }).limit(12).lean();
   }
