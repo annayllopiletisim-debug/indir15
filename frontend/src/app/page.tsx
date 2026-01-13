@@ -17,23 +17,25 @@ export const dynamic = 'force-dynamic';
 
 async function getHomeData() {
   await connectDB();
-  const now = new Date();
+  const nowISO = new Date().toISOString();
   
   // Get all active discounts and coupons to count per brand
   const [allDiscounts, allCoupons] = await Promise.all([
     Discount.find({
       $or: [
-        { expiry_date: { $gte: now } },
+        { expiry_date: { $gte: nowISO } },
         { expiry_date: null },
-        { expiry_date: { $exists: false } }
+        { expiry_date: { $exists: false } },
+        { expiry_date: '' }
       ]
     }).lean(),
     (await import('@/lib/models')).Coupon.find({ 
       is_active: true,
       $or: [
-        { expiry_date: { $gte: now } },
+        { expiry_date: { $gte: nowISO } },
         { expiry_date: null },
-        { expiry_date: { $exists: false } }
+        { expiry_date: { $exists: false } },
+        { expiry_date: '' }
       ]
     }).lean(),
   ]);
