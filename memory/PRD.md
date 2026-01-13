@@ -121,7 +121,17 @@
 └── next.config.ts
 ```
 
-## Son Güncelleme: 9 Ocak 2026
+## Son Güncelleme: 13 Ocak 2026
+
+### Performans ve Hata Düzeltmeleri (13 Ocak 2026)
+- ✅ **Resim 400 Hataları Düzeltildi:** Backend proxy'de HEAD method desteği eklendi
+- ✅ **Hop-by-hop Header Sorunu:** Proxy response header'larında filtreleme eklendi
+- ✅ **Favicon Düzeltildi:** Boş favicon.ico dosyası düzgün 1234 byte ICO ile değiştirildi
+- ✅ **og-image.png Eklendi:** Open Graph görsel dosyası oluşturuldu
+- ✅ **Admin Şifresi:** `Muzafferadmin*` olarak güncellendi ve çalışıyor
+- ✅ **Test:** 15/15 backend testi başarılı, frontend %100 çalışıyor
+
+### Önceki Güncellemeler (9 Ocak 2026)
 - **Admin login düzeltildi:** bcrypt hash escape sorunu giderildi (.env.local'da `$` karakteri escape edildi)
 - **Admin form validasyonu test edildi:** `/uploads/` path'li görseller sorunsuz kaydediliyor - bug kapalı
 - **Build başarılı:** Tüm sayfa tipleri doğru render ediliyor (Static/Dynamic)
