@@ -30,6 +30,7 @@ const DiscountSchema = new Schema({
   destination_url: String,
   image_url: String,
   click_count: { type: Number, default: 0 },
+  tags: [String], // Kampanya etiketleri (black-friday, sevgililer-gunu vb.)
   created_at: { type: Date, default: Date.now },
 }, { collection: 'discounts' });
 
@@ -46,6 +47,7 @@ const CouponSchema = new Schema({
   destination_url: String,
   is_active: { type: Boolean, default: true },
   click_count: { type: Number, default: 0 },
+  tags: [String], // Kampanya etiketleri (black-friday, sevgililer-gunu vb.)
   created_at: { type: Date, default: Date.now },
 }, { collection: 'coupons' });
 
