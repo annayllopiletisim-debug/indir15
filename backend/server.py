@@ -17,8 +17,10 @@ FRONTEND_URL = "http://localhost:3000"
 
 @app.api_route("/{path:path}", methods=["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"])
 async def proxy(request: Request, path: str):
-    async with httpx.AsyncClient() as client:
-        url = f"{FRONTEND_URL}/{path}"
+    async with httpx.AsyncClient(timeout=60.0) as client:
+        # Ensure path starts with /
+        clean_path = path if path.startswith('/') else f'/{path}'
+        url = f"{FRONTEND_URL}{clean_path}"
         
         # Forward the request
         response = await client.request(
