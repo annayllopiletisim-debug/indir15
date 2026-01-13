@@ -4,7 +4,11 @@ import CategoryBar from './CategoryBar';
 
 async function getCategories() {
   try {
-    await connectDB();
+    const conn = await connectDB();
+    // If connection is null (build phase), return empty
+    if (!conn) {
+      return [];
+    }
     const categories = await Category.find({}).sort({ order: 1 }).lean();
     return categories.map((c: any) => ({
       id: c.id,
@@ -21,7 +25,7 @@ async function getCategories() {
 
 export default async function CategoryBarWrapper() {
   const categories = await getCategories();
-  // Don't render if no categories (build time)
+  // Don't render if no categories (build time or empty DB)
   if (categories.length === 0) {
     return null;
   }
