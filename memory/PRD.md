@@ -123,6 +123,11 @@
 
 ## Son Güncelleme: 13 Ocak 2026
 
+### Kritik Bug Fix: Tarih Filtreleme Sorunu (13 Ocak 2026)
+- ✅ **DÜZELTILDI: İndirimler Görünmüyor Hatası:** Veritabanında `expiry_date` alanları string olarak saklanıyordu, Date olarak değil. Bu nedenle MongoDB sorguları (`$gte: now`) çalışmıyordu.
+- ✅ **Çözüm:** 57 discount kaydının tarih formatı string'den Date nesnesine dönüştürüldü (migration script)
+- ✅ **Etkilenen Sayfalar:** Ana sayfa, mağaza detay, kategori, kuponlar, indirimler, bitmek üzere, site haritası - tümü düzeltildi
+
 ### Performans ve Hata Düzeltmeleri (13 Ocak 2026)
 - ✅ **Resim 400 Hataları Düzeltildi:** Backend proxy'de HEAD method desteği eklendi
 - ✅ **Hop-by-hop Header Sorunu:** Proxy response header'larında filtreleme eklendi
