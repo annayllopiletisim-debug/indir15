@@ -238,9 +238,18 @@ export default function AdminDiscountsPage() {
   };
 
   const resetForm = () => {
-    setFormData({ brand_id: '', title: '', description: '', discount_text: '', expiry_date: '', is_featured: false, destination_url: '', image_url: '' });
+    setFormData({ brand_id: '', title: '', description: '', discount_text: '', expiry_date: '', is_featured: false, destination_url: '', image_url: '', tags: [] });
     setEditingId(null);
     setShowForm(false);
+  };
+
+  const toggleTag = (tag: string) => {
+    setFormData(prev => ({
+      ...prev,
+      tags: prev.tags.includes(tag) 
+        ? prev.tags.filter(t => t !== tag)
+        : [...prev.tags, tag]
+    }));
   };
 
   const getBrandName = (brandId: string) => brands.find(b => b.id === brandId)?.name || '-';
