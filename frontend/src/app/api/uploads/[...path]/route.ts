@@ -14,6 +14,12 @@ const MIME_TYPES: Record<string, string> = {
   'svg': 'image/svg+xml',
 };
 
+// Simple 1x1 transparent PNG placeholder
+const PLACEHOLDER_PNG = Buffer.from(
+  'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==',
+  'base64'
+);
+
 export async function GET(
   request: Request,
   { params }: { params: Promise<{ path: string[] }> }
@@ -25,11 +31,22 @@ export async function GET(
 
     // Security: Prevent directory traversal
     if (!filepath.startsWith(UPLOAD_DIR)) {
-      return NextResponse.json({ error: 'Invalid path' }, { status: 400 });
+      return new NextResponse(PLACEHOLDER_PNG, {
+        headers: {
+          'Content-Type': 'image/png',
+          'Cache-Control': 'public, max-age=60',
+        },
+      });
     }
 
     if (!existsSync(filepath)) {
-      return NextResponse.json({ error: 'File not found' }, { status: 404 });
+      // Return placeholder image instead of JSON error
+      return new NextResponse(PLACEHOLDER_PNG, {
+        headers: {
+          'Content-Type': 'image/png',
+          'Cache-Control': 'public, max-age=60',
+        },
+      });
     }
 
     const file = await readFile(filepath);
@@ -44,6 +61,12 @@ export async function GET(
     });
   } catch (error) {
     console.error('Error serving file:', error);
-    return NextResponse.json({ error: 'Error serving file' }, { status: 500 });
+    // Return placeholder on error
+    return new NextResponse(PLACEHOLDER_PNG, {
+      headers: {
+        'Content-Type': 'image/png',
+        'Cache-Control': 'public, max-age=60',
+      },
+    });
   }
 }
