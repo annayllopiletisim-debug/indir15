@@ -363,6 +363,26 @@ export default function AdminCouponsPage() {
                 className="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white"
               />
             </div>
+            <div className="col-span-2">
+              <label className="block text-sm text-gray-400 mb-2">Kampanya Etiketleri</label>
+              <div className="flex flex-wrap gap-2">
+                {CAMPAIGN_TAGS.map(tag => (
+                  <button
+                    key={tag.value}
+                    type="button"
+                    onClick={() => toggleTag(tag.value)}
+                    className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
+                      formData.tags.includes(tag.value)
+                        ? 'bg-purple-600 text-white'
+                        : 'bg-slate-700 text-gray-300 hover:bg-slate-600'
+                    }`}
+                  >
+                    {tag.label}
+                  </button>
+                ))}
+              </div>
+              <p className="text-xs text-gray-500 mt-1">Seçilen etiketler kampanya sayfalarında görünür</p>
+            </div>
             <div className="col-span-2 flex gap-2">
               <button type="submit" className="px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700">
                 {editingId ? 'Güncelle' : 'Kaydet'}
