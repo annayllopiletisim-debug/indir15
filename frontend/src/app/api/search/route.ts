@@ -55,11 +55,11 @@ export async function GET(request: Request) {
   
   const normalizedQuery = normalizeText(query);
   
-  // Get all brands and discounts for searching
+  // Get brands and discounts with only needed fields (optimized)
   const [allBrands, allDiscounts, allCoupons] = await Promise.all([
-    Brand.find({}).limit(300).lean(),
-    Discount.find({}).limit(100).lean(),
-    Coupon.find({ is_active: true }).limit(100).lean(),
+    Brand.find({}).select('id name slug logo_url').limit(300).lean(),
+    Discount.find({}).select('id brand_id title slug').limit(100).lean(),
+    Coupon.find({ is_active: true }).select('id brand_id title').limit(100).lean(),
   ]);
   
   // Count deals per brand
