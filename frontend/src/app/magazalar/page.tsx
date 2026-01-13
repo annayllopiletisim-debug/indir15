@@ -71,6 +71,10 @@ async function getAllBrands() {
     })).sort((a: any, b: any) => b.deal_count - a.deal_count),
     categories: categories.map((c: any) => ({ ...c, _id: c._id?.toString() }))
   };
+  } catch (error) {
+    console.error('Failed to fetch brands:', error);
+    return { brands: [], categories: [] };
+  }
 }
 
 export default async function StoresPage() {
