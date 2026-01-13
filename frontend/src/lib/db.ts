@@ -1,13 +1,13 @@
 import mongoose from 'mongoose';
 
-// Connection string from environment - use MONGO_URL for Emergent deployments
-const MONGODB_URI = process.env.MONGO_URL || process.env.MONGODB_URI || '';
+// Use ONLY MONGO_URL provided by Emergent - ignore MONGODB_URI completely
+const MONGODB_URI = process.env.MONGO_URL || '';
 
-// Database name - extract from URI or use default
+// Database name
 const DB_NAME = process.env.DB_NAME || 'indirimci-2-savvy_saver_db';
 
 if (!MONGODB_URI) {
-  console.error('WARNING: MONGO_URL or MONGODB_URI environment variable not defined');
+  console.error('WARNING: MONGO_URL environment variable not defined');
 }
 
 interface MongooseCache {
