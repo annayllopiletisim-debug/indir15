@@ -18,21 +18,27 @@ export const metadata: Metadata = {
 export const dynamic = 'force-dynamic';
 
 async function getLast24HoursDeals() {
-  await connectDB();
-  const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000);
-  
-  const [discounts, coupons, brands] = await Promise.all([
-    Discount.find({ created_at: { $gte: yesterday } }).sort({ created_at: -1 }).lean(),
-    Coupon.find({ created_at: { $gte: yesterday }, is_active: true }).sort({ created_at: -1 }).lean(),
-    Brand.find({}).lean(),
-  ]);
-  
-  const brandMap = new Map(brands.map((b: any) => [b.id, b]));
-  
-  return {
-    discounts: discounts.map((d: any) => ({ ...d, _id: d._id?.toString(), brand: brandMap.get(d.brand_id) })),
-    coupons: coupons.map((c: any) => ({ ...c, _id: c._id?.toString(), brand: brandMap.get(c.brand_id) })),
-  };
+  try {
+    const conn = await connectDB();
+    if (!conn) return { discounts: [], coupons: [] }; // Build phase
+    const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000);
+    
+    const [discounts, coupons, brands] = await Promise.all([
+      Discount.find({ created_at: { $gte: yesterday } }).sort({ created_at: -1 }).lean(),
+      Coupon.find({ created_at: { $gte: yesterday }, is_active: true }).sort({ created_at: -1 }).lean(),
+      Brand.find({}).lean(),
+    ]);
+    
+    const brandMap = new Map(brands.map((b: any) => [b.id, b]));
+    
+    return {
+      discounts: discounts.map((d: any) => ({ ...d, _id: d._id?.toString(), brand: brandMap.get(d.brand_id) })),
+      coupons: coupons.map((c: any) => ({ ...c, _id: c._id?.toString(), brand: brandMap.get(c.brand_id) })),
+    };
+  } catch (error) {
+    console.error('Failed to fetch last 24 hours deals:', error);
+    return { discounts: [], coupons: [] };
+  }
 }
 
 export default async function Last24HoursPage() {
