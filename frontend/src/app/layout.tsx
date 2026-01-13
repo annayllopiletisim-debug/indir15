@@ -96,6 +96,11 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-screen bg-background text-foreground antialiased">
+        {/* Top Loading Bar */}
+        <Suspense fallback={null}>
+          <TopLoadingBar />
+        </Suspense>
+        
         {/* Google Tag Manager (noscript) */}
         <noscript>
           <iframe
