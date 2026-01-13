@@ -25,13 +25,13 @@ interface Props {
 
 async function getCoupons(page: number) {
   await connectDB();
-  const nowISO = new Date().toISOString();
+  const now = new Date();
   const skip = (page - 1) * ITEMS_PER_PAGE;
   
   const filter = { 
     is_active: true,
     $or: [
-      { expiry_date: { $gte: nowISO } },
+      { expiry_date: { $gte: now } },
       { expiry_date: null },
       { expiry_date: { $exists: false } },
       { expiry_date: '' }

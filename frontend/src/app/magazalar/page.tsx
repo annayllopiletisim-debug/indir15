@@ -17,7 +17,7 @@ export const dynamic = 'force-dynamic';
 
 async function getAllBrands() {
   await connectDB();
-  const nowISO = new Date().toISOString();
+  const now = new Date();
   
   // Get all brands
   const brands = await Brand.find({}).select('id name slug logo_url category_ids').sort({ name: 1 }).limit(500).lean();
@@ -27,7 +27,7 @@ async function getAllBrands() {
     Discount.aggregate([
       { $match: {
         $or: [
-          { expiry_date: { $gte: nowISO } },
+          { expiry_date: { $gte: now } },
           { expiry_date: null },
           { expiry_date: { $exists: false } },
           { expiry_date: '' }
@@ -39,7 +39,7 @@ async function getAllBrands() {
       { $match: { 
         is_active: true,
         $or: [
-          { expiry_date: { $gte: nowISO } },
+          { expiry_date: { $gte: now } },
           { expiry_date: null },
           { expiry_date: { $exists: false } },
           { expiry_date: '' }

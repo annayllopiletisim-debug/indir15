@@ -48,7 +48,7 @@ async function getCategoryData(slug: string) {
   
   let discounts: any[] = [];
   let coupons: any[] = [];
-  const nowISO = new Date().toISOString();
+  const now = new Date();
   
   if (brandIds.length > 0) {
     // Get active deals from these brands (filter expired)
@@ -56,7 +56,7 @@ async function getCategoryData(slug: string) {
       Discount.find({ 
         brand_id: { $in: brandIds },
         $or: [
-          { expiry_date: { $gte: nowISO } },
+          { expiry_date: { $gte: now } },
           { expiry_date: null },
           { expiry_date: { $exists: false } },
           { expiry_date: '' }
@@ -66,7 +66,7 @@ async function getCategoryData(slug: string) {
         brand_id: { $in: brandIds }, 
         is_active: true,
         $or: [
-          { expiry_date: { $gte: nowISO } },
+          { expiry_date: { $gte: now } },
           { expiry_date: null },
           { expiry_date: { $exists: false } },
           { expiry_date: '' }

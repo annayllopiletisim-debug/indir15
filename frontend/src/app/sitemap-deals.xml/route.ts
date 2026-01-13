@@ -12,13 +12,13 @@ function formatDate(date: Date | string | null): string {
 
 export async function GET() {
   await connectDB();
-  const nowISO = new Date().toISOString();
+  const now = new Date();
   
   // Get active discounts only
   const [discounts, brands] = await Promise.all([
     Discount.find({
       $or: [
-        { expiry_date: { $gte: nowISO } },
+        { expiry_date: { $gte: now } },
         { expiry_date: null },
         { expiry_date: { $exists: false } },
         { expiry_date: '' }

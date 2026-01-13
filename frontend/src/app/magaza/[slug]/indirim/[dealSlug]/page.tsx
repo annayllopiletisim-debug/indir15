@@ -58,14 +58,14 @@ async function getDealData(dealSlug: string, brandSlug: string) {
   if (!discount) return null;
   
   // Parallel queries for brand, related discounts, and deal counts
-  const nowISO = new Date().toISOString();
+  const now = new Date();
   const [brand, relatedDiscounts, allDiscounts, allCoupons] = await Promise.all([
     Brand.findOne({ id: (discount as any).brand_id }).lean(),
     Discount.find({
       brand_id: (discount as any).brand_id,
       id: { $ne: (discount as any).id },
       $or: [
-        { expiry_date: { $gte: nowISO } },
+        { expiry_date: { $gte: now } },
         { expiry_date: null },
         { expiry_date: { $exists: false } },
         { expiry_date: '' }
@@ -74,7 +74,7 @@ async function getDealData(dealSlug: string, brandSlug: string) {
     Discount.countDocuments({ 
       brand_id: (discount as any).brand_id,
       $or: [
-        { expiry_date: { $gte: nowISO } },
+        { expiry_date: { $gte: now } },
         { expiry_date: null },
         { expiry_date: { $exists: false } },
         { expiry_date: '' }
@@ -84,7 +84,7 @@ async function getDealData(dealSlug: string, brandSlug: string) {
       brand_id: (discount as any).brand_id, 
       is_active: true,
       $or: [
-        { expiry_date: { $gte: nowISO } },
+        { expiry_date: { $gte: now } },
         { expiry_date: null },
         { expiry_date: { $exists: false } },
         { expiry_date: '' }
