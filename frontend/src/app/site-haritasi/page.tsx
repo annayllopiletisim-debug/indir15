@@ -22,56 +22,72 @@ export const metadata: Metadata = {
 export const dynamic = 'force-dynamic'; // Her saat başı yenile
 
 async function getSiteMapData() {
-  await connectDB();
-  const now = new Date();
-  
-  const [categories, brands, blogPosts, discountCount, couponCount] = await Promise.all([
-    Category.find({}).sort({ order: 1, name: 1 }).lean(),
-    Brand.find({}).sort({ name: 1 }).lean(),
-    BlogPost.find({ is_published: true }).sort({ published_at: -1 }).select('title slug').lean(),
-    Discount.countDocuments({
-      $or: [
-        { expiry_date: { $gte: now } },
-        { expiry_date: null },
-        { expiry_date: { $exists: false } },
-        { expiry_date: '' }
-      ]
-    }),
-    Coupon.countDocuments({ 
-      is_active: true,
-      $or: [
-        { expiry_date: { $gte: now } },
-        { expiry_date: null },
-        { expiry_date: { $exists: false } },
-        { expiry_date: '' }
-      ]
-    }),
-  ]);
+  try {
+    const conn = await connectDB();
+    if (!conn) return { 
+      categories: [], 
+      brands: [], 
+      blogPosts: [], 
+      stats: { discountCount: 0, couponCount: 0, brandCount: 0, categoryCount: 0, blogCount: 0 } 
+    }; // Build phase
+    const now = new Date();
+    
+    const [categories, brands, blogPosts, discountCount, couponCount] = await Promise.all([
+      Category.find({}).sort({ order: 1, name: 1 }).lean(),
+      Brand.find({}).sort({ name: 1 }).lean(),
+      BlogPost.find({ is_published: true }).sort({ published_at: -1 }).select('title slug').lean(),
+      Discount.countDocuments({
+        $or: [
+          { expiry_date: { $gte: now } },
+          { expiry_date: null },
+          { expiry_date: { $exists: false } },
+          { expiry_date: '' }
+        ]
+      }),
+      Coupon.countDocuments({ 
+        is_active: true,
+        $or: [
+          { expiry_date: { $gte: now } },
+          { expiry_date: null },
+          { expiry_date: { $exists: false } },
+          { expiry_date: '' }
+        ]
+      }),
+    ]);
 
-  return {
-    categories: categories.map((c: any) => ({
-      id: c.id,
-      name: c.name,
-      slug: c.slug,
-      icon: c.icon,
-    })),
-    brands: brands.map((b: any) => ({
-      id: b.id,
-      name: b.name,
-      slug: b.slug,
-    })),
-    blogPosts: blogPosts.map((p: any) => ({
-      title: p.title,
-      slug: p.slug,
-    })),
-    stats: {
-      discountCount,
-      couponCount,
-      brandCount: brands.length,
-      categoryCount: categories.length,
-      blogCount: blogPosts.length,
-    },
-  };
+    return {
+      categories: categories.map((c: any) => ({
+        id: c.id,
+        name: c.name,
+        slug: c.slug,
+        icon: c.icon,
+      })),
+      brands: brands.map((b: any) => ({
+        id: b.id,
+        name: b.name,
+        slug: b.slug,
+      })),
+      blogPosts: blogPosts.map((p: any) => ({
+        title: p.title,
+        slug: p.slug,
+      })),
+      stats: {
+        discountCount,
+        couponCount,
+        brandCount: brands.length,
+        categoryCount: categories.length,
+        blogCount: blogPosts.length,
+      },
+    };
+  } catch (error) {
+    console.error('Failed to fetch sitemap data:', error);
+    return { 
+      categories: [], 
+      brands: [], 
+      blogPosts: [], 
+      stats: { discountCount: 0, couponCount: 0, brandCount: 0, categoryCount: 0, blogCount: 0 } 
+    };
+  }
 }
 
 // JSON-LD for SiteNavigationElement
