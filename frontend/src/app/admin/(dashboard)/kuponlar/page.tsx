@@ -203,9 +203,18 @@ export default function AdminCouponsPage() {
   };
 
   const resetForm = () => {
-    setFormData({ brand_id: '', title: '', code: '', discount_text: '', expiry_date: '', is_active: true });
+    setFormData({ brand_id: '', title: '', code: '', discount_text: '', expiry_date: '', is_active: true, tags: [] });
     setEditingId(null);
     setShowForm(false);
+  };
+
+  const toggleTag = (tag: string) => {
+    setFormData(prev => ({
+      ...prev,
+      tags: prev.tags.includes(tag) 
+        ? prev.tags.filter(t => t !== tag)
+        : [...prev.tags, tag]
+    }));
   };
 
   const getBrandName = (brandId: string) => brands.find(b => b.id === brandId)?.name || '-';
