@@ -3,6 +3,9 @@ import mongoose from 'mongoose';
 // Connection string from environment - use MONGO_URL for Emergent deployments
 const MONGODB_URI = process.env.MONGO_URL || process.env.MONGODB_URI || '';
 
+// Database name - extract from URI or use default
+const DB_NAME = process.env.DB_NAME || 'savvy_saver_db';
+
 if (!MONGODB_URI) {
   console.error('WARNING: MONGO_URL or MONGODB_URI environment variable not defined');
 }
@@ -36,11 +39,12 @@ export async function connectDB() {
   if (!cached.promise) {
     const opts = {
       bufferCommands: false,
-      serverSelectionTimeoutMS: 10000, // 10 second timeout
+      serverSelectionTimeoutMS: 10000,
       connectTimeoutMS: 10000,
+      dbName: DB_NAME, // Explicitly specify database name
     };
 
-    console.log('Connecting to MongoDB...');
+    console.log(`Connecting to MongoDB (database: ${DB_NAME})...`);
     cached.promise = mongoose.connect(MONGODB_URI, opts).then((mongoose) => {
       console.log('MongoDB connected successfully');
       return mongoose;
