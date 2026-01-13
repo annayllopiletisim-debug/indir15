@@ -51,6 +51,10 @@ async function getExpiringDeals() {
       brand: brandMap.get(c.brand_id) || null,
     })),
   };
+  } catch (error) {
+    console.error('Failed to fetch expiring deals:', error);
+    return { discounts: [], coupons: [] };
+  }
 }
 
 function getDaysRemaining(expiryDate: string): number {
