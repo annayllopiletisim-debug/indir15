@@ -27,44 +27,50 @@ export const metadata: Metadata = {
 };
 
 async function getPopularDeals() {
-  await connectDB();
-  
-  const now = new Date();
-  
-  const [discounts, coupons, brands] = await Promise.all([
-    Discount.find({
-      $or: [
-        { expiry_date: { $gte: now } },
-        { expiry_date: null },
-        { expiry_date: { $exists: false } },
-      ],
-    })
-    .sort({ click_count: -1, created_at: -1 })
-    .limit(30)
-    .lean(),
-    Coupon.find({
-      is_active: true,
-      $or: [
-        { expiry_date: { $gte: now } },
-        { expiry_date: null },
-        { expiry_date: { $exists: false } },
-      ],
-    })
-    .sort({ click_count: -1, created_at: -1 })
-    .limit(20)
-    .lean(),
-    Brand.find({}).lean(),
-  ]);
+  try {
+    const conn = await connectDB();
+    if (!conn) return []; // Build phase
+    
+    const now = new Date();
+    
+    const [discounts, coupons, brands] = await Promise.all([
+      Discount.find({
+        $or: [
+          { expiry_date: { $gte: now } },
+          { expiry_date: null },
+          { expiry_date: { $exists: false } },
+        ],
+      })
+      .sort({ click_count: -1, created_at: -1 })
+      .limit(30)
+      .lean(),
+      Coupon.find({
+        is_active: true,
+        $or: [
+          { expiry_date: { $gte: now } },
+          { expiry_date: null },
+          { expiry_date: { $exists: false } },
+        ],
+      })
+      .sort({ click_count: -1, created_at: -1 })
+      .limit(20)
+      .lean(),
+      Brand.find({}).lean(),
+    ]);
 
-  const brandMap = new Map(brands.map((b: any) => [b.id, b]));
+    const brandMap = new Map(brands.map((b: any) => [b.id, b]));
 
-  // Combine and sort by click_count
-  const allDeals = [
-    ...discounts.map((d: any) => ({ ...d, type: 'discount', brand: brandMap.get(d.brand_id) })),
-    ...coupons.map((c: any) => ({ ...c, type: 'coupon', brand: brandMap.get(c.brand_id) })),
-  ].sort((a: any, b: any) => (b.click_count || 0) - (a.click_count || 0));
+    // Combine and sort by click_count
+    const allDeals = [
+      ...discounts.map((d: any) => ({ ...d, type: 'discount', brand: brandMap.get(d.brand_id) })),
+      ...coupons.map((c: any) => ({ ...c, type: 'coupon', brand: brandMap.get(c.brand_id) })),
+    ].sort((a: any, b: any) => (b.click_count || 0) - (a.click_count || 0));
 
-  return allDeals.slice(0, 40);
+    return allDeals.slice(0, 40);
+  } catch (error) {
+    console.error('Failed to fetch popular deals:', error);
+    return [];
+  }
 }
 
 export default async function EnCokTiklananPage() {
