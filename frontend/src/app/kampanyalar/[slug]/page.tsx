@@ -62,46 +62,52 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 // Get discounts with matching tags
 async function getCampaignDeals(campaign: Campaign) {
-  await connectDB();
-  
-  const now = new Date();
-  
-  // Find discounts with matching tags
-  const [discounts, coupons, brands] = await Promise.all([
-    Discount.find({
-      tags: { $in: campaign.tags },
-      $or: [
-        { expiry_date: { $gte: now } },
-        { expiry_date: null },
-        { expiry_date: { $exists: false } },
-      ],
-    }).sort({ created_at: -1 }).limit(20).lean(),
-    Coupon.find({
-      tags: { $in: campaign.tags },
-      is_active: true,
-      $or: [
-        { expiry_date: { $gte: now } },
-        { expiry_date: null },
-        { expiry_date: { $exists: false } },
-      ],
-    }).sort({ created_at: -1 }).limit(20).lean(),
-    Brand.find({}).lean(),
-  ]);
+  try {
+    const conn = await connectDB();
+    if (!conn) return { discounts: [], coupons: [] }; // Build phase
+    
+    const now = new Date();
+    
+    // Find discounts with matching tags
+    const [discounts, coupons, brands] = await Promise.all([
+      Discount.find({
+        tags: { $in: campaign.tags },
+        $or: [
+          { expiry_date: { $gte: now } },
+          { expiry_date: null },
+          { expiry_date: { $exists: false } },
+        ],
+      }).sort({ created_at: -1 }).limit(20).lean(),
+      Coupon.find({
+        tags: { $in: campaign.tags },
+        is_active: true,
+        $or: [
+          { expiry_date: { $gte: now } },
+          { expiry_date: null },
+          { expiry_date: { $exists: false } },
+        ],
+      }).sort({ created_at: -1 }).limit(20).lean(),
+      Brand.find({}).lean(),
+    ]);
 
-  const brandMap = new Map(brands.map((b: any) => [b.id, b]));
+    const brandMap = new Map(brands.map((b: any) => [b.id, b]));
 
-  return {
-    discounts: discounts.map((d: any) => ({
-      ...d,
-      _id: d._id?.toString(),
-      brand: brandMap.get(d.brand_id) || null,
-    })),
-    coupons: coupons.map((c: any) => ({
-      ...c,
-      _id: c._id?.toString(),
-      brand: brandMap.get(c.brand_id) || null,
-    })),
-  };
+    return {
+      discounts: discounts.map((d: any) => ({
+        ...d,
+        _id: d._id?.toString(),
+        brand: brandMap.get(d.brand_id) || null,
+      })),
+      coupons: coupons.map((c: any) => ({
+        ...c,
+        _id: c._id?.toString(),
+        brand: brandMap.get(c.brand_id) || null,
+      })),
+    };
+  } catch (error) {
+    console.error('Failed to fetch campaign deals:', error);
+    return { discounts: [], coupons: [] };
+  }
 }
 
 function formatDate(dateStr: string): string {
