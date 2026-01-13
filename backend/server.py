@@ -15,7 +15,7 @@ app.add_middleware(
 
 FRONTEND_URL = "http://localhost:3000"
 
-@app.api_route("/{path:path}", methods=["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"])
+@app.api_route("/{path:path}", methods=["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS", "HEAD"])
 async def proxy(request: Request, path: str):
     async with httpx.AsyncClient(timeout=60.0) as client:
         # Ensure path starts with /
@@ -31,8 +31,12 @@ async def proxy(request: Request, path: str):
             params=request.query_params,
         )
         
+        # Filter out hop-by-hop headers
+        hop_by_hop = {'connection', 'keep-alive', 'transfer-encoding', 'te', 'trailer', 'upgrade'}
+        filtered_headers = {k: v for k, v in response.headers.items() if k.lower() not in hop_by_hop}
+        
         return Response(
             content=response.content,
             status_code=response.status_code,
-            headers=dict(response.headers),
+            headers=filtered_headers,
         )
