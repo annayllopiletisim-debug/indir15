@@ -25,52 +25,58 @@ interface Props {
 }
 
 async function getDiscounts(page: number) {
-  await connectDB();
-  const now = new Date();
-  const skip = (page - 1) * ITEMS_PER_PAGE;
-  
-  const filter = {
-    $or: [
-      { expiry_date: { $gte: now } },
-      { expiry_date: null },
-      { expiry_date: { $exists: false } },
-      { expiry_date: '' }
-    ]
-  };
-  
-  const [discounts, totalCount, brands] = await Promise.all([
-    Discount.find(filter)
-      .sort({ created_at: -1 })
-      .skip(skip)
-      .limit(ITEMS_PER_PAGE)
-      .lean(),
-    Discount.countDocuments(filter),
-    Brand.find({}).select('id name slug logo_url default_deal_image').limit(500).lean(),
-  ]);
-  
-  const brandMap = new Map(brands.map((b: any) => [b.id, {
-    id: b.id,
-    name: b.name,
-    slug: b.slug,
-    logo_url: b.logo_url || null,
-    default_deal_image: b.default_deal_image || null,
-  }]));
-  
-  return {
-    discounts: discounts.map((d: any) => ({
-      id: d.id,
-      title: d.title,
-      description: d.description || null,
-      discount_text: d.discount_text || null,
-      image_url: d.image_url || null,
-      expiry_date: d.expiry_date ? (typeof d.expiry_date === 'string' ? d.expiry_date : d.expiry_date.toISOString()) : null,
-      destination_url: d.destination_url || null,
-      brand_id: d.brand_id,
-      brand: brandMap.get(d.brand_id) || null,
-    })),
-    totalCount,
-    totalPages: Math.ceil(totalCount / ITEMS_PER_PAGE),
-  };
+  try {
+    const conn = await connectDB();
+    if (!conn) return { discounts: [], totalCount: 0, totalPages: 0 }; // Build phase
+    const now = new Date();
+    const skip = (page - 1) * ITEMS_PER_PAGE;
+    
+    const filter = {
+      $or: [
+        { expiry_date: { $gte: now } },
+        { expiry_date: null },
+        { expiry_date: { $exists: false } },
+        { expiry_date: '' }
+      ]
+    };
+    
+    const [discounts, totalCount, brands] = await Promise.all([
+      Discount.find(filter)
+        .sort({ created_at: -1 })
+        .skip(skip)
+        .limit(ITEMS_PER_PAGE)
+        .lean(),
+      Discount.countDocuments(filter),
+      Brand.find({}).select('id name slug logo_url default_deal_image').limit(500).lean(),
+    ]);
+    
+    const brandMap = new Map(brands.map((b: any) => [b.id, {
+      id: b.id,
+      name: b.name,
+      slug: b.slug,
+      logo_url: b.logo_url || null,
+      default_deal_image: b.default_deal_image || null,
+    }]));
+    
+    return {
+      discounts: discounts.map((d: any) => ({
+        id: d.id,
+        title: d.title,
+        description: d.description || null,
+        discount_text: d.discount_text || null,
+        image_url: d.image_url || null,
+        expiry_date: d.expiry_date ? (typeof d.expiry_date === 'string' ? d.expiry_date : d.expiry_date.toISOString()) : null,
+        destination_url: d.destination_url || null,
+        brand_id: d.brand_id,
+        brand: brandMap.get(d.brand_id) || null,
+      })),
+      totalCount,
+      totalPages: Math.ceil(totalCount / ITEMS_PER_PAGE),
+    };
+  } catch (error) {
+    console.error('Failed to fetch discounts:', error);
+    return { discounts: [], totalCount: 0, totalPages: 0 };
+  }
 }
 
 export default async function DiscountsPage({ searchParams }: Props) {
