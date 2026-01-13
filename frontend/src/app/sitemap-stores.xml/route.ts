@@ -13,7 +13,12 @@ function formatDate(date: Date | string | null): string {
 
 export async function GET() {
   try {
-    await connectDB();
+    const conn = await connectDB();
+    if (!conn) {
+      return new NextResponse(`<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n</urlset>`, {
+        headers: { 'Content-Type': 'application/xml' },
+      });
+    }
     
     const brands = await Brand.find({}).sort({ name: 1 }).lean();
     
