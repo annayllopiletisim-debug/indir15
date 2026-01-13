@@ -47,6 +47,7 @@ async function getBrandData(slug: string) {
   if (!brand) return null;
   
   const brandId = (brand as any).id;
+  const categoryIds = (brand as any).category_ids || [];
   
   const now = new Date();
   
@@ -81,11 +82,42 @@ async function getBrandData(slug: string) {
     }).sort({ created_at: -1 }).lean(),
   ]);
   
+  // If no deals, get popular deals from same category
+  let popularDeals: any[] = [];
+  if (discounts.length === 0 && coupons.length === 0 && giveaways.length === 0 && categoryIds.length > 0) {
+    // Get brands in same category
+    const sameCategoryBrands = await Brand.find({
+      category_ids: { $in: categoryIds },
+      id: { $ne: brandId }
+    }).select('id name slug logo_url').limit(20).lean();
+    
+    const sameCategoryBrandIds = sameCategoryBrands.map((b: any) => b.id);
+    const brandMap = new Map(sameCategoryBrands.map((b: any) => [b.id, b]));
+    
+    // Get popular discounts from these brands
+    const popularDiscounts = await Discount.find({
+      brand_id: { $in: sameCategoryBrandIds },
+      $or: [
+        { expiry_date: { $gte: now } },
+        { expiry_date: null },
+        { expiry_date: { $exists: false } },
+        { expiry_date: '' }
+      ]
+    }).sort({ click_count: -1, created_at: -1 }).limit(8).lean();
+    
+    popularDeals = popularDiscounts.map((d: any) => ({
+      ...d,
+      _id: d._id?.toString(),
+      brand: brandMap.get(d.brand_id) || null,
+    }));
+  }
+  
   return {
     brand: { ...(brand as any), _id: (brand as any)._id?.toString() },
     discounts: discounts.map((d: any) => ({ ...d, _id: d._id?.toString() })),
     coupons: coupons.map((c: any) => ({ ...c, _id: c._id?.toString() })),
     giveaways: giveaways.map((g: any) => ({ ...g, _id: g._id?.toString() })),
+    popularDeals,
   };
 }
 
