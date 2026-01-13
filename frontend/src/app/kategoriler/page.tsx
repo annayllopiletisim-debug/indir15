@@ -16,7 +16,7 @@ export const dynamic = 'force-dynamic';
 
 async function getCategoriesWithStats() {
   await connectDB();
-  const now = new Date();
+  const nowISO = new Date().toISOString();
   
   const categories = await Category.find({}).sort({ order: 1 }).lean();
   const brands = await Brand.find({}).lean();
@@ -31,18 +31,20 @@ async function getCategoriesWithStats() {
         Discount.countDocuments({ 
           brand_id: { $in: brandIds },
           $or: [
-            { expiry_date: { $gte: now } },
+            { expiry_date: { $gte: nowISO } },
             { expiry_date: null },
-            { expiry_date: { $exists: false } }
+            { expiry_date: { $exists: false } },
+            { expiry_date: '' }
           ]
         }),
         Coupon.countDocuments({ 
           brand_id: { $in: brandIds }, 
           is_active: true,
           $or: [
-            { expiry_date: { $gte: now } },
+            { expiry_date: { $gte: nowISO } },
             { expiry_date: null },
-            { expiry_date: { $exists: false } }
+            { expiry_date: { $exists: false } },
+            { expiry_date: '' }
           ]
         }),
       ]);
