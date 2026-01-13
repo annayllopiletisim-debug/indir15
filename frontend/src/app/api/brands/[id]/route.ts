@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import connectDB from '@/lib/db';
 import { Brand } from '@/lib/models';
 import { verifyAuth } from '@/lib/auth';
+import { revalidateContent } from '@/lib/revalidate';
 
 export async function GET(
   request: Request,
@@ -36,11 +37,18 @@ export async function PUT(
     await connectDB();
     const data = await request.json();
     
+    // Get current brand for slug
+    const currentBrand = await Brand.findOne({ id }).select('slug').lean();
+    
     const result = await Brand.updateOne({ id }, { $set: data });
     
     if (result.modifiedCount === 0) {
       return NextResponse.json({ error: 'Mağaza bulunamadı' }, { status: 404 });
     }
+    
+    // Revalidate cached pages
+    const brandSlug = data.slug || (currentBrand as any)?.slug;
+    revalidateContent('brands', brandSlug);
     
     return NextResponse.json({ success: true });
   } catch (error) {
@@ -60,11 +68,19 @@ export async function DELETE(
 
     const { id } = await params;
     await connectDB();
+    
+    // Get brand slug before deleting
+    const brand = await Brand.findOne({ id }).select('slug').lean();
+    const brandSlug = (brand as any)?.slug;
+    
     const result = await Brand.deleteOne({ id });
     
     if (result.deletedCount === 0) {
       return NextResponse.json({ error: 'Mağaza bulunamadı' }, { status: 404 });
     }
+    
+    // Revalidate cached pages
+    revalidateContent('brands', brandSlug);
     
     return NextResponse.json({ success: true });
   } catch (error) {
