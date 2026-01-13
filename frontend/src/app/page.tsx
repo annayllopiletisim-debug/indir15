@@ -19,38 +19,40 @@ async function getHomeData() {
   await connectDB();
   const now = new Date();
   
-  // Get all active discounts and coupons to count per brand
-  const [allDiscounts, allCoupons] = await Promise.all([
-    Discount.find({
-      $or: [
-        { expiry_date: { $gte: now } },
-        { expiry_date: null },
-        { expiry_date: { $exists: false } },
-        { expiry_date: '' }
-      ]
-    }).lean(),
-    (await import('@/lib/models')).Coupon.find({ 
-      is_active: true,
-      $or: [
-        { expiry_date: { $gte: now } },
-        { expiry_date: null },
-        { expiry_date: { $exists: false } },
-        { expiry_date: '' }
-      ]
-    }).lean(),
+  // Count deals per brand using aggregation (optimized)
+  const [discountCounts, couponCounts] = await Promise.all([
+    Discount.aggregate([
+      { $match: {
+        $or: [
+          { expiry_date: { $gte: now } },
+          { expiry_date: null },
+          { expiry_date: { $exists: false } },
+          { expiry_date: '' }
+        ]
+      }},
+      { $group: { _id: '$brand_id', count: { $sum: 1 } } }
+    ]),
+    (await import('@/lib/models')).Coupon.aggregate([
+      { $match: { 
+        is_active: true,
+        $or: [
+          { expiry_date: { $gte: now } },
+          { expiry_date: null },
+          { expiry_date: { $exists: false } },
+          { expiry_date: '' }
+        ]
+      }},
+      { $group: { _id: '$brand_id', count: { $sum: 1 } } }
+    ]),
   ]);
   
-  // Count discounts per brand
+  // Build count map from aggregation results
   const brandDiscountCount: Record<string, number> = {};
-  allDiscounts.forEach((d: any) => {
-    if (d.brand_id) {
-      brandDiscountCount[d.brand_id] = (brandDiscountCount[d.brand_id] || 0) + 1;
-    }
+  discountCounts.forEach((d: any) => {
+    if (d._id) brandDiscountCount[d._id] = (brandDiscountCount[d._id] || 0) + d.count;
   });
-  allCoupons.forEach((c: any) => {
-    if (c.brand_id) {
-      brandDiscountCount[c.brand_id] = (brandDiscountCount[c.brand_id] || 0) + 1;
-    }
+  couponCounts.forEach((c: any) => {
+    if (c._id) brandDiscountCount[c._id] = (brandDiscountCount[c._id] || 0) + c.count;
   });
 
   const [brands, categories] = await Promise.all([
