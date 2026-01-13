@@ -1,8 +1,10 @@
 import type { Metadata, Viewport } from "next";
+import { Suspense } from "react";
 import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import CategoryBarWrapper from "@/components/CategoryBarWrapper";
+import TopLoadingBar from "@/components/TopLoadingBar";
 import { OrganizationSchema, WebSiteSchema } from "@/components/StructuredData";
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://indirimkesfet.com";
