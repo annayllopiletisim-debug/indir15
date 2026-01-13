@@ -3,16 +3,17 @@ import mongoose from 'mongoose';
 // Use MONGO_URL (Emergent production) first, then MONGODB_URI (local/preview) as fallback
 const MONGODB_URI = process.env.MONGO_URL || process.env.MONGODB_URI || '';
 
-// For production (MONGO_URL set): use production db name
-// For local/preview (only MONGODB_URI): extract from connection string
+// Get database name - called at runtime each time
 function getDbName(): string {
   // Explicit DB_NAME always wins
   if (process.env.DB_NAME) {
+    console.log('Using DB_NAME from env:', process.env.DB_NAME);
     return process.env.DB_NAME;
   }
   
-  // Production uses MONGO_URL with specific db name
+  // If MONGO_URL is set, we're in production - use production db name
   if (process.env.MONGO_URL) {
+    console.log('Production mode: using indirimci-2-savvy_saver_db');
     return 'indirimci-2-savvy_saver_db';
   }
   
@@ -22,10 +23,12 @@ function getDbName(): string {
     // Extract database name from mongodb://host:port/dbname
     const match = localUri.match(/\/([^/?]+)(\?|$)/);
     if (match && match[1]) {
+      console.log('Local mode: extracted db name:', match[1]);
       return match[1];
     }
   }
   
+  console.log('Default: using savvy_saver_db');
   return 'savvy_saver_db';
 }
 
