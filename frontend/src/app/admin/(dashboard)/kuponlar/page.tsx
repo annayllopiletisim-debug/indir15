@@ -186,6 +186,7 @@ export default function AdminCouponsPage() {
       discount_text: coupon.discount_text || '',
       expiry_date: coupon.expiry_date?.split('T')[0] || '',
       is_active: coupon.is_active ?? true,
+      tags: coupon.tags || [],
     });
     setEditingId(coupon.id);
     setShowForm(true);
