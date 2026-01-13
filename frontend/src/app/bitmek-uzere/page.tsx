@@ -22,10 +22,9 @@ async function getExpiringDeals() {
   try {
     const conn = await connectDB();
     if (!conn) return { discounts: [], coupons: [] }; // Build phase
-  await connectDB();
   
-  const now = new Date();
-  const weekLater = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+    const now = new Date();
+    const weekLater = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
   
   const [discounts, coupons, brands] = await Promise.all([
     Discount.find({
