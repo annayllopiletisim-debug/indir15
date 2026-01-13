@@ -3,6 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 import connectDB from '@/lib/db';
 import { Brand } from '@/lib/models';
 import { verifyAuth } from '@/lib/auth';
+import { revalidateContent } from '@/lib/revalidate';
 
 export async function GET() {
   try {
@@ -32,6 +33,10 @@ export async function POST(request: Request) {
     });
     
     await brand.save();
+    
+    // Revalidate cached pages
+    revalidateContent('brands', brand.slug);
+    
     return NextResponse.json({ success: true, brand });
   } catch (error) {
     return NextResponse.json({ error: 'Kayıt başarısız' }, { status: 500 });

@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server';
 import connectDB from '@/lib/db';
-import { Coupon } from '@/lib/models';
+import { Coupon, Brand } from '@/lib/models';
 import { verifyAuth } from '@/lib/auth';
+import { revalidateContent } from '@/lib/revalidate';
 
 export async function PUT(
   request: Request,
@@ -17,11 +18,23 @@ export async function PUT(
     await connectDB();
     const data = await request.json();
     
+    // Get current coupon to find brand slug
+    const currentCoupon = await Coupon.findOne({ id }).lean();
+    const brandId = data.brand_id || (currentCoupon as any)?.brand_id;
+    
     const result = await Coupon.updateOne({ id }, { $set: data });
     
     if (result.modifiedCount === 0) {
       return NextResponse.json({ error: 'Kupon bulunamadı' }, { status: 404 });
     }
+    
+    // Revalidate cached pages
+    let brandSlug: string | undefined;
+    if (brandId) {
+      const brand = await Brand.findOne({ id: brandId }).select('slug').lean();
+      brandSlug = (brand as any)?.slug;
+    }
+    revalidateContent('coupons', brandSlug);
     
     return NextResponse.json({ success: true });
   } catch (error) {
@@ -41,11 +54,24 @@ export async function DELETE(
 
     const { id } = await params;
     await connectDB();
+    
+    // Get coupon to find brand slug before deleting
+    const coupon = await Coupon.findOne({ id }).lean();
+    const brandId = (coupon as any)?.brand_id;
+    
     const result = await Coupon.deleteOne({ id });
     
     if (result.deletedCount === 0) {
       return NextResponse.json({ error: 'Kupon bulunamadı' }, { status: 404 });
     }
+    
+    // Revalidate cached pages
+    let brandSlug: string | undefined;
+    if (brandId) {
+      const brand = await Brand.findOne({ id: brandId }).select('slug').lean();
+      brandSlug = (brand as any)?.slug;
+    }
+    revalidateContent('coupons', brandSlug);
     
     return NextResponse.json({ success: true });
   } catch (error) {
