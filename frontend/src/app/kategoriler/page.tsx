@@ -19,47 +19,67 @@ async function getCategoriesWithStats() {
   await connectDB();
   const now = new Date();
   
-  const categories = await Category.find({}).sort({ order: 1 }).lean();
-  const brands = await Brand.find({}).lean();
+  // Fetch all data in parallel with single queries
+  const [categories, brands, discountCounts, couponCounts] = await Promise.all([
+    Category.find({}).sort({ order: 1 }).lean(),
+    Brand.find({}).select('id category_ids').lean(),
+    // Single aggregation for all discounts
+    Discount.aggregate([
+      { $match: {
+        $or: [
+          { expiry_date: { $gte: now } },
+          { expiry_date: null },
+          { expiry_date: { $exists: false } },
+          { expiry_date: '' }
+        ]
+      }},
+      { $group: { _id: '$brand_id', count: { $sum: 1 } } }
+    ]),
+    // Single aggregation for all coupons
+    Coupon.aggregate([
+      { $match: { 
+        is_active: true,
+        $or: [
+          { expiry_date: { $gte: now } },
+          { expiry_date: null },
+          { expiry_date: { $exists: false } },
+          { expiry_date: '' }
+        ]
+      }},
+      { $group: { _id: '$brand_id', count: { $sum: 1 } } }
+    ])
+  ]);
   
-  // Calculate deal counts per category (only active deals)
-  const categoryStats = await Promise.all(
-    categories.map(async (cat: any) => {
-      const categoryBrands = brands.filter((b: any) => b.category_ids?.includes(cat.id));
-      const brandIds = categoryBrands.map((b: any) => b.id);
-      
-      const [discountCount, couponCount] = await Promise.all([
-        Discount.countDocuments({ 
-          brand_id: { $in: brandIds },
-          $or: [
-            { expiry_date: { $gte: now } },
-            { expiry_date: null },
-            { expiry_date: { $exists: false } },
-            { expiry_date: '' }
-          ]
-        }),
-        Coupon.countDocuments({ 
-          brand_id: { $in: brandIds }, 
-          is_active: true,
-          $or: [
-            { expiry_date: { $gte: now } },
-            { expiry_date: null },
-            { expiry_date: { $exists: false } },
-            { expiry_date: '' }
-          ]
-        }),
-      ]);
-      
-      return {
-        ...cat,
-        _id: cat._id?.toString(),
-        brandCount: categoryBrands.length,
-        dealCount: discountCount + couponCount,
-      };
-    })
-  );
+  // Build brand deal count map
+  const brandDealCount: Record<string, number> = {};
+  discountCounts.forEach((d: any) => {
+    if (d._id) brandDealCount[d._id] = (brandDealCount[d._id] || 0) + d.count;
+  });
+  couponCounts.forEach((c: any) => {
+    if (c._id) brandDealCount[c._id] = (brandDealCount[c._id] || 0) + c.count;
+  });
   
-  return categoryStats;
+  // Build category stats from brand data
+  const categoryBrandCount: Record<string, number> = {};
+  const categoryDealCount: Record<string, number> = {};
+  
+  brands.forEach((brand: any) => {
+    if (brand.category_ids && Array.isArray(brand.category_ids)) {
+      const brandDeals = brandDealCount[brand.id] || 0;
+      brand.category_ids.forEach((catId: string) => {
+        categoryBrandCount[catId] = (categoryBrandCount[catId] || 0) + 1;
+        categoryDealCount[catId] = (categoryDealCount[catId] || 0) + brandDeals;
+      });
+    }
+  });
+  
+  // Enrich categories with computed stats
+  return categories.map((cat: any) => ({
+    ...cat,
+    _id: cat._id?.toString(),
+    brandCount: categoryBrandCount[cat.id] || 0,
+    dealCount: categoryDealCount[cat.id] || 0,
+  }));
 }
 
 export default async function CategoriesPage() {
