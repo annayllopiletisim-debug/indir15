@@ -27,61 +27,67 @@ export const metadata: Metadata = {
 };
 
 async function getNewDeals() {
-  await connectDB();
-  
-  const now = new Date();
-  const twentyFourHoursAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
-  const fortyEightHoursAgo = new Date(now.getTime() - 48 * 60 * 60 * 1000);
-  const oneWeekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-  
-  const [discounts, coupons, brands] = await Promise.all([
-    Discount.find({
-      created_at: { $gte: oneWeekAgo },
-      $or: [
-        { expiry_date: { $gte: now } },
-        { expiry_date: null },
-        { expiry_date: { $exists: false } },
-      ],
-    })
-    .sort({ created_at: -1 })
-    .limit(50)
-    .lean(),
-    Coupon.find({
-      is_active: true,
-      created_at: { $gte: oneWeekAgo },
-      $or: [
-        { expiry_date: { $gte: now } },
-        { expiry_date: null },
-        { expiry_date: { $exists: false } },
-      ],
-    })
-    .sort({ created_at: -1 })
-    .limit(30)
-    .lean(),
-    Brand.find({}).lean(),
-  ]);
+  try {
+    const conn = await connectDB();
+    if (!conn) return []; // Build phase
+    
+    const now = new Date();
+    const twentyFourHoursAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+    const fortyEightHoursAgo = new Date(now.getTime() - 48 * 60 * 60 * 1000);
+    const oneWeekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+    
+    const [discounts, coupons, brands] = await Promise.all([
+      Discount.find({
+        created_at: { $gte: oneWeekAgo },
+        $or: [
+          { expiry_date: { $gte: now } },
+          { expiry_date: null },
+          { expiry_date: { $exists: false } },
+        ],
+      })
+      .sort({ created_at: -1 })
+      .limit(50)
+      .lean(),
+      Coupon.find({
+        is_active: true,
+        created_at: { $gte: oneWeekAgo },
+        $or: [
+          { expiry_date: { $gte: now } },
+          { expiry_date: null },
+          { expiry_date: { $exists: false } },
+        ],
+      })
+      .sort({ created_at: -1 })
+      .limit(30)
+      .lean(),
+      Brand.find({}).lean(),
+    ]);
 
-  const brandMap = new Map(brands.map((b: any) => [b.id, b]));
+    const brandMap = new Map(brands.map((b: any) => [b.id, b]));
 
-  // Combine and sort by created_at
-  const allDeals = [
-    ...discounts.map((d: any) => ({ 
-      ...d, 
-      type: 'discount', 
-      brand: brandMap.get(d.brand_id),
-      isNew: new Date(d.created_at) >= twentyFourHoursAgo,
-      isRecent: new Date(d.created_at) >= fortyEightHoursAgo,
-    })),
-    ...coupons.map((c: any) => ({ 
-      ...c, 
-      type: 'coupon', 
-      brand: brandMap.get(c.brand_id),
-      isNew: new Date(c.created_at) >= twentyFourHoursAgo,
-      isRecent: new Date(c.created_at) >= fortyEightHoursAgo,
-    })),
-  ].sort((a: any, b: any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+    // Combine and sort by created_at
+    const allDeals = [
+      ...discounts.map((d: any) => ({ 
+        ...d, 
+        type: 'discount', 
+        brand: brandMap.get(d.brand_id),
+        isNew: new Date(d.created_at) >= twentyFourHoursAgo,
+        isRecent: new Date(d.created_at) >= fortyEightHoursAgo,
+      })),
+      ...coupons.map((c: any) => ({ 
+        ...c, 
+        type: 'coupon', 
+        brand: brandMap.get(c.brand_id),
+        isNew: new Date(c.created_at) >= twentyFourHoursAgo,
+        isRecent: new Date(c.created_at) >= fortyEightHoursAgo,
+      })),
+    ].sort((a: any, b: any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
 
-  return allDeals;
+    return allDeals;
+  } catch (error) {
+    console.error('Failed to fetch new deals:', error);
+    return [];
+  }
 }
 
 function formatTimeAgo(dateStr: string): string {
