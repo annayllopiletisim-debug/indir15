@@ -32,43 +32,49 @@ async function getSearchResults(query: string) {
     return { brands: [], discounts: [], coupons: [] };
   }
   
-  await connectDB();
-  const normalizedQuery = normalizeText(query);
-  
-  const [allBrands, allDiscounts, allCoupons] = await Promise.all([
-    Brand.find({}).lean(),
-    Discount.find({}).lean(),
-    Coupon.find({ is_active: true }).lean(),
-  ]);
-  
-  const brandDealCount: Record<string, number> = {};
-  allDiscounts.forEach((d: any) => {
-    if (d.brand_id) brandDealCount[d.brand_id] = (brandDealCount[d.brand_id] || 0) + 1;
-  });
-  allCoupons.forEach((c: any) => {
-    if (c.brand_id) brandDealCount[c.brand_id] = (brandDealCount[c.brand_id] || 0) + 1;
-  });
-  
-  const brands = allBrands
-    .filter((b: any) => normalizeText(b.name).includes(normalizedQuery))
-    .map((b: any) => ({ ...b, _id: undefined, deal_count: brandDealCount[b.id] || 0 }))
-    .sort((a: any, b: any) => (b.deal_count || 0) - (a.deal_count || 0));
-  
-  const discounts = allDiscounts
-    .filter((d: any) => normalizeText(d.title).includes(normalizedQuery))
-    .map((d: any) => {
-      const brand = allBrands.find((b: any) => b.id === d.brand_id);
-      return { ...d, _id: undefined, brand: brand ? { ...brand, _id: undefined } : null };
+  try {
+    const conn = await connectDB();
+    if (!conn) return { brands: [], discounts: [], coupons: [] }; // Build phase
+    const normalizedQuery = normalizeText(query);
+    
+    const [allBrands, allDiscounts, allCoupons] = await Promise.all([
+      Brand.find({}).lean(),
+      Discount.find({}).lean(),
+      Coupon.find({ is_active: true }).lean(),
+    ]);
+    
+    const brandDealCount: Record<string, number> = {};
+    allDiscounts.forEach((d: any) => {
+      if (d.brand_id) brandDealCount[d.brand_id] = (brandDealCount[d.brand_id] || 0) + 1;
     });
-  
-  const coupons = allCoupons
-    .filter((c: any) => normalizeText(c.title).includes(normalizedQuery) || normalizeText(c.code).includes(normalizedQuery))
-    .map((c: any) => {
-      const brand = allBrands.find((b: any) => b.id === c.brand_id);
-      return { ...c, _id: undefined, brand: brand ? { ...brand, _id: undefined } : null };
+    allCoupons.forEach((c: any) => {
+      if (c.brand_id) brandDealCount[c.brand_id] = (brandDealCount[c.brand_id] || 0) + 1;
     });
-  
-  return { brands, discounts, coupons };
+    
+    const brands = allBrands
+      .filter((b: any) => normalizeText(b.name).includes(normalizedQuery))
+      .map((b: any) => ({ ...b, _id: undefined, deal_count: brandDealCount[b.id] || 0 }))
+      .sort((a: any, b: any) => (b.deal_count || 0) - (a.deal_count || 0));
+    
+    const discounts = allDiscounts
+      .filter((d: any) => normalizeText(d.title).includes(normalizedQuery))
+      .map((d: any) => {
+        const brand = allBrands.find((b: any) => b.id === d.brand_id);
+        return { ...d, _id: undefined, brand: brand ? { ...brand, _id: undefined } : null };
+      });
+    
+    const coupons = allCoupons
+      .filter((c: any) => normalizeText(c.title).includes(normalizedQuery) || normalizeText(c.code).includes(normalizedQuery))
+      .map((c: any) => {
+        const brand = allBrands.find((b: any) => b.id === c.brand_id);
+        return { ...c, _id: undefined, brand: brand ? { ...brand, _id: undefined } : null };
+      });
+    
+    return { brands, discounts, coupons };
+  } catch (error) {
+    console.error('Search failed:', error);
+    return { brands: [], discounts: [], coupons: [] };
+  }
 }
 
 export default async function SearchPage({ searchParams }: Props) {
