@@ -1,8 +1,9 @@
 import { NextResponse } from 'next/server';
 import { v4 as uuidv4 } from 'uuid';
 import connectDB from '@/lib/db';
-import { Coupon } from '@/lib/models';
+import { Coupon, Brand } from '@/lib/models';
 import { verifyAuth } from '@/lib/auth';
+import { revalidateContent } from '@/lib/revalidate';
 
 export async function GET() {
   try {
@@ -33,6 +34,15 @@ export async function POST(request: Request) {
     });
     
     await coupon.save();
+    
+    // Revalidate cached pages
+    let brandSlug: string | undefined;
+    if (data.brand_id) {
+      const brand = await Brand.findOne({ id: data.brand_id }).select('slug').lean();
+      brandSlug = (brand as any)?.slug;
+    }
+    revalidateContent('coupons', brandSlug);
+    
     return NextResponse.json({ success: true, coupon });
   } catch (error) {
     return NextResponse.json({ error: 'Kayıt başarısız' }, { status: 500 });
