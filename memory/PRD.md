@@ -123,6 +123,12 @@
 
 ## Son Güncelleme: 14 Ocak 2026
 
+### Deployment Blocker Fixes (14 Ocak 2026)
+- ✅ **DÜZELTILDI: Hardcoded Database Name:** `lib/db.ts` artık sadece environment variable'dan DB_NAME alıyor, hardcoded fallback kaldırıldı
+- ✅ **DÜZELTILDI: Hardcoded Auth Credentials:** `api/auth/login/route.ts` artık tüm credential'ları environment variable'dan alıyor, fallback kaldırıldı
+- ✅ **DÜZELTILDI: Hardcoded API Secret:** `api/optimize-db/route.ts` artık OPTIMIZE_DB_SECRET environment variable'ı gerektiriyor
+- ✅ **Environment Variables Updated:** `.env` dosyasına `DB_NAME` ve `OPTIMIZE_DB_SECRET` eklendi
+
 ### Client-Side Exception Bug Fix (14 Ocak 2026)
 - ✅ **DÜZELTILDI: "Cannot read properties of undefined (reading 'brand')" Hatası:**
   - `FeaturedDealCard.tsx`: Brand erişimi güvenli hale getirildi (`deal?.brand || null`)
