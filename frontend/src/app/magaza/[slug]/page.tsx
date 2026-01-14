@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import connectDB from '@/lib/db';
 import { Brand, Discount, Coupon, Giveaway, Category } from '@/lib/models';
-import { getImageUrl } from '@/lib/image';
+import { getImageUrl, isInternalUpload } from '@/lib/image';
 import { getShortId, generateSlug } from '@/lib/utils';
 import { addUtmParams } from '@/lib/utm';
 import { Tag, Ticket, Gift, ExternalLink, TrendingUp } from 'lucide-react';
@@ -202,21 +202,20 @@ export default async function BrandPage({ params }: Props) {
                   <h2 className="text-xl font-bold text-gray-800">Popüler İndirimler</h2>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                  {popularDeals.map((deal: any) => (
-                    <FeaturedDealCard
-                      key={deal.id}
-                      id={deal.id}
-                      title={deal.title}
-                      description={deal.description}
-                      discountText={deal.discount_text}
-                      imageUrl={deal.image_url || deal.brand?.default_deal_image}
-                      brandName={deal.brand?.name}
-                      brandSlug={deal.brand?.slug}
-                      brandLogo={deal.brand?.logo_url}
-                      expiryDate={deal.expiry_date}
-                      destinationUrl={deal.destination_url}
-                    />
-                  ))}
+                  {popularDeals.map((deal: any) => {
+                    const shortId = getShortId(deal.id);
+                    const dealSlug = generateSlug(deal.title);
+                    const detailHref = deal.brand?.slug 
+                      ? `/magaza/${deal.brand.slug}/indirim/${dealSlug}-${shortId}` 
+                      : '#';
+                    return (
+                      <FeaturedDealCard
+                        key={deal.id}
+                        deal={deal}
+                        detailHref={detailHref}
+                      />
+                    );
+                  })}
                 </div>
                 <div className="text-center mt-6">
                   <Link
