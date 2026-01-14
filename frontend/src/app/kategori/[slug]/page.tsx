@@ -4,7 +4,8 @@ import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import connectDB from '@/lib/db';
 import { Category, Brand, Discount, Coupon } from '@/lib/models';
-import { getImageUrl } from '@/lib/image';
+import { getImageUrl, isInternalUpload } from '@/lib/image';
+import { getShortId, generateSlug } from '@/lib/utils';
 import { Store, TrendingUp, ExternalLink } from 'lucide-react';
 import CategoryDealsFilter from '@/components/CategoryDealsFilter';
 import FeaturedDealCard from '@/components/FeaturedDealCard';
@@ -212,13 +213,14 @@ export default async function CategoryPage({ params }: Props) {
                     {brand.logo_url ? (
                       <Image 
                         src={getImageUrl(brand.logo_url)} 
-                        alt={brand.name} 
+                        alt={brand?.name || 'Mağaza'} 
                         fill
                         sizes="64px"
+                        unoptimized={isInternalUpload(brand.logo_url)}
                         className="object-contain p-1" 
                       />
                     ) : (
-                      <span className="text-xl font-bold text-gray-400">{brand.name.charAt(0)}</span>
+                      <span className="text-xl font-bold text-gray-400">{brand?.name?.charAt(0) || '?'}</span>
                     )}
                   </div>
                   <span className="text-xs font-medium mt-1.5 max-w-[64px] truncate">{brand.name}</span>
@@ -255,21 +257,20 @@ export default async function CategoryPage({ params }: Props) {
                   <h2 className="text-xl font-bold text-gray-800">Popüler İndirimler</h2>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                  {popularDeals.map((deal: any) => (
-                    <FeaturedDealCard
-                      key={deal.id}
-                      id={deal.id}
-                      title={deal.title}
-                      description={deal.description}
-                      discountText={deal.discount_text}
-                      imageUrl={deal.image_url || deal.brand?.default_deal_image}
-                      brandName={deal.brand?.name}
-                      brandSlug={deal.brand?.slug}
-                      brandLogo={deal.brand?.logo_url}
-                      expiryDate={deal.expiry_date}
-                      destinationUrl={deal.destination_url}
-                    />
-                  ))}
+                  {popularDeals.map((deal: any) => {
+                    const shortId = getShortId(deal.id);
+                    const dealSlug = generateSlug(deal.title);
+                    const detailHref = deal.brand?.slug 
+                      ? `/magaza/${deal.brand.slug}/indirim/${dealSlug}-${shortId}` 
+                      : '#';
+                    return (
+                      <FeaturedDealCard
+                        key={deal.id}
+                        deal={deal}
+                        detailHref={detailHref}
+                      />
+                    );
+                  })}
                 </div>
                 <div className="text-center mt-6">
                   <Link
