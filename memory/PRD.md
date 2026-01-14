@@ -121,7 +121,25 @@
 └── next.config.ts
 ```
 
-## Son Güncelleme: 13 Ocak 2026
+## Son Güncelleme: 14 Ocak 2026
+
+### Client-Side Exception Bug Fix (14 Ocak 2026)
+- ✅ **DÜZELTILDI: "Cannot read properties of undefined (reading 'brand')" Hatası:**
+  - `FeaturedDealCard.tsx`: Brand erişimi güvenli hale getirildi (`deal?.brand || null`)
+  - `DealCard.tsx`: Tüm brand erişimlerine optional chaining eklendi
+  - `kuponlar/page.tsx`: CouponCard component'inde güvenli brand erişimi
+  - `page.tsx`: Ana sayfada güvenli brand erişimi
+  - `magaza/[slug]/page.tsx`: FeaturedDealCard çağrıları düzeltildi
+  - `kategori/[slug]/page.tsx`: FeaturedDealCard çağrıları düzeltildi
+
+- ✅ **DÜZELTILDI: Next.js Image 400 Hataları:**
+  - `lib/image.ts`: `isInternalUpload()` helper fonksiyonu eklendi
+  - Tüm internal `/api/uploads/` path'leri için `unoptimized={true}` eklendi
+  - Next.js Image optimization sadece external URL'ler için çalışıyor
+
+- ✅ **DÜZELTILDI: PWA Icon 404 Hatası:**
+  - `icon-192x192.svg` ve `icon-512x512.svg` oluşturuldu
+  - `manifest.json` SVG ikonları kullanacak şekilde güncellendi
 
 ### Kritik Bug Fix: Tarih Filtreleme Sorunu (13 Ocak 2026)
 - ✅ **DÜZELTILDI: İndirimler Görünmüyor Hatası:** Veritabanında `expiry_date` alanları string olarak saklanıyordu, Date olarak değil. Bu nedenle MongoDB sorguları (`$gte: now`) çalışmıyordu.
