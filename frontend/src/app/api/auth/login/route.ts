@@ -3,34 +3,30 @@ import { cookies } from 'next/headers';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 
-// Hardcoded fallback credentials (if env vars don't work)
-const FALLBACK_USERNAME = 'admin';
-const FALLBACK_PASSWORD = 'Admin2026!Secure';
-const FALLBACK_JWT_SECRET = 'indirimkesfet-jwt-secret-2026-secure';
-
 export async function POST(request: Request) {
   try {
-    const jwtSecret = process.env.JWT_SECRET || FALLBACK_JWT_SECRET;
-    const adminUsername = process.env.ADMIN_USERNAME || FALLBACK_USERNAME;
+    // All credentials must come from environment variables - no fallbacks
+    const jwtSecret = process.env.JWT_SECRET;
+    const adminUsername = process.env.ADMIN_USERNAME;
+    const adminPasswordHash = process.env.ADMIN_PASSWORD_HASH;
+    
+    // Fail fast if required env vars are missing
+    if (!jwtSecret || !adminUsername || !adminPasswordHash) {
+      console.error('Missing required environment variables for authentication');
+      return NextResponse.json({ error: 'Server configuration error' }, { status: 500 });
+    }
     
     const { username, password } = await request.json();
 
     // Validate username
-    if (username !== adminUsername && username !== FALLBACK_USERNAME) {
+    if (username !== adminUsername) {
       return NextResponse.json({ error: 'Geçersiz kullanıcı adı veya şifre' }, { status: 401 });
     }
 
-    // Check password - try env hash first, then fallback to direct comparison
+    // Check password against bcrypt hash from environment
     let isValidPassword = false;
-    
-    const adminPasswordHash = process.env.ADMIN_PASSWORD_HASH;
-    if (adminPasswordHash && adminPasswordHash.startsWith('$2')) {
+    if (adminPasswordHash.startsWith('$2')) {
       isValidPassword = bcrypt.compareSync(password, adminPasswordHash);
-    }
-    
-    // Fallback: direct password comparison
-    if (!isValidPassword && password === FALLBACK_PASSWORD) {
-      isValidPassword = true;
     }
     
     if (!isValidPassword) {

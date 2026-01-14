@@ -5,27 +5,23 @@ const MONGODB_URI = process.env.MONGO_URL || process.env.MONGODB_URI || '';
 
 // Get database name - called at runtime each time
 function getDbName(): string {
-  // Explicit DB_NAME always wins
+  // Explicit DB_NAME from environment always wins (required for Emergent deployment)
   if (process.env.DB_NAME) {
     return process.env.DB_NAME;
   }
   
-  // If MONGO_URL is set, we're in production - use production db name
-  if (process.env.MONGO_URL) {
-    return 'indirimci-2-savvy_saver_db';
-  }
-  
-  // Local/preview: extract from MONGODB_URI
-  const localUri = process.env.MONGODB_URI || '';
-  if (localUri) {
-    // Extract database name from mongodb://host:port/dbname
-    const match = localUri.match(/\/([^/?]+)(\?|$)/);
+  // Try to extract from connection URI
+  const uri = process.env.MONGO_URL || process.env.MONGODB_URI || '';
+  if (uri) {
+    // Extract database name from mongodb://host:port/dbname or mongodb+srv://...
+    const match = uri.match(/\/([^/?]+)(\?|$)/);
     if (match && match[1]) {
       return match[1];
     }
   }
   
-  return 'savvy_saver_db';
+  // Fail fast if no database name can be determined
+  throw new Error('DB_NAME environment variable is required');
 }
 
 interface MongooseCache {

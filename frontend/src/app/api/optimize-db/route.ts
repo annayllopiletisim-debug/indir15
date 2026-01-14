@@ -6,7 +6,15 @@ export const dynamic = 'force-dynamic';
 export async function POST(request: Request) {
   try {
     const { secret } = await request.json();
-    if (secret !== 'optimize-db-2026') {
+    const expectedSecret = process.env.OPTIMIZE_DB_SECRET;
+    
+    // Require environment variable for secret - no hardcoded values
+    if (!expectedSecret) {
+      console.error('OPTIMIZE_DB_SECRET environment variable not set');
+      return NextResponse.json({ error: 'Server configuration error' }, { status: 500 });
+    }
+    
+    if (secret !== expectedSecret) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
