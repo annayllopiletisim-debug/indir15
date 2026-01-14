@@ -141,13 +141,14 @@ export default async function BrandPage({ params }: Props) {
               {brand.logo_url ? (
                 <Image 
                   src={getImageUrl(brand.logo_url)} 
-                  alt={brand.name} 
+                  alt={brand?.name || 'Mağaza'} 
                   fill
                   sizes="96px"
+                  unoptimized={isInternalUpload(brand.logo_url)}
                   className="object-contain p-2" 
                 />
               ) : (
-                <span className="text-4xl font-bold text-gray-300">{brand.name.charAt(0)}</span>
+                <span className="text-4xl font-bold text-gray-300">{brand?.name?.charAt(0) || '?'}</span>
               )}
             </div>
             <div className="flex-1">
