@@ -1,5 +1,5 @@
 from fastapi import FastAPI, Request
-from fastapi.responses import Response
+from fastapi.responses import Response, JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 import httpx
 import os
@@ -16,6 +16,11 @@ app.add_middleware(
 
 # Get frontend URL from environment variable
 FRONTEND_URL = os.getenv('FRONTEND_URL', 'http://localhost:3000')
+
+@app.get("/health")
+async def health_check():
+    """Health check endpoint for Kubernetes probes"""
+    return JSONResponse(content={"status": "healthy", "service": "backend-proxy"})
 
 @app.api_route("/{path:path}", methods=["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS", "HEAD"])
 async def proxy(request: Request, path: str):
