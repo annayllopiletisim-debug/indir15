@@ -9,11 +9,15 @@ import discountsData from '@/data/discounts.json';
 
 export const dynamic = 'force-dynamic';
 
-// Secret key to protect the endpoint
-const MIGRATION_SECRET = process.env.MIGRATION_SECRET || 'migrate-indirimkesfet-2026';
-
 export async function POST(request: Request) {
   try {
+    // Secret key must come from environment - no fallbacks
+    const MIGRATION_SECRET = process.env.MIGRATION_SECRET;
+    if (!MIGRATION_SECRET) {
+      console.error('MIGRATION_SECRET environment variable not set');
+      return NextResponse.json({ error: 'Server configuration error' }, { status: 500 });
+    }
+    
     // Check secret key
     const { secret } = await request.json();
     
