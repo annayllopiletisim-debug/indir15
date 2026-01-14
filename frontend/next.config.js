@@ -1,5 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Output as standalone for containerized deployments
+  output: 'standalone',
+  
   // Disable ESLint during builds
   eslint: {
     ignoreDuringBuilds: true,
