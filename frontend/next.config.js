@@ -28,6 +28,8 @@ const nextConfig = {
         hostname: 'localhost',
       },
     ],
+    // Disable optimization for /api/uploads paths - use unoptimized for internal API routes
+    unoptimized: false,
     formats: ['image/avif', 'image/webp'],
     minimumCacheTTL: 60 * 60 * 24, // 24 hours
     deviceSizes: [640, 750, 828, 1080, 1200],

@@ -13,8 +13,9 @@ interface FeaturedDealCardProps {
 }
 
 export default function FeaturedDealCard({ deal, detailHref, type = 'discount' }: FeaturedDealCardProps) {
-  const brand = deal.brand;
-  const destinationUrl = deal.destination_url || brand?.affiliate_url || brand?.website_url;
+  // Safe access - brand might be undefined or null
+  const brand = deal?.brand || null;
+  const destinationUrl = deal?.destination_url || brand?.affiliate_url || brand?.website_url;
 
   const handleCtaClick = async (e: React.MouseEvent) => {
     e.preventDefault();
