@@ -3,7 +3,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import connectDB from '@/lib/db';
 import { Brand, Coupon } from '@/lib/models';
-import { getImageUrl } from '@/lib/image';
+import { getImageUrl, isInternalUpload } from '@/lib/image';
 import { Gift, Copy, ExternalLink } from 'lucide-react';
 import Pagination from '@/components/Pagination';
 
@@ -114,8 +114,8 @@ export default async function CouponsPage({ searchParams }: Props) {
 }
 
 function CouponCard({ coupon }: { coupon: any }) {
-  const brand = coupon.brand;
-  const destinationUrl = coupon.destination_url || brand?.affiliate_url || brand?.website_url;
+  const brand = coupon?.brand || null;
+  const destinationUrl = coupon?.destination_url || brand?.affiliate_url || brand?.website_url;
 
   return (
     <article className="bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all duration-200 overflow-hidden border border-gray-100 p-6">
@@ -124,9 +124,10 @@ function CouponCard({ coupon }: { coupon: any }) {
           <div className="w-14 h-14 rounded-xl border border-gray-200 bg-white flex items-center justify-center p-2 overflow-hidden relative">
             <Image 
               src={getImageUrl(brand.logo_url)} 
-              alt={brand.name} 
+              alt={brand?.name || 'Mağaza'} 
               width={48}
               height={48}
+              unoptimized={isInternalUpload(brand.logo_url)}
               className="object-contain" 
             />
           </div>
@@ -139,17 +140,17 @@ function CouponCard({ coupon }: { coupon: any }) {
           <Link href={brand ? `/magaza/${brand.slug}` : '#'} className="font-bold text-gray-800 hover:text-purple-600">
             {brand?.name || 'Mağaza'}
           </Link>
-          {coupon.discount_text && (
+          {coupon?.discount_text && (
             <span className="block text-sm text-green-600 font-bold">{coupon.discount_text}</span>
           )}
         </div>
       </div>
 
-      <h3 className="font-semibold text-gray-700 mb-4 line-clamp-2">{coupon.title}</h3>
+      <h3 className="font-semibold text-gray-700 mb-4 line-clamp-2">{coupon?.title || ''}</h3>
 
       <div className="flex items-center gap-2 mb-4">
         <code className="flex-1 px-4 py-3 bg-purple-50 border-2 border-dashed border-purple-300 rounded-xl text-center font-mono font-bold text-purple-700 text-lg">
-          {coupon.code}
+          {coupon?.code || ''}
         </code>
         <button className="p-3 bg-purple-100 text-purple-600 rounded-xl hover:bg-purple-200 transition-colors" title="Kopyala">
           <Copy className="w-5 h-5" />
