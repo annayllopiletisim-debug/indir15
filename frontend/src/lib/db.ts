@@ -14,14 +14,16 @@ function getDbName(): string {
   const uri = process.env.MONGO_URL || process.env.MONGODB_URI || '';
   if (uri) {
     // Extract database name from mongodb://host:port/dbname or mongodb+srv://...
+    // Handle both formats: /dbname and /dbname?options
     const match = uri.match(/\/([^/?]+)(\?|$)/);
-    if (match && match[1]) {
+    if (match && match[1] && match[1] !== 'mongodb') {
       return match[1];
     }
   }
   
-  // Fail fast if no database name can be determined
-  throw new Error('DB_NAME environment variable is required');
+  // Return a default database name instead of throwing - let the connection fail gracefully
+  console.warn('DB_NAME not set, using default: savvy_saver_db');
+  return 'savvy_saver_db';
 }
 
 interface MongooseCache {
