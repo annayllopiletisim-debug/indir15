@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { Tag, Clock, ExternalLink } from 'lucide-react';
-import { getImageUrl } from '@/lib/image';
+import { getImageUrl, isInternalUpload } from '@/lib/image';
 import { addUtmParams } from '@/lib/utm';
 
 interface DealCardProps {
@@ -13,7 +13,7 @@ interface DealCardProps {
 }
 
 export default function DealCard({ deal, brand, href }: DealCardProps) {
-  const destinationUrl = deal.destination_url || brand?.affiliate_url || brand?.website_url;
+  const destinationUrl = deal?.destination_url || brand?.affiliate_url || brand?.website_url;
 
   const handleCtaClick = async (e: React.MouseEvent) => {
     e.preventDefault();
@@ -24,7 +24,7 @@ export default function DealCard({ deal, brand, href }: DealCardProps) {
         await fetch('/api/track/click', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ type: 'discount', id: deal.id }),
+          body: JSON.stringify({ type: 'discount', id: deal?.id }),
         });
       } catch (err) {
         console.error('Track click error:', err);
@@ -39,20 +39,22 @@ export default function DealCard({ deal, brand, href }: DealCardProps) {
         <div className="flex gap-3">
           {/* Square image - 16x16 (64px) */}
           <div className="w-16 h-16 rounded-xl overflow-hidden bg-purple-50 flex-shrink-0 relative">
-            {deal.image_url || brand?.default_deal_image ? (
+            {deal?.image_url || brand?.default_deal_image ? (
               <Image 
-                src={getImageUrl(deal.image_url || brand?.default_deal_image)} 
-                alt={deal.title} 
+                src={getImageUrl(deal?.image_url || brand?.default_deal_image)} 
+                alt={deal?.title || 'İndirim'} 
                 fill
                 sizes="64px"
+                unoptimized={isInternalUpload(deal?.image_url || brand?.default_deal_image)}
                 className="object-cover" 
               />
             ) : brand?.logo_url ? (
               <Image 
                 src={getImageUrl(brand.logo_url)} 
-                alt={brand.name} 
+                alt={brand?.name || 'Mağaza'} 
                 fill
                 sizes="64px"
+                unoptimized={isInternalUpload(brand.logo_url)}
                 className="object-contain p-1.5" 
               />
             ) : (
@@ -68,28 +70,29 @@ export default function DealCard({ deal, brand, href }: DealCardProps) {
                 <div className="w-6 h-6 relative flex-shrink-0">
                   <Image 
                     src={getImageUrl(brand.logo_url)} 
-                    alt={brand.name} 
+                    alt={brand?.name || 'Mağaza'} 
                     width={24}
                     height={24}
+                    unoptimized={isInternalUpload(brand.logo_url)}
                     className="rounded-md object-contain bg-gray-50" 
                   />
                 </div>
               )}
-              <span className="text-sm font-medium text-gray-700 truncate">{brand?.name}</span>
+              <span className="text-sm font-medium text-gray-700 truncate">{brand?.name || 'Mağaza'}</span>
             </div>
-            {deal.discount_text && (
+            {deal?.discount_text && (
               <span className="inline-block self-start px-2 py-0.5 text-xs font-bold rounded-full bg-green-100 text-green-700 mb-1">
                 {deal.discount_text}
               </span>
             )}
             {/* Title - 2 lines max */}
-            <h3 className="font-semibold text-sm line-clamp-2 group-hover:text-purple-600 transition-colors">{deal.title}</h3>
+            <h3 className="font-semibold text-sm line-clamp-2 group-hover:text-purple-600 transition-colors">{deal?.title || ''}</h3>
           </div>
         </div>
         
         {/* Footer with date and CTA */}
         <div className="mt-3 flex items-center justify-between gap-2">
-          {deal.expiry_date ? (
+          {deal?.expiry_date ? (
             <div className="flex items-center gap-1 text-xs text-gray-500">
               <Clock className="w-3 h-3" />
               {new Date(deal.expiry_date).toLocaleDateString('tr-TR')}
