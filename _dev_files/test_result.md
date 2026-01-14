@@ -259,14 +259,14 @@
 ## SEARCH BAR FUNCTIONALITY TESTING - CRITICAL ISSUE FOUND ❌
 
 ### Search Bar Component Testing (FAIL ❌)
-- **Page URL**: https://coupon-finder-14.preview.emergentagent.com
+- **Page URL**: https://turkdeals-2.preview.emergentagent.com
 - **Search Input**: ✅ Found search input with placeholder "Mağaza veya kampanya ara..."
 - **Search API**: ❌ CRITICAL ISSUE - Query parameters are being stripped from API requests
 
 ### Search API Issue Analysis
 - **API Endpoint**: /api/search
 - **Issue**: Query parameters (e.g., ?q=kara) are not reaching the API route
-- **Root Cause**: External URL `https://coupon-finder-14.preview.emergentagent.com/api/search?q=kara` is being transformed to `https://localhost:3000/api/search` without query parameters
+- **Root Cause**: External URL `https://turkdeals-2.preview.emergentagent.com/api/search?q=kara` is being transformed to `https://localhost:3000/api/search` without query parameters
 - **Impact**: Search functionality is completely broken - no search results are returned for any query
 
 ### Technical Details
