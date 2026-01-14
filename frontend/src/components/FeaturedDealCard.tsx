@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { Calendar, ChevronRight } from 'lucide-react';
-import { getImageUrl } from '@/lib/image';
+import { getImageUrl, isInternalUpload } from '@/lib/image';
 import { addUtmParams } from '@/lib/utm';
 
 interface FeaturedDealCardProps {
@@ -40,29 +40,32 @@ export default function FeaturedDealCard({ deal, detailHref, type = 'discount' }
         <div className="flex gap-3">
           {/* Left - Square Image */}
           <div className="w-24 h-24 flex-shrink-0 bg-gradient-to-br from-purple-50 to-pink-50 overflow-hidden rounded-xl relative">
-            {deal.image_url ? (
+            {deal?.image_url ? (
               <Image
                 src={getImageUrl(deal.image_url)}
-                alt={deal.title}
+                alt={deal?.title || 'İndirim'}
                 fill
                 sizes="96px"
+                unoptimized={isInternalUpload(deal.image_url)}
                 className="object-cover group-hover:scale-105 transition-transform duration-300"
               />
             ) : brand?.default_deal_image ? (
               <Image
                 src={getImageUrl(brand.default_deal_image)}
-                alt={deal.title}
+                alt={deal?.title || 'İndirim'}
                 fill
                 sizes="96px"
+                unoptimized={isInternalUpload(brand.default_deal_image)}
                 className="object-cover group-hover:scale-105 transition-transform duration-300"
               />
             ) : brand?.logo_url ? (
               <div className="w-full h-full flex items-center justify-center p-2">
                 <Image
                   src={getImageUrl(brand.logo_url)}
-                  alt={brand.name}
+                  alt={brand?.name || 'Mağaza'}
                   width={80}
                   height={80}
+                  unoptimized={isInternalUpload(brand.logo_url)}
                   className="object-contain"
                 />
               </div>
@@ -82,14 +85,15 @@ export default function FeaturedDealCard({ deal, detailHref, type = 'discount' }
                   <div className="w-8 h-8 rounded-lg border border-gray-200 bg-white flex items-center justify-center p-0.5 overflow-hidden flex-shrink-0 relative">
                     <Image 
                       src={getImageUrl(brand.logo_url)} 
-                      alt={brand.name} 
+                      alt={brand?.name || 'Mağaza'} 
                       width={28}
                       height={28}
+                      unoptimized={isInternalUpload(brand.logo_url)}
                       className="object-contain" 
                     />
                   </div>
                 )}
-                <span className="text-sm font-bold text-gray-800">{brand.name}</span>
+                <span className="text-sm font-bold text-gray-800">{brand?.name || 'Mağaza'}</span>
               </div>
             )}
 
