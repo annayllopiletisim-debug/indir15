@@ -4,7 +4,7 @@ import Image from 'next/image';
 import connectDB from '@/lib/db';
 import { Brand, Discount, Category } from '@/lib/models';
 import { getShortId, generateSlug } from '@/lib/utils';
-import { getImageUrl } from '@/lib/image';
+import { getImageUrl, isInternalUpload } from '@/lib/image';
 import { ArrowRight, Star } from 'lucide-react';
 import FeaturedDealCard from '@/components/FeaturedDealCard';
 
@@ -167,14 +167,15 @@ export default async function HomePage() {
                   {brand.logo_url ? (
                     <Image
                       src={getImageUrl(brand.logo_url)}
-                      alt={brand.name}
+                      alt={brand?.name || 'Mağaza'}
                       fill
                       sizes="80px"
+                      unoptimized={isInternalUpload(brand.logo_url)}
                       className="object-contain p-3"
                     />
                   ) : (
                     <span className="text-2xl font-bold text-purple-400">
-                      {brand.name.charAt(0)}
+                      {brand?.name?.charAt(0) || '?'}
                     </span>
                   )}
                 </div>
@@ -185,7 +186,7 @@ export default async function HomePage() {
                 )}
               </div>
               <span className="text-sm font-medium text-center max-w-[80px] truncate text-gray-700 group-hover:text-purple-600">
-                {brand.name}
+                {brand?.name || 'Mağaza'}
               </span>
             </Link>
           ))}
