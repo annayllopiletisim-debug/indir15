@@ -124,6 +124,15 @@
 
 ## Son Güncelleme: 15 Ocak 2026
 
+### Programatik SEO Tamamlandı (15 Ocak 2026)
+- ✅ **`/marka/[slug]/kuponlar` sayfası:** Marka bazlı kupon kodları sayfası oluşturuldu
+  - SEO metadata (title, description, canonical)
+  - JSON-LD ItemList schema
+  - Aktif ve süresi dolmuş kuponlar
+  - Boş durum için kullanıcı dostu mesaj
+- ✅ **`/llms.txt` dosyası:** AI crawler'lar için site bilgisi eklendi
+- ✅ **FAQ Schema:** Campaign sayfalarında zaten mevcut ve çalışıyor
+
 ### Cloudinary Entegrasyonu (15 Ocak 2026)
 - ✅ **Cloudinary Image Storage:** Tüm görseller artık Cloudinary CDN üzerinden sunuluyor
 - ✅ **Migration API:** `/api/migrate-cloudinary` ile mevcut yerel görseller Cloudinary'ye taşındı
