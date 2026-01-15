@@ -6,9 +6,11 @@ import connectDB from '@/lib/db';
 import { Category, Brand, Discount, Coupon } from '@/lib/models';
 import { getImageUrl, isInternalUpload } from '@/lib/image';
 import { getShortId, generateSlug } from '@/lib/utils';
-import { Store, TrendingUp, ExternalLink } from 'lucide-react';
+import { Store, TrendingUp, ExternalLink, Info } from 'lucide-react';
 import CategoryDealsFilter from '@/components/CategoryDealsFilter';
 import FeaturedDealCard from '@/components/FeaturedDealCard';
+import ExpandableDescription from '@/components/ExpandableDescription';
+import { getCategoryDescription } from '@/data/categoryDescriptions';
 
 interface Props {
   params: Promise<{ slug: string }>;
