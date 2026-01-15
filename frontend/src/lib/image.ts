@@ -2,7 +2,7 @@
 export function getImageUrl(url: string | undefined | null): string {
   if (!url) return '';
   
-  // Already absolute URL
+  // Already absolute URL (Cloudinary, CDN, etc.)
   if (url.startsWith('http')) {
     return url;
   }
@@ -26,8 +26,20 @@ export function getImageUrl(url: string | undefined | null): string {
 }
 
 // Check if URL is an internal API upload (needs unoptimized rendering)
+// Cloudinary URLs don't need unoptimized - they handle their own optimization
 export function isInternalUpload(url: string | undefined | null): boolean {
   if (!url) return false;
+  
+  // Cloudinary URLs are external and optimized
+  if (url.startsWith('http') && url.includes('cloudinary.com')) {
+    return false;
+  }
+  
+  // External URLs don't need unoptimized
+  if (url.startsWith('http')) {
+    return false;
+  }
+  
   const processedUrl = getImageUrl(url);
   return processedUrl.startsWith('/api/uploads/');
 }
