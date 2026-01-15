@@ -214,15 +214,53 @@ export default async function HomePage() {
 
       {/* Kupon Kodları - REMOVED */}
 
-      {/* SEO Content */}
+      {/* SEO Content Block 1 - Kupon ve İndirim Kodları */}
+      <section className="container mx-auto px-4 py-12 bg-white rounded-2xl shadow-sm my-8">
+        <div className="max-w-4xl mx-auto">
+          <h2 className="text-2xl font-bold text-gray-800 mb-4">Kupon ve İndirim Kodları</h2>
+          <p className="text-gray-600 leading-relaxed">
+            İndirim Keşfet, Türkiye'nin en kapsamlı indirim, kampanya ve kupon kodu platformlarından biridir. 
+            Yüzlerce online mağazaya ait güncel indirimler, özel kuponlar, sezonluk kampanyalar ve kaçırılmayacak 
+            fırsatlar tek bir adreste toplanır. Her gün düzenli olarak güncellenen içeriklerimiz sayesinde online 
+            alışveriş yaparken en avantajlı fiyatlara ulaşabilir, bütçenizi koruyarak tasarruf edebilirsiniz. 
+            Trendyol, Hepsiburada, Migros, LC Waikiki ve daha birçok popüler markanın en yeni indirimlerini, 
+            kampanya detaylarını ve kupon kodlarını İndirim Keşfet üzerinden güvenle keşfedin.
+          </p>
+        </div>
+      </section>
+
+      {/* SEO Content Block 2 - Detaylı Açıklama */}
       <section className="container mx-auto px-4 py-12">
-        <div className="prose prose-purple max-w-none">
-          <h2 className="text-2xl font-bold mb-4">İndirim Keşfet ile Tasarruf Edin</h2>
-          <p className="text-gray-600">
-            İndirim Keşfet, Türkiye'nin en kapsamlı indirim ve kupon platformudur. 
-            Yüzlerce mağazadan güncel kampanyaları, özel kupon kodlarını ve çekilişleri 
-            tek bir yerde bulabilirsiniz. Her gün güncellenen içeriklerimizle alışveriş 
-            yaparken tasarruf etmenize yardımcı oluyoruz.
+        <div className="max-w-4xl mx-auto prose prose-purple">
+          <h2 className="text-2xl font-bold text-gray-800 mb-6">İndirim Keşfet ile Güncel İndirimleri ve Kupon Kodlarını Keşfedin</h2>
+          
+          <p className="text-gray-600 leading-relaxed mb-4">
+            Online alışveriş yaparken en uygun fiyatları yakalamak ve bütçenizi korumak her zamankinden daha önemli. 
+            İndirim Keşfet, Türkiye genelindeki yüzlerce markanın güncel indirimlerini, kampanyalarını ve kupon kodlarını 
+            tek bir platformda toplayarak kullanıcılarına kolay, hızlı ve avantajlı bir alışveriş deneyimi sunar. 
+            Farklı kategorilerde yer alan fırsatları tek tek araştırmak yerine, en güncel ve doğrulanmış indirimleri 
+            tek bir adreste bulabilirsiniz.
+          </p>
+          
+          <p className="text-gray-600 leading-relaxed mb-4">
+            İndirim Keşfet'te; moda, elektronik, market, kozmetik, ev & yaşam ve daha birçok kategoride online alışveriş 
+            indirimleri düzenli olarak güncellenir. Platformumuzda yer alan kampanyalar, kullanıcıların gerçek anlamda 
+            tasarruf etmesini hedefler. Süresi dolmuş ya da geçerliliğini kaybetmiş kuponlar yerine, aktif ve kullanılabilir 
+            fırsatlar ön planda tutulur. Böylece alışveriş yaparken zaman kaybetmeden doğru indirime ulaşmanız sağlanır.
+          </p>
+          
+          <p className="text-gray-600 leading-relaxed mb-4">
+            Her gün yenilenen içeriklerimiz sayesinde sezon indirimleri, özel gün kampanyaları, özel kupon kodları ve 
+            sınırlı süreli fırsatları kaçırmadan takip edebilirsiniz. İndirim Keşfet, yalnızca indirim listeleyen bir site 
+            değil; aynı zamanda kullanıcıların bilinçli alışveriş yapmasına yardımcı olan bir keşif platformudur. 
+            Kampanya detayları, indirim oranları ve kullanım koşulları açık ve anlaşılır şekilde sunulur.
+          </p>
+          
+          <p className="text-gray-600 leading-relaxed">
+            Amacımız, online alışverişte tasarrufu kolaylaştırmak ve kullanıcıların en iyi fırsatlara zahmetsizce ulaşmasını 
+            sağlamaktır. İster günlük ihtiyaçlarınız için ister büyük alışverişlerinizde, en güncel indirimleri ve kupon 
+            kodlarını tek bir merkezden takip edebilir, alışveriş deneyiminizi daha avantajlı hale getirebilirsiniz. 
+            İndirim Keşfet ile fırsatları kaçırmadan, akıllı ve hesaplı alışverişin keyfini çıkarın.
           </p>
         </div>
       </section>
