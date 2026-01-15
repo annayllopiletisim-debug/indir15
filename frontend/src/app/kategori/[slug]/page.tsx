@@ -287,6 +287,29 @@ export default async function CategoryPage({ params }: Props) {
             )}
           </div>
         )}
+
+        {/* SEO Description Section */}
+        {(() => {
+          const seoContent = getCategoryDescription(category.slug);
+          if (!seoContent) return null;
+          
+          return (
+            <section className="mt-12 bg-white rounded-2xl shadow-sm p-6 md:p-8 border border-gray-100">
+              <div className="flex items-start gap-3 mb-4">
+                <div className="text-3xl">{seoContent.icon}</div>
+                <div>
+                  <h2 className="text-xl font-bold text-gray-800">{seoContent.title}</h2>
+                  <p className="text-sm text-gray-500">Kategori hakkında bilgi</p>
+                </div>
+              </div>
+              <ExpandableDescription 
+                description={seoContent.description} 
+                previewLength={250}
+                className="text-gray-600 leading-relaxed"
+              />
+            </section>
+          );
+        })()}
       </div>
     </div>
   );
