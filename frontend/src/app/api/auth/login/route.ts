@@ -10,15 +10,6 @@ export async function POST(request: Request) {
     const adminUsername = process.env.ADMIN_USERNAME;
     const adminPasswordHash = process.env.ADMIN_PASSWORD_HASH;
     
-    // Debug logging
-    console.log('Auth attempt - ENV vars present:', {
-      hasJwtSecret: !!jwtSecret,
-      hasUsername: !!adminUsername,
-      hasPasswordHash: !!adminPasswordHash,
-      usernameValue: adminUsername,
-      hashLength: adminPasswordHash?.length
-    });
-    
     // Fail fast if required env vars are missing
     if (!jwtSecret || !adminUsername || !adminPasswordHash) {
       console.error('Missing required environment variables for authentication');
@@ -26,20 +17,15 @@ export async function POST(request: Request) {
     }
     
     const { username, password } = await request.json();
-    
-    console.log('Login attempt:', { providedUsername: username, expectedUsername: adminUsername });
 
     // Validate username
     if (username !== adminUsername) {
-      console.log('Username mismatch');
       return NextResponse.json({ error: 'Geçersiz kullanıcı adı veya şifre' }, { status: 401 });
     }
 
     // Check password against bcrypt hash from environment
     const bcrypt = await import('bcryptjs');
     const isValidPassword = bcrypt.compareSync(password, adminPasswordHash);
-    
-    console.log('Password check:', { isValid: isValidPassword, hashPrefix: adminPasswordHash.substring(0, 10) });
     
     if (!isValidPassword) {
       return NextResponse.json({ error: 'Geçersiz kullanıcı adı veya şifre' }, { status: 401 });
