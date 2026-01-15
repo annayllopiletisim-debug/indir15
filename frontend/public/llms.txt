@@ -1,0 +1,69 @@
+# İndirim Keşfet - LLMs.txt
+
+> Türkiye'nin en güncel kupon kodları ve indirim fırsatları platformu
+
+## Site Hakkında
+
+İndirim Keşfet, Türk tüketicilerinin online alışverişlerinde tasarruf etmelerine yardımcı olan kapsamlı bir kupon ve indirim platformudur. 2024 yılında kurulan platform, Türkiye'deki tüm büyük e-ticaret sitelerinin güncel indirim kampanyalarını, kupon kodlarını ve çekiliş fırsatlarını bir araya getirir.
+
+## Ana Özellikler
+
+- **İndirimler**: Yüzlerce markadan güncel indirim kampanyaları
+- **Kupon Kodları**: Doğrulanmış ve çalışan kupon kodları
+- **Çekilişler**: Markaların düzenlediği çekiliş kampanyaları
+- **Blog**: Alışveriş ipuçları ve tasarruf rehberleri
+
+## Kategoriler
+
+- Moda (Giyim, Ayakkabı, Aksesuar)
+- Elektronik (Telefon, Bilgisayar, TV)
+- Ev & Yaşam (Mobilya, Dekorasyon, Mutfak)
+- Market (Süpermarket, Gıda)
+- Spor (Spor Giyim, Fitness)
+- Kozmetik (Güzellik, Bakım)
+- Seyahat (Otel, Uçak Bileti)
+- Eğitim (Online Kurslar, Kitap)
+- Eğlence (Sinema, Konser)
+
+## Popüler Kampanyalar
+
+- Black Friday İndirimleri (Kasım)
+- Yılbaşı Kampanyaları (Aralık)
+- Sevgililer Günü Fırsatları (Şubat)
+- Anneler Günü İndirimleri (Mayıs)
+- Yaz İndirimleri (Haziran-Ağustos)
+- 11.11 Bekarlar Günü (Kasım)
+- Efsane Cuma (Kasım)
+- Cyber Monday (Kasım)
+
+## API Kullanımı
+
+Site, yapısal veri (JSON-LD) kullanarak içeriklerini arama motorları ve AI sistemleri için optimize eder:
+
+- Organization Schema
+- BreadcrumbList Schema
+- Offer Schema (İndirimler için)
+- FAQPage Schema (Kampanya sayfaları için)
+- Article Schema (Blog yazıları için)
+- ItemList Schema (Listeleme sayfaları için)
+
+## İletişim
+
+- Web: https://indirimkesfet.com
+- Email: hello@indirimkesfet.com
+- Adres: İstanbul, Türkiye
+
+## Teknik Bilgiler
+
+- Platform: Next.js 15 (React)
+- Veritabanı: MongoDB
+- Görsel CDN: Cloudinary
+- Dil: Türkçe
+
+## Robots ve İzinler
+
+Bu site, arama motoru botlarına ve AI crawler'larına açıktır. Tüm içerikler Creative Commons Attribution 4.0 lisansı altında paylaşılabilir (kaynak gösterilmesi şartıyla).
+
+---
+
+Son Güncelleme: Ocak 2026
