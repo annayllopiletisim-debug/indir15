@@ -21,9 +21,11 @@ async function getHomeData() {
     const conn = await connectDB();
     // If connection is null (build phase), return empty data
     if (!conn) {
+      console.log('[HomePage] No DB connection, returning empty data');
       return { brands: [], discounts: [], categories: [] };
     }
     const now = new Date();
+    console.log('[HomePage] Fetching home data, now:', now.toISOString());
     
     // Count deals per brand using aggregation (optimized)
     const [discountCounts, couponCounts] = await Promise.all([
@@ -48,9 +50,11 @@ async function getHomeData() {
             { expiry_date: '' }
           ]
         }},
-        { $group: { _id: '$brand_id', count: { $sum: 1 } } }
+        { $group: { _id: '\$brand_id', count: { $sum: 1 } } }
       ]),
     ]);
+    
+    console.log('[HomePage] Discount counts:', discountCounts.length, 'Coupon counts:', couponCounts.length);
     
     // Build count map from aggregation results
     const brandDiscountCount: Record<string, number> = {};
@@ -60,11 +64,15 @@ async function getHomeData() {
     couponCounts.forEach((c: any) => {
       if (c._id) brandDiscountCount[c._id] = (brandDiscountCount[c._id] || 0) + c.count;
     });
+    
+    console.log('[HomePage] Brand discount count map entries:', Object.keys(brandDiscountCount).length);
 
     const [brands, categories] = await Promise.all([
       Brand.find({}).select('id name slug logo_url category_ids deal_count default_deal_image').limit(30).lean(),
       Category.find({}).sort({ order: 1 }).lean(),
     ]);
+    
+    console.log('[HomePage] Brands fetched:', brands.length, 'Categories:', categories.length);
 
     // Enrich brands with actual discount count and sort by it
     const enrichedBrands = brands.map((b: any) => ({
@@ -72,6 +80,9 @@ async function getHomeData() {
       _id: b._id?.toString(),
       deal_count: brandDiscountCount[b.id] || 0,
     })).sort((a: any, b: any) => b.deal_count - a.deal_count);
+    
+    const brandsWithDeals = enrichedBrands.filter((b: any) => b.deal_count > 0);
+    console.log('[HomePage] Brands with deals:', brandsWithDeals.length);
 
     // Count deals per category based on brand's category_ids
     const categoryDealCount: Record<string, number> = {};
