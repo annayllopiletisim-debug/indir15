@@ -1,13 +1,14 @@
 # İndirim Keşfet - Ürün Gereksinimleri Dokümanı (PRD)
 
 ## Proje Özeti
-İndirim Keşfet, Türkiye'nin en güncel kupon kodları ve indirim fırsatları platformudur. Next.js 14 (App Router) ile SSR destekli, SEO-optimized bir full-stack uygulama.
+İndirim Keşfet, Türkiye'nin en güncel kupon kodları ve indirim fırsatları platformudur. Next.js 15 (App Router) ile SSR destekli, SEO-optimized bir full-stack uygulama.
 
 ## Teknik Stack
-- **Frontend:** Next.js 14 (App Router), TailwindCSS, shadcn/ui
+- **Frontend:** Next.js 15 (App Router), TailwindCSS, shadcn/ui
 - **Backend:** Next.js API Routes (App Router)
-- **Database:** MongoDB
-- **Deployment:** SSR ready, Gzip/Brotli compression enabled
+- **Database:** MongoDB Atlas (Production)
+- **Image Storage:** Cloudinary CDN
+- **Deployment:** Emergent Kubernetes, SSR ready
 
 ## Temel Özellikler
 
@@ -121,7 +122,21 @@
 └── next.config.ts
 ```
 
-## Son Güncelleme: 14 Ocak 2026
+## Son Güncelleme: 15 Ocak 2026
+
+### Cloudinary Entegrasyonu (15 Ocak 2026)
+- ✅ **Cloudinary Image Storage:** Tüm görseller artık Cloudinary CDN üzerinden sunuluyor
+- ✅ **Migration API:** `/api/migrate-cloudinary` ile mevcut yerel görseller Cloudinary'ye taşındı
+- ✅ **Upload API Güncellendi:** Yeni yüklenen görseller otomatik olarak Cloudinary'ye yükleniyor
+- ✅ **Image Helper Güncellendi:** `isInternalUpload()` Cloudinary URL'lerini destekliyor
+
+### Ana Sayfa Bug Fix (15 Ocak 2026)
+- ✅ **DÜZELTILDI:** Ana sayfa içerik sorunu - `force-dynamic` ile cache bypass edildi
+- ✅ **Aggregation Optimizasyonu:** Brand deal sayıları runtime'da hesaplanıyor
+
+### Admin Giriş Bug Fix (15 Ocak 2026)
+- ✅ **DÜZELTILDI:** `.env` dosyasındaki `$` karakterleri escape edildi
+- ✅ **Şifre:** `Admin2026!Secure`
 
 ### Deployment Blocker Fixes (14 Ocak 2026)
 - ✅ **DÜZELTILDI: Hardcoded Database Name:** `lib/db.ts` artık sadece environment variable'dan DB_NAME alıyor, hardcoded fallback kaldırıldı
