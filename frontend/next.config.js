@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Output as standalone for containerized deployments
-  output: 'standalone',
+  // Output as standalone for containerized deployments (production only)
+  // Uncomment for deployment: output: 'standalone',
   
   // Disable ESLint during builds
   eslint: {
