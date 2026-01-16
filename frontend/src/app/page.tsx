@@ -14,9 +14,8 @@ export const metadata: Metadata = {
   description: 'Binlerce mağazadan en güncel indirimler, kupon kodları ve çekilişler. İndirim Keşfet ile tasarruf etmeye başlayın!',
 };
 
-// Force dynamic rendering for homepage - always fetch fresh data
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
+// Cache for 5 minutes for better performance
+export const revalidate = 300;
 
 async function getHomeData() {
   try {
