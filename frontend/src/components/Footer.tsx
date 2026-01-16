@@ -279,23 +279,9 @@ export default function Footer() {
       {/* SEO Section */}
       <div className="bg-gray-50 border-t border-gray-200">
         <div className="container mx-auto px-4 py-8">
-          <h2 className="text-lg font-bold text-gray-800 mb-3">Kupon ve İndirim Kodları</h2>
-          <p className="text-gray-600 text-sm mb-4 max-w-3xl">
-            İndirim Keşfet, Türkiye'nin en kapsamlı kupon ve indirim platformudur. Yüzlerce mağazadan 
-            güncel kampanyaları, özel kupon kodlarını ve çekilişleri tek bir yerde bulabilirsiniz. 
-            Her gün güncellenen içeriklerimizle alışveriş yaparken tasarruf etmenize yardımcı oluyoruz.
-            Trendyol, Hepsiburada, Migros, LC Waikiki ve daha birçok markadan en güncel fırsatları takip edin.
+          <p className="text-gray-600 text-sm max-w-3xl">
+            İndirim Keşfet, Türkiye'nin en kapsamlı indirim, kampanya ve kupon kodu platformlarından biridir. Yüzlerce online mağazaya ait güncel indirimler, özel kuponlar, sezonluk kampanyalar ve kaçırılmayacak fırsatlar tek bir adreste toplanır. Her gün düzenli olarak güncellenen içeriklerimiz sayesinde online alışveriş yaparken en avantajlı fiyatlara ulaşabilir, bütçenizi koruyarak tasarruf edebilirsiniz. Trendyol, Hepsiburada, Migros, LC Waikiki ve daha birçok popüler markanın en yeni indirimlerini, kampanya detaylarını ve kupon kodlarını İndirim Keşfet üzerinden güvenle keşfedin.
           </p>
-          <div className="flex flex-wrap gap-2">
-            {tags.map((tag) => (
-              <span 
-                key={tag}
-                className="px-3 py-1.5 bg-white border border-gray-200 rounded-full text-xs text-gray-600 hover:border-purple-300 hover:text-purple-600 transition-colors cursor-pointer"
-              >
-                {tag}
-              </span>
-            ))}
-          </div>
         </div>
       </div>
 
