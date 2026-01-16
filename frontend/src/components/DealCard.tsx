@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { Tag, Clock, ExternalLink } from 'lucide-react';
-import { getImageUrl, isInternalUpload } from '@/lib/image';
+import { getImageUrl, isInternalUpload, BLUR_PLACEHOLDER } from '@/lib/image';
 import { addUtmParams } from '@/lib/utm';
 
 interface DealCardProps {
@@ -45,6 +45,8 @@ export default function DealCard({ deal, brand, href }: DealCardProps) {
                 alt={deal?.title || 'İndirim'} 
                 fill
                 sizes="64px"
+                placeholder="blur"
+                blurDataURL={BLUR_PLACEHOLDER}
                 unoptimized={isInternalUpload(deal?.image_url || brand?.default_deal_image)}
                 className="object-cover" 
               />
@@ -54,6 +56,8 @@ export default function DealCard({ deal, brand, href }: DealCardProps) {
                 alt={brand?.name || 'Mağaza'} 
                 fill
                 sizes="64px"
+                placeholder="blur"
+                blurDataURL={BLUR_PLACEHOLDER}
                 unoptimized={isInternalUpload(brand.logo_url)}
                 className="object-contain p-1.5" 
               />
