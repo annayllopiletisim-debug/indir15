@@ -96,8 +96,6 @@ export default function Footer() {
     { name: 'Reklam Ver', href: '/reklam' },
   ];
 
-  const tags = ['kupon kodları', 'indirim kodları', 'migros kupon', 'trendyol indirim', 'hepsiburada kupon', 'ücretsiz kargo', 'kampanya'];
-
   return (
     <footer className="bg-white border-t border-gray-200">
       {/* Stats Section */}

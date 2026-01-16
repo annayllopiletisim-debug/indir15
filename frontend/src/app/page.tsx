@@ -7,6 +7,7 @@ import { getShortId, generateSlug } from '@/lib/utils';
 import { getImageUrl, isInternalUpload } from '@/lib/image';
 import { ArrowRight, Star } from 'lucide-react';
 import FeaturedDealCard from '@/components/FeaturedDealCard';
+import ExpandableSEOContent from '@/components/ExpandableSEOContent';
 
 export const metadata: Metadata = {
   title: 'İndirim Keşfet - Türkiye\'nin En Güncel Kupon ve İndirim Platformu',
