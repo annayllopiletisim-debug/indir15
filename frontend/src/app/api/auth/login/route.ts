@@ -1,33 +1,24 @@
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import jwt from 'jsonwebtoken';
-import bcrypt from 'bcryptjs';
 
 export async function POST(request: Request) {
   try {
     // All credentials must come from environment variables - no fallbacks
     const jwtSecret = process.env.JWT_SECRET;
     const adminUsername = process.env.ADMIN_USERNAME;
-    const adminPasswordHash = process.env.ADMIN_PASSWORD_HASH;
+    const adminPassword = process.env.ADMIN_PASSWORD;
     
     // Fail fast if required env vars are missing
-    if (!jwtSecret || !adminUsername || !adminPasswordHash) {
+    if (!jwtSecret || !adminUsername || !adminPassword) {
       console.error('Missing required environment variables for authentication');
       return NextResponse.json({ error: 'Server configuration error' }, { status: 500 });
     }
     
     const { username, password } = await request.json();
 
-    // Validate username
-    if (username !== adminUsername) {
-      return NextResponse.json({ error: 'Geçersiz kullanıcı adı veya şifre' }, { status: 401 });
-    }
-
-    // Check password against bcrypt hash from environment
-    const bcrypt = await import('bcryptjs');
-    const isValidPassword = bcrypt.compareSync(password, adminPasswordHash);
-    
-    if (!isValidPassword) {
+    // Validate credentials
+    if (username !== adminUsername || password !== adminPassword) {
       return NextResponse.json({ error: 'Geçersiz kullanıcı adı veya şifre' }, { status: 401 });
     }
 
