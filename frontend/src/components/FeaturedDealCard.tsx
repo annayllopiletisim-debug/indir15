@@ -47,6 +47,9 @@ export default function FeaturedDealCard({ deal, detailHref, type = 'discount', 
                 alt={deal?.title || 'İndirim'}
                 fill
                 sizes="96px"
+                priority={priority}
+                placeholder="blur"
+                blurDataURL={BLUR_PLACEHOLDER}
                 unoptimized={isInternalUpload(deal.image_url)}
                 className="object-cover group-hover:scale-105 transition-transform duration-300"
               />
@@ -56,6 +59,9 @@ export default function FeaturedDealCard({ deal, detailHref, type = 'discount', 
                 alt={deal?.title || 'İndirim'}
                 fill
                 sizes="96px"
+                priority={priority}
+                placeholder="blur"
+                blurDataURL={BLUR_PLACEHOLDER}
                 unoptimized={isInternalUpload(brand.default_deal_image)}
                 className="object-cover group-hover:scale-105 transition-transform duration-300"
               />
