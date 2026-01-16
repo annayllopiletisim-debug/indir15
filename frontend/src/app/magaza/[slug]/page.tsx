@@ -38,7 +38,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export const dynamic = 'force-dynamic';
+// Cache for 10 minutes for better performance
+export const revalidate = 600;
 
 async function getBrandData(slug: string) {
   await connectDB();
