@@ -3,16 +3,17 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { Calendar, ChevronRight } from 'lucide-react';
-import { getImageUrl, isInternalUpload } from '@/lib/image';
+import { getImageUrl, isInternalUpload, BLUR_PLACEHOLDER } from '@/lib/image';
 import { addUtmParams } from '@/lib/utm';
 
 interface FeaturedDealCardProps {
   deal: any;
   detailHref: string;
   type?: 'discount' | 'coupon';
+  priority?: boolean;
 }
 
-export default function FeaturedDealCard({ deal, detailHref, type = 'discount' }: FeaturedDealCardProps) {
+export default function FeaturedDealCard({ deal, detailHref, type = 'discount', priority = false }: FeaturedDealCardProps) {
   // Safe access - brand might be undefined or null
   const brand = deal?.brand || null;
   const destinationUrl = deal?.destination_url || brand?.affiliate_url || brand?.website_url;
