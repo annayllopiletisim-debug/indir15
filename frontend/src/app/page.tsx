@@ -4,7 +4,7 @@ import Image from 'next/image';
 import connectDB from '@/lib/db';
 import { Brand, Discount, Category } from '@/lib/models';
 import { getShortId, generateSlug } from '@/lib/utils';
-import { getImageUrl, isInternalUpload } from '@/lib/image';
+import { getImageUrl, isInternalUpload, BLUR_PLACEHOLDER } from '@/lib/image';
 import { ArrowRight, Star } from 'lucide-react';
 import FeaturedDealCard from '@/components/FeaturedDealCard';
 import ExpandableSEOContent from '@/components/ExpandableSEOContent';
@@ -157,10 +157,11 @@ export default async function HomePage() {
           </Link>
         </div>
         <div className="flex gap-5 overflow-x-auto pb-4 scrollbar-hide">
-          {brands.filter((b: any) => b.deal_count > 0).map((brand: any) => (
+          {brands.filter((b: any) => b.deal_count > 0).map((brand: any, index: number) => (
             <Link
               key={brand.id}
               href={`/magaza/${brand.slug}`}
+              prefetch={false}
               className="flex-shrink-0 flex flex-col items-center group"
             >
               <div className="relative mb-2">
@@ -171,6 +172,9 @@ export default async function HomePage() {
                       alt={brand?.name || 'Mağaza'}
                       fill
                       sizes="80px"
+                      priority={index < 8}
+                      placeholder="blur"
+                      blurDataURL={BLUR_PLACEHOLDER}
                       unoptimized={isInternalUpload(brand.logo_url)}
                       className="object-contain p-3"
                     />
@@ -201,12 +205,12 @@ export default async function HomePage() {
           <h2 className="text-xl font-semibold text-gray-800">Öne Çıkanlar</h2>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {discounts.slice(0, 9).map((discount: any) => {
+          {discounts.slice(0, 9).map((discount: any, index: number) => {
             const shortId = getShortId(discount.id);
             const slug = generateSlug(discount.title);
             const detailHref = discount.brand ? `/magaza/${discount.brand.slug}/indirim/${slug}-${shortId}` : '#';
             return (
-              <FeaturedDealCard key={discount.id} deal={discount} detailHref={detailHref} />
+              <FeaturedDealCard key={discount.id} deal={discount} detailHref={detailHref} priority={index < 3} />
             );
           })}
         </div>
