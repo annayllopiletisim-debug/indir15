@@ -39,6 +39,9 @@ const nextConfig = {
     imageSizes: [16, 32, 48, 64, 96, 128, 256],
   },
   
+  // Server external packages - required for standalone build with mongoose
+  serverExternalPackages: ['mongoose'],
+  
   // Experimental optimizations
   experimental: {
     serverActions: {
