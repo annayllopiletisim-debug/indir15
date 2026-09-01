@@ -39,6 +39,21 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 // Cache for 10 minutes for better performance
 export const revalidate = 600;
 
+// Pre-render all known category pages at build time so they're served
+// instantly from cache instead of waiting on a DB round-trip on first click.
+// Falls back to on-demand ISR (previous behavior) if the DB isn't reachable at build time.
+export async function generateStaticParams() {
+  try {
+    const conn = await connectDB();
+    if (!conn) return [];
+    const categories = await Category.find({}).select('slug').lean();
+    return categories.map((c: any) => ({ slug: c.slug }));
+  } catch (error) {
+    console.error('Failed to generate static params for categories:', error);
+    return [];
+  }
+}
+
 async function getCategoryData(slug: string) {
   await connectDB();
   
