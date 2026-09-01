@@ -16,6 +16,8 @@ const BrandSchema = new Schema({
   created_at: { type: Date, default: Date.now },
 }, { collection: 'brands' });
 
+BrandSchema.index({ category_ids: 1 });
+
 // Discount Schema
 const DiscountSchema = new Schema({
   id: { type: String, required: true, unique: true },
@@ -34,6 +36,12 @@ const DiscountSchema = new Schema({
   created_at: { type: Date, default: Date.now },
 }, { collection: 'discounts' });
 
+DiscountSchema.index({ brand_id: 1, created_at: -1 });
+DiscountSchema.index({ expiry_date: 1 });
+DiscountSchema.index({ is_featured: 1, created_at: -1 });
+DiscountSchema.index({ click_count: -1, created_at: -1 });
+DiscountSchema.index({ created_at: -1 });
+
 // Coupon Schema
 const CouponSchema = new Schema({
   id: { type: String, required: true, unique: true },
@@ -51,6 +59,11 @@ const CouponSchema = new Schema({
   created_at: { type: Date, default: Date.now },
 }, { collection: 'coupons' });
 
+CouponSchema.index({ brand_id: 1, created_at: -1 });
+CouponSchema.index({ is_active: 1, expiry_date: 1 });
+CouponSchema.index({ click_count: -1, created_at: -1 });
+CouponSchema.index({ created_at: -1 });
+
 // Giveaway Schema
 const GiveawaySchema = new Schema({
   id: { type: String, required: true, unique: true },
@@ -64,6 +77,9 @@ const GiveawaySchema = new Schema({
   created_at: { type: Date, default: Date.now },
 }, { collection: 'giveaways' });
 
+GiveawaySchema.index({ brand_id: 1 });
+GiveawaySchema.index({ created_at: -1 });
+
 // Category Schema
 const CategorySchema = new Schema({
   id: { type: String, required: true, unique: true },
@@ -74,6 +90,8 @@ const CategorySchema = new Schema({
   order: { type: Number, default: 0 },
   created_at: { type: Date, default: Date.now },
 }, { collection: 'categories' });
+
+CategorySchema.index({ order: 1 });
 
 // Newsletter Subscriber Schema
 const NewsletterSchema = new Schema({
@@ -101,6 +119,8 @@ const BlogPostSchema = new Schema({
   created_at: { type: Date, default: Date.now },
   updated_at: { type: Date, default: Date.now },
 }, { collection: 'blog_posts' });
+
+BlogPostSchema.index({ is_published: 1, published_at: -1 });
 
 // Contact Message Schema
 const ContactMessageSchema = new Schema({
